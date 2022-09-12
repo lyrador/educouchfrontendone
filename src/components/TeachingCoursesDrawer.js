@@ -11,7 +11,9 @@ import ListItemText from '@mui/material/ListItemText';
 import '../css/DrawerLeft.css';
 
 function TeachingCoursesDrawer(props) {
-
+  function handleChange(event, text) {
+    props.onChange(text);
+  }
   const drawer = (
     <div>
       <div className='drawerContainer'>
@@ -42,7 +44,7 @@ function TeachingCoursesDrawer(props) {
             <List>
                 {['Announcements', 'Files', 'Forum', 'Assessments', 'Quiz', 'Gradebook', 'Whiteboard', 'In-Class'].map((text, index) => (
                 <ListItem key={text} disablePadding>
-                    <ListItemButton>
+                    <ListItemButton  onClick = {event => handleChange(event, text)}>
                     {/* <ListItemIcon>
                         {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                     </ListItemIcon> */}
