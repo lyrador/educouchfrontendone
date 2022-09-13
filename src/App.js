@@ -8,7 +8,13 @@ import Settings from './pages/Settings';
 import Home from './pages/Home';
 import LearnerCreation from './pages/LearnerCreation';
 import Appbar from './components/Appbar';
-import TeachingCourses from './pages/TeachingCourses';
+import TeachingCoursesList from './pages/TeachingCoursesList';
+import TeachingCourse from './pages/TeachingCourse';
+import TeachingCourseNew from './pages/TeachingCourseNew';
+import TeachingForumList from './components/TeachingForumList';
+import TeachingDiscussion from './components/TeachingDiscussion';
+import TeachingForum from './components/TeachingForum';
+import TeachingFileList from './components/TeachingFileList';
 
 function App() {
   return (
@@ -17,7 +23,17 @@ function App() {
         <Appbar></Appbar>
         <Routes>
           <Route path = "/" element={<Home />} />
-          <Route path = "/myTeachingModules" element={<TeachingCourses />} />
+
+          <Route path = "/myTeachingCoursesList" element={<TeachingCoursesList />} />
+          <Route path = "/myTeachingCourse/:moduleCode" element={<TeachingCourse />}></Route>
+          <Route path = "/myTeachingCourse/new" element={<TeachingCourseNew />} />
+
+          <Route path = "/myTeachingCourse/:moduleCode/forum" element={<TeachingForumList />} />
+          <Route path = "/myTeachingCourse/:moduleCode/forum/:forumId" element={<TeachingForum />} />
+          <Route path = "/myTeachingCourse/:moduleCode/forum/:forumId/:discussionId" element={<TeachingDiscussion />} />
+
+          <Route path = "/myTeachingCourse/:moduleCode/files" element={<TeachingFileList />} />
+
           <Route path = "/settings" element={<Settings/>} />
           <Route path = "/learnerCreation" element={<LearnerCreation/>} />
         </Routes>

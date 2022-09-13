@@ -13,8 +13,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import '../css/Appbar.css';
 
-//from mui.com/material-ui/react-drawer
-
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
@@ -91,13 +89,13 @@ export default function Appbar() {
                         </Link>
                     </li>
                     <li className='nav-item'>
-                        <Link to ='/myTeachingModules' className='nav-links'>
-                            Teaching Modules
+                        <Link to ='/myTeachingCoursesList' className='nav-links'>
+                            Teaching Courses
                         </Link>
                     </li>
                     <li className='nav-item'>
                         <Link to ='/' className='nav-links'>
-                            Module Explorer
+                            Course Explorer
                         </Link>
                     </li>
                     <li className='nav-item'>

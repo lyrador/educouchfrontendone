@@ -8,12 +8,19 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
+import { Link, useLocation } from 'react-router-dom';
+
 import '../css/DrawerLeft.css';
 
 function TeachingCoursesDrawer(props) {
+
+  const location = useLocation();
+  const modulePath = location.pathname.split('/').slice(0,3).join('/')
+
   function handleChange(event, text) {
     props.onChange(text);
   }
+
   const drawer = (
     <div>
       <div className='drawerContainer'>
@@ -29,29 +36,57 @@ function TeachingCoursesDrawer(props) {
         <br/><br/>
         <Divider />
             <List>
-                {['Course Settings', 'Schedule'].map((text, index) => (
-                <ListItem key={text} disablePadding>
+                <Link to={`${modulePath}/courseSettings`} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
-                    {/* <ListItemIcon>
-                        {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon> */}
-                    <ListItemText primary={text} />
+                      <ListItemText primary="Course Settings"/>
                     </ListItemButton>
-                </ListItem>
-                ))}
+                </Link>
+                <Link to={`${modulePath}/schedule`} style={{textDecoration: 'none', color: 'black'}}>
+                    <ListItemButton>
+                      <ListItemText primary="Schedule"/>
+                    </ListItemButton>
+                </Link>
             </List>
             <Divider />
             <List>
-                {['Announcements', 'Files', 'Forum', 'Assessments', 'Quiz', 'Gradebook', 'Whiteboard', 'In-Class'].map((text, index) => (
-                <ListItem key={text} disablePadding>
-                    <ListItemButton  onClick = {event => handleChange(event, text)}>
-                    {/* <ListItemIcon>
-                        {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon> */}
-                    <ListItemText primary={text} />
+                <Link to={`${modulePath}/announcements`} style={{textDecoration: 'none', color: 'black'}}>
+                    <ListItemButton>
+                      <ListItemText primary="Announcements"/>
                     </ListItemButton>
-                </ListItem>
-                ))}
+                </Link>
+                <Link to={`${modulePath}/files`} style={{textDecoration: 'none', color: 'black'}}>
+                    <ListItemButton>
+                      <ListItemText primary="Files"/>
+                    </ListItemButton>
+                </Link>
+                <Link to={{
+                  pathname: `${modulePath}/forum`,
+                  // state: {stateParam : true}
+                }} style={{textDecoration: 'none', color: 'black'}}>
+                    <ListItemButton>
+                      <ListItemText primary="Forum"/>
+                    </ListItemButton>
+                </Link>
+                <Link to={`${modulePath}/assessments`} style={{textDecoration: 'none', color: 'black'}}>
+                    <ListItemButton>
+                      <ListItemText primary="Assessments"/>
+                    </ListItemButton>
+                </Link>
+                <Link to={`${modulePath}/gradebook`} style={{textDecoration: 'none', color: 'black'}}>
+                    <ListItemButton>
+                      <ListItemText primary="Gradebook"/>
+                    </ListItemButton>
+                </Link>
+                <Link to={`${modulePath}/whiteboard`} style={{textDecoration: 'none', color: 'black'}}>
+                    <ListItemButton>
+                      <ListItemText primary="Whiteboard"/>
+                    </ListItemButton>
+                </Link>
+                <Link to={`/myTeachingCourse/${props.moduleCode}/inClass`} style={{textDecoration: 'none', color: 'black'}}>
+                    <ListItemButton>
+                      <ListItemText primary="In-Class"/>
+                    </ListItemButton>
+                </Link>
             </List>
       </div>
     </div>
@@ -63,7 +98,7 @@ function TeachingCoursesDrawer(props) {
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: '12%' , top: '123px'},
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: '15%' , top: '123px', minWidth: '200px'},
           }}
           open
         >
