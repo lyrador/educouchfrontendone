@@ -25,7 +25,7 @@ function TeachingDiscussion(props) {
     //paths
     const location = useLocation();
     const forumPath = location.pathname.split('/').slice(0,4).join('/')
-    const discussionPath = location.pathname.split('/').slice(0,5).join('/')
+    const discussionsPath = location.pathname.split('/').slice(0,5).join('/')
 
     console.log(location.state)
     const discussionName = location.state.discussionName;
@@ -42,12 +42,20 @@ function TeachingDiscussion(props) {
                         <LinkMaterial underline="hover" color="inherit" href={`${forumPath}`}>
                             Forum
                         </LinkMaterial>
-                        <LinkMaterial underline="hover" color="inherit" href={`${discussionPath}`}>
-                            {forumName}
-                        </LinkMaterial>
-                        <LinkMaterial underline="hover" color="inherit" href={`${location.pathname}`}>
-                            {discussionName}
-                        </LinkMaterial>
+                        <Link to={`${discussionsPath}`} 
+                            state={{ discussionName: discussionName, forumName: forumName }} 
+                            style={{textDecoration: 'none', color: 'grey'}}>
+                            <LinkMaterial underline="hover" color="inherit">
+                                {forumName}
+                            </LinkMaterial>
+                        </Link>
+                        <Link to={`${location.pathname}`} 
+                            state={{ discussionName: discussionName, forumName: forumName }} 
+                            style={{textDecoration: 'none', color: 'grey'}}>
+                            <LinkMaterial underline="hover" color="inherit">
+                                {discussionName}
+                            </LinkMaterial>
+                        </Link>
                     </Breadcrumbs>
                 </Grid>
             </Grid>

@@ -27,10 +27,11 @@ function TeachingForum(props) {
 
     //paths
     const location = useLocation();
-    const forumPath = location.pathname.split('/').slice(0,4).join('/')
-    const discussionPath = location.pathname.split('/').slice(0,5).join('/')
+    const forumsPath = location.pathname.split('/').slice(0,4).join('/')
+    const discussionsPath = location.pathname
 
-    const { forumName } = location.state;
+    console.log(location.state)
+    const forumName = location.state.forumName;
 
     function createData(discussionId, discussionName, numofComments, lastActivity) {
         return {discussionId, discussionName, numofComments, lastActivity};
@@ -51,12 +52,16 @@ function TeachingForum(props) {
                 </Grid>
                 <Grid item xs={10}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <LinkMaterial underline="hover" color="inherit" href={`${forumPath}`}>
+                        <LinkMaterial underline="hover" color="inherit" href={`${forumsPath}`}>
                             Forum
                         </LinkMaterial>
-                        <LinkMaterial underline="hover" color="inherit" href={`${discussionPath}`}>
-                            {forumName}
-                        </LinkMaterial>
+                        <Link to={`${discussionsPath}`} 
+                            state={{ forumName: forumName }} 
+                            style={{textDecoration: 'none', color: 'grey'}}>
+                            <LinkMaterial underline="hover" color="inherit">
+                                {forumName}
+                            </LinkMaterial>
+                        </Link>
                     </Breadcrumbs>
                     <h1>List of Discussions</h1>
                     <div style={{padding: '5%'}}>
@@ -76,7 +81,7 @@ function TeachingForum(props) {
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell component="th" scope="row">
-                                        <Link to={`${discussionPath}/${row.discussionId}`} 
+                                        <Link to={`${discussionsPath}/${row.discussionId}`} 
                                         state={{ discussionName: row.discussionName, forumName: forumName }} 
                                         style={{textDecoration: 'none'}}>
                                             {row.discussionName}

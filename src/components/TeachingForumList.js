@@ -19,7 +19,7 @@ function TeachingForumList(props) {
 
     //paths
     const location = useLocation();
-    const forumPath = location.pathname.split('/').slice(0,4).join('/')
+    const forumsPath = location.pathname.split('/').slice(0,4).join('/')
 
     const moduleCode = useParams();
 
@@ -44,7 +44,7 @@ function TeachingForumList(props) {
                 </Grid>
                 <Grid item xs={10}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <LinkMaterial underline="hover" color="inherit" href={`${forumPath}`}>
+                        <LinkMaterial underline="hover" color="inherit" href={`${forumsPath}`}>
                             Forum
                         </LinkMaterial>
                     </Breadcrumbs>
@@ -66,7 +66,7 @@ function TeachingForumList(props) {
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell component="th" scope="row">
-                                        <Link to={`${forumPath}/${row.forumId}`} state={{ forumName: row.forumName }} style={{textDecoration: 'none'}}>
+                                        <Link to={`${forumsPath}/${row.forumId}`} state={{ forumName: row.forumName }} style={{textDecoration: 'none'}}>
                                             {row.forumName}
                                         </Link>
                                     </TableCell>
