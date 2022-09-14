@@ -39,7 +39,7 @@ function SettingsDrawer(props) {
             <List>
                 {['EducatorCreation'].map((text, index) => (
                 <ListItem key={text} disablePadding>
-                    <ListItemButton>
+                    <ListItemButton component={Link} to="/educatorCreation">
                     <ListItemText primary={text} />
                     </ListItemButton>
                 </ListItem>

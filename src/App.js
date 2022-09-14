@@ -15,6 +15,8 @@ import TeachingForumList from './components/TeachingForumList';
 import TeachingDiscussion from './components/TeachingDiscussion';
 import TeachingForum from './components/TeachingForum';
 import TeachingFileList from './components/TeachingFileList';
+import SettingsDrawer from './components/SettingsDrawer';
+import EducatorCreation from './pages/EducatorCreation';
 
 function App() {
   return (
@@ -33,9 +35,11 @@ function App() {
           <Route path = "/myTeachingCourse/:moduleCode/forum/:forumId/:discussionId" element={<TeachingDiscussion />} />
 
           <Route path = "/myTeachingCourse/:moduleCode/files" element={<TeachingFileList />} />
-
+          <Route path = "/adminDrawer" element={<SettingsDrawer/>} />
           <Route path = "/settings" element={<Settings/>} />
-          <Route path = "/learnerCreation" element={<LearnerCreation/>} />
+          <Route path="/learnerCreation" element={<LearnerCreation />} />
+          <Route path = "/educatorCreation" element={<EducatorCreation/>} />
+
         </Routes>
       </Router>
     </div>
