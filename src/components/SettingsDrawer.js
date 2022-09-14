@@ -37,9 +37,9 @@ function SettingsDrawer(props) {
             </List>
             <Divider />
             <List>
-                {['EducatorCreation'].map((text, index) => (
+                {['View Educators'].map((text, index) => (
                 <ListItem key={text} disablePadding>
-                    <ListItemButton component={Link} to="/educatorCreation">
+                    <ListItemButton component={Link} to="/viewAllEducators">
                     <ListItemText primary={text} />
                     </ListItemButton>
                 </ListItem>

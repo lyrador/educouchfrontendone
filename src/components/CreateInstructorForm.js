@@ -48,19 +48,20 @@ export default function CreateInstructorForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [accessRightEnum, setAccessRightEnum] = useState("");
 
-  // const handleClick=(e)=> {
-  //     e.preventDefault()
-  //       const educator={name,address,email,password,username,profilePictureURL}
-  //       console.log(educator)
-  //       fetch("http://localhost:8080/educator/add", {
-  //       method:"POST",
-  //       headers:{"Content-Type":"application/json"},
-  //       body:JSON.stringify(educator)
-  //       })
-  //     console.log("New educator added")
-  // }
 
+  const handleClick = (e) => {
+    e.preventDefault();
+    const educator = { name, email, password, username, accessRightEnum };
+    console.log(educator);
+    fetch("http://localhost:8080/educator/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(educator),
+    });
+    console.log("New educator added");
+  };
 
   // React.useEffect(()=>{
   //     fetch("http://localhost:8080/educator/getAll")
@@ -126,6 +127,15 @@ export default function CreateInstructorForm() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
+          <TextField
+            id="outlined-basic"
+            label="educator Accessright Enum"
+            variant="outlined"
+            fullWidth
+            style={{ paddingBottom: "10px" }}
+            value={accessRightEnum}
+            onChange={(e) => setAccessRightEnum(e.target.value)}
+          />
           {/* </form> */}
           <br />
           {name}
@@ -136,9 +146,11 @@ export default function CreateInstructorForm() {
           <br />
           {username}
           <br />
+          {accessRightEnum}
           <br />
-        </Paper>
+          <Button variant="contained" onClick={handleClick}>Submit</Button>
 
+        </Paper>
 
         {/* <Paper elevation={3} style={paperStyle}>
         {educators.map(educator=>(
