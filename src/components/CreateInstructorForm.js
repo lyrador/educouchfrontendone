@@ -3,17 +3,21 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Container } from "@mui/system";
 import {
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  Stack,
+} from "@mui/material";
+import {
   Paper,
   Button,
-  Typography,
-  LinearProgress,
-  ThemeProvider,
   createTheme,
 } from "@mui/material";
 import { useState } from "react";
-import UploadService from "../services/UploadFilesService";
 
-export default function CreateInstructorForm() {
+export default function CreateInstructorForm(props) {
   const theme = createTheme({
     components: {
       MuiLinearProgress: {
@@ -34,15 +38,6 @@ export default function CreateInstructorForm() {
     },
   });
 
-  const [currentFile, setCurrentFile] = useState(undefined);
-  const [previewImage, setPreviewImage] = useState(
-    "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-  );
-  const [progress, setProgress] = useState(0);
-  const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(false);
-  const [isUploaded, setIsUploaded] = useState(false);
-
   const paperStyle = { padding: "50px 20px", width: 600, margin: "20px auto" };
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -50,27 +45,23 @@ export default function CreateInstructorForm() {
   const [username, setUsername] = useState("");
   const [accessRightEnum, setAccessRightEnum] = useState("");
 
-
   const handleClick = (e) => {
-    e.preventDefault();
+
     const educator = { name, email, password, username, accessRightEnum };
-    console.log(educator);
     fetch("http://localhost:8080/educator/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(educator),
-    });
+    }).then(res => res.json())
+      .then(props.closeModalFunc());
     console.log("New educator added");
   };
 
-  // React.useEffect(()=>{
-  //     fetch("http://localhost:8080/educator/getAll")
-  //     .then(res=>res.json())
-  //     .then((result)=>{
-  //         seteducators(result);
-  //     }
-  // )
-  // },[])
+  const handleCancel = () => {
+    props.closeModalFunc();
+    console.log("child cancel called");
+  };
+
 
   return (
     <Box
@@ -90,7 +81,6 @@ export default function CreateInstructorForm() {
             <u>Add Instructor</u>
           </h1>
           <br></br>
-          {/* <form className={classes.root} noValidate autoComplete="off"> */}
           <TextField
             id="outlined-basic"
             label="educator Name"
@@ -127,52 +117,43 @@ export default function CreateInstructorForm() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-          <TextField
-            id="outlined-basic"
-            label="educator Accessright Enum"
-            variant="outlined"
-            fullWidth
-            style={{ paddingBottom: "10px" }}
-            value={accessRightEnum}
-            onChange={(e) => setAccessRightEnum(e.target.value)}
-          />
-          {/* </form> */}
-          <br />
-          {name}
-          <br />
-          {email}
-          <br />
-          {password}
-          <br />
-          {username}
-          <br />
-          {accessRightEnum}
-          <br />
-          <Button variant="contained" onClick={handleClick}>Submit</Button>
 
+          <Stack direction={"row"}>
+            <Box justifyContent={"center"} alignContent={ "center"}>
+              <h3>Access Right</h3>
+            </Box>
+            <FormControl>
+              <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                defaultValue="INSTRUCTOR"
+                name="radio-buttons-group"
+                value={accessRightEnum}
+                onChange={(e) => setAccessRightEnum(e.target.value)}
+              >
+                <FormControlLabel
+                  value="INSTRUCTOR"
+                  control={<Radio />}
+                  label="Instructor"
+                />
+                <FormControlLabel
+                  value="HEADINSTRUCTOR"
+                  control={<Radio />}
+                  label="Head Instructor"
+                />
+              </RadioGroup>
+            </FormControl>
+
+          </Stack>
+          <br />
+          <br />
+          <br />
+          <Button variant="contained" onClick={handleClick}>
+            Submit
+          </Button>
+          <Button variant="contained" onClick={handleCancel}>
+            Cancel
+          </Button>
         </Paper>
-
-        {/* <Paper elevation={3} style={paperStyle}>
-        {educators.map(educator=>(
-            <Paper elevation={6} style={{margin:"10px",padding:"15px",textAlign:"left"}} key={educator.educatorId}>
-                educatorId: {educator.educatorId}
-                <br/>
-                Name: {educator.name}
-                <br/>
-                Address: {educator.address}
-                <br/>
-                Email: {educator.email}
-                <br/>
-                Password: {educator.password}
-                <br/>
-                Username: {educator.username}
-                <br/>
-                Profile Picture: 
-                <img className="preview my20" src={educator.profilePictureURL} alt="" style={{ height: '10%', width: '10%' }}/>
-            </Paper>
-        ))
-        }
-      </Paper> */}
       </Container>
     </Box>
   );
