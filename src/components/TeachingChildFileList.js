@@ -7,33 +7,25 @@ import { Grid, Typography, Button } from '@mui/material';
 import TeachingFileComponent from './TeachingFileComponent';
 import { useState } from 'react';
 
-function TeachingFileList() {
-
+function TeachingChildFileList({ folderId }) {
     var moduleCode = useParams();
     moduleCode = moduleCode.moduleCode;
-    
-    // const handleClick = num => {
-    //     fetch("http://localhost:8080/folder/getFolderByFolderId/1" + num)
-    //     .then(res => res.json())
-    //     .then((result) => {
-    //         var fol = result;
-    //         setFolderList(fol.childFolders)
-    //     })
-    // }
 
-    const[folderList, setFolderList] = useState([]);
+    const [folderList, setFolderList] = useState([]);
 
-    React.useEffect(()=>{
-        fetch("http://localhost:8080/folder/getFoldersByCourseCode/" + moduleCode)
-        .then(res=>res.json())
-        .then((result)=>{
-            setFolderList(result);
-        }
-    ).catch((err) => {
-        console.log(err.message);
-    });}, []);
+    React.useEffect(() => {
+        fetch("http://localhost:8080/folder/getFolderByFolderId/" + folderId)
+            .then(res => res.json())
+            .then((result) => {
+                var fol = result;
+                setFolderList(fol.childFolders)
+            }
+            ).catch((err) => {
+                console.log(err.message);
+            });
+    }, []);
 
-    
+
 
     return (
         <div>
@@ -42,6 +34,7 @@ function TeachingFileList() {
                     <TeachingCoursesDrawer moduleCode={moduleCode}></TeachingCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
+                    
                     <Typography variant="h5">
                         Content Files Uploading
                     </Typography>
@@ -58,7 +51,7 @@ function TeachingFileList() {
                     <br/>
                     {
                         folderList
-                            .map((folder) => (<TeachingFileComponent folder={folder} moduleCode = {moduleCode}></TeachingFileComponent>))
+                            .map((folder) => (<TeachingFileComponent folder={folder} moduleCode={moduleCode}></TeachingFileComponent>))
                     }
 
                 </Grid>
@@ -71,4 +64,4 @@ function TeachingFileList() {
     )
 }
 
-export default TeachingFileList;
+export default TeachingChildFileList;

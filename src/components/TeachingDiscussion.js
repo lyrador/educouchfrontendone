@@ -26,8 +26,6 @@ function TeachingDiscussion(props) {
     const location = useLocation();
     const forumPath = location.pathname.split('/').slice(0,4).join('/')
     const discussionsPath = location.pathname.split('/').slice(0,5).join('/')
-
-    console.log(location.state)
     const discussionName = location.state.discussionName;
     const forumName = location.state.forumName;
 
