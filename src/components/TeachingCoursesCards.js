@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import '../App.css';
 import CardItem from './CardItem';
 import '../css/CardItem.css'
@@ -8,8 +8,7 @@ import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
-import { width } from '@mui/system';
-import { AlignHorizontalLeft } from '@mui/icons-material';
+
 
 function TeachingCoursesCards() {
 
@@ -47,10 +46,22 @@ function TeachingCoursesCards() {
       }
     
       const [value, setValue] = React.useState(0);
+      const [courses, setCourses] = useState([])
     
       const handleChange = (event, newValue) => {
         setValue(newValue);
       };
+
+      React.useEffect(() => {
+        fetch("http://localhost:8080/course/courses").
+        then(res=>res.json()).
+        then((result)=>{
+          setCourses(result);
+        }
+      )
+      }, [])
+
+      console.log(courses)
 
   return (
     <>
@@ -69,42 +80,15 @@ function TeachingCoursesCards() {
                     <TabPanel value={value} index={0}>
                     <div className='cards-wrapper'>
                     <ul className='cards-items'>
-                        <CardItem 
-                        src="images/computing.jpg"
-                        text="CS1010 Introduction to Computer Science"
-                        label='Computing'
-                        moduleCode="CS1010"
+                    {courses.map(course=>(
+                        <CardItem src="images/computing.jpg" 
+                        key={course.id} 
+                        text={course.courseTitle}
+                        label={course.ageGroup}
+                        moduleCode={course.courseCode}
                         />
-                        <CardItem 
-                        src="images/bio.jpg"
-                        text="BIO4000 Molecular Genetics"
-                        label='Biology'
-                        moduleCode="BIO4000"
-                        />
-                        <CardItem 
-                        src="images/math.jpg"
-                        text="MA1011 Linear Algebra"
-                        label='Mathemathics'
-                        moduleCode="MA1011"
-                        />
-                        <CardItem 
-                        src="images/chem.jpg"
-                        text="CH2000 Chemical Reactions"
-                        label='Chemistry'
-                        moduleCode="CH2000"
-                        />
-                        <CardItem 
-                        src="images/soc.jpg"
-                        text="SC1233 Society and Sociology"
-                        label='Sociology'
-                        moduleCode="SC1233"
-                        />
-                        <CardItem 
-                        src="images/physics.jpg"
-                        text="PHY5321 Quantum Physics"
-                        label='Physics'
-                        moduleCode="PHY5321"
-                        />
+                      ))
+                    }
                     </ul>
                 </div>
                     </TabPanel>
