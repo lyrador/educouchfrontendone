@@ -82,10 +82,9 @@ function TeachingCoursesCards() {
                     <ul className='cards-items'>
                     {courses.map(course=>(
                         <CardItem src="images/computing.jpg" 
-                        key={course.id} 
                         text={course.courseTitle}
-                        label={course.ageGroup}
-                        moduleCode={course.courseCode}
+                        label={course.courseCode}
+                        moduleCode={course.courseId}
                         />
                       ))
                     }
@@ -95,18 +94,6 @@ function TeachingCoursesCards() {
                     <TabPanel value={value} index={1}>
                     <div className='cards-wrapper'>
                     <ul className='cards-items'>
-                        <CardItem 
-                        src="images/math.jpg"
-                        text="MA1011 Linear Algebra"
-                        label='Mathemathics'
-                        moduleCode="MA1011"
-                        />
-                        <CardItem 
-                        src="images/chem.jpg"
-                        text="CH2000 Chemical Reactions"
-                        label='Chemistry'
-                        moduleCode="CH2000"
-                        />
                         <CardItem 
                         src="images/soc.jpg"
                         text="SC1233 Society and Sociology"

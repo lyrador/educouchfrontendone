@@ -13,6 +13,15 @@ import { useParams } from 'react-router-dom';
 export default function TeachingCourse(props) {
 
   let { moduleCode } = useParams();
+  const[course, setCourse] = useState('')
+
+  React.useEffect(() => {
+    fetch("http://localhost:8080/course/courses/" + moduleCode).
+    then(res=>res.json()).then((result)=>{
+        setCourse(result); 
+      }
+    )
+  }, [])
 
   return (
     <>
@@ -21,7 +30,7 @@ export default function TeachingCourse(props) {
           <TeachingCoursesDrawer moduleCode={ moduleCode }></TeachingCoursesDrawer>
         </Grid>
         <Grid item xs={10}>
-          <h1>{moduleCode}</h1>
+          <h1>{course.courseTitle}</h1>
         </Grid>
       </Grid>
 
