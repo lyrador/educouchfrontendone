@@ -15,6 +15,10 @@ import { Grid } from '@mui/material';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import LinkMaterial from '@mui/material/Link';
 
+import { Button } from '@mui/material';
+
+import { useState } from 'react';
+
 function TeachingForumList(props) {
 
     //paths
@@ -22,6 +26,12 @@ function TeachingForumList(props) {
     const forumsPath = location.pathname.split('/').slice(0,4).join('/')
 
     const moduleCode = useParams();
+
+    const [forumTitle,setForumTitle]=useState('')
+
+    function createNewForum() {
+
+    }
 
     console.log(moduleCode);
 
@@ -48,7 +58,19 @@ function TeachingForumList(props) {
                             Forum
                         </LinkMaterial>
                     </Breadcrumbs>
-                    <h1>List of Forums</h1>
+                    <div style={{justifyContent: 'center'}}>
+                        <h1 style={{justifySelf: 'center', marginLeft: 'auto'}}>List of Forums</h1>
+                        <Button
+                            className="btn-upload"
+                            color="primary"
+                            variant="contained"
+                            component="span"
+                            onClick={createNewForum}
+                            style={{float: 'right', marginLeft: 'auto'}}
+                            >
+                            Create New Forum
+                        </Button>
+                    </div>
                     <div style={{padding: '5%'}}>
                         <TableContainer component={Paper}>
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
