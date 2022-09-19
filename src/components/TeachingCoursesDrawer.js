@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
@@ -21,14 +22,31 @@ function TeachingCoursesDrawer(props) {
     props.onChange(text);
   }
 
+  const[course, setCourse] = useState('')
+  const [name, setName] = useState('')
+
+
+  /*if(typeof props.moduleCode != 'undefined') {
+    React.useEffect(() => {
+        fetch("http://localhost:8080/course/courses/" + props.moduleCode.moduleCode).
+        then(res=>res.json()).then((result)=>{
+            setCourse(result); 
+            }
+        )
+    }, []) 
+    setName(course.courseTitle); 
+  } else {
+    setName(''); 
+  } */
+
   const drawer = (
     <div>
       <div className='drawerContainer'>
         <List>
-            {['Course Name'].map((text, index) => (
-            <ListItem key={text} disablePadding>
+            {['COURSE NAME'].map((text, index) => (
+            <ListItem key={text} style={{textDecoration: 'none', color: 'black', fontFamily:"Helvetica"}} disablePadding>
                 <ListItemButton>
-                <ListItemText primary={text} />
+                <ListItemText   primary={text} />
                 </ListItemButton>
             </ListItem>
             ))}
@@ -36,7 +54,9 @@ function TeachingCoursesDrawer(props) {
         <br/><br/>
         <Divider />
             <List>
-                <Link to={`${modulePath}/courseSettings`} style={{textDecoration: 'none', color: 'black'}}>
+                <Link to={{
+                  pathname: `${modulePath}/courseSettings`,
+                }} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
                       <ListItemText primary="Course Settings"/>
                     </ListItemButton>

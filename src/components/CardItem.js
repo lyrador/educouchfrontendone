@@ -7,12 +7,10 @@ import { useNavigate } from "react-router-dom"
 
 function CardItem(props) {
 
-  console.log(props.moduleCode)
-
   return (
       <>
           <div className='card-flex-item'>
-          <Link to={`/myTeachingCourse/${props.moduleCode}`} className='cards-item-link'>
+          <Link to={`/myTeachingCourse/${props.moduleCode}/courseSettings`} className='cards-item-link'>
                 <figure className='cards-item-pic-wrap' data-category={props.label}>
                     <img src={props.src} alt='Voices' className='cards-item-img'/>
                 </figure>

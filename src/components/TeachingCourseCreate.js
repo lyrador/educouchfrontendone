@@ -46,8 +46,8 @@ export default function TeachingCourseCreate() {
     const[courseDescription, setCourseDescription] = useState('')
     const[courseTimeline, setCourseTimeline] = useState('')
     const[courseMaxScore, setCourseMaxScore] = useState('')
-    const[ageGroup, setAgeGroup] = useState('EUR')
-    const[courseApprovalStatus, setCourseApprovalStatus] = useState('EUR')
+    const[ageGroup, setAgeGroup] = useState('')
+    const[courseApprovalStatus, setCourseApprovalStatus] = useState('')
 
     const handleChange1 = (event) => {
         setAgeGroup(event.target.value); 

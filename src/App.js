@@ -15,6 +15,7 @@ import TeachingForumList from './components/TeachingForumList';
 import TeachingDiscussion from './components/TeachingDiscussion';
 import TeachingForum from './components/TeachingForum';
 import TeachingFileList from './components/TeachingFileList';
+import TeachingCourseSettings from './components/TeachingCourseSettings';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path = "/myTeachingCourse/:moduleCode" element={<TeachingCourse />}></Route>
           <Route path = "/myTeachingCourse/new" element={<TeachingCourseNew />} />
 
+          <Route path = "/myTeachingCourse/:moduleCode/courseSettings" element={<TeachingCourseSettings />}  />
           <Route path = "/myTeachingCourse/:moduleCode/forum" element={<TeachingForumList />} />
           <Route path = "/myTeachingCourse/:moduleCode/forum/:forumId" element={<TeachingForum />} />
           <Route path = "/myTeachingCourse/:moduleCode/forum/:forumId/:discussionId" element={<TeachingDiscussion />} />
