@@ -78,42 +78,42 @@ function TeachingCoursesCards() {
                         </Box>
                     </div>
                     <TabPanel value={value} index={0}>
-                    <div className='cards-wrapper'>
-                    <ul className='cards-items'>
-                    {courses.map(course=>(
-                        <CardItem src="images/computing.jpg" 
-                        text={course.courseTitle}
-                        label={course.courseCode}
-                        moduleCode={course.courseId}
-                        />
-                      ))
-                    }
-                    </ul>
-                </div>
+                      <div className='cards-wrapper'>
+                        <ul className='cards-items'>
+                          {courses.map(course=>(
+                              <CardItem src="images/computing.jpg" 
+                              text={course.courseTitle}
+                              label={course.courseCode}
+                              courseId={course.courseId}
+                              />
+                            ))
+                          }
+                          </ul>
+                      </div>
                     </TabPanel>
                     <TabPanel value={value} index={1}>
-                    <div className='cards-wrapper'>
-                    <ul className='cards-items'>
-                        <CardItem 
-                        src="images/soc.jpg"
-                        text="SC1233 Society and Sociology"
-                        label='Sociology'
-                        moduleCode="SC1233"
-                        />
-                    </ul>
-                </div>
+                        <div className='cards-wrapper'>
+                          <ul className='cards-items'>
+                              <CardItem 
+                              src="images/soc.jpg"
+                              text="SC1233 Society and Sociology"
+                              label='Sociology'
+                              // moduleCode="SC1233"
+                              />
+                          </ul>
+                        </div>
                     </TabPanel>
                     <TabPanel value={value} index={2}>
-                    <div className='cards-wrapper'>
-                    <ul className='cards-items'>
-                        <CardItem 
-                        src="images/computing.jpg"
-                        text="CS1010 Introduction to Computer Science"
-                        label='Computing'
-                        moduleCode="CS1010"
-                        />
-                    </ul>
-                </div>
+                      <div className='cards-wrapper'>
+                        <ul className='cards-items'>
+                            <CardItem 
+                            src="images/computing.jpg"
+                            text="CS1010 Introduction to Computer Science"
+                            label='Computing'
+                            // moduleCode="CS1010"
+                            />
+                        </ul>
+                      </div>
                     </TabPanel>
                 </Box>
             </div>

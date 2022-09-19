@@ -12,11 +12,11 @@ import { useParams } from 'react-router-dom';
 
 export default function TeachingCourse(props) {
 
-  let { moduleCode } = useParams();
+  let { courseId } = useParams();
   const[course, setCourse] = useState('')
 
   React.useEffect(() => {
-    fetch("http://localhost:8080/course/courses/" + moduleCode).
+    fetch("http://localhost:8080/course/courses/" + courseId).
     then(res=>res.json()).then((result)=>{
         setCourse(result); 
       }
@@ -27,7 +27,7 @@ export default function TeachingCourse(props) {
     <>
       <Grid container spacing={0}>
         <Grid item xs={2}>
-          <TeachingCoursesDrawer moduleCode={ moduleCode }></TeachingCoursesDrawer>
+          <TeachingCoursesDrawer courseId={ courseId }></TeachingCoursesDrawer>
         </Grid>
         <Grid item xs={10}>
           <h1>{course.courseTitle}</h1>

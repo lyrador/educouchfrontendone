@@ -20,14 +20,16 @@ import LinkMaterial from '@mui/material/Link';
 
 function TeachingDiscussion(props) {
 
-    let { moduleCode } = useParams();
+    let { courseId } = useParams();
 
     //paths
     const location = useLocation();
     const forumPath = location.pathname.split('/').slice(0,4).join('/')
     const discussionsPath = location.pathname.split('/').slice(0,5).join('/')
-    const discussionName = location.state.discussionName;
-    const forumName = location.state.forumName;
+    const discussionTitle = location.state.discussionTitle;
+    const forumTitle = location.state.forumTitle;
+
+    console.log(discussionTitle)
 
     return (
         <div>
@@ -41,17 +43,17 @@ function TeachingDiscussion(props) {
                             Forum
                         </LinkMaterial>
                         <Link to={`${discussionsPath}`} 
-                            state={{ discussionName: discussionName, forumName: forumName }} 
+                            state={{ discussionTitle: discussionTitle, forumTitle: forumTitle }} 
                             style={{textDecoration: 'none', color: 'grey'}}>
                             <LinkMaterial underline="hover" color="inherit">
-                                {forumName}
+                                {forumTitle}
                             </LinkMaterial>
                         </Link>
                         <Link to={`${location.pathname}`} 
-                            state={{ discussionName: discussionName, forumName: forumName }} 
+                            state={{ discussionTitle: discussionTitle, forumTitle: forumTitle }} 
                             style={{textDecoration: 'none', color: 'grey'}}>
                             <LinkMaterial underline="hover" color="inherit">
-                                {discussionName}
+                                {discussionTitle}
                             </LinkMaterial>
                         </Link>
                     </Breadcrumbs>

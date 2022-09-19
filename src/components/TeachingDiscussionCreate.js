@@ -5,12 +5,16 @@ import TextField from '@mui/material/TextField';
 import { Container ,Paper, Button, MenuItem} from '@mui/material';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
-export default function TeachingForumCreate() {
+export default function TeachingDiscussionCreate() {
 
     //paths
     const location = useLocation();
+
     const courseId = location.pathname.split('/')[2];
     console.log(courseId);
+
+    const forumId = location.pathname.split('/')[4];
+    console.log(forumId);
 
     const paperStyle={
         padding: '50px 20px', 
@@ -21,18 +25,19 @@ export default function TeachingForumCreate() {
         flex: '1'
     }
 
-    const [forumTitle,setForumTitle]=useState('')
+    const [forumDiscussionTitle,setForumDiscussionTitle]=useState('')
+    const [forumDiscussionDescription,setForumDiscussionDescription]=useState('')
 
     const handleClick=(e)=>{
         e.preventDefault()
-        const newForum={forumTitle}
-        console.log(newForum)
-        fetch("http://localhost:8080/forum/courses/" + courseId + "/forums", {
+        const newDiscussion={forumDiscussionTitle, forumDiscussionDescription}
+        console.log(newDiscussion)
+        fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions", {
             method:"POST", 
             headers:{"Content-Type":"application/json"}, 
-            body:JSON.stringify(newForum)
+            body:JSON.stringify(newDiscussion)
         }).then(()=>{
-            console.log("New Forum Created Successfully!")
+            console.log("New Discussion Created Successfully!")
         })
     }
 
@@ -40,7 +45,7 @@ export default function TeachingForumCreate() {
   return (
     <Container>
         <Paper elevation={3} style={paperStyle}>
-            <h1 style={{color: "blue"}}> Create New Forum </h1>
+            <h1 style={{color: "blue"}}> Create New Discussion </h1>
         <Box
         component="form"
         sx={{
@@ -49,9 +54,13 @@ export default function TeachingForumCreate() {
         noValidate
         autoComplete="off"
         >
-        <TextField id="outlined-basic" label="Forum Title" variant="outlined" fullWidth 
-        value={forumTitle}
-        onChange={(e)=>setForumTitle(e.target.value)}
+        <TextField id="outlined-basic" label="Discussion Title" variant="outlined" fullWidth 
+        value={forumDiscussionTitle}
+        onChange={(e)=>setForumDiscussionTitle(e.target.value)}
+        />
+        <TextField id="outlined-basic" label="Discussion Description" variant="outlined" fullWidth 
+        value={forumDiscussionDescription}
+        onChange={(e)=>setForumDiscussionDescription(e.target.value)}
         />
 
         <Button variant="outlined" onClick={handleClick}>Submit</Button>

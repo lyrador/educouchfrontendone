@@ -13,7 +13,7 @@ function CardItem(props) {
           {/* <Link to={`/myTeachingCourse/${props.moduleCode}`} 
                 state={{ course: props }} 
                 className='cards-item-link'> */}
-          <Link to={`/myTeachingCourse/${props.moduleCode}/courseSettings`} className='cards-item-link'>
+          <Link to={`/myTeachingCourse/${props.courseId}/courseSettings`} className='cards-item-link'>
                 <figure className='cards-item-pic-wrap' data-category={props.label}>
                     <img src={props.src} alt='Voices' className='cards-item-img'/>
                 </figure>

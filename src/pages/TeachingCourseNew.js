@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 
 export default function TeachingCourseNew(props) {
 
-  let { moduleCode } = useParams();
+  let { courseId } = useParams();
 
   return (
     <>
@@ -23,7 +23,7 @@ export default function TeachingCourseNew(props) {
         </Grid>
         <Grid item xs={10}>
           <TeachingCourseCreate></TeachingCourseCreate>
-          <h1>{moduleCode}</h1>
+          <h1>{courseId}</h1>
         </Grid>
       </Grid>
 

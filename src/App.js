@@ -18,6 +18,8 @@ import TeachingFileList from './components/TeachingFileList';
 import TeachingChildFileCover from './components/TeachingChildFileCover';
 
 import TeachingCourseSettings from './components/TeachingCourseSettings';
+import TeachingForumCreate from './components/TeachingForumCreate';
+import TeachingDiscussionCreate from './components/TeachingDiscussionCreate';
 
 function App() {
   return (
@@ -28,16 +30,20 @@ function App() {
           <Route path = "/" element={<Home />} />
 
           <Route path = "/myTeachingCoursesList" element={<TeachingCoursesList />} />
-          <Route path = "/myTeachingCourse/:moduleCode" element={<TeachingCourse />}></Route>
+          <Route path = "/myTeachingCourse/:courseId" element={<TeachingCourse />}></Route>
           <Route path = "/myTeachingCourse/new" element={<TeachingCourseNew />} />
 
-          <Route path = "/myTeachingCourse/:moduleCode/courseSettings" element={<TeachingCourseSettings />}  />
-          <Route path = "/myTeachingCourse/:moduleCode/forum" element={<TeachingForumList />} />
-          <Route path = "/myTeachingCourse/:moduleCode/forum/:forumId" element={<TeachingForum />} />
-          <Route path = "/myTeachingCourse/:moduleCode/forum/:forumId/:discussionId" element={<TeachingDiscussion />} />
+          <Route path = "/myTeachingCourse/:courseId/courseSettings" element={<TeachingCourseSettings />}  />
 
-          <Route path = "/myTeachingCourse/:moduleCode/files" element={<TeachingFileList />} />
-          <Route path = "/myTeachingCourse/:moduleCode/files/:folderId" element={<TeachingChildFileCover/>} />
+          <Route path = "/myTeachingCourse/:courseId/newForum" element={<TeachingForumCreate/>} />
+          <Route path = "/myTeachingCourse/:courseId/forum" element={<TeachingForumList />} />
+          <Route path = "/myTeachingCourse/:courseId/forum/:forumId" element={<TeachingForum />} />
+
+          <Route path = "/myTeachingCourse/:courseId/forum/:forumId/newDiscussion" element={<TeachingDiscussionCreate/>} />
+          <Route path = "/myTeachingCourse/:courseId/forum/:forumId/:discussionId" element={<TeachingDiscussion />} />
+
+          <Route path = "/myTeachingCourse/:courseId/files" element={<TeachingFileList />} />
+          <Route path = "/myTeachingCourse/:courseId/files/:folderId" element={<TeachingChildFileCover/>} />
 
           <Route path = "/settings" element={<Settings/>} />
           <Route path = "/learnerCreation" element={<LearnerCreation/>} />

@@ -10,13 +10,13 @@ export default function TeachingCourseSettings(props) {
     const location = useLocation(props);
     const settingsPath = location.pathname.split('/').slice(0,4).join('/')
 
-    const moduleCode = useParams();
-    console.log(moduleCode.moduleCode)
+    const courseId = useParams();
+    console.log(courseId.courseId)
 
     const[course, setCourse] = useState('')
 
     React.useEffect(() => {
-        fetch("http://localhost:8080/course/courses/" + moduleCode.moduleCode).
+        fetch("http://localhost:8080/course/courses/" + courseId.courseId).
         then(res=>res.json()).then((result)=>{
             setCourse(result); 
             }
@@ -43,7 +43,7 @@ export default function TeachingCourseSettings(props) {
 
     return (
         <Container>
-            <TeachingCoursesDrawer moduleCode={moduleCode}></TeachingCoursesDrawer>
+            <TeachingCoursesDrawer courseId = {courseId }></TeachingCoursesDrawer>
         <Paper elevation={3} style={paperStyle}>
             <h1 style={headingStyle}> Course Description</h1>
             <Box

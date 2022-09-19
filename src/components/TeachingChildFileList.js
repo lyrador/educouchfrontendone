@@ -8,8 +8,8 @@ import TeachingFileComponent from './TeachingFileComponent';
 import { useState } from 'react';
 
 function TeachingChildFileList({ folderId }) {
-    var moduleCode = useParams();
-    moduleCode = moduleCode.moduleCode;
+    var courseId = useParams();
+    courseId = courseId.courseId;
 
     const [folderList, setFolderList] = useState([]);
 
@@ -31,7 +31,7 @@ function TeachingChildFileList({ folderId }) {
         <div>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <TeachingCoursesDrawer moduleCode={moduleCode}></TeachingCoursesDrawer>
+                    <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
                     
@@ -51,7 +51,7 @@ function TeachingChildFileList({ folderId }) {
                     <br/>
                     {
                         folderList
-                            .map((folder) => (<TeachingFileComponent folder={folder} moduleCode={moduleCode}></TeachingFileComponent>))
+                            .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId}></TeachingFileComponent>))
                     }
 
                 </Grid>
