@@ -33,6 +33,11 @@ function TeachingFileList() {
     const [isError, setError] = useState(false);
     const [isSuccess, setSuccess] = useState(false);
 
+    // from child component
+    const handleRefresh = () => {
+        refresh();
+    };
+
     var courseId = useParams();
     courseId = courseId.courseId;
 
@@ -151,7 +156,7 @@ function TeachingFileList() {
                     <div>
                         {folderList.length > 0 &&
                             folderList
-                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId}></TeachingFileComponent>))
+                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefresh = {handleRefresh}></TeachingFileComponent>))
                         }
                         {folderList.length <= 0 &&
                             <p>This course currently doesn't have any teaching folder.</p>

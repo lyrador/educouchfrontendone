@@ -20,7 +20,7 @@ import InstantSuccessMessage from './InstantSuccessMessage';
 
 
 
-function TeachingFileComponent({ folder, courseId }) {
+function TeachingFileComponent({ folder, courseId, handleRefresh }) {
 
     // opening mini menu
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -40,6 +40,8 @@ function TeachingFileComponent({ folder, courseId }) {
             setMessage("Folder is successfully deleted!");
             setError(false);
             setSuccess(true);
+
+            handleRefresh();
         }).catch((err) => {
             //notification
             setMessage("Could not delete folder.");
