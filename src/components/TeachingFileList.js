@@ -34,8 +34,13 @@ function TeachingFileList() {
     const [isSuccess, setSuccess] = useState(false);
 
     // from child component
-    const handleRefresh = () => {
+    const handleRefreshDelete = () => {
         refresh();
+        //notification
+        setMessage("Folder is successfully deleted!");
+        setError(false);
+        setSuccess(true);
+        
     };
 
     var courseId = useParams();
@@ -156,7 +161,7 @@ function TeachingFileList() {
                     <div>
                         {folderList.length > 0 &&
                             folderList
-                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefresh = {handleRefresh}></TeachingFileComponent>))
+                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefreshDelete={handleRefreshDelete}></TeachingFileComponent>))
                         }
                         {folderList.length <= 0 &&
                             <p>This course currently doesn't have any teaching folder.</p>

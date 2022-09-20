@@ -20,7 +20,7 @@ import InstantSuccessMessage from './InstantSuccessMessage';
 
 
 
-function TeachingFileComponent({ folder, courseId, handleRefresh }) {
+function TeachingFileComponent({ folder, courseId, handleRefreshDelete }) {
 
     // opening mini menu
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -41,7 +41,7 @@ function TeachingFileComponent({ folder, courseId, handleRefresh }) {
             setError(false);
             setSuccess(true);
 
-            handleRefresh();
+            handleRefreshDelete();
         }).catch((err) => {
             //notification
             setMessage("Could not delete folder.");
@@ -63,9 +63,6 @@ function TeachingFileComponent({ folder, courseId, handleRefresh }) {
         <List>
             {message && isError && (
                 <InstantErrorMessage message={message}></InstantErrorMessage>
-            )}
-            {message && isSuccess && (
-                <InstantSuccessMessage message={message}></InstantSuccessMessage>
             )}
             <ListItem>
                 {/* <ListItemButton href={`/myTeachingCourse/${courseId}/files/${folder.folderId}`}> */}
