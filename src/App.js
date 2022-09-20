@@ -18,6 +18,8 @@ import TeachingFileList from './components/TeachingFileList';
 import SettingsDrawer from './components/SettingsDrawer';
 import ViewAllEducators from './pages/ViewAllEducators';
 import ViewInstructor from './pages/ViewInstructor';
+import TeachingChildFileCover from './components/TeachingChildFileCover';
+
 
 function App() {
   return (
@@ -37,6 +39,8 @@ function App() {
 
           <Route path = "/myTeachingCourse/:moduleCode/files" element={<TeachingFileList />} />
           <Route path = "/adminDrawer" element={<SettingsDrawer/>} />
+          <Route path = "/myTeachingCourse/:moduleCode/files/:folderId" element={<TeachingChildFileCover/>} />
+
           <Route path = "/settings" element={<Settings/>} />
           <Route path="/learnerCreation" element={<LearnerCreation />} />
           <Route path="/viewAllEducators" element={<ViewAllEducators />} />
