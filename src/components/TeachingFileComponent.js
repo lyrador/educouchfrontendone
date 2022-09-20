@@ -6,7 +6,6 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 import folderPicture from '../assets/folder.png';
 import '../css/TeachingFileList.css';
-import { Link } from 'react-router-dom';
 
 
 function TeachingFileComponent({ folder, moduleCode }) {
