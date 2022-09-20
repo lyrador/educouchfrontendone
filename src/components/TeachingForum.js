@@ -20,29 +20,47 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import LinkMaterial from '@mui/material/Link';
 
+import { Button } from '@mui/material';
 
 function TeachingForum(props) {
 
-    let { moduleCode } = useParams();
+    // let { courseId } = useParams();
 
     //paths
     const location = useLocation();
     const forumsPath = location.pathname.split('/').slice(0,4).join('/')
     const discussionsPath = location.pathname
 
-    console.log(location.state)
-    const forumName = location.state.forumName;
+    const courseId = location.pathname.split('/')[2];
+    console.log(courseId);
 
-    function createData(discussionId, discussionName, numofComments, lastActivity) {
-        return {discussionId, discussionName, numofComments, lastActivity};
-    }
+    const forumId = location.pathname.split('/')[4];
+    console.log(forumId);
+
+    console.log(location.state)
+    const forumTitle = location.state.forumTitle;
+
+    // function createData(discussionId, discussionName, numofComments, lastActivity) {
+    //     return {discussionId, discussionName, numofComments, lastActivity};
+    // }
     
-    const rows = [
-        createData(1, 'Tutorial Grp 1', 20, "1 Sep 2359hrs"),
-        createData(2, 'Tutorial Grp 2', 80, "2 Sep 1200hrs"),
-        createData(3, 'Tutorial Grp 3', 789, "31 May 2359hrs"),
-        createData(4, 'Tutorial Grp 4', 432, "22 Jul 2000hrs"),
-    ];
+    // const rows = [
+    //     createData(1, 'Tutorial Grp 1', 20, "1 Sep 2359hrs"),
+    //     createData(2, 'Tutorial Grp 2', 80, "2 Sep 1200hrs"),
+    //     createData(3, 'Tutorial Grp 3', 789, "31 May 2359hrs"),
+    //     createData(4, 'Tutorial Grp 4', 432, "22 Jul 2000hrs"),
+    // ];
+
+    const [discussions,setDiscussions]=useState([])
+
+    React.useEffect(() => {
+        fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions").
+        then(res=>res.json()).
+        then((result)=>{
+          setDiscussions(result);
+        }
+      )
+      }, [])
 
     return (
         <div>
@@ -56,39 +74,54 @@ function TeachingForum(props) {
                             Forum
                         </LinkMaterial>
                         <Link to={`${discussionsPath}`} 
-                            state={{ forumName: forumName }} 
+                            state={{ forumTitle: forumTitle }} 
                             style={{textDecoration: 'none', color: 'grey'}}>
                             <LinkMaterial underline="hover" color="inherit">
-                                {forumName}
+                                {forumTitle}
                             </LinkMaterial>
                         </Link>
                     </Breadcrumbs>
-                    <h1>List of Discussions</h1>
+                    <div style={{justifyContent: 'center'}}>
+                        <h1 style={{justifySelf: 'center', marginLeft: 'auto'}}>List of Discussions</h1>
+                        <Link to ={`/myTeachingCourse/${courseId}/forum/${forumId}/newDiscussion`} style={{textDecoration: 'none'}}>
+                            <Button
+                                className="btn-upload"
+                                color="primary"
+                                variant="contained"
+                                component="span"
+                                // onClick={createNewForum}
+                                style={{float: 'right', marginLeft: 'auto'}}
+                                >
+                                Create New Discussion
+                            </Button>
+                        </Link>
+                    </div>
                     <div style={{padding: '5%'}}>
                         <TableContainer component={Paper}>
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                             <TableHead>
                                 <TableRow>
-                                <TableCell>Discussion Name</TableCell>
-                                <TableCell>Number of Comments</TableCell>
-                                <TableCell>Last Post</TableCell>
+                                <TableCell>Discussion Title</TableCell>
+                                <TableCell>Description</TableCell>
+                                <TableCell>Time Created</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {rows.map((row) => (
+                                {discussions.map((discussion) => (
                                 <TableRow
-                                    key={row.name}
+                                    key={discussion.discussionId}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell component="th" scope="row">
-                                        <Link to={`${discussionsPath}/${row.discussionId}`} 
-                                        state={{ discussionName: row.discussionName, forumName: forumName }} 
-                                        style={{textDecoration: 'none'}}>
-                                            {row.discussionName}
+                                        <Link 
+                                            to={`${discussionsPath}/${discussion.forumDiscussionId}`} 
+                                            state={{ discussionTitle: discussion.forumDiscussionTitle, forumTitle: forumTitle }} 
+                                            style={{textDecoration: 'none'}}>
+                                            {discussion.forumDiscussionTitle}
                                         </Link>
                                     </TableCell>
-                                    <TableCell>{row.numofComments}</TableCell>
-                                    <TableCell>{row.lastActivity}</TableCell>
+                                    <TableCell>{discussion.forumDiscussionDescription}</TableCell>
+                                    <TableCell>{discussion.timestamp}</TableCell>
                                 </TableRow>
                                 ))}
                             </TableBody>

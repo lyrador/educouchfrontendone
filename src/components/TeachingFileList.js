@@ -9,8 +9,8 @@ import { useState } from 'react';
 
 function TeachingFileList() {
 
-    var moduleCode = useParams();
-    moduleCode = moduleCode.moduleCode;
+    var courseId = useParams();
+    courseId = courseId.courseId;
     
     // const handleClick = num => {
     //     fetch("http://localhost:8080/folder/getFolderByFolderId/1" + num)
@@ -24,7 +24,7 @@ function TeachingFileList() {
     const[folderList, setFolderList] = useState([]);
 
     React.useEffect(()=>{
-        fetch("http://localhost:8080/folder/getFoldersByCourseCode/" + moduleCode)
+        fetch("http://localhost:8080/folder/getFoldersByCourseCode/" + courseId)
         .then(res=>res.json())
         .then((result)=>{
             setFolderList(result);
@@ -39,7 +39,7 @@ function TeachingFileList() {
         <div>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <TeachingCoursesDrawer moduleCode={moduleCode}></TeachingCoursesDrawer>
+                    <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
                     <Typography variant="h5">
@@ -58,7 +58,7 @@ function TeachingFileList() {
                     <br/>
                     {
                         folderList
-                            .map((folder) => (<TeachingFileComponent folder={folder} moduleCode = {moduleCode}></TeachingFileComponent>))
+                            .map((folder) => (<TeachingFileComponent folder={folder} courseId = {courseId}></TeachingFileComponent>))
                     }
 
                 </Grid>
