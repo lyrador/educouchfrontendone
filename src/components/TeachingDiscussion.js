@@ -17,19 +17,45 @@ import { Link, useLocation } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import LinkMaterial from '@mui/material/Link';
 
+import { Button } from '@mui/material';
+
 
 function TeachingDiscussion(props) {
-
-    let { courseId } = useParams();
 
     //paths
     const location = useLocation();
     const forumPath = location.pathname.split('/').slice(0,4).join('/')
     const discussionsPath = location.pathname.split('/').slice(0,5).join('/')
-    const discussionTitle = location.state.discussionTitle;
-    const forumTitle = location.state.forumTitle;
+
+    console.log(location.state)
+
+    const params = location.state;
+    const discussionTitle = params.discussionTitle;
+    const forumTitle = params.forumTitle;
+
+    console.log(discussionTitle);
+
+    const courseId = location.pathname.split('/')[2];
+    // console.log(courseId);
+
+    const forumId = location.pathname.split('/')[4];
+    // console.log(forumId);
+
+    const discussionId = location.pathname.split('/')[5];
+    // console.log(discussionId);
 
     console.log(discussionTitle)
+
+    const [comments,setComments]=useState([])
+
+    React.useEffect(() => {
+        fetch("http://localhost:8080/comment/forumDiscussions/" + discussionId + "/comments").
+        then(res=>res.json()).
+        then((result)=>{
+          setComments(result);
+        }
+      )
+      }, [])
 
     return (
         <div>
@@ -57,6 +83,44 @@ function TeachingDiscussion(props) {
                             </LinkMaterial>
                         </Link>
                     </Breadcrumbs>
+                    <div style={{justifyContent: 'center'}}>
+                        <h1 style={{justifySelf: 'center', marginLeft: 'auto'}}>List of Comments</h1>
+                        <Link to ={`/myTeachingCourse/${courseId}/forum/${forumId}/${discussionId}/newComment`} style={{textDecoration: 'none'}}>
+                            <Button
+                                className="btn-upload"
+                                color="primary"
+                                variant="contained"
+                                component="span"
+                                // onClick={createNewForum}
+                                style={{float: 'right', marginLeft: 'auto'}}
+                                >
+                                Create New Comment
+                            </Button>
+                        </Link>
+                    </div>
+                    <div style={{padding: '5%'}}>
+                        <TableContainer component={Paper}>
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                <TableCell>Comment Content</TableCell>
+                                <TableCell>Time Created</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {comments.map((comment) => (
+                                <TableRow
+                                    key={comment.commentId}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell component="th" scope="row">{comment.content}</TableCell>
+                                    <TableCell>{comment.timestamp}</TableCell>
+                                </TableRow>
+                                ))}
+                            </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </div>
                 </Grid>
             </Grid>
         </div>

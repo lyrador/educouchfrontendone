@@ -1,0 +1,15 @@
+import * as React from "react";
+import { useState } from "react";
+
+export default function ViewInstructor() {
+  const [instructor, setInstructor] = useState("");
+
+  //organisation (org admin) is hard coded for now until org admin sign up is done
+
+  return (
+    <div>
+      <SettingsDrawer></SettingsDrawer>
+      <h1>lol</h1>
+    </div>
+  );
+}
