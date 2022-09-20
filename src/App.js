@@ -17,6 +17,7 @@ import TeachingForum from './components/TeachingForum';
 import TeachingFileList from './components/TeachingFileList';
 import SettingsDrawer from './components/SettingsDrawer';
 import ViewAllEducators from './pages/ViewAllEducators';
+import ViewInstructor from './pages/ViewInstructor';
 
 function App() {
   return (
@@ -38,8 +39,8 @@ function App() {
           <Route path = "/adminDrawer" element={<SettingsDrawer/>} />
           <Route path = "/settings" element={<Settings/>} />
           <Route path="/learnerCreation" element={<LearnerCreation />} />
-          <Route path = "/viewAllEducators" element={<ViewAllEducators/>} />
-
+          <Route path="/viewAllEducators" element={<ViewAllEducators />} />
+          <Route path="/viewInstructor" element={<ViewInstructor/> } />
         </Routes>
       </Router>
     </div>

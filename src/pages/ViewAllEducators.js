@@ -1,16 +1,7 @@
 import * as React from "react";
 import CreateInstructorForm from "../components/CreateInstructorForm";
 import SettingsDrawer from "../components/SettingsDrawer";
-import {
-  Paper,
-  Button,
-  Divider,
-  Chip,
-  Grid,
-  Modal,
-  Box,
-  Typography,
-} from "@mui/material";
+import { Paper, Button, Divider, Chip, Grid, Modal } from "@mui/material";
 import { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -18,11 +9,9 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-  import { flexbox, margin } from "@mui/system";
-  import { AlignHorizontalCenter } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 export default function ViewAllEducators() {
-
   const [instructors, setInstructors] = useState([]);
   const instructorTableStyle = {
     padding: "10px 10px",
@@ -43,10 +32,6 @@ export default function ViewAllEducators() {
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
-
-  // const handle viewInstructorProfile = (instructorIdProp) => {
-    
-  // }
 
   function handleClose(ed) {
     setOpen(false);
@@ -102,7 +87,15 @@ export default function ViewAllEducators() {
                   </TableCell>
                   <TableCell align="right">NULL</TableCell>
                   <TableCell align="right">
-                    
+                    <Link to="/viewInstructor">
+                      <Button
+                        className="btn-choose"
+                        variant="outlined"
+                        type="submit"
+                      >
+                        View Profile
+                      </Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))}
@@ -114,6 +107,9 @@ export default function ViewAllEducators() {
         <Divider>
           <Chip label="End" />
         </Divider>
+        {/* <div className="app--shell" onClick={openModal}>
+          <ModalManager closeFn={closeModal} modal={modalOpen} />
+        </div> */}
         <br></br>
 
         <Grid container justifyContent={"center"}>
