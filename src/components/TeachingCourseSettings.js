@@ -11,7 +11,7 @@ export default function TeachingCourseSettings(props) {
     const settingsPath = location.pathname.split('/').slice(0,4).join('/')
 
     const courseId = useParams();
-    console.log(courseId.courseId)
+    console.log(JSON.stringify(courseId));
 
     const[course, setCourse] = useState('')
 
