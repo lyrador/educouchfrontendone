@@ -10,11 +10,7 @@ import {
   FormLabel,
   Stack,
 } from "@mui/material";
-import {
-  Paper,
-  Button,
-  createTheme,
-} from "@mui/material";
+import { Paper, Button, createTheme } from "@mui/material";
 import { useState } from "react";
 
 export default function CreateInstructorForm(props) {
@@ -43,16 +39,17 @@ export default function CreateInstructorForm(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [accessRightEnum, setAccessRightEnum] = useState("");
+  const [instructorAccessRight, setinstructorAccessRight] = useState("");
 
   const handleClick = (e) => {
-
-    const educator = { name, email, password, username, accessRightEnum };
-    fetch("http://localhost:8080/educator/add", {
-      method: "POST",
+    const educator = { name, email, username, password, instructorAccessRight };
+    //organisation (org admin) is hard coded for now until org admin sign up is done
+    fetch("http://localhost:8080/educator/addInstructor?organisationId=1", {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(educator),
-    }).then(res => res.json())
+    })
+      .then((res) => res.json())
       .then(props.closeModalFunc());
     console.log("New educator added");
   };
@@ -83,7 +80,7 @@ export default function CreateInstructorForm(props) {
           <br></br>
           <TextField
             id="outlined-basic"
-            label="educator Name"
+            label="Instructor Name"
             variant="outlined"
             fullWidth
             style={{ paddingBottom: "10px" }}
@@ -92,7 +89,7 @@ export default function CreateInstructorForm(props) {
           />
           <TextField
             id="outlined-basic"
-            label="educator Email"
+            label="Instructor Email"
             variant="outlined"
             fullWidth
             style={{ paddingBottom: "10px" }}
@@ -101,7 +98,7 @@ export default function CreateInstructorForm(props) {
           />
           <TextField
             id="outlined-basic"
-            label="educator Password"
+            label="Instructor Password"
             variant="outlined"
             fullWidth
             style={{ paddingBottom: "10px" }}
@@ -110,7 +107,7 @@ export default function CreateInstructorForm(props) {
           />
           <TextField
             id="outlined-basic"
-            label="educator Username"
+            label="Instructor Username"
             variant="outlined"
             fullWidth
             style={{ paddingBottom: "10px" }}
@@ -119,7 +116,7 @@ export default function CreateInstructorForm(props) {
           />
 
           <Stack direction={"row"}>
-            <Box justifyContent={"center"} alignContent={ "center"}>
+            <Box justifyContent={"center"} alignContent={"center"}>
               <h3>Access Right</h3>
             </Box>
             <FormControl>
@@ -127,8 +124,8 @@ export default function CreateInstructorForm(props) {
                 aria-labelledby="demo-radio-buttons-group-label"
                 defaultValue="INSTRUCTOR"
                 name="radio-buttons-group"
-                value={accessRightEnum}
-                onChange={(e) => setAccessRightEnum(e.target.value)}
+                value={instructorAccessRight}
+                onChange={(e) => setinstructorAccessRight(e.target.value)}
               >
                 <FormControlLabel
                   value="INSTRUCTOR"
@@ -142,7 +139,6 @@ export default function CreateInstructorForm(props) {
                 />
               </RadioGroup>
             </FormControl>
-
           </Stack>
           <br />
           <br />
