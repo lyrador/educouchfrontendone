@@ -53,7 +53,7 @@ function App() {
 
           <Route path = "/myTeachingCourse/:courseId/files" element={<TeachingFileList />} />
           <Route path = "/myTeachingCourse/:courseId/files/:folderId" element={<TeachingChildFileCover/>} />
-          <Route path = "/myTeachingCourse/:moduleCode/files" element={<TeachingFileList />} />
+          <Route path = "/myTeachingCourse/:courseId/files" element={<TeachingFileList />} />
           <Route path = "/adminDrawer" element={<SettingsDrawer/>} />
 
           <Route path = "/settings" element={<Settings/>} />

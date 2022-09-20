@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import folderPicture from '../assets/folder.png';
+import { Grid, Typography, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import '../css/TeachingFileList.css';
 import { Link } from 'react-router-dom';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
@@ -20,7 +21,9 @@ import InstantSuccessMessage from './InstantSuccessMessage';
 
 
 
-function TeachingFileComponent({ folder, courseId, handleRefreshDelete }) {
+
+
+function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate }) {
 
     // opening mini menu
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -57,6 +60,48 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete }) {
     const [message, setMessage] = useState('');
     const [isError, setError] = useState(false);
     const [isSuccess, setSuccess] = useState(false);
+
+    // rename dialog box
+    const [renameDialogBox, setRenameDialogBox] = useState(false);
+
+    const openRenameDialogBox = () => {
+        handleClose();
+        setRenameDialogBox(true);
+    };
+
+    const closeRenameDialogBox = () => {
+        setRenameDialogBox(false);
+    };
+
+    // rename form input
+    const [currFolderName, setCurrFolderName] = useState(folder.folderName);
+
+    const clickRenameButton = (e) => {
+        e.preventDefault();
+        if (currFolderName.length == 0) {
+            setError(true);
+        };
+        var apiUrl = "http://localhost:8080/folder/renameFolderByFolderId?folderId=" + folder.folderId + "&folderName=" + currFolderName;
+
+        fetch(apiUrl)
+            .then(() => {
+                setRenameDialogBox(false);
+                handleRefreshUpdate();
+            })
+            .catch((error) => {
+                setRenameDialogBox(false);
+
+                //notification
+                setMessage("Could not rename folder.");
+                setError(true);
+                setSuccess(false);
+                console.log(error);
+
+            })
+    };
+
+
+
 
     return (
 
@@ -110,16 +155,41 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete }) {
                         </ListItemIcon>
                         Delete
                     </MenuItem>
-                    <MenuItem onClick={handleClose}>
+                    <MenuItem onClick={openRenameDialogBox}>
                         <ListItemIcon>
                             <DriveFileRenameOutlineIcon fontSize="small" />
                         </ListItemIcon>
                         Rename
                     </MenuItem>
                 </Menu>
+                <Dialog open={renameDialogBox} onClose={closeRenameDialogBox} fullWidth="lg">
+                    <DialogContent>
+                        <DialogContentText>
+                            Rename folder
+                        </DialogContentText>
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="parentFolderTitleField"
+                            label="Folder Title"
+                            type="text"
+                            fullWidth
+                            variant="standard"
+                            defaultValue={folder.folderName}
+                            onChange={(e) => setCurrFolderName(e.target.value)} />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={clickRenameButton}>Rename</Button>
+                        <Button onClick={closeRenameDialogBox}>Cancel</Button>
+                    </DialogActions>
+                </Dialog>
+                
+
 
             </ListItem>
         </List>
+
     )
 }
 
