@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import TeachingCoursesDrawer from '../components/TeachingCoursesDrawer';
+import TeachingCourseCreate from '../components/TeachingCourseCreate';
 import TeachingFileComponent from '../components/TeachingFileComponent';
 import TeachingForumList from '../components/TeachingForumList';
 import { styled } from '@mui/material/styles';
@@ -12,7 +13,7 @@ import { useParams } from 'react-router-dom';
 
 export default function TeachingCourseNew(props) {
 
-  let { moduleCode } = useParams();
+  let { courseId } = useParams();
 
   return (
     <>
@@ -21,7 +22,8 @@ export default function TeachingCourseNew(props) {
           <TeachingCoursesDrawer></TeachingCoursesDrawer>
         </Grid>
         <Grid item xs={10}>
-          <h1>{moduleCode}</h1>
+          <TeachingCourseCreate></TeachingCourseCreate>
+          <h1>{courseId}</h1>
         </Grid>
       </Grid>
 

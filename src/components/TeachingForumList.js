@@ -15,32 +15,51 @@ import { Grid } from '@mui/material';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import LinkMaterial from '@mui/material/Link';
 
+import { Button } from '@mui/material';
+
+import { useState } from 'react';
+
 function TeachingForumList(props) {
 
     //paths
     const location = useLocation();
     const forumsPath = location.pathname.split('/').slice(0,4).join('/')
 
-    const moduleCode = useParams();
+    const params = useParams();
+    const courseId = params.courseId;
 
-    console.log(moduleCode);
+    const [forums,setForums]=useState([])
 
-    function createData(forumId, forumName, numofDiscussions, lastActivity) {
-        return {forumId, forumName, numofDiscussions, lastActivity};
+    React.useEffect(() => {
+        fetch("http://localhost:8080/forum/courses/" + courseId + "/forums").
+        then(res=>res.json()).
+        then((result)=>{
+          setForums(result);
+        }
+      )
+      }, [])
+
+    function createNewForum() {
     }
+
+    console.log(courseId);
+
+    // function createData(forumId, forumName, numofDiscussions, lastActivity) {
+    //     return {forumId, forumName, numofDiscussions, lastActivity};
+    // }
     
-    const rows = [
-        createData(1, 'Finding Agile Squad Teammates', 159, "23 Aug 2359hrs"),
-        createData(2, 'Tutorial Swaps', 237, "1 Sep 1200hrs"),
-        createData(3, 'Clarifications on Assignment 1', 262, "2 May 2359hrs"),
-        createData(4, 'Queries on Final Exam', 305, "13 Sep 2000hrs"),
-    ];
+    // const rows = [
+    //     createData(1, 'Finding Agile Squad Teammates', 159, "23 Aug 2359hrs"),
+    //     createData(2, 'Tutorial Swaps', 237, "1 Sep 1200hrs"),
+    //     createData(3, 'Clarifications on Assignment 1', 262, "2 May 2359hrs"),
+    //     createData(4, 'Queries on Final Exam', 305, "13 Sep 2000hrs"),
+    // ];
 
     return (
         <div>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <TeachingCoursesDrawer moduleCode={moduleCode}></TeachingCoursesDrawer>
+                    <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
                     <Breadcrumbs aria-label="breadcrumb">
@@ -48,7 +67,21 @@ function TeachingForumList(props) {
                             Forum
                         </LinkMaterial>
                     </Breadcrumbs>
-                    <h1>List of Forums</h1>
+                    <div style={{justifyContent: 'center'}}>
+                        <h1 style={{justifySelf: 'center', marginLeft: 'auto'}}>List of Forums</h1>
+                        <Link to ={`/myTeachingCourse/${courseId}/newForum`} style={{textDecoration: 'none'}}>
+                            <Button
+                                className="btn-upload"
+                                color="primary"
+                                variant="contained"
+                                component="span"
+                                // onClick={createNewForum}
+                                style={{float: 'right', marginLeft: 'auto'}}
+                                >
+                                Create New Forum
+                            </Button>
+                        </Link>
+                    </div>
                     <div style={{padding: '5%'}}>
                         <TableContainer component={Paper}>
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -60,18 +93,21 @@ function TeachingForumList(props) {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {rows.map((row) => (
+                                {forums.map((forum) => (
                                 <TableRow
-                                    key={row.name}
+                                    key={forum.forumId}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell component="th" scope="row">
-                                        <Link to={`${forumsPath}/${row.forumId}`} state={{ forumName: row.forumName }} style={{textDecoration: 'none'}}>
-                                            {row.forumName}
+                                        <Link 
+                                            to={`${forumsPath}/${forum.forumId}`} 
+                                            state={{ forumTitle: forum.forumTitle }} 
+                                            style={{textDecoration: 'none'}}>
+                                            {forum.forumTitle}
                                         </Link>
                                     </TableCell>
-                                    <TableCell>{row.numofDiscussions}</TableCell>
-                                    <TableCell>{row.lastActivity}</TableCell>
+                                    <TableCell></TableCell>
+                                    <TableCell></TableCell>
                                 </TableRow>
                                 ))}
                             </TableBody>

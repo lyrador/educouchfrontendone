@@ -8,11 +8,11 @@ import folderPicture from '../assets/folder.png';
 import '../css/TeachingFileList.css';
 
 
-function TeachingFileComponent({ folder, moduleCode }) {
+function TeachingFileComponent({ folder, courseId }) {
     return (
         <List>
             <ListItem>
-                <ListItemButton href = {`/myTeachingCourse/${moduleCode}/files/${folder.folderId}`}>
+                <ListItemButton href = {`/myTeachingCourse/${courseId}/files/${folder.folderId}`}>
                     <ListItemIcon>
                         <img class="folder-picture" src={folderPicture} />
                     </ListItemIcon>

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
@@ -15,20 +16,37 @@ import '../css/DrawerLeft.css';
 function TeachingCoursesDrawer(props) {
 
   const location = useLocation();
-  const modulePath = location.pathname.split('/').slice(0,3).join('/')
+  const coursePath = location.pathname.split('/').slice(0,3).join('/')
 
   function handleChange(event, text) {
     props.onChange(text);
   }
 
+  const[course, setCourse] = useState('')
+  const [name, setName] = useState('')
+
+
+  /*if(typeof props.moduleCode != 'undefined') {
+    React.useEffect(() => {
+        fetch("http://localhost:8080/course/courses/" + props.moduleCode.moduleCode).
+        then(res=>res.json()).then((result)=>{
+            setCourse(result); 
+            }
+        )
+    }, []) 
+    setName(course.courseTitle); 
+  } else {
+    setName(''); 
+  } */
+
   const drawer = (
     <div>
       <div className='drawerContainer'>
         <List>
-            {['Course Name'].map((text, index) => (
-            <ListItem key={text} disablePadding>
+            {['COURSE NAME'].map((text, index) => (
+            <ListItem key={text} style={{textDecoration: 'none', color: 'black', fontFamily:"Helvetica"}} disablePadding>
                 <ListItemButton>
-                <ListItemText primary={text} />
+                <ListItemText   primary={text} />
                 </ListItemButton>
             </ListItem>
             ))}
@@ -36,12 +54,14 @@ function TeachingCoursesDrawer(props) {
         <br/><br/>
         <Divider />
             <List>
-                <Link to={`${modulePath}/courseSettings`} style={{textDecoration: 'none', color: 'black'}}>
+                <Link to={{
+                  pathname: `${coursePath}/courseSettings`,
+                }} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
                       <ListItemText primary="Course Settings"/>
                     </ListItemButton>
                 </Link>
-                <Link to={`${modulePath}/schedule`} style={{textDecoration: 'none', color: 'black'}}>
+                <Link to={`${coursePath}/schedule`} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
                       <ListItemText primary="Schedule"/>
                     </ListItemButton>
@@ -49,40 +69,40 @@ function TeachingCoursesDrawer(props) {
             </List>
             <Divider />
             <List>
-                <Link to={`${modulePath}/announcements`} style={{textDecoration: 'none', color: 'black'}}>
+                <Link to={`${coursePath}/announcements`} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
                       <ListItemText primary="Announcements"/>
                     </ListItemButton>
                 </Link>
-                <Link to={`${modulePath}/files`} style={{textDecoration: 'none', color: 'black'}}>
+                <Link to={`${coursePath}/files`} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
                       <ListItemText primary="Files"/>
                     </ListItemButton>
                 </Link>
                 <Link to={{
-                  pathname: `${modulePath}/forum`,
+                  pathname: `${coursePath}/forum`,
                   // state: {stateParam : true}
                 }} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
                       <ListItemText primary="Forum"/>
                     </ListItemButton>
                 </Link>
-                <Link to={`${modulePath}/assessments`} style={{textDecoration: 'none', color: 'black'}}>
+                <Link to={`${coursePath}/assessments`} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
                       <ListItemText primary="Assessments"/>
                     </ListItemButton>
                 </Link>
-                <Link to={`${modulePath}/gradebook`} style={{textDecoration: 'none', color: 'black'}}>
+                <Link to={`${coursePath}/gradebook`} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
                       <ListItemText primary="Gradebook"/>
                     </ListItemButton>
                 </Link>
-                <Link to={`${modulePath}/whiteboard`} style={{textDecoration: 'none', color: 'black'}}>
+                <Link to={`${coursePath}/whiteboard`} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
                       <ListItemText primary="Whiteboard"/>
                     </ListItemButton>
                 </Link>
-                <Link to={`/myTeachingCourse/${props.moduleCode}/inClass`} style={{textDecoration: 'none', color: 'black'}}>
+                <Link to={`/myTeachingCourse/${props.courseId}/inClass`} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
                       <ListItemText primary="In-Class"/>
                     </ListItemButton>
