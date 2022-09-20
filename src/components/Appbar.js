@@ -109,7 +109,7 @@ export default function Appbar() {
                         </Link>
                     </li>
                     <li className='nav-item'>
-                        <Link to ='/settings' className='nav-links'>
+                        <Link to ='/adminDrawer' className='nav-links'>
                             AdminTesting
                         </Link>
                     </li>

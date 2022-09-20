@@ -16,10 +16,12 @@ import TeachingDiscussion from './components/TeachingDiscussion';
 import TeachingForum from './components/TeachingForum';
 import TeachingFileList from './components/TeachingFileList';
 import TeachingChildFileCover from './components/TeachingChildFileCover';
-
 import TeachingCourseSettings from './components/TeachingCourseSettings';
 import TeachingForumCreate from './components/TeachingForumCreate';
 import TeachingDiscussionCreate from './components/TeachingDiscussionCreate';
+import SettingsDrawer from './components/SettingsDrawer';
+import ViewAllEducators from './pages/ViewAllEducators';
+
 
 function App() {
   return (
@@ -34,7 +36,6 @@ function App() {
           <Route path = "/myTeachingCourse/new" element={<TeachingCourseNew />} />
 
           <Route path = "/myTeachingCourse/:courseId/courseSettings" element={<TeachingCourseSettings />}  />
-
           <Route path = "/myTeachingCourse/:courseId/newForum" element={<TeachingForumCreate/>} />
           <Route path = "/myTeachingCourse/:courseId/forum" element={<TeachingForumList />} />
           <Route path = "/myTeachingCourse/:courseId/forum/:forumId" element={<TeachingForum />} />
@@ -44,9 +45,12 @@ function App() {
 
           <Route path = "/myTeachingCourse/:courseId/files" element={<TeachingFileList />} />
           <Route path = "/myTeachingCourse/:courseId/files/:folderId" element={<TeachingChildFileCover/>} />
-
+          <Route path = "/myTeachingCourse/:moduleCode/files" element={<TeachingFileList />} />
+          <Route path = "/adminDrawer" element={<SettingsDrawer/>} />
           <Route path = "/settings" element={<Settings/>} />
-          <Route path = "/learnerCreation" element={<LearnerCreation/>} />
+          <Route path="/learnerCreation" element={<LearnerCreation />} />
+          <Route path = "/viewAllEducators" element={<ViewAllEducators/>} />
+
         </Routes>
       </Router>
     </div>
