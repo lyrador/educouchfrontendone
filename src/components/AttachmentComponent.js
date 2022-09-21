@@ -11,7 +11,7 @@ import MenuItem from '@mui/material/MenuItem';
 import folderPicture from '../assets/file.png';
 import { Grid, Typography, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import '../css/TeachingFileList.css';
-import { Link, Routes, Route, useNavigate } from 'react-router-dom';
+import { Link, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -25,6 +25,9 @@ import DownloadIcon from '@mui/icons-material/Download';
 
 
 function AttachmentComponent({ attachment, courseId, handleRefreshDelete, handleRefreshUpdate, refresh }) {
+
+    var folderId = useParams();
+    folderId = folderId.folderId;
 
     // opening mini menu
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -53,13 +56,64 @@ function AttachmentComponent({ attachment, courseId, handleRefreshDelete, handle
         setRenameDialogBox(false);
     };
 
+    // rename form input
+    const [attachmentName, setAttachmentName] = useState("");
+
+    const processRename = (e) => {
+        e.preventDefault();
+        if (attachmentName.length === 0) {
+            setError(true);
+        };
+        var apiUrl = "http://localhost:8080/renameAttachment?attachmentId=" + attachment.attachmentId
+         + "&fileName=" + attachmentName;
+
+        fetch(apiUrl)
+            .then(() => {
+                setRenameDialogBox(false);
+                handleRefreshUpdate();
+            })
+            .catch((error) => {
+                setRenameDialogBox(false);
+
+                //notification
+                setMessage("Could not rename attachment.");
+                setError(true);
+                setSuccess(false);
+                console.log(error);
+
+            })
+    };
+
     // download file
     const downloadFile = () => {
         var fileUrl = "";
         window.open(attachment.fileURL, '_blank');
     };
 
-    
+    // delete
+    const processDeletion = () => {
+        fetch("http://localhost:8080/deleteFolderAttachment?attachmentId=" + attachment.attachmentId +
+        "&folderId=" + folderId, {
+            method: "DELETE"
+        }).then(() => {
+            //notification
+            setMessage("Attachment is successfully deleted!");
+            setError(false);
+            setSuccess(true);
+
+            handleRefreshDelete();
+        }).catch((err) => {
+            //notification
+            setMessage("Could not delete attachment.");
+            setError(true);
+            setSuccess(false);
+            console.log(err.message);
+        });
+
+        handleClose();
+    };
+
+
 
     return (
 
@@ -107,20 +161,42 @@ function AttachmentComponent({ attachment, courseId, handleRefreshDelete, handle
                         </ListItemIcon>
                         Download
                     </MenuItem>
-                    <MenuItem>
+                    <MenuItem onClick={processDeletion}>
                         <ListItemIcon>
                             <DeleteIcon fontSize="small" />
                         </ListItemIcon>
                         Delete
                     </MenuItem>
-                    <MenuItem>
+                    <MenuItem onClick = { openRenameDialogBox }>
                         <ListItemIcon>
                             <DriveFileRenameOutlineIcon fontSize="small" />
                         </ListItemIcon>
                         Rename
                     </MenuItem>
                 </Menu>
-                
+                <Dialog open={renameDialogBox} onClose={closeRenameDialogBox} fullWidth="lg">
+                    <DialogContent>
+                        <DialogContentText>
+                            Rename attachment
+                        </DialogContentText>
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="parentFolderTitleField"
+                            label="Attachment Title"
+                            type="text"
+                            fullWidth
+                            variant="standard"
+                            defaultValue={attachment.fileOriginalName}
+                            onChange={(e) => setAttachmentName(e.target.value)} />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={processRename}>Rename</Button>
+                        <Button onClick={closeRenameDialogBox}>Cancel</Button>
+                    </DialogActions>
+                </Dialog>
+
 
 
 

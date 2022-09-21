@@ -1,9 +1,14 @@
 import * as React from 'react';
 import '../App.css';
 import '../css/TeachingFileList.css';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import TeachingCoursesDrawer from './TeachingCoursesDrawer';
-import { Grid, Typography, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import {
+    Grid, LinearProgress, ThemeProvider,
+    createTheme, Typography, Button, TextField,
+    Dialog, DialogActions, DialogContent,
+    DialogContentText, Box
+} from '@mui/material';
 import TeachingFileComponent from './TeachingFileComponent';
 import AttachmentComponent from './AttachmentComponent';
 import { useState } from 'react';
@@ -137,7 +142,7 @@ function TeachingChildFileList() {
     const handleRefreshDelete = () => {
         refresh();
         //notification
-        setMessage("Folder is successfully deleted!");
+        setMessage("Item is successfully deleted!");
         setError(false);
         setSuccess(true);
 
@@ -146,7 +151,7 @@ function TeachingChildFileList() {
     const handleRefreshUpdate = () => {
         refresh();
         //notification
-        setMessage("Folder is successfully updated!");
+        setMessage("Item is successfully updated!");
         setError(false);
         setSuccess(true);
     }
@@ -154,7 +159,6 @@ function TeachingChildFileList() {
     // uploading function
     const [currentFile, setCurrentFile] = useState(undefined);
     const [progress, setProgress] = useState(0);
-    const [isUploaded, setIsUploaded] = useState(false);
 
     const selectFile = (event) => {
         setCurrentFile(event.target.files[0]);
@@ -162,26 +166,46 @@ function TeachingChildFileList() {
         setMessage("");
     };
 
-    const uploadImage = () => {
+    const uploadAttachment = () => {
         setProgress(0);
-        UploadService.upload(currentFile, (event) => {
+        UploadService.uploadAttachment(folderId, currentFile, (event) => {
             setProgress(Math.round((100 * event.loaded) / event.total));
         })
             .then((response) => {
-                // setMessage("Succesfully Uploaded!");
-                // setProfilePictureURL(response.data.fileURL);
-                // setError(false);
-                // setIsUploaded(true);
-                // console.log(response);
+                setMessage("Succesfully Uploaded!");
+                setError(false);
+                console.log(response);
+                closeUploadDialogBox();
+                refresh();
             })
             .catch((err) => {
-                // setMessage("Could not upload the image!");
-                // setError(true);
-                // setProgress(0);
-                // setCurrentFile(undefined);
+                setMessage("Could not upload the image!");
+                setError(true);
+                setProgress(0);
+                setCurrentFile(undefined);
             });
     };
 
+    // progress bar
+    const theme = createTheme({
+        components: {
+            MuiLinearProgress: {
+                styleOverrides: {
+                    root: {
+                        height: 15,
+                        borderRadius: 5,
+                    },
+                    colorPrimary: {
+                        backgroundColor: "#EEEEEE",
+                    },
+                    bar: {
+                        borderRadius: 5,
+                        backgroundColor: "#1a90ff",
+                    },
+                },
+            },
+        },
+    });
 
 
 
@@ -255,33 +279,41 @@ function TeachingChildFileList() {
                             <DialogContentText>
                                 Upload file
                             </DialogContentText>
-
+                            
+                            <br />
                             <label htmlFor="btn-upload">
                                 <input
                                     id="btn-upload"
                                     name="btn-upload"
                                     style={{ display: "none" }}
                                     type="file"
-                                    accept="image/*"
+                                    accept=".doc,.docx,.pdf, .mp4"
                                     onChange={selectFile}
                                 />
                                 <Button className="btn-choose" variant="outlined" component="span">
-                                    Choose Profile Image
+                                    Choose File
                                 </Button>
                             </label>
-                            <Button
-                                className="btn-upload"
-                                color="primary"
-                                variant="contained"
-                                component="span"
-                                disabled={!currentFile}
-                                onClick={uploadImage}
-                            >
-                                Upload
-                            </Button>
+                            <divider></divider>
+                            {currentFile && (
+                                <Box className="my20" display="flex" alignItems="center">
+                                    <Box width="100%" mr={1}>
+                                        <ThemeProvider theme={theme}>
+                                            <LinearProgress variant="determinate" value={progress} />
+                                        </ThemeProvider>
+                                    </Box>
+                                    <Box minWidth={35}>
+                                        <Typography
+                                            variant="body2"
+                                            color="textSecondary"
+                                        >{`${progress}%`}</Typography>
+                                    </Box>
+                                </Box>
+                            )}
                         </DialogContent>
                         <DialogActions>
-                            <Button>Upload</Button>
+                            <Button disabled={!currentFile}
+                                onClick={uploadAttachment}>Upload</Button>
                             <Button onClick={closeUploadDialogBox}>Cancel</Button>
                         </DialogActions>
                     </Dialog>

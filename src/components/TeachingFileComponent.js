@@ -105,7 +105,7 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
     const navigate = useNavigate();
     const navigateChildFolder = () => {
         navigate(`/myTeachingCourse/${courseId}/files/${folder.folderId}`);
-        refresh();
+        window.location.reload(false);
     };
 
 
