@@ -8,7 +8,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import folderPicture from '../assets/folder.png';
+import folderPicture from '../assets/file.png';
 import { Grid, Typography, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import '../css/TeachingFileList.css';
 import { Link, Routes, Route, useNavigate } from 'react-router-dom';
@@ -17,15 +17,15 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import DeleteIcon from '@mui/icons-material/Delete';
 import InstantErrorMessage from './InstantErrorMessage';
 import InstantSuccessMessage from './InstantSuccessMessage';
+import DownloadIcon from '@mui/icons-material/Download';
 
 
 
 
 
 
+function AttachmentComponent({ attachment, courseId, handleRefreshDelete, handleRefreshUpdate, refresh }) {
 
-function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate, refresh }) {
-    
     // opening mini menu
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -34,27 +34,6 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
     };
     const handleClose = () => {
         setAnchorEl(null);
-    };
-
-    const processDeletion = () => {
-        fetch("http://localhost:8080/folder/deleteFolder/" + folder.folderId, {
-            method: "DELETE"
-        }).then(() => {
-            //notification
-            setMessage("Folder is successfully deleted!");
-            setError(false);
-            setSuccess(true);
-
-            handleRefreshDelete();
-        }).catch((err) => {
-            //notification
-            setMessage("Could not delete folder.");
-            setError(true);
-            setSuccess(false);
-            console.log(err.message);
-        });
-
-        handleClose();
     };
 
     // notification
@@ -74,40 +53,13 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
         setRenameDialogBox(false);
     };
 
-    // rename form input
-    const [currFolderName, setCurrFolderName] = useState(folder.folderName);
-
-    const clickRenameButton = (e) => {
-        e.preventDefault();
-        if (currFolderName.length === 0) {
-            setError(true);
-        };
-        var apiUrl = "http://localhost:8080/folder/renameFolderByFolderId?folderId=" + folder.folderId + "&folderName=" + currFolderName;
-
-        fetch(apiUrl)
-            .then(() => {
-                setRenameDialogBox(false);
-                handleRefreshUpdate();
-            })
-            .catch((error) => {
-                setRenameDialogBox(false);
-
-                //notification
-                setMessage("Could not rename folder.");
-                setError(true);
-                setSuccess(false);
-                console.log(error);
-
-            })
+    // download file
+    const downloadFile = () => {
+        var fileUrl = "";
+        window.open(attachment.fileURL, '_blank');
     };
 
-    // navigate to child folder
-    const navigate = useNavigate();
-    const navigateChildFolder = () => {
-        navigate(`/myTeachingCourse/${courseId}/files/${folder.folderId}`);
-        refresh();
-    };
-
+    
 
     return (
 
@@ -125,7 +77,7 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
                         <img class="folder-picture" src={folderPicture} />
                     </ListItemIcon>
                     <ListItemText
-                        primary={folder.folderName}
+                        primary={attachment.fileOriginalName}
                     />
                     {/* <Link to={`/myTeachingCourse/${moduleCode}/files/${folder.folderId}`}>
                         <ListItemIcon>
@@ -149,48 +101,27 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
                 >
 
 
-                    <MenuItem onClick = {navigateChildFolder}>
+                    <MenuItem onClick={downloadFile}>
                         <ListItemIcon>
-                            <FolderOpenIcon fontSize="small" />
+                            <DownloadIcon fontSize="small" />
                         </ListItemIcon>
-                        Open
+                        Download
                     </MenuItem>
-                    <MenuItem onClick={processDeletion}>
+                    <MenuItem>
                         <ListItemIcon>
                             <DeleteIcon fontSize="small" />
                         </ListItemIcon>
                         Delete
                     </MenuItem>
-                    <MenuItem onClick={openRenameDialogBox}>
+                    <MenuItem>
                         <ListItemIcon>
                             <DriveFileRenameOutlineIcon fontSize="small" />
                         </ListItemIcon>
                         Rename
                     </MenuItem>
                 </Menu>
-                <Dialog open={renameDialogBox} onClose={closeRenameDialogBox} fullWidth="lg">
-                    <DialogContent>
-                        <DialogContentText>
-                            Rename folder
-                        </DialogContentText>
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="parentFolderTitleField"
-                            label="Folder Title"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                            defaultValue={folder.folderName}
-                            onChange={(e) => setCurrFolderName(e.target.value)} />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={clickRenameButton}>Rename</Button>
-                        <Button onClick={closeRenameDialogBox}>Cancel</Button>
-                    </DialogActions>
-                </Dialog>
                 
+
 
 
             </ListItem>
@@ -199,4 +130,4 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
     )
 }
 
-export default TeachingFileComponent;
+export default AttachmentComponent;

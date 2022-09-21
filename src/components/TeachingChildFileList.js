@@ -5,6 +5,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import TeachingCoursesDrawer from './TeachingCoursesDrawer';
 import { Grid, Typography, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import TeachingFileComponent from './TeachingFileComponent';
+import AttachmentComponent from './AttachmentComponent';
 import { useState } from 'react';
 
 import InstantErrorMessage from './InstantErrorMessage';
@@ -17,10 +18,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 
-function TeachingChildFileList({ folderId }) {
+import UploadService from "../services/UploadFilesService";
+
+function TeachingChildFileList() {
     var courseId = useParams();
     courseId = courseId.moduleCode;
-    
+
+    var folderId = useParams();
+    folderId = folderId.folderId;
 
     const [folderList, setFolderList] = useState([]);
     const [attachmentList, setAttachmentList] = useState([]);
@@ -53,24 +58,36 @@ function TeachingChildFileList({ folderId }) {
                 console.log(err.message);
             });
     };
-     // create new folder dialog box
-     const [open, setOpen] = useState(false);
+    // create new folder dialog box
+    const [open, setOpen] = useState(false);
 
-     const openCreateFolderDialogBox = () => {
-         setOpen(true);
-     };
- 
-     const closeCreateFolderDialogBox = () => {
-         setOpen(false);
-     };
+    const openCreateFolderDialogBox = () => {
+        setOpen(true);
+    };
+
+    const closeCreateFolderDialogBox = () => {
+        setOpen(false);
+    };
+
+
+    // upload dialog box
+    const [uploadDialogBox, setUploadDialogBox] = useState(false);
+
+    const openUploadDialogBox = () => {
+        setUploadDialogBox(true);
+    };
+
+    const closeUploadDialogBox = () => {
+        setUploadDialogBox(false);
+    };
 
     // dial speed
     const actions = [
-        { icon: <CreateNewFolderIcon />, name: 'Create new folder', action: openCreateFolderDialogBox},
-        { icon: <AttachFileIcon />, name: 'Upload new file', action: openCreateFolderDialogBox },
+        { icon: <CreateNewFolderIcon />, name: 'Create new folder', action: openCreateFolderDialogBox },
+        { icon: <AttachFileIcon />, name: 'Upload new file', action: openUploadDialogBox },
     ];
 
-   
+
 
     // create new folder form
     const [folderName, setFolderName] = useState('');
@@ -87,7 +104,7 @@ function TeachingChildFileList({ folderId }) {
             setError(true);
         };
 
-        const childFolder = {"courseId": courseId, "parentFolderId": folderId, "folder":{"folderName": folderName}};
+        const childFolder = { "courseId": courseId, "parentFolderId": folderId, "folder": { "folderName": folderName } };
         console.log('JSON IS ' + JSON.stringify(childFolder));
 
         fetch("http://localhost:8080/folder/addSubFolder", {
@@ -134,7 +151,38 @@ function TeachingChildFileList({ folderId }) {
         setSuccess(true);
     }
 
-    
+    // uploading function
+    const [currentFile, setCurrentFile] = useState(undefined);
+    const [progress, setProgress] = useState(0);
+    const [isUploaded, setIsUploaded] = useState(false);
+
+    const selectFile = (event) => {
+        setCurrentFile(event.target.files[0]);
+        setProgress(0);
+        setMessage("");
+    };
+
+    const uploadImage = () => {
+        setProgress(0);
+        UploadService.upload(currentFile, (event) => {
+            setProgress(Math.round((100 * event.loaded) / event.total));
+        })
+            .then((response) => {
+                // setMessage("Succesfully Uploaded!");
+                // setProfilePictureURL(response.data.fileURL);
+                // setError(false);
+                // setIsUploaded(true);
+                // console.log(response);
+            })
+            .catch((err) => {
+                // setMessage("Could not upload the image!");
+                // setError(true);
+                // setProgress(0);
+                // setCurrentFile(undefined);
+            });
+    };
+
+
 
 
     return (
@@ -158,7 +206,11 @@ function TeachingChildFileList({ folderId }) {
                     <div>
                         {folderList.length > 0 &&
                             folderList
-                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate}></TeachingFileComponent>))
+                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate} refresh={refresh}></TeachingFileComponent>))
+                        }
+                        {attachmentList.length > 0 &&
+                            attachmentList
+                                .map((attachment) => (<AttachmentComponent attachment={attachment} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate} refresh={refresh}></AttachmentComponent>))
                         }
                         {folderList.length <= 0 && attachmentList.length <= 0 &&
                             <p>This folder doesn't have any content currently.</p>}
@@ -194,10 +246,45 @@ function TeachingChildFileList({ folderId }) {
                                 key={action.name}
                                 icon={action.icon}
                                 tooltipTitle={action.name}
-                                onClick = {action.action}
+                                onClick={action.action}
                             />
                         ))}
                     </SpeedDial>
+                    <Dialog open={uploadDialogBox} onClose={closeUploadDialogBox} fullWidth="lg">
+                        <DialogContent>
+                            <DialogContentText>
+                                Upload file
+                            </DialogContentText>
+
+                            <label htmlFor="btn-upload">
+                                <input
+                                    id="btn-upload"
+                                    name="btn-upload"
+                                    style={{ display: "none" }}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={selectFile}
+                                />
+                                <Button className="btn-choose" variant="outlined" component="span">
+                                    Choose Profile Image
+                                </Button>
+                            </label>
+                            <Button
+                                className="btn-upload"
+                                color="primary"
+                                variant="contained"
+                                component="span"
+                                disabled={!currentFile}
+                                onClick={uploadImage}
+                            >
+                                Upload
+                            </Button>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button>Upload</Button>
+                            <Button onClick={closeUploadDialogBox}>Cancel</Button>
+                        </DialogActions>
+                    </Dialog>
 
 
                 </Grid>
