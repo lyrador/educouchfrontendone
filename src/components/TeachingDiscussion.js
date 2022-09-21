@@ -1,24 +1,26 @@
 import * as React from 'react';
 
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-
 import TeachingCoursesDrawer from './TeachingCoursesDrawer';
 import Grid from '@mui/material/Grid';
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import LinkMaterial from '@mui/material/Link';
 
 import { Button } from '@mui/material';
+import CommentCard from './CommentCard';
 
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+
+import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
+
+import TextField from '@mui/material/TextField';
 
 function TeachingDiscussion(props) {
 
@@ -46,7 +48,22 @@ function TeachingDiscussion(props) {
 
     console.log(discussionTitle)
 
+    const [content,setContent]=useState('')
     const [comments,setComments]=useState([])
+
+    const createComment=(e)=>{
+        e.preventDefault()
+        const newComment={content}
+        console.log(newComment)
+        fetch("http://localhost:8080/comment/forumDiscussions/" + discussionId + "/comments", {
+            method:"POST", 
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify(newComment)
+        }).then(()=>{
+            console.log("New Comment Created Successfully!")
+        })
+    }
+
 
     React.useEffect(() => {
         fetch("http://localhost:8080/comment/forumDiscussions/" + discussionId + "/comments").
@@ -57,13 +74,52 @@ function TeachingDiscussion(props) {
       )
       }, [])
 
+      const bull = (
+        <Box
+            component="span"
+            sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
+        >
+            •
+        </Box>
+        );
+    
+        const card = (
+        <React.Fragment>
+            <CardContent>
+            {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                Comment
+            </Typography>
+            <Typography variant="h5" component="div">
+                be{bull}nev{bull}o{bull}lent
+            </Typography>
+            <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                adjective
+            </Typography>
+            <Typography variant="body2">
+                well meaning and kindly.
+                <br />
+                {'"a benevolent smile"'}
+            </Typography> */}
+            <TextField id="outlined-basic" label="Comment Content" variant="outlined" fullWidth 
+                style={{margin: '5px 0'}}
+                value={content}
+                onChange={(e)=>setContent(e.target.value)}
+            />
+            </CardContent>
+            <CardActions>
+            <Button size="small">Post</Button>
+            </CardActions>
+        </React.Fragment>
+        );
+
     return (
         <div>
-            <Grid container spacing={0}>
+            <Grid container spacing={0} sx={{height: '80vh'}}>
                 <Grid item xs={2}>
                     <TeachingCoursesDrawer></TeachingCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
+                    <div style={{marginRight: '20px'}}>
                     <Breadcrumbs aria-label="breadcrumb">
                         <LinkMaterial underline="hover" color="inherit" href={`${forumPath}`}>
                             Forum
@@ -98,28 +154,23 @@ function TeachingDiscussion(props) {
                             </Button>
                         </Link>
                     </div>
-                    <div style={{padding: '5%'}}>
-                        <TableContainer component={Paper}>
-                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                            <TableHead>
-                                <TableRow>
-                                <TableCell>Comment Content</TableCell>
-                                <TableCell>Time Created</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {comments.map((comment) => (
-                                <TableRow
-                                    key={comment.commentId}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                    <TableCell component="th" scope="row">{comment.content}</TableCell>
-                                    <TableCell>{comment.timestamp}</TableCell>
-                                </TableRow>
-                                ))}
-                            </TableBody>
-                            </Table>
-                        </TableContainer>
+                    <div style={{paddingTop: '4%', paddingBottom: '1%', height: '50vh'}}>
+                    <React.Fragment>
+                        <CssBaseline />
+                        <Container maxWidth="sm">
+                            {comments.map(comment=>(
+                                <CommentCard
+                                timestamp={comment.timestamp}
+                                content={comment.content}
+                                />
+                                ))
+                            }
+                        </Container>
+                    </React.Fragment>
+                    </div>
+                    <Box sx={{ minWidth: 275, bottom: '0px'}}>
+                        <Card variant="outlined">{card}</Card>
+                    </Box>
                     </div>
                 </Grid>
             </Grid>

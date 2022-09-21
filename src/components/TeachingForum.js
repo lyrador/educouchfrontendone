@@ -22,9 +22,14 @@ import LinkMaterial from '@mui/material/Link';
 
 import { Button } from '@mui/material';
 
-function TeachingForum(props) {
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
-    // let { courseId } = useParams();
+function TeachingForum(props) {
 
     //paths
     const location = useLocation();
@@ -40,18 +45,31 @@ function TeachingForum(props) {
     console.log(location.state)
     const forumTitle = location.state.forumTitle;
 
-    // function createData(discussionId, discussionName, numofComments, lastActivity) {
-    //     return {discussionId, discussionName, numofComments, lastActivity};
-    // }
-    
-    // const rows = [
-    //     createData(1, 'Tutorial Grp 1', 20, "1 Sep 2359hrs"),
-    //     createData(2, 'Tutorial Grp 2', 80, "2 Sep 1200hrs"),
-    //     createData(3, 'Tutorial Grp 3', 789, "31 May 2359hrs"),
-    //     createData(4, 'Tutorial Grp 4', 432, "22 Jul 2000hrs"),
-    // ];
+    const paperStyle={
+        padding: '50px 20px', 
+        width:600,
+        margin:"20px auto", 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        flex: '1'
+    }
+    console.log(courseId);
+
+    const [open, setOpen] = React.useState(false);
+    const [forums,setForums]=useState([])
+
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+  
+    const handleClose = () => {
+      setOpen(false);
+    };
 
     const [discussions,setDiscussions]=useState([])
+
+    const [forumDiscussionTitle,setForumDiscussionTitle]=useState('')
+    const [forumDiscussionDescription,setForumDiscussionDescription]=useState('')
 
     React.useEffect(() => {
         fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions").
@@ -61,6 +79,22 @@ function TeachingForum(props) {
         }
       )
       }, [])
+
+    const createNewDiscussion=(e)=>{
+        e.preventDefault()
+        const newDiscussion={forumDiscussionTitle, forumDiscussionDescription}
+        console.log(newDiscussion)
+        fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions", {
+            method:"POST", 
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify(newDiscussion)
+        }).then(()=>{
+            console.log("New Discussion Created Successfully!")
+            setForumDiscussionTitle("")
+            setForumDiscussionDescription("")
+            window.location.reload();
+        })
+    }
 
     return (
         <div>
@@ -83,18 +117,16 @@ function TeachingForum(props) {
                     </Breadcrumbs>
                     <div style={{justifyContent: 'center'}}>
                         <h1 style={{justifySelf: 'center', marginLeft: 'auto'}}>List of Discussions</h1>
-                        <Link to ={`/myTeachingCourse/${courseId}/forum/${forumId}/newDiscussion`} style={{textDecoration: 'none'}}>
-                            <Button
-                                className="btn-upload"
-                                color="primary"
-                                variant="contained"
-                                component="span"
-                                // onClick={createNewForum}
-                                style={{float: 'right', marginLeft: 'auto'}}
-                                >
-                                Create New Discussion
-                            </Button>
-                        </Link>
+                        <Button
+                            className="btn-upload"
+                            color="primary"
+                            variant="contained"
+                            component="span"
+                            onClick={handleClickOpen}
+                            style={{float: 'right', marginLeft: 'auto'}}
+                            >
+                            Create New Discussion
+                        </Button>
                     </div>
                     <div style={{padding: '5%'}}>
                         <TableContainer component={Paper}>
@@ -130,6 +162,28 @@ function TeachingForum(props) {
                     </div>
                 </Grid>
             </Grid>
+            <div>
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle>Create New Discussion</DialogTitle>
+                    <DialogContent>
+                    <TextField id="outlined-basic" label="Discussion Title" variant="outlined" fullWidth 
+                        style={{margin: '5px 0'}}
+                        value={forumDiscussionTitle}
+                        onChange={(e)=>setForumDiscussionTitle(e.target.value)}
+                        />
+                    <TextField id="outlined-basic" label="Discussion Description" variant="outlined" fullWidth 
+                        style={{margin: '5px 0'}}
+                        value={forumDiscussionDescription}
+                        onChange={(e)=>setForumDiscussionDescription(e.target.value)}
+                    />
+
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={createNewDiscussion}>Create</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
         </div>
     )
 }
