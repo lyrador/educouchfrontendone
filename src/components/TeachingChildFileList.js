@@ -43,8 +43,11 @@ function TeachingChildFileList({ folderId }) {
             .then(res => res.json())
             .then((result) => {
                 var fol = result;
+                console.log(JSON.stringify(fol));
                 setFolderList(fol.childFolders);
                 setAttachmentList(fol.attachments);
+                console.log("Length of folder is " + folderList.length);
+                console.log("Length of attachment is " + attachmentList.length);
             }
             ).catch((err) => {
                 console.log(err.message);
@@ -131,6 +134,7 @@ function TeachingChildFileList({ folderId }) {
         setSuccess(true);
     }
 
+    
 
 
     return (

@@ -24,7 +24,7 @@ import InstantSuccessMessage from './InstantSuccessMessage';
 
 
 function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate }) {
-
+    
     // opening mini menu
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
