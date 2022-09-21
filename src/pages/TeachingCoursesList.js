@@ -18,10 +18,10 @@ import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 export default function TeachingCoursesList() {
-  const [currPage, setCurrPage] = useState("course");
-  function handleChange(newCurrPage) {
-    setCurrPage(newCurrPage);
-  }
+  // const [currPage, setCurrPage] = useState("course");
+  // function handleChange(newCurrPage) {
+  //   setCurrPage(newCurrPage);
+  // }
 
   return (
     <>
