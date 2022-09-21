@@ -21,8 +21,6 @@ import ViewInstructor from './pages/ViewInstructor';
 import TeachingChildFileCover from './components/TeachingChildFileCover';
 import TeachingCourseSettings from './components/TeachingCourseSettings';
 
-import TeachingCommentsCreate from './components/TeachingCommentsCreate';
-
 function App() {
   return (
     <div className="App">
@@ -43,9 +41,6 @@ function App() {
           <Route path = "/myTeachingCourse/:courseId/forum/:forumId" element={<TeachingForum />} />
 
           <Route path = "/myTeachingCourse/:courseId/forum/:forumId/:discussionId" element={<TeachingDiscussion />} />
-
-          <Route path = "/myTeachingCourse/:courseId/forum/:forumId/:discussionId/newComment" element={<TeachingCommentsCreate/>} />
-
 
           <Route path = "/myTeachingCourse/:courseId/files" element={<TeachingFileList />} />
           <Route path = "/myTeachingCourse/:courseId/files/:folderId" element={<TeachingChildFileCover/>} />

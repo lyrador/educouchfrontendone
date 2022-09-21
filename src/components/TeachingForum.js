@@ -29,6 +29,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+
 function TeachingForum(props) {
 
     //paths
@@ -37,26 +40,12 @@ function TeachingForum(props) {
     const discussionsPath = location.pathname
 
     const courseId = location.pathname.split('/')[2];
-    console.log(courseId);
-
     const forumId = location.pathname.split('/')[4];
-    console.log(forumId);
-
-    console.log(location.state)
     const forumTitle = location.state.forumTitle;
 
-    const paperStyle={
-        padding: '50px 20px', 
-        width:600,
-        margin:"20px auto", 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        flex: '1'
-    }
-    console.log(courseId);
-
     const [open, setOpen] = React.useState(false);
-    const [forums,setForums]=useState([])
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -67,9 +56,18 @@ function TeachingForum(props) {
     };
 
     const [discussions,setDiscussions]=useState([])
-
     const [forumDiscussionTitle,setForumDiscussionTitle]=useState('')
     const [forumDiscussionDescription,setForumDiscussionDescription]=useState('')
+    const [discussionIdToDelete,setDiscussionIdToDelete]=useState('')
+
+    const handleClickDeleteDialogOpen = (event, discussionId) => {
+        setDiscussionIdToDelete(discussionId);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteDialogClose = () => {
+        setDeleteDialogOpen(false);
+    };
 
     React.useEffect(() => {
         fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions").
@@ -79,6 +77,18 @@ function TeachingForum(props) {
         }
       )
       }, [])
+
+    const deleteDiscussion=(e)=>{
+        e.preventDefault()
+        fetch("http://localhost:8080/forumDiscussion/forumDiscussions/" + discussionIdToDelete, {
+            method:"DELETE", 
+            headers:{"Content-Type":"application/json"}, 
+            // body:JSON.stringify(newComment)
+        }).then(()=>{
+            console.log("Discussion Deleted Successfully!")
+            window.location.reload();
+        })
+    }
 
     const createNewDiscussion=(e)=>{
         e.preventDefault()
@@ -136,12 +146,13 @@ function TeachingForum(props) {
                                 <TableCell>Discussion Title</TableCell>
                                 <TableCell>Description</TableCell>
                                 <TableCell>Time Created</TableCell>
+                                <TableCell>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {discussions.map((discussion) => (
                                 <TableRow
-                                    key={discussion.discussionId}
+                                    key={discussion.forumDiscussionId}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell component="th" scope="row">
@@ -154,6 +165,11 @@ function TeachingForum(props) {
                                     </TableCell>
                                     <TableCell>{discussion.forumDiscussionDescription}</TableCell>
                                     <TableCell>{discussion.timestamp}</TableCell>
+                                    <TableCell>
+                                        <IconButton aria-label="settings" onClick={event => handleClickDeleteDialogOpen(event, discussion.forumDiscussionId)}>
+                                            <DeleteIcon/>
+                                        </IconButton>
+                                    </TableCell>
                                 </TableRow>
                                 ))}
                             </TableBody>
@@ -181,6 +197,30 @@ function TeachingForum(props) {
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
                         <Button onClick={createNewDiscussion}>Create</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
+                    open={deleteDialogOpen}
+                    onClose={handleDeleteDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Delete this discussion?"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            These will delete all the comments inside the discussion.
+                            You will not be able to undo this action. Are you sure you want to delete?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDeleteDialogClose}>Cancel</Button>
+                        <Button onClick={deleteDiscussion} autoFocus>
+                        Delete
+                        </Button>
                     </DialogActions>
                 </Dialog>
             </div>

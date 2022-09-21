@@ -26,6 +26,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+
 function TeachingForumList(props) {
     
     React.useEffect(() => {
@@ -36,26 +39,19 @@ function TeachingForumList(props) {
         }
       )
     }, [])
-
-    const paperStyle={
-        padding: '50px 20px', 
-        width:600,
-        margin:"20px auto", 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        flex: '1'
-    }
-
+    
     //paths
     const location = useLocation();
     const forumsPath = location.pathname.split('/').slice(0,4).join('/')
 
     const courseId = location.pathname.split('/')[2];
-    console.log(courseId);
 
     const [open, setOpen] = React.useState(false);
     const [forums,setForums]=useState([])
     const [forumTitle,setForumTitle]=useState('')
+    const [forumIdToDelete,setForumIdToDelete]=useState('')
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -63,6 +59,15 @@ function TeachingForumList(props) {
   
     const handleClose = () => {
       setOpen(false);
+    };
+
+    const handleClickDeleteDialogOpen = (event, forumId) => {
+        setForumIdToDelete(forumId);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteDialogClose = () => {
+        setDeleteDialogOpen(false);
     };
 
     const createNewForum=(e)=>{
@@ -76,6 +81,18 @@ function TeachingForumList(props) {
         }).then(()=>{
             console.log("New Forum Created Successfully!")
             setForumTitle("")
+            window.location.reload();
+        })
+    }
+
+    const deleteForum=(e)=>{
+        e.preventDefault()
+        fetch("http://localhost:8080/forum/forums/" + forumIdToDelete, {
+            method:"DELETE", 
+            headers:{"Content-Type":"application/json"}, 
+            // body:JSON.stringify(newComment)
+        }).then(()=>{
+            console.log("Forum Deleted Successfully!")
             window.location.reload();
         })
     }
@@ -111,8 +128,8 @@ function TeachingForumList(props) {
                             <TableHead>
                                 <TableRow>
                                 <TableCell>Forum Name</TableCell>
-                                <TableCell>Number of Discussions</TableCell>
-                                <TableCell>Last Post</TableCell>
+                                <TableCell>Time Created</TableCell>
+                                <TableCell>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -129,8 +146,12 @@ function TeachingForumList(props) {
                                             {forum.forumTitle}
                                         </Link>
                                     </TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell></TableCell>
+                                    <TableCell>{forum.timestamp}</TableCell>
+                                    <TableCell>
+                                        <IconButton aria-label="settings" onClick={event => handleClickDeleteDialogOpen(event, forum.forumId)}>
+                                            <DeleteIcon/>
+                                        </IconButton>
+                                    </TableCell>
                                 </TableRow>
                                 ))}
                             </TableBody>
@@ -159,7 +180,7 @@ function TeachingForumList(props) {
                         onChange={(e)=>setForumTitle(e.target.value)}
                     /> */}
                     <TextField id="outlined-basic" label="Forum Title" variant="outlined" fullWidth 
-                        style={{margin: '5px 0'}}
+                        style={{margin: '6px 0'}}
                         value={forumTitle}
                         onChange={(e)=>setForumTitle(e.target.value)}
                     />
@@ -167,6 +188,30 @@ function TeachingForumList(props) {
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
                         <Button onClick={createNewForum}>Create</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
+                    open={deleteDialogOpen}
+                    onClose={handleDeleteDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Delete this forum?"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            These will delete all the discussions and comments inside the forum.
+                            You will not be able to undo this action. Are you sure you want to delete?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDeleteDialogClose}>Cancel</Button>
+                        <Button onClick={deleteForum} autoFocus>
+                        Delete
+                        </Button>
                     </DialogActions>
                 </Dialog>
             </div>
