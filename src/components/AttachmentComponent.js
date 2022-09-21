@@ -8,24 +8,27 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import folderPicture from '../assets/folder.png';
+import folderPicture from '../assets/file.png';
 import { Grid, Typography, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import '../css/TeachingFileList.css';
-import { Link, Routes, Route, useNavigate } from 'react-router-dom';
+import { Link, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InstantErrorMessage from './InstantErrorMessage';
 import InstantSuccessMessage from './InstantSuccessMessage';
+import DownloadIcon from '@mui/icons-material/Download';
 
 
 
 
 
 
+function AttachmentComponent({ attachment, courseId, handleRefreshDelete, handleRefreshUpdate, refresh }) {
 
-function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate, refresh }) {
-    
+    var folderId = useParams();
+    folderId = folderId.folderId;
+
     // opening mini menu
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -34,27 +37,6 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
     };
     const handleClose = () => {
         setAnchorEl(null);
-    };
-
-    const processDeletion = () => {
-        fetch("http://localhost:8080/folder/deleteFolder/" + folder.folderId, {
-            method: "DELETE"
-        }).then(() => {
-            //notification
-            setMessage("Folder is successfully deleted!");
-            setError(false);
-            setSuccess(true);
-
-            handleRefreshDelete();
-        }).catch((err) => {
-            //notification
-            setMessage("Could not delete folder.");
-            setError(true);
-            setSuccess(false);
-            console.log(err.message);
-        });
-
-        handleClose();
     };
 
     // notification
@@ -75,14 +57,15 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
     };
 
     // rename form input
-    const [currFolderName, setCurrFolderName] = useState(folder.folderName);
+    const [attachmentName, setAttachmentName] = useState("");
 
-    const clickRenameButton = (e) => {
+    const processRename = (e) => {
         e.preventDefault();
-        if (currFolderName.length === 0) {
+        if (attachmentName.length === 0) {
             setError(true);
         };
-        var apiUrl = "http://localhost:8080/folder/renameFolderByFolderId?folderId=" + folder.folderId + "&folderName=" + currFolderName;
+        var apiUrl = "http://localhost:8080/renameAttachment?attachmentId=" + attachment.attachmentId
+         + "&fileName=" + attachmentName;
 
         fetch(apiUrl)
             .then(() => {
@@ -93,7 +76,7 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
                 setRenameDialogBox(false);
 
                 //notification
-                setMessage("Could not rename folder.");
+                setMessage("Could not rename attachment.");
                 setError(true);
                 setSuccess(false);
                 console.log(error);
@@ -101,12 +84,35 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
             })
     };
 
-    // navigate to child folder
-    const navigate = useNavigate();
-    const navigateChildFolder = () => {
-        navigate(`/myTeachingCourse/${courseId}/files/${folder.folderId}`);
-        window.location.reload(false);
+    // download file
+    const downloadFile = () => {
+        var fileUrl = "";
+        window.open(attachment.fileURL, '_blank');
     };
+
+    // delete
+    const processDeletion = () => {
+        fetch("http://localhost:8080/deleteFolderAttachment?attachmentId=" + attachment.attachmentId +
+        "&folderId=" + folderId, {
+            method: "DELETE"
+        }).then(() => {
+            //notification
+            setMessage("Attachment is successfully deleted!");
+            setError(false);
+            setSuccess(true);
+
+            handleRefreshDelete();
+        }).catch((err) => {
+            //notification
+            setMessage("Could not delete attachment.");
+            setError(true);
+            setSuccess(false);
+            console.log(err.message);
+        });
+
+        handleClose();
+    };
+
 
 
     return (
@@ -125,7 +131,7 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
                         <img class="folder-picture" src={folderPicture} />
                     </ListItemIcon>
                     <ListItemText
-                        primary={folder.folderName}
+                        primary={attachment.fileOriginalName}
                     />
                     {/* <Link to={`/myTeachingCourse/${moduleCode}/files/${folder.folderId}`}>
                         <ListItemIcon>
@@ -149,11 +155,11 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
                 >
 
 
-                    <MenuItem onClick = {navigateChildFolder}>
+                    <MenuItem onClick={downloadFile}>
                         <ListItemIcon>
-                            <FolderOpenIcon fontSize="small" />
+                            <DownloadIcon fontSize="small" />
                         </ListItemIcon>
-                        Open
+                        Download
                     </MenuItem>
                     <MenuItem onClick={processDeletion}>
                         <ListItemIcon>
@@ -161,7 +167,7 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
                         </ListItemIcon>
                         Delete
                     </MenuItem>
-                    <MenuItem onClick={openRenameDialogBox}>
+                    <MenuItem onClick = { openRenameDialogBox }>
                         <ListItemIcon>
                             <DriveFileRenameOutlineIcon fontSize="small" />
                         </ListItemIcon>
@@ -171,26 +177,27 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
                 <Dialog open={renameDialogBox} onClose={closeRenameDialogBox} fullWidth="lg">
                     <DialogContent>
                         <DialogContentText>
-                            Rename folder
+                            Rename attachment
                         </DialogContentText>
 
                         <TextField
                             autoFocus
                             margin="dense"
                             id="parentFolderTitleField"
-                            label="Folder Title"
+                            label="Attachment Title"
                             type="text"
                             fullWidth
                             variant="standard"
-                            defaultValue={folder.folderName}
-                            onChange={(e) => setCurrFolderName(e.target.value)} />
+                            defaultValue={attachment.fileOriginalName}
+                            onChange={(e) => setAttachmentName(e.target.value)} />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={clickRenameButton}>Rename</Button>
+                        <Button onClick={processRename}>Rename</Button>
                         <Button onClick={closeRenameDialogBox}>Cancel</Button>
                     </DialogActions>
                 </Dialog>
-                
+
+
 
 
             </ListItem>
@@ -199,4 +206,4 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
     )
 }
 
-export default TeachingFileComponent;
+export default AttachmentComponent;

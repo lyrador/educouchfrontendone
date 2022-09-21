@@ -72,8 +72,8 @@ function TeachingCoursesCards() {
                         <Box sx={{ borderBottom: 1, borderColor: 'divider'}}>
                         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                             <Tab label="Drafts" {...a11yProps(0)} />
-                            <Tab label="Ongoing" {...a11yProps(1)} />
-                            <Tab label="Completed" {...a11yProps(2)} />
+                            {/* <Tab label="Ongoing" {...a11yProps(1)} />
+                            <Tab label="Completed" {...a11yProps(2)} /> */}
                         </Tabs>
                         </Box>
                     </div>
@@ -91,7 +91,7 @@ function TeachingCoursesCards() {
                           </ul>
                       </div>
                     </TabPanel>
-                    <TabPanel value={value} index={1}>
+                    {/* <TabPanel value={value} index={1}>
                         <div className='cards-wrapper'>
                           <ul className='cards-items'>
                               <CardItem 
@@ -114,7 +114,7 @@ function TeachingCoursesCards() {
                             />
                         </ul>
                       </div>
-                    </TabPanel>
+                    </TabPanel> */}
                 </Box>
             </div>
         </div>
