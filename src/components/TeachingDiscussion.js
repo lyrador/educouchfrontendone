@@ -18,6 +18,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import LinkMaterial from '@mui/material/Link';
 
 import { Button } from '@mui/material';
+import CommentCard from './CommentCard';
 
 
 function TeachingDiscussion(props) {
@@ -99,7 +100,7 @@ function TeachingDiscussion(props) {
                         </Link>
                     </div>
                     <div style={{padding: '5%'}}>
-                        <TableContainer component={Paper}>
+                        {/* <TableContainer component={Paper}>
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                             <TableHead>
                                 <TableRow>
@@ -119,7 +120,14 @@ function TeachingDiscussion(props) {
                                 ))}
                             </TableBody>
                             </Table>
-                        </TableContainer>
+                        </TableContainer> */}
+                        {comments.map(comment=>(
+                              <CommentCard
+                              timestamp={comment.timestamp}
+                              content={comment.content}
+                              />
+                            ))
+                          }
                     </div>
                 </Grid>
             </Grid>
