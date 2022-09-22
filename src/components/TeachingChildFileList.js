@@ -25,6 +25,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 import UploadService from "../services/UploadFilesService";
 
+
 function TeachingChildFileList() {
     var courseId = useParams();
     courseId = courseId.moduleCode;
@@ -228,15 +229,15 @@ function TeachingChildFileList() {
                     <divider></divider>
                     <br />
                     <div>
-                        {folderList.length > 0 &&
+                        {folderList && folderList.length > 0 &&
                             folderList
                                 .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate} refresh={refresh}></TeachingFileComponent>))
                         }
-                        {attachmentList.length > 0 &&
+                        {attachmentList && attachmentList.length > 0 &&
                             attachmentList
                                 .map((attachment) => (<AttachmentComponent attachment={attachment} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate} refresh={refresh}></AttachmentComponent>))
                         }
-                        {folderList.length <= 0 && attachmentList.length <= 0 &&
+                        {(folderList || folderList.length <= 0) && (attachmentList || attachmentList.length <= 0) &&
                             <p>This folder doesn't have any content currently.</p>}
                     </div>
                     <Dialog open={open} onClose={closeCreateFolderDialogBox} fullWidth="lg">
