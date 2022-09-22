@@ -28,6 +28,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 
 function TeachingForumList(props) {
     
@@ -36,6 +37,7 @@ function TeachingForumList(props) {
         then(res=>res.json()).
         then((result)=>{
           setForums(result);
+          console.log(result);
         }
       )
     }, [])
@@ -52,6 +54,10 @@ function TeachingForumList(props) {
     const [forumIdToDelete,setForumIdToDelete]=useState('')
 
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+
+    const [editForumTitle,setEditForumTitle]=useState('')
+    const [forumIdToEdit,setForumIdToEdit]=useState('')
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -70,9 +76,37 @@ function TeachingForumList(props) {
         setDeleteDialogOpen(false);
     };
 
+    const handleClickEditDialogOpen = (event, forumId, forumTitle, forumDescription) => {
+        setEditForumTitle(forumTitle)
+        setForumIdToEdit(forumId)
+        setEditDialogOpen(true)
+    };
+  
+    const handleEditDialogClose = () => {
+      setEditDialogOpen(false);
+    };
+
+    // const createNewForum=(e)=>{
+    //     e.preventDefault()
+    //     const newForum={forumTitle}
+    //     console.log(newForum)
+    //     fetch("http://localhost:8080/forum/courses/" + courseId + "/forums", {
+    //         method:"POST", 
+    //         headers:{"Content-Type":"application/json"}, 
+    //         body:JSON.stringify(newForum)
+    //     }).then(()=>{
+    //         console.log("New Forum Created Successfully!")
+    //         setForumTitle("")
+    //         window.location.reload();
+    //     })
+    // }
+
     const createNewForum=(e)=>{
         e.preventDefault()
-        const newForum={forumTitle}
+        var createdByUserId = 1;
+        var createdByUserName = "alex"
+        var createdByUserType = "LEARNER"
+        const newForum={forumTitle, createdByUserId, createdByUserName, createdByUserType}
         console.log(newForum)
         fetch("http://localhost:8080/forum/courses/" + courseId + "/forums", {
             method:"POST", 
@@ -95,6 +129,31 @@ function TeachingForumList(props) {
             console.log("Forum Deleted Successfully!")
             window.location.reload();
         })
+    }
+
+    const editForum=(e)=>{
+        e.preventDefault()
+        var forumTitle = editForumTitle;
+        const newEditedForum ={forumTitle}
+        fetch("http://localhost:8080/forum/forums/" + forumIdToEdit, {
+            method:"PUT", 
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify(newEditedForum)
+        }).then(()=>{
+            console.log("Forum Edited Successfully!")
+            window.location.reload();
+        })
+    }
+
+    const renderEmptyRowMessage = () => {
+        if (forums.length === 0) {
+          return <TableRow>
+                    <TableCell colSpan={4} style={{textAlign: 'center'}}>
+                        There are currently no forums in this course!
+                    </TableCell>
+                </TableRow>
+            ;
+        }
     }
 
     return (
@@ -128,11 +187,13 @@ function TeachingForumList(props) {
                             <TableHead>
                                 <TableRow>
                                 <TableCell>Forum Name</TableCell>
-                                <TableCell>Time Created</TableCell>
+                                <TableCell>Created By</TableCell>
+                                <TableCell>Created On</TableCell>
                                 <TableCell>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
+                                {renderEmptyRowMessage()}
                                 {forums.map((forum) => (
                                 <TableRow
                                     key={forum.forumId}
@@ -146,11 +207,19 @@ function TeachingForumList(props) {
                                             {forum.forumTitle}
                                         </Link>
                                     </TableCell>
-                                    <TableCell>{forum.timestamp}</TableCell>
+                                    <TableCell>{forum.createdByUserName}</TableCell>
+                                    <TableCell>{forum.createdDateTime}</TableCell>
                                     <TableCell>
-                                        <IconButton aria-label="settings" onClick={event => handleClickDeleteDialogOpen(event, forum.forumId)}>
-                                            <DeleteIcon/>
-                                        </IconButton>
+                                        <div>
+                                            <IconButton aria-label="settings" 
+                                                onClick={event => handleClickDeleteDialogOpen(event, forum.forumId)}>
+                                                <DeleteIcon/>
+                                            </IconButton>
+                                            <IconButton aria-label="settings" 
+                                                onClick={event => handleClickEditDialogOpen(event, forum.forumId, forum.forumTitle)}>
+                                                <EditIcon/>
+                                            </IconButton>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                                 ))}
@@ -211,6 +280,34 @@ function TeachingForumList(props) {
                         <Button onClick={handleDeleteDialogClose}>Cancel</Button>
                         <Button onClick={deleteForum} autoFocus>
                         Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
+                    open={editDialogOpen}
+                    onClose={handleEditDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    >
+                    <DialogTitle id="alert-dialog-title">
+                        {"You are editing this forum"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                        Enter the new forum details
+                        </DialogContentText>
+                        <TextField id="outlined-basic" label="Discussion Title" variant="outlined" fullWidth 
+                        style={{margin: '6px 0'}}
+                        value={editForumTitle}
+                        onChange={(e)=>setEditForumTitle(e.target.value)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleEditDialogClose}>Cancel</Button>
+                        <Button onClick={editForum} autoFocus>
+                        Edit
                         </Button>
                     </DialogActions>
                 </Dialog>

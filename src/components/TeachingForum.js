@@ -31,6 +31,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 
 function TeachingForum(props) {
 
@@ -43,9 +44,29 @@ function TeachingForum(props) {
     const forumId = location.pathname.split('/')[4];
     const forumTitle = location.state.forumTitle;
 
-    const [open, setOpen] = React.useState(false);
+    React.useEffect(() => {
+        fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions").
+        then(res=>res.json()).
+        then((result)=>{
+          setDiscussions(result);
+        }
+      )
+      }, [])
 
+    const [open, setOpen] = React.useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+
+    const [discussions,setDiscussions]=useState([])
+
+    const [forumDiscussionTitle,setForumDiscussionTitle]=useState('')
+    const [forumDiscussionDescription,setForumDiscussionDescription]=useState('')
+    
+    const [discussionIdToDelete,setDiscussionIdToDelete]=useState('')
+
+    const [editForumDiscussionTitle,setEditForumDiscussionTitle]=useState('')
+    const [editForumDiscussionDescription,setEditForumDiscussionDescription]=useState('')
+    const [discussionIdToEdit,setDiscussionIdToEdit]=useState('')
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -54,11 +75,6 @@ function TeachingForum(props) {
     const handleClose = () => {
       setOpen(false);
     };
-
-    const [discussions,setDiscussions]=useState([])
-    const [forumDiscussionTitle,setForumDiscussionTitle]=useState('')
-    const [forumDiscussionDescription,setForumDiscussionDescription]=useState('')
-    const [discussionIdToDelete,setDiscussionIdToDelete]=useState('')
 
     const handleClickDeleteDialogOpen = (event, discussionId) => {
         setDiscussionIdToDelete(discussionId);
@@ -69,14 +85,16 @@ function TeachingForum(props) {
         setDeleteDialogOpen(false);
     };
 
-    React.useEffect(() => {
-        fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions").
-        then(res=>res.json()).
-        then((result)=>{
-          setDiscussions(result);
-        }
-      )
-      }, [])
+    const handleClickEditDialogOpen = (event, discussionId, discussionTitle, discussionDescription) => {
+        setEditForumDiscussionTitle(discussionTitle)
+        setEditForumDiscussionDescription(discussionDescription)
+        setDiscussionIdToEdit(discussionId)
+        setEditDialogOpen(true)
+    };
+  
+    const handleEditDialogClose = () => {
+      setEditDialogOpen(false);
+    };
 
     const deleteDiscussion=(e)=>{
         e.preventDefault()
@@ -92,8 +110,10 @@ function TeachingForum(props) {
 
     const createNewDiscussion=(e)=>{
         e.preventDefault()
-        const newDiscussion={forumDiscussionTitle, forumDiscussionDescription}
-        console.log(newDiscussion)
+        var createdByUserId = 1;
+        var createdByUserName = "alex"
+        var createdByUserType = "LEARNER"
+        const newDiscussion={forumDiscussionTitle, forumDiscussionDescription, createdByUserId, createdByUserName, createdByUserType}
         fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions", {
             method:"POST", 
             headers:{"Content-Type":"application/json"}, 
@@ -104,6 +124,32 @@ function TeachingForum(props) {
             setForumDiscussionDescription("")
             window.location.reload();
         })
+    }
+
+    const editDiscussion=(e)=>{
+        e.preventDefault()
+        var forumDiscussionTitle = editForumDiscussionTitle;
+        var forumDiscussionDescription = editForumDiscussionDescription;
+        const newEditedDiscussion={forumDiscussionTitle, forumDiscussionDescription}
+        fetch("http://localhost:8080/forumDiscussion/forumDiscussions/" + discussionIdToEdit, {
+            method:"PUT", 
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify(newEditedDiscussion)
+        }).then(()=>{
+            console.log("Discussion Edited Successfully!")
+            window.location.reload();
+        })
+    }
+
+    const renderEmptyRowMessage = () => {
+        if (discussions.length === 0) {
+          return <TableRow>
+                    <TableCell colSpan={4} style={{textAlign: 'center'}}>
+                        There are currently no discussions in this forum!
+                    </TableCell>
+                </TableRow>
+            ;
+        }
     }
 
     return (
@@ -145,11 +191,13 @@ function TeachingForum(props) {
                                 <TableRow>
                                 <TableCell>Discussion Title</TableCell>
                                 <TableCell>Description</TableCell>
-                                <TableCell>Time Created</TableCell>
+                                <TableCell>Created By</TableCell>
+                                <TableCell>Created On</TableCell>
                                 <TableCell>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
+                            {renderEmptyRowMessage()}
                                 {discussions.map((discussion) => (
                                 <TableRow
                                     key={discussion.forumDiscussionId}
@@ -164,11 +212,19 @@ function TeachingForum(props) {
                                         </Link>
                                     </TableCell>
                                     <TableCell>{discussion.forumDiscussionDescription}</TableCell>
-                                    <TableCell>{discussion.timestamp}</TableCell>
+                                    <TableCell>{discussion.createdByUserName}</TableCell>
+                                    <TableCell>{discussion.createdDateTime}</TableCell>
                                     <TableCell>
-                                        <IconButton aria-label="settings" onClick={event => handleClickDeleteDialogOpen(event, discussion.forumDiscussionId)}>
-                                            <DeleteIcon/>
-                                        </IconButton>
+                                        <div>
+                                            <IconButton aria-label="settings" 
+                                                onClick={event => handleClickDeleteDialogOpen(event, discussion.forumDiscussionId)}>
+                                                <DeleteIcon/>
+                                            </IconButton>
+                                            <IconButton aria-label="settings" 
+                                                onClick={event => handleClickEditDialogOpen(event, discussion.forumDiscussionId, discussion.forumDiscussionTitle, discussion.forumDiscussionDescription)}>
+                                                <EditIcon/>
+                                            </IconButton>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                                 ))}
@@ -183,16 +239,16 @@ function TeachingForum(props) {
                     <DialogTitle>Create New Discussion</DialogTitle>
                     <DialogContent>
                     <TextField id="outlined-basic" label="Discussion Title" variant="outlined" fullWidth 
-                        style={{margin: '5px 0'}}
+                        style={{margin: '6px 0'}}
                         value={forumDiscussionTitle}
                         onChange={(e)=>setForumDiscussionTitle(e.target.value)}
                         />
-                    <TextField id="outlined-basic" label="Discussion Description" variant="outlined" fullWidth 
-                        style={{margin: '5px 0'}}
+                    <TextField
+                        id="filled-multiline-static" label="Discussion Description" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
+                        style={{margin: '6px 0'}}
                         value={forumDiscussionDescription}
                         onChange={(e)=>setForumDiscussionDescription(e.target.value)}
                     />
-
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
@@ -220,6 +276,40 @@ function TeachingForum(props) {
                         <Button onClick={handleDeleteDialogClose}>Cancel</Button>
                         <Button onClick={deleteDiscussion} autoFocus>
                         Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
+                    open={editDialogOpen}
+                    onClose={handleEditDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    >
+                    <DialogTitle id="alert-dialog-title">
+                        {"You are editing this discussion"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                        Enter the new discussion details
+                        </DialogContentText>
+                        <TextField id="outlined-basic" label="Discussion Title" variant="outlined" fullWidth 
+                        style={{margin: '6px 0'}}
+                        value={editForumDiscussionTitle}
+                        onChange={(e)=>setEditForumDiscussionTitle(e.target.value)}
+                        />
+                        <TextField
+                        id="filled-multiline-static" label="Discussion Description" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
+                        style={{margin: '6px 0'}}
+                        value={editForumDiscussionDescription}
+                        onChange={(e)=>setEditForumDiscussionDescription(e.target.value)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleEditDialogClose}>Cancel</Button>
+                        <Button onClick={editDiscussion} autoFocus>
+                        Edit
                         </Button>
                     </DialogActions>
                 </Dialog>

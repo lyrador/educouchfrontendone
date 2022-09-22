@@ -49,7 +49,10 @@ function TeachingDiscussion(props) {
 
     const createComment=(e)=>{
         e.preventDefault()
-        const newComment={commentTitle, content}
+        var createdByUserId = 1;
+        var createdByUserName = "alex"
+        var createdByUserType = "LEARNER"
+        const newComment={commentTitle, content, createdByUserId, createdByUserName, createdByUserType}
         console.log(newComment)
         fetch("http://localhost:8080/comment/forumDiscussions/" + discussionId + "/comments", {
             method:"POST", 
@@ -99,7 +102,7 @@ function TeachingDiscussion(props) {
                 {'"a benevolent smile"'}
             </Typography> */}
             <TextField id="outlined-basic" label="Comment Title" variant="outlined" fullWidth 
-                style={{margin: '5px 0'}}
+                style={{margin: '6px 0'}}
                 value={commentTitle}
                 onChange={(e)=>setCommentTitle(e.target.value)}
             />
@@ -110,7 +113,7 @@ function TeachingDiscussion(props) {
             /> */}
             <TextField
                 id="filled-multiline-static" label="Comment Content" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
-                style={{margin: '5px 0'}}
+                style={{margin: '6px 0'}}
                 value={content}
                 onChange={(e)=>setContent(e.target.value)}
             />
@@ -124,6 +127,15 @@ function TeachingDiscussion(props) {
             </CardActions>
         </React.Fragment>
         );
+
+        const renderEmptyRowMessage = () => {
+            if (comments.length === 0) {
+              return <div style={{textAlign: 'center'}}>
+                        There are currently no comments in this discussion!
+                    </div>
+                ;
+            }
+        }
 
     return (
         <div>
@@ -157,12 +169,15 @@ function TeachingDiscussion(props) {
                         </div>
                         <div style={{paddingTop: '4%', paddingBottom: '1%', minHeight: '40vh'}}>
                             <Container>
+                                {renderEmptyRowMessage()}
                                 {comments.map(comment=>(
                                     <CommentCard
                                     commentId={comment.commentId}
                                     commentTitle={comment.commentTitle}
-                                    timestamp={comment.timestamp}
+                                    timestamp={comment.createdDateTime}
                                     content={comment.content}
+                                    createdByUserName={comment.createdByUserName}
+                                    profilePictureURL={comment.createdByUserProfilePictureURL}
                                     />
                                     ))
                                 }

@@ -15,7 +15,7 @@ function CardItem(props) {
                 className='cards-item-link'> */}
           <Link to={`/myTeachingCourse/${props.courseId}/courseSettings`} className='cards-item-link'>
                 <figure className='cards-item-pic-wrap' data-category={props.label}>
-                    <img src={props.src} alt='Voices' className='cards-item-img'/>
+                    <img src={props.src} alt='picture' className='cards-item-img'/>
                 </figure>
                 <div className='cards-item-info'>
                     <h5 className='cards-item-text'>{props.text}</h5>

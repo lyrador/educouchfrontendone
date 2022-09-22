@@ -37,120 +37,66 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
 
-// export default function MenuListComposition() {
-//   const [open, setOpen] = React.useState(false);
-//   const anchorRef = React.useRef(null);
-
-//   const handleToggle = () => {
-//     setOpen((prevOpen) => !prevOpen);
-//   };
-
-//   const handleClose = (event) => {
-//     if (anchorRef.current && anchorRef.current.contains(event.target)) {
-//       return;
-//     }
-
-//     setOpen(false);
-//   };
-
-//   function handleListKeyDown(event) {
-//     if (event.key === 'Tab') {
-//       event.preventDefault();
-//       setOpen(false);
-//     } else if (event.key === 'Escape') {
-//       setOpen(false);
-//     }
-//   }
-
-//   // return focus to the button when we transitioned from !open -> open
-//   const prevOpen = React.useRef(open);
-//   React.useEffect(() => {
-//     if (prevOpen.current === true && open === false) {
-//       anchorRef.current.focus();
-//     }
-
-//     prevOpen.current = open;
-//   }, [open]);
-
-//   return (
-//     <Stack direction="row" spacing={2}>
-//       <Paper>
-//         <MenuList>
-//           <MenuItem>Profile</MenuItem>
-//           <MenuItem>My account</MenuItem>
-//           <MenuItem>Logout</MenuItem>
-//         </MenuList>
-//       </Paper>
-//       <div>
-//         <Button
-//           ref={anchorRef}
-//           id="composition-button"
-//           aria-controls={open ? 'composition-menu' : undefined}
-//           aria-expanded={open ? 'true' : undefined}
-//           aria-haspopup="true"
-//           onClick={handleToggle}
-//         >
-//           Dashboard
-//         </Button>
-//         <Popper
-//           open={open}
-//           anchorEl={anchorRef.current}
-//           role={undefined}
-//           placement="bottom-start"
-//           transition
-//           disablePortal
-//         >
-//           {({ TransitionProps, placement }) => (
-//             <Grow
-//               {...TransitionProps}
-//               style={{
-//                 transformOrigin:
-//                   placement === 'bottom-start' ? 'left top' : 'left bottom',
-//               }}
-//             >
-//               <Paper>
-//                 <ClickAwayListener onClickAway={handleClose}>
-//                   <MenuList
-//                     autoFocusItem={open}
-//                     id="composition-menu"
-//                     aria-labelledby="composition-button"
-//                     onKeyDown={handleListKeyDown}
-//                   >
-//                     <MenuItem onClick={handleClose}>Profile</MenuItem>
-//                     <MenuItem onClick={handleClose}>My account</MenuItem>
-//                     <MenuItem onClick={handleClose}>Logout</MenuItem>
-//                   </MenuList>
-//                 </ClickAwayListener>
-//               </Paper>
-//             </Grow>
-//           )}
-//         </Popper>
-//       </div>
-//     </Stack>
-//   );
-// }
-
 export default function CommentCard(props) {
 
-    // const [isToggled, setIsToggled]=useState(false)
+  const [openMenu, setOpenMenu] = React.useState(false);
+  const anchorRef = React.useRef(null);
 
-    // const toggleSmallMenu=(e)=> {
-    //     e.preventDefault()
-    //     if (isToggled) {
-    //         <IconMenu></IconMenu>
-    //     } else {
-    //         <IconMenu></IconMenu>
-    //     }
-    // }
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleToggle = () => {
+    setOpenMenu((prevOpen) => !prevOpen);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseMenu = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+    setOpenMenu(false);
   };
+
+  function handleListKeyDown(event) {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      setOpenMenu(false);
+    } else if (event.key === 'Escape') {
+      setOpenMenu(false);
+    }
+  }
+
+  // return focus to the button when we transitioned from !open -> open
+  const prevOpenMenu = React.useRef(openMenu);
+  React.useEffect(() => {
+    if (prevOpenMenu.current === true && openMenu === false) {
+      anchorRef.current.focus();
+    }
+
+    prevOpenMenu.current = openMenu;
+  }, [openMenu]);
+
+  //---------------------------------------
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+
+  const handleClickDeleteDialogOpen = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteDialogClose = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+
+  const handleClickEditDialogOpen = () => {
+    setEditDialogOpen(true);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
+  };
+
+  // const [newComment, setNewComment]=useState([])
+  const [commentTitle,setCommentTitle]=useState(props.commentTitle)
+  const [content,setContent]=useState(props.content)
 
   const deleteComment=(e)=>{
     e.preventDefault()
@@ -162,7 +108,20 @@ export default function CommentCard(props) {
         console.log("Comment Deleted Successfully!")
         window.location.reload();
     })
-}
+  }
+
+  const editComment=(e)=>{
+    e.preventDefault()
+    const newComment={commentTitle, content}
+    fetch("http://localhost:8080/comment/comments/" + props.commentId, {
+        method:"PUT", 
+        headers:{"Content-Type":"application/json"}, 
+        body:JSON.stringify(newComment)
+    }).then(()=>{
+        console.log("Comment Edited Successfully!")
+        window.location.reload();
+    })
+  }
 
   return (
     <>
@@ -170,15 +129,67 @@ export default function CommentCard(props) {
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            R
+            <img src={props.profilePictureURL}></img>
           </Avatar>
         }
         action={
-          <IconButton aria-label="settings" onClick={handleClickOpen}>
-            <DeleteIcon/>
-          </IconButton>
+          // <IconButton aria-label="settings" onClick={handleClickOpen}>
+          //   <DeleteIcon/>
+          // </IconButton>
+            <div>
+              <IconButton
+                ref={anchorRef}
+                id="composition-button"
+                aria-controls={openMenu ? 'composition-menu' : undefined}
+                aria-expanded={openMenu ? 'true' : undefined}
+                aria-haspopup="true"
+                onClick={handleToggle}
+              >
+                <MoreVertIcon/>
+              </IconButton>
+              <Popper
+                open={openMenu}
+                anchorEl={anchorRef.current}
+                role={undefined}
+                placement="bottom-start"
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin:
+                        placement === 'bottom-start' ? 'left top' : 'left bottom',
+                    }}
+                  >
+                    <Paper>
+                      <ClickAwayListener onClickAway={handleCloseMenu}>
+                        <MenuList
+                          autoFocusItem={openMenu}
+                          id="composition-menu"
+                          aria-labelledby="composition-button"
+                          onKeyDown={handleListKeyDown}
+                        >
+                          <MenuItem onClick={handleClickDeleteDialogOpen}>
+                            <DeleteIcon style={{color: 'grey'}}/>
+                            &nbsp;
+                            Delete
+                          </MenuItem>
+                          <MenuItem onClick={handleClickEditDialogOpen}>
+                            <EditIcon style={{color: 'grey'}}/>
+                            &nbsp;
+                            Edit
+                          </MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </div>
         }
-        title={props.commentTitle}
+        title={props.createdByUserName}
         subheader={props.timestamp}
       />
       {/* <CardMedia
@@ -187,7 +198,10 @@ export default function CommentCard(props) {
         image="/static/images/cards/paella.jpg"
         alt="Paella dish"
       /> */}
-      <CardContent>
+      <CardContent style={{paddingTop: '0px'}}>
+        <Typography variant="body2" color="text.primary" style={{textDecoration: 'underline'}}>
+            {props.commentTitle}
+        </Typography>
         <Typography variant="body2" color="text.secondary">
             {props.content}
         </Typography>
@@ -240,8 +254,8 @@ export default function CommentCard(props) {
     </Card>
     <div>
       <Dialog
-          open={open}
-          onClose={handleClose}
+          open={deleteDialogOpen}
+          onClose={handleDeleteDialogClose}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
@@ -254,9 +268,43 @@ export default function CommentCard(props) {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleDeleteDialogClose}>Cancel</Button>
             <Button onClick={deleteComment} autoFocus>
               Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+    </div>
+    <div>
+      <Dialog
+          open={editDialogOpen}
+          onClose={handleEditDialogClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"You are editing this comment"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Enter the new comment details
+            </DialogContentText>
+            <TextField id="outlined-basic" label="Comment" variant="outlined" fullWidth 
+              style={{margin: '6px 0'}}
+              value={commentTitle}
+              onChange={(e)=>setCommentTitle(e.target.value)}
+            />
+            <TextField
+              id="filled-multiline-static" label="Comment Content" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
+              style={{margin: '5px 0'}}
+              value={content}
+              onChange={(e)=>setContent(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleEditDialogClose}>Cancel</Button>
+            <Button onClick={editComment} autoFocus>
+              Edit
             </Button>
           </DialogActions>
         </Dialog>
