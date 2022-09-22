@@ -1,10 +1,28 @@
 import * as React from 'react';
 import { useState } from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import { Container ,Paper, Button, MenuItem} from '@mui/material';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import {  useLocation, useParams } from 'react-router-dom';
 
-export default function TeachingCourseCreate() {
+export default function TeachingCourseUpdate() {
+
+    const location = useLocation();
+    const params = useParams();
+    const courseId = params.courseId;
+
+    const [course, setCourse] = useState(''); 
+
+    React.useEffect(() => {
+        fetch("http://localhost:8080/course/courses/" + courseId).
+        then(res=>res.json()).then((result)=>{
+            setCourse(result); 
+            }
+        )
+    }, [])
+
+    console.log(course)
+
     const paperStyle={
         padding: '50px 20px', 
         width:600,
@@ -41,6 +59,7 @@ export default function TeachingCourseCreate() {
         },
     ];
 
+
     const[courseCode,setCourseCode] = useState('')
     const[courseTitle,setCourseTitle]=useState('')
     const[courseDescription, setCourseDescription] = useState('')
@@ -59,14 +78,13 @@ export default function TeachingCourseCreate() {
 
     const handleClick=(e)=>{
         e.preventDefault()
-        const course={courseCode, courseTitle, courseDescription, courseTimeline, courseMaxScore, ageGroup, courseApprovalStatus}
-        console.log(course)
-        fetch("http://localhost:8080/course/courses", {
-            method:"POST", 
+        const course1 ={courseCode, courseTitle, courseDescription, courseTimeline, courseMaxScore, ageGroup, courseApprovalStatus}
+        fetch("http://localhost:8080/course/courses/" + courseId , {
+            method:"PUT", 
             headers:{"Content-Type":"application/json"}, 
-            body:JSON.stringify(course)
+            body:JSON.stringify(course1)
         }).then(()=>{
-            console.log("New Course Created Successfully!")  
+            console.log("Course Updated Successfully!")  
         })
     }
 
@@ -74,7 +92,7 @@ export default function TeachingCourseCreate() {
   return (
     <Container>
         <Paper elevation={3} style={paperStyle}>
-            <h1 style={{color: "blue"}}> Create New Course </h1>
+            <h1 style={{color: "blue"}}> Update Course </h1>
         <Box
         component="form"
         sx={{
@@ -84,32 +102,32 @@ export default function TeachingCourseCreate() {
         autoComplete="off"
         >
         <TextField id="outlined-basic" label="Course Code" variant="outlined" fullWidth 
-        value={courseCode}
+        value={course.courseCode}
         onChange={(e)=>setCourseCode(e.target.value)}
         />
         
         <TextField id="outlined-basic" label="Course Title" variant="outlined" fullWidth
-        value={courseTitle}
+        value={course.courseTitle}
         onChange={(e)=>setCourseTitle(e.target.value)}
         />
              
         <TextField id="outlined-basic" label="Course Description" variant="outlined" fullWidth
-        value={courseDescription}
+        value={course.courseDescription}
         onChange={(e)=>setCourseDescription(e.target.value)}
         />
 
         <TextField id="outlined-basic" label="Course Timeline" variant="outlined" fullWidth
-        value={courseTimeline}
+        value={course.courseTimeline}
         onChange={(e)=>setCourseTimeline(e.target.value)}
         />
 
         <TextField id="outlined-basic" label="Course Max Score" variant="outlined" fullWidth
-        value={courseMaxScore}
+        value={course.courseMaxScore}
         onChange={(e)=>setCourseMaxScore(e.target.value)}
         />
 
         <TextField id="outlined-select-age" select label="Age Group" fullWidth
-         value={ageGroup}
+         value={course.ageGroup}
          onChange={handleChange1}
          helperText="Please select your age group"
          >
@@ -121,7 +139,7 @@ export default function TeachingCourseCreate() {
         </TextField>
 
         <TextField id="outlined-select-status" select label="Approval Status" fullWidth
-         value={courseApprovalStatus}
+         value={course.courseApprovalStatus}
          onChange={handleChange2}
          helperText="Please select your approval status"
          >
@@ -132,9 +150,14 @@ export default function TeachingCourseCreate() {
             ))}
         </TextField>
 
-         <Button variant="outlined" onClick={handleClick}>Submit</Button>
+         <Button variant="outlined" onClick={handleClick}>Update</Button>
         </Box>
         </Paper>
     </Container>
   );
+
+
+
+
+
 }

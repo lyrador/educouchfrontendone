@@ -20,6 +20,10 @@ import ViewAllEducators from './pages/ViewAllEducators';
 import ViewInstructor from './pages/ViewInstructor';
 import TeachingChildFileCover from './components/TeachingChildFileCover';
 import TeachingCourseSettings from './components/TeachingCourseSettings';
+import TeachingForumCreate from './components/TeachingForumCreate';
+import TeachingDiscussionCreate from './components/TeachingDiscussionCreate';
+import TeachingCourseUpdate from'./components/TeachingCourseUpdate'; 
+import TeachingCommentsCreate from './components/TeachingCommentsCreate';
 
 function App() {
   return (
@@ -40,7 +44,9 @@ function App() {
           <Route path = "/myTeachingCourse/:courseId/forum" element={<TeachingForumList />} />
           <Route path = "/myTeachingCourse/:courseId/forum/:forumId" element={<TeachingForum />} />
 
+          <Route path = "/myTeachingCourse/:courseId/updateCourse" element={<TeachingCourseUpdate/>} />
           <Route path = "/myTeachingCourse/:courseId/forum/:forumId/:discussionId" element={<TeachingDiscussion />} />
+
 
           <Route path = "/myTeachingCourse/:courseId/files" element={<TeachingFileList />} />
           <Route path = "/myTeachingCourse/:courseId/files/:folderId" element={<TeachingChildFileCover/>} />
