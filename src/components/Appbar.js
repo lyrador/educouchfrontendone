@@ -13,6 +13,17 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import '../css/Appbar.css';
 
+import Menu from '@mui/material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
+import Container from '@mui/material/Container';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+
+import { useAuth } from '../context/AuthProvider';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
@@ -33,6 +44,28 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 export default function Appbar() {
+
+  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const auth = useAuth()
+  const user = auth.user
+  const profilePictureURL = user.profilePictureURL
   const [click, setClick] = useState(false);
   const [button, setButton] = useState(true);
 
@@ -53,6 +86,10 @@ export default function Appbar() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
+  const handleLogout = () => {
+    auth.logout()
+  }
+
   return (<>
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -61,30 +98,67 @@ export default function Appbar() {
             <Typography variant="h6" noWrap component="div" style={{marginLeft:"40px"}}>
               EduCouch
             </Typography>
-            <div style={{marginLeft:"auto"}}>
+            {/* <div style={{marginLeft:"auto"}}>
               <ul className={'top-nav-menu'}>
                   <li>
                       <Link to ='/settings' className='top-nav-links'>
                         <IconButton color="primary" aria-label="upload picture" component="label">
-                          <SettingsIcon color="disabled"></SettingsIcon>
+                          <SettingsIcon color="disabled"/>
                         </IconButton>
                       </Link>
                   </li>
                   <li>
-                      <Link to ='/learnerCreation' className='top-nav-links'>
-                        <IconButton color="primary" aria-label="upload picture" component="label">
-                          <LogoutIcon color="disabled"></LogoutIcon>
-                        </IconButton>
-                      </Link>
+                      <IconButton color="primary" aria-label="upload picture" component="label" onClick={handleLogout}>
+                        <LogoutIcon color="disabled"/>
+                      </IconButton>
                   </li>
               </ul>
+            </div> */}
+            <div style={{marginLeft:"auto"}}>
+              <Box sx={{ flexGrow: 0 }}>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }} style={{marginLeft:"auto"}}>
+                    <Avatar alt="avatar" src={profilePictureURL} />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: '45px' }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  <Link to ='/account' style={{textDecoration: 'none', color: 'black'}}>
+                    <MenuItem style={{justifyContent: 'center'}}>
+                      <AccountCircleIcon color="disabled"/>
+                      &nbsp;
+                      <Typography>Profile</Typography>
+                    </MenuItem>
+                  </Link>
+                  <MenuItem style={{justifyContent: 'center'}} onClick={handleLogout}>
+                    <LogoutIcon color="disabled"/>
+                    &nbsp;
+                    <Typography>Logout</Typography>
+                  </MenuItem>
+                </Menu>
+                {/* <Typography>{user.name}</Typography> */}
+              </Box>
             </div>
         </Toolbar>
         <nav className="navbar">
             <div className="navbar-container">
                 <ul className={'nav-menu'}>
                     <li className='nav-item'>
-                        <Link to ='/' className='nav-links'>
+                        <Link to ='/home' className='nav-links'>
                             Dashboard
                         </Link>
                     </li>
@@ -94,17 +168,17 @@ export default function Appbar() {
                         </Link>
                     </li>
                     <li className='nav-item'>
-                        <Link to ='/' className='nav-links'>
+                        <Link to ='/home' className='nav-links'>
                             Course Explorer
                         </Link>
                     </li>
                     <li className='nav-item'>
-                        <Link to ='/' className='nav-links'>
+                        <Link to ='/home' className='nav-links'>
                             Points Config
                         </Link>
                     </li>
                     <li className='nav-item'>
-                        <Link to ='/' className='nav-links'>
+                        <Link to ='/home' className='nav-links'>
                             Social Media
                         </Link>
                     </li>
