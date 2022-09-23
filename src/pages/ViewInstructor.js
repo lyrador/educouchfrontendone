@@ -5,6 +5,7 @@ import { Link, useLocation, useParams} from "react-router-dom";
 import SettingsDrawer from "../components/SettingsDrawer";
 import CreateInstructorForm from "../components/CreateInstructorForm";
 import DeleteInstructor from "../components/DeleteInstructor";
+import UpdateInstructorAccessRight from "../components/UpdateInstructorAccessRight";
 
 export default function ViewInstructor() {
   const [instructor, setInstructor] = useState("");
@@ -91,7 +92,21 @@ export default function ViewInstructor() {
             ></DeleteInstructor>
           </Modal>
           <br/>
-          <Button>Edit Instructor Access Right</Button>
+          <Button
+          onClick={handleOpen}>Edit Instructor Access Right</Button>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <UpdateInstructorAccessRight
+              closeModalFunc={handleClose}
+              instructorProps={instructor}
+              instructorAccessRightProps={instructor.instructorAccessRight}
+            >
+            </UpdateInstructorAccessRight>
+          </Modal>
         </Paper>
       </Paper>
     </div>
