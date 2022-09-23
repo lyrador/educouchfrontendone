@@ -32,8 +32,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import { useAuth } from '../context/AuthProvider';
 
 function TeachingForum(props) {
+
+    const auth = useAuth()
+    const user = auth.user
 
     //paths
     const location = useLocation();
@@ -44,20 +48,23 @@ function TeachingForum(props) {
     const forumId = location.pathname.split('/')[4];
     const forumTitle = location.state.forumTitle;
 
+    const [discussions,setDiscussions]=useState([])
+
+    const [refreshPage,setRefreshPage]=useState('')
+
     React.useEffect(() => {
+        setRefreshPage(false)
         fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions").
         then(res=>res.json()).
         then((result)=>{
           setDiscussions(result);
         }
       )
-      }, [])
+      }, [refreshPage])
 
     const [open, setOpen] = React.useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-
-    const [discussions,setDiscussions]=useState([])
 
     const [forumDiscussionTitle,setForumDiscussionTitle]=useState('')
     const [forumDiscussionDescription,setForumDiscussionDescription]=useState('')
@@ -104,15 +111,16 @@ function TeachingForum(props) {
             // body:JSON.stringify(newComment)
         }).then(()=>{
             console.log("Discussion Deleted Successfully!")
-            window.location.reload();
+            setRefreshPage(true)
+            handleDeleteDialogClose()
         })
     }
 
     const createNewDiscussion=(e)=>{
         e.preventDefault()
-        var createdByUserId = 1;
-        var createdByUserName = "alex"
-        var createdByUserType = "LEARNER"
+        var createdByUserId = user.userId
+        var createdByUserName = user.username
+        var createdByUserType = user.userType
         const newDiscussion={forumDiscussionTitle, forumDiscussionDescription, createdByUserId, createdByUserName, createdByUserType}
         fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions", {
             method:"POST", 
@@ -120,9 +128,10 @@ function TeachingForum(props) {
             body:JSON.stringify(newDiscussion)
         }).then(()=>{
             console.log("New Discussion Created Successfully!")
+            setRefreshPage(true)
             setForumDiscussionTitle("")
             setForumDiscussionDescription("")
-            window.location.reload();
+            handleClose()
         })
     }
 
@@ -137,7 +146,8 @@ function TeachingForum(props) {
             body:JSON.stringify(newEditedDiscussion)
         }).then(()=>{
             console.log("Discussion Edited Successfully!")
-            window.location.reload();
+            setRefreshPage(true)
+            handleEditDialogClose()
         })
     }
 
@@ -160,9 +170,12 @@ function TeachingForum(props) {
                 </Grid>
                 <Grid item xs={10}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <LinkMaterial underline="hover" color="inherit" href={`${forumsPath}`}>
-                            Forum
-                        </LinkMaterial>
+                        <Link to={`${forumsPath}`} 
+                            style={{textDecoration: 'none', color: 'grey'}}>
+                            <LinkMaterial underline="hover" color="inherit">
+                                Forum
+                            </LinkMaterial>
+                        </Link>
                         <Link to={`${discussionsPath}`} 
                             state={{ forumTitle: forumTitle }} 
                             style={{textDecoration: 'none', color: 'grey'}}>

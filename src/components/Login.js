@@ -35,6 +35,7 @@ export default function Login() {
     const navigate = useNavigate()
     const [username, setUsername] = React.useState("")
     const [password, setPassword] = React.useState("")
+    const [userType, setUserType] = React.useState("")
     auth.logout()
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -49,7 +50,7 @@ export default function Login() {
             data: {
               username: username,
               password: password,
-              userType: "LEARNER"
+              userType: userType
             }
           });
             // axios.post(
@@ -117,6 +118,17 @@ export default function Login() {
             //   autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="UserType"
+              label="UserType (LEARNER/INSTRUCTOR/ORG_ADMIN)"
+              name="userType"
+              value={userType}
+              onChange={(e) => setUserType(e.target.value)}
+              autoFocus
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}

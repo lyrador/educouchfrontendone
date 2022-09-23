@@ -137,7 +137,7 @@ export default function Appbar() {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  <Link to ='/account' style={{textDecoration: 'none', color: 'black'}}>
+                  <Link to ='/account' style={{textDecoration: 'none', color: 'black'}} onClick={handleCloseUserMenu}>
                     <MenuItem style={{justifyContent: 'center'}}>
                       <AccountCircleIcon color="disabled"/>
                       &nbsp;

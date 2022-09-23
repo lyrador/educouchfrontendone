@@ -22,36 +22,48 @@ import Container from '@mui/material/Container';
 
 import TextField from '@mui/material/TextField';
 
+import { useAuth } from '../context/AuthProvider';
+
 function TeachingDiscussion(props) {
+
+    const auth = useAuth()
+    const user = auth.user
 
     //paths
     const location = useLocation();
     const forumPath = location.pathname.split('/').slice(0,4).join('/')
     const discussionsPath = location.pathname.split('/').slice(0,5).join('/')
 
-    console.log(location.state)
-
     const params = location.state;
     const discussionTitle = params.discussionTitle;
     const forumTitle = params.forumTitle;
-
-    console.log(discussionTitle);
 
     const courseId = location.pathname.split('/')[2];
     const forumId = location.pathname.split('/')[4];
     const discussionId = location.pathname.split('/')[5];
 
-    console.log(discussionTitle)
-
     const [commentTitle, setCommentTitle]=useState('')
     const [content,setContent]=useState('')
     const [comments,setComments]=useState([])
 
+    const [refreshPage,setRefreshPage]=useState('')
+
+    React.useEffect(() => {
+        console.log("HELLO")
+        setRefreshPage(false)
+        fetch("http://localhost:8080/comment/forumDiscussions/" + discussionId + "/comments").
+        then(res=>res.json()).
+        then((result)=>{
+          setComments(result);
+        }
+      )
+      }, [refreshPage])
+
     const createComment=(e)=>{
         e.preventDefault()
-        var createdByUserId = 1;
-        var createdByUserName = "alex"
-        var createdByUserType = "LEARNER"
+        var createdByUserId = user.userId
+        var createdByUserName = user.username
+        var createdByUserType = user.userType
         const newComment={commentTitle, content, createdByUserId, createdByUserName, createdByUserType}
         console.log(newComment)
         fetch("http://localhost:8080/comment/forumDiscussions/" + discussionId + "/comments", {
@@ -60,20 +72,11 @@ function TeachingDiscussion(props) {
             body:JSON.stringify(newComment)
         }).then(()=>{
             console.log("New Comment Created Successfully!")
+            setRefreshPage(true)
             setCommentTitle("")
             setContent("")
-            window.location.reload();
         })
     }
-
-    React.useEffect(() => {
-        fetch("http://localhost:8080/comment/forumDiscussions/" + discussionId + "/comments").
-        then(res=>res.json()).
-        then((result)=>{
-          setComments(result);
-        }
-      )
-      }, [])
 
       const bull = (
         <Box
@@ -146,9 +149,12 @@ function TeachingDiscussion(props) {
                 <Grid item xs={10}>
                     <div style={{marginRight: '20px'}}>
                         <Breadcrumbs aria-label="breadcrumb">
-                            <LinkMaterial underline="hover" color="inherit" href={`${forumPath}`}>
-                                Forum
-                            </LinkMaterial>
+                            <Link to={`${forumPath}`} 
+                                style={{textDecoration: 'none', color: 'grey'}}>
+                                <LinkMaterial underline="hover" color="inherit">
+                                    Forum
+                                </LinkMaterial>
+                            </Link>
                             <Link to={`${discussionsPath}`} 
                                 state={{ discussionTitle: discussionTitle, forumTitle: forumTitle }} 
                                 style={{textDecoration: 'none', color: 'grey'}}>
@@ -177,6 +183,8 @@ function TeachingDiscussion(props) {
                                     timestamp={comment.createdDateTime}
                                     content={comment.content}
                                     createdByUserName={comment.createdByUserName}
+                                    createdByUserType={comment.createdByUserType}
+                                    createdByUserId={comment.createdByUserId}
                                     profilePictureURL={comment.createdByUserProfilePictureURL}
                                     />
                                     ))

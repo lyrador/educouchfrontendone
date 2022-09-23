@@ -31,10 +31,78 @@ import { useAuth } from '../context/AuthProvider';
 
 import Avatar from '@mui/material/Avatar';
 
+import Box from "@mui/material/Box";
+import { Container } from "@mui/system";
+import {
+  Typography,
+  LinearProgress,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material";
+import UploadService from "../services/UploadFilesService";
+
 function Account(props) {
+
+    const theme = createTheme({
+        components: {
+          MuiLinearProgress: {
+            styleOverrides: {
+              root: {
+                height: 15,
+                borderRadius: 5,
+              },
+              colorPrimary: {
+                backgroundColor: "#EEEEEE",
+              },
+              bar: {
+                borderRadius: 5,
+                backgroundColor: "#1a90ff",
+              },
+            },
+          },
+        },
+      });
 
     const auth = useAuth()
     const user = auth.user
+
+    const [currentFile, setCurrentFile] = useState(undefined);
+    const [previewImage, setPreviewImage] = useState(
+      user.profilePictureURL
+    );
+    const [progress, setProgress] = useState(0);
+    const [message, setMessage] = useState("");
+    const [isError, setIsError] = useState(false);
+    const [isUploaded, setIsUploaded] = useState(false);
+  
+    const [editedProfilePictureURL,setEditedProfilePictureURL]=useState(user.profilePictureURL)
+
+    const selectFile = (event) => {
+        setCurrentFile(event.target.files[0]);
+        setPreviewImage(URL.createObjectURL(event.target.files[0]));
+        setProgress(0);
+        setMessage("");
+      };
+    
+      const uploadImage = () => {
+        setProgress(0);
+        UploadService.upload(currentFile, (event) => {
+          setProgress(Math.round((100 * event.loaded) / event.total));
+        })
+          .then((response) => {
+            setMessage("Succesfully Uploaded!");
+            setEditedProfilePictureURL(response.data.fileURL);
+            setIsError(false);
+            setIsUploaded(true);
+            console.log(response);
+          })
+          .catch((err) => {
+            setMessage("Could not upload the image!");
+            setIsError(true);
+            setProgress(0);
+            setCurrentFile(undefined);
+          });
+      };
     
     // React.useEffect(() => {
     //     var userId = user.userId;
@@ -58,15 +126,12 @@ function Account(props) {
     const courseId = location.pathname.split('/')[2];
 
     const [open, setOpen] = React.useState(false);
-    const [forums,setForums]=useState([])
-    const [forumTitle,setForumTitle]=useState('')
-    const [forumIdToDelete,setForumIdToDelete]=useState('')
 
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
 
-    const [editForumTitle,setEditForumTitle]=useState('')
-    const [forumIdToEdit,setForumIdToEdit]=useState('')
+    const [editedEmail,setEditedEmail]=useState(user.email)
+    const [editedPassword,setEditedPassword]=useState(user.password)
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -76,8 +141,7 @@ function Account(props) {
       setOpen(false);
     };
 
-    const handleClickDeleteDialogOpen = (event, forumId) => {
-        setForumIdToDelete(forumId);
+    const handleClickDeleteDialogOpen = () => {
         setDeleteDialogOpen(true);
     };
 
@@ -85,9 +149,10 @@ function Account(props) {
         setDeleteDialogOpen(false);
     };
 
-    const handleClickEditDialogOpen = (event, forumId, forumTitle, forumDescription) => {
-        setEditForumTitle(forumTitle)
-        setForumIdToEdit(forumId)
+    const handleClickEditDialogOpen = () => {
+        if (previewImage === null) {
+            setPreviewImage("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png")
+        }
         setEditDialogOpen(true)
     };
   
@@ -96,29 +161,43 @@ function Account(props) {
     };
 
     const deleteAccount=(e)=>{
-        // e.preventDefault()
-        // fetch("http://localhost:8080/forum/forums/" + forumIdToDelete, {
-        //     method:"DELETE", 
-        //     headers:{"Content-Type":"application/json"}, 
-        //     // body:JSON.stringify(newComment)
-        // }).then(()=>{
-        //     console.log("Forum Deleted Successfully!")
-        //     window.location.reload();
-        // })
+        e.preventDefault()
+        //mandatory unchanged variables
+        var userId = user.userId
+        var username = user.username
+        var userType = user.userType
+
+        const editAccountDTO ={userId, username, userType}
+        fetch("http://localhost:8080/account/delete", {
+            method:"DELETE", 
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify(editAccountDTO)
+        }).then(()=>{
+            console.log("Account Deleted Successfully!")
+            handleEditDialogClose()
+            auth.logout()
+        })
     }
 
     const editAccount=(e)=>{
-        // e.preventDefault()
-        // var forumTitle = editForumTitle;
-        // const newEditedForum ={forumTitle}
-        // fetch("http://localhost:8080/forum/forums/" + forumIdToEdit, {
-        //     method:"PUT", 
-        //     headers:{"Content-Type":"application/json"}, 
-        //     body:JSON.stringify(newEditedForum)
-        // }).then(()=>{
-        //     console.log("Forum Edited Successfully!")
-        //     window.location.reload();
-        // })
+        e.preventDefault()
+        //mandatory unchanged variables
+        var userId = user.userId
+        var username = user.username
+        var userType = user.userType
+        //changed variables
+        var email = editedEmail
+        var password = editedPassword
+        var profilePictureURL = editedProfilePictureURL
+        const editAccountDTO ={userId, username, userType, email, password, profilePictureURL}
+        fetch("http://localhost:8080/account/edit", {
+            method:"PUT", 
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify(editAccountDTO)
+        }).then(()=>{
+            console.log("Account Edited Successfully!")
+            handleEditDialogClose()
+        })
     }
 
     return (
@@ -135,53 +214,72 @@ function Account(props) {
                             color="primary"
                             variant="contained"
                             component="span"
-                            onClick={handleClickOpen}
+                            onClick={handleClickEditDialogOpen}
                             style={{float: 'right', marginLeft: 'auto'}}
                             >
-                            Update Account
+                            Edit Account
+                        </Button>
+                        <Button
+                            className="btn-upload"
+                            color="error"
+                            variant="contained"
+                            component="span"
+                            onClick={handleClickDeleteDialogOpen}
+                            style={{float: 'right', marginLeft: 'auto'}}
+                            >
+                            Delete Account
                         </Button>
                     </div>
-                    <div style={{padding: '5%'}}>
-                        <TableContainer component={Paper}>
-                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                            <TableHead>
-                                <TableRow>
-                                <TableCell>User Id</TableCell>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Email</TableCell>
-                                <TableCell>Password</TableCell>
-                                <TableCell>Username</TableCell>
-                                <TableCell>Profile Pic</TableCell>
-                                <TableCell>User Type</TableCell>
-                                <TableCell>User Enum</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                    <TableCell component="th" scope="row">{user.userId}</TableCell>
-                                    <TableCell>{user.name}</TableCell>
-                                    <TableCell>{user.email}</TableCell>
-                                    <TableCell>{user.password}</TableCell>
-                                    <TableCell>{user.username}</TableCell>
-                                    <TableCell>
-                                        <Avatar alt="avatar" src={user.profilePictureURL} />
-                                    </TableCell>
-                                    <TableCell>{user.userType}</TableCell>
-                                    <TableCell>{user.userEnum}</TableCell>
-                                    {/* <TableCell>
-                                        <div>
-                                            <IconButton aria-label="settings" 
-                                                onClick={event => handleClickDeleteDialogOpen(event, forum.forumId)}>
-                                                <DeleteIcon/>
-                                            </IconButton>
-                                            <IconButton aria-label="settings" 
-                                                onClick={event => handleClickEditDialogOpen(event, forum.forumId, forum.forumTitle)}>
-                                                <EditIcon/>
-                                            </IconButton>
-                                        </div>
-                                    </TableCell> */}
-                            </TableBody>
-                            </Table>
-                        </TableContainer>
+                    <div style={{padding: '5%', justifyContent: 'center', borderColor:'black', border:'10px'}}>
+                        <div>
+                            <TableContainer component={Paper} 
+                                // style={{justifyContent: 'center'}} 
+                                sx={{ minWidth: 200, maxWidth: 300, justifyContent: 'center'}}>
+                                <Table aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell colSpan={2} style={{textAlign: 'center'}}>User Details</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell>ID</TableCell>
+                                        <TableCell>{user.userId}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell>{user.name}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>Email</TableCell>
+                                        <TableCell>{user.email}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>Password</TableCell>
+                                        <TableCell>{user.password}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>Username</TableCell>
+                                        <TableCell>{user.username}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>Profile Picture</TableCell>
+                                        <TableCell>
+                                            <Avatar alt="avatar" src={user.profilePictureURL} />
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>User Type</TableCell>
+                                        <TableCell>{user.userType}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>User Enum</TableCell>
+                                        <TableCell>{user.userEnum}</TableCell>
+                                    </TableRow>
+                                </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </div>
                     </div>
                 {/* </Grid>
             </Grid> */}
@@ -200,7 +298,7 @@ function Account(props) {
                         <Button onClick={createNewForum}>Create</Button>
                     </DialogActions>
                 </Dialog>
-            </div>
+            </div> */}
             <div>
                 <Dialog
                     open={deleteDialogOpen}
@@ -209,17 +307,17 @@ function Account(props) {
                     aria-describedby="alert-dialog-description"
                     >
                     <DialogTitle id="alert-dialog-title">
-                        {"Delete this forum?"}
+                        {"Delete your account?"}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            These will delete all the discussions and comments inside the forum.
+                            These will delete your account and all the information inside.
                             You will not be able to undo this action. Are you sure you want to delete?
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleDeleteDialogClose}>Cancel</Button>
-                        <Button onClick={deleteForum} autoFocus>
+                        <Button onClick={deleteAccount} autoFocus>
                         Delete
                         </Button>
                     </DialogActions>
@@ -233,26 +331,91 @@ function Account(props) {
                     aria-describedby="alert-dialog-description"
                     >
                     <DialogTitle id="alert-dialog-title">
-                        {"You are editing this forum"}
+                        {"Enter the New Account Details"}
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                        Enter the new forum details
-                        </DialogContentText>
-                        <TextField id="outlined-basic" label="Discussion Title" variant="outlined" fullWidth 
+                        {/* <DialogContentText id="alert-dialog-description">
+                        Enter the new account details
+                        </DialogContentText> */}
+                        <TextField id="outlined-basic" label="Email Address" variant="outlined" fullWidth 
                         style={{margin: '6px 0'}}
-                        value={editForumTitle}
-                        onChange={(e)=>setEditForumTitle(e.target.value)}
+                        value={editedEmail}
+                        onChange={(e)=>setEditedEmail(e.target.value)}
                         />
+                        <TextField id="outlined-basic" label="Email Address" variant="outlined" fullWidth 
+                        style={{margin: '6px 0'}}
+                        value={editedPassword}
+                        onChange={(e)=>setEditedPassword(e.target.value)}
+                        />
+                        <div>
+                            {previewImage && (
+                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <img
+                                    className="preview my20"
+                                    src={previewImage}
+                                    alt=""
+                                    style={{ height: "40%", width: "40%", justifySelf:'center'}}
+                                />
+                                </div>
+                            )}
+                            {currentFile && (
+                                <Box className="my20" display="flex" alignItems="center">
+                                <Box width="100%" mr={1}>
+                                    <ThemeProvider theme={theme}>
+                                    <LinearProgress variant="determinate" value={progress} />
+                                    </ThemeProvider>
+                                </Box>
+                                <Box minWidth={35}>
+                                    <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    >{`${progress}%`}</Typography>
+                                </Box>
+                                </Box>
+                            )}
+                            {message && (
+                                <Typography
+                                variant="subtitle2"
+                                className={`upload-message ${isError ? "error" : ""}`}
+                                >
+                                {message}
+                                </Typography>
+                            )}
+                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <label htmlFor="btn-upload">
+                                    <input
+                                    id="btn-upload"
+                                    name="btn-upload"
+                                    style={{ display: "none"}}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={selectFile}
+                                    />
+                                    <Button className="btn-choose" variant="outlined" component="span">
+                                    Choose Profile Image
+                                    </Button>
+                                </label>
+                                <Button
+                                    className="btn-upload"
+                                    color="primary"
+                                    variant="contained"
+                                    component="span"
+                                    disabled={!currentFile}
+                                    onClick={uploadImage}
+                                >
+                                Upload
+                            </Button>
+                            </div>
+                        </div>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleEditDialogClose}>Cancel</Button>
-                        <Button onClick={editForum} autoFocus>
+                        <Button onClick={editAccount} autoFocus>
                         Edit
                         </Button>
                     </DialogActions>
                 </Dialog>
-            </div> */}
+            </div>
         </div>
     )
 }

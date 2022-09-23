@@ -30,17 +30,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 
+import { useAuth } from '../context/AuthProvider';
+import { render } from '@testing-library/react';
+
 function TeachingForumList(props) {
-    
-    React.useEffect(() => {
-        fetch("http://localhost:8080/forum/courses/" + courseId + "/forums").
-        then(res=>res.json()).
-        then((result)=>{
-          setForums(result);
-          console.log(result);
-        }
-      )
-    }, [])
+
+    const auth = useAuth()
+    const user = auth.user
     
     //paths
     const location = useLocation();
@@ -48,10 +44,24 @@ function TeachingForumList(props) {
 
     const courseId = location.pathname.split('/')[2];
 
-    const [open, setOpen] = React.useState(false);
     const [forums,setForums]=useState([])
     const [forumTitle,setForumTitle]=useState('')
     const [forumIdToDelete,setForumIdToDelete]=useState('')
+
+    const [refreshPage,setRefreshPage]=useState('')
+
+    React.useEffect(() => {
+        setRefreshPage(false)
+        fetch("http://localhost:8080/forum/courses/" + courseId + "/forums").
+        then(res=>res.json()).
+        then((result)=>{
+            setForums(result);
+            console.log(result);
+        }
+        )
+    }, [refreshPage])
+
+    const [open, setOpen] = React.useState(false);
 
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
@@ -86,26 +96,11 @@ function TeachingForumList(props) {
       setEditDialogOpen(false);
     };
 
-    // const createNewForum=(e)=>{
-    //     e.preventDefault()
-    //     const newForum={forumTitle}
-    //     console.log(newForum)
-    //     fetch("http://localhost:8080/forum/courses/" + courseId + "/forums", {
-    //         method:"POST", 
-    //         headers:{"Content-Type":"application/json"}, 
-    //         body:JSON.stringify(newForum)
-    //     }).then(()=>{
-    //         console.log("New Forum Created Successfully!")
-    //         setForumTitle("")
-    //         window.location.reload();
-    //     })
-    // }
-
     const createNewForum=(e)=>{
         e.preventDefault()
-        var createdByUserId = 1;
-        var createdByUserName = "alex"
-        var createdByUserType = "LEARNER"
+        var createdByUserId = user.userId
+        var createdByUserName = user.username
+        var createdByUserType = user.userType
         const newForum={forumTitle, createdByUserId, createdByUserName, createdByUserType}
         console.log(newForum)
         fetch("http://localhost:8080/forum/courses/" + courseId + "/forums", {
@@ -114,8 +109,9 @@ function TeachingForumList(props) {
             body:JSON.stringify(newForum)
         }).then(()=>{
             console.log("New Forum Created Successfully!")
+            setRefreshPage(true)
             setForumTitle("")
-            window.location.reload();
+            handleClose()
         })
     }
 
@@ -127,7 +123,8 @@ function TeachingForumList(props) {
             // body:JSON.stringify(newComment)
         }).then(()=>{
             console.log("Forum Deleted Successfully!")
-            window.location.reload();
+            setRefreshPage(true)
+            handleDeleteDialogClose()
         })
     }
 
@@ -141,7 +138,8 @@ function TeachingForumList(props) {
             body:JSON.stringify(newEditedForum)
         }).then(()=>{
             console.log("Forum Edited Successfully!")
-            window.location.reload();
+            setRefreshPage(true)
+            handleEditDialogClose()
         })
     }
 
