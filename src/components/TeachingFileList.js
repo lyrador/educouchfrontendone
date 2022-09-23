@@ -8,6 +8,10 @@ import TeachingFileComponent from './TeachingFileComponent';
 import { useState } from 'react';
 import InstantErrorMessage from './InstantErrorMessage';
 import InstantSuccessMessage from './InstantSuccessMessage';
+import { JavascriptOutlined } from '@mui/icons-material';
+
+
+
 
 function TeachingFileList() {
 
@@ -40,11 +44,19 @@ function TeachingFileList() {
         setMessage("Folder is successfully deleted!");
         setError(false);
         setSuccess(true);
-        
+
     };
 
+    const handleRefreshUpdate = () => {
+        refresh();
+        //notification
+        setMessage("Folder is successfully updated!");
+        setError(false);
+        setSuccess(true);
+    }
+
     var courseId = useParams();
-    courseId = courseId.courseId;
+    courseId = courseId.moduleCode;
 
     React.useEffect(() => {
         fetch("http://localhost:8080/folder/getFoldersByCourseId/" + courseId)
@@ -129,7 +141,7 @@ function TeachingFileList() {
                     <br />
                     <Button
                         color="primary"
-                        variant="contained"
+                        variant="outlined"
                         component="span"
                         onClick={openCreateFolderDialogBox}
                     >
@@ -161,12 +173,13 @@ function TeachingFileList() {
                     <div>
                         {folderList.length > 0 &&
                             folderList
-                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefreshDelete={handleRefreshDelete}></TeachingFileComponent>))
+                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate}></TeachingFileComponent>))
                         }
                         {folderList.length <= 0 &&
                             <p>This course currently doesn't have any teaching folder.</p>
                         }
                     </div>
+                    
 
 
 
