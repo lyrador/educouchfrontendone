@@ -59,7 +59,7 @@ function App() {
           <Route path = "/settings" element={<Settings/>} />
           <Route path="/learnerCreation" element={<LearnerCreation />} />
           <Route path="/viewAllEducators" element={<ViewAllEducators />} />
-          <Route path="/viewInstructor" element={<ViewInstructor/> } />
+          <Route path="/viewInstructor/:instructorUsername" element={<ViewInstructor/> } />
         </Routes>
       </Router>
     </div>

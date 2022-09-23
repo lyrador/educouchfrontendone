@@ -12,6 +12,8 @@ import TableRow from "@mui/material/TableRow";
 import { Link } from "react-router-dom";
 
 export default function ViewAllEducators() {
+
+  const viewInstructorPath = "/viewInstructor"
   const [instructors, setInstructors] = useState([]);
   const instructorTableStyle = {
     padding: "10px 10px",
@@ -64,6 +66,9 @@ export default function ViewAllEducators() {
                   <b>Name</b>
                 </TableCell>
                 <TableCell align="right">
+                  <b>Username</b>
+                </TableCell>
+                <TableCell align="right">
                   <b>Access Right</b>
                 </TableCell>
                 <TableCell align="right">
@@ -82,12 +87,15 @@ export default function ViewAllEducators() {
                 >
                   <TableCell align="right">{instructor.instructorId}</TableCell>
                   <TableCell align="right">{instructor.name}</TableCell>
+                  <TableCell align="right">{instructor.username}</TableCell>
                   <TableCell align="right">
                     {instructor.instructorAccessRight}
                   </TableCell>
                   <TableCell align="right">NULL</TableCell>
                   <TableCell align="right">
-                    <Link to="/viewInstructor">
+                    <Link
+                      to={`${viewInstructorPath}/${instructor.username}`}
+                      state={{instructorUsername : instructor.username}}>
                       <Button
                         className="btn-choose"
                         variant="outlined"
