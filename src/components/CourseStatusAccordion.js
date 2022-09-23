@@ -5,6 +5,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InstantErrorMessage from './InstantErrorMessage';
 import InstantSuccessMessage from './InstantSuccessMessage';
@@ -78,6 +79,42 @@ export default function ControlledAccordions({ course, refresh }) {
                         {course.courseApprovalStatus === 'Pending Approval' &&
                             <div>
                                 <p>Please wait while our admin check the content of your course.</p>
+                            </div>}
+
+                        {course.courseApprovalStatus === 'Accepted' &&
+                            <div>
+                                <Typography>Congratulations!🎉 Your course has been reviewed and approved my our LMS Admin. It is now ready to go live!</Typography>
+                                <br />
+                                <Button variant="contained" color="success">
+                                    Go live
+                                </Button>
+                            </div>}
+                        {course.courseApprovalStatus === 'Rejected' &&
+                            <div>
+                                <Typography>Our LMS Admin has reviewed and rejected your course. </Typography>
+                                <br />
+                                <div>
+                                    <Typography>Rejection reason: </Typography>
+                                    <br/>
+                                    <TextField
+                                        disabled
+                                        id="outlined-disabled"
+                                        label="Disabled"
+                                        defaultValue={course.rejectionReason}
+                                        style = {{minWidth: "100%"}}
+                                    />
+                                </div>
+                                <br />
+                                <Typography>Before you re-submit your course for approval, please make the necessary changes. </Typography>
+                                <br/>
+                                <Button
+                                    color="error"
+                                    variant="contained"
+                                    component="span"
+                                    onClick={submitForApproval}
+                                >
+                                    Re-submit course for approval
+                                </Button>
                             </div>}
                     </Typography>
                 </AccordionDetails>
