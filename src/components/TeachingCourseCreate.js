@@ -92,13 +92,14 @@ export default function TeachingCourseCreate() {
         value={courseTitle}
         onChange={(e)=>setCourseTitle(e.target.value)}
         />
-             
-        <TextField id="outlined-basic" label="Course Description" variant="outlined" fullWidth
-        value={courseDescription}
-        onChange={(e)=>setCourseDescription(e.target.value)}
+  
+        
+        <TextField id="outlined-multiline-static" label="Course Description" multiline rows={6} fullWidth defaultValue="" style={{ whiteSpace: "pre-line" }} 
+             value={courseDescription} 
+             onChange={(e)=>setCourseDescription(e.target.value.replace(/↵/g, "\n"))}
         />
 
-        <TextField id="outlined-basic" label="Course Timeline" variant="outlined" fullWidth
+        <TextField id="outlined-multiline-static" label="Course Timeline" multiline rows={6} fullWidth defaultValue=""
         value={courseTimeline}
         onChange={(e)=>setCourseTimeline(e.target.value)}
         />
