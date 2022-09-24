@@ -47,6 +47,8 @@ function TeachingForumList(props) {
     const [forums,setForums]=useState([])
     const [forumTitle,setForumTitle]=useState('')
     const [forumIdToDelete,setForumIdToDelete]=useState('')
+    
+    const [forumTitleError, setForumTitleError] = useState({ value: false, errorMessage: '' })
 
     const [refreshPage,setRefreshPage]=useState('')
 
@@ -98,21 +100,26 @@ function TeachingForumList(props) {
 
     const createNewForum=(e)=>{
         e.preventDefault()
-        var createdByUserId = user.userId
-        var createdByUserName = user.username
-        var createdByUserType = user.userType
-        const newForum={forumTitle, createdByUserId, createdByUserName, createdByUserType}
-        console.log(newForum)
-        fetch("http://localhost:8080/forum/courses/" + courseId + "/forums", {
-            method:"POST", 
-            headers:{"Content-Type":"application/json"}, 
-            body:JSON.stringify(newForum)
-        }).then(()=>{
-            console.log("New Forum Created Successfully!")
-            setRefreshPage(true)
-            setForumTitle("")
-            handleClose()
-        })
+        setForumTitleError({ value: false, errorMessage: '' })
+        if (forumTitle == '') {
+            setForumTitleError({ value: true, errorMessage: 'Forum Title cannot be empty!' })
+        } else {
+            var createdByUserId = user.userId
+            var createdByUserName = user.username
+            var createdByUserType = user.userType
+            const newForum={forumTitle, createdByUserId, createdByUserName, createdByUserType}
+            console.log(newForum)
+            fetch("http://localhost:8080/forum/courses/" + courseId + "/forums", {
+                method:"POST", 
+                headers:{"Content-Type":"application/json"}, 
+                body:JSON.stringify(newForum)
+            }).then(()=>{
+                console.log("New Forum Created Successfully!")
+                setRefreshPage(true)
+                setForumTitle("")
+                handleClose()
+            })
+        }
     }
 
     const deleteForum=(e)=>{
@@ -260,9 +267,12 @@ function TeachingForumList(props) {
                         onChange={(e)=>setForumTitle(e.target.value)}
                     /> */}
                     <TextField id="outlined-basic" label="Forum Title" variant="outlined" fullWidth 
+                        required
                         style={{margin: '6px 0'}}
                         value={forumTitle}
                         onChange={(e)=>setForumTitle(e.target.value)}
+                        error={forumTitleError.value}
+                        helperText={forumTitleError.errorMessage}
                     />
                     </DialogContent>
                     <DialogActions>

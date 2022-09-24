@@ -46,6 +46,9 @@ function TeachingDiscussion(props) {
     const [content,setContent]=useState('')
     const [comments,setComments]=useState([])
 
+    const [commentTitleError, setCommentTitleError] = useState({ value: false, errorMessage: '' })
+    const [contentError, setContentError] = useState({ value: false, errorMessage: '' })
+
     const [refreshPage,setRefreshPage]=useState('')
 
     React.useEffect(() => {
@@ -61,21 +64,31 @@ function TeachingDiscussion(props) {
 
     const createComment=(e)=>{
         e.preventDefault()
-        var createdByUserId = user.userId
-        var createdByUserName = user.username
-        var createdByUserType = user.userType
-        const newComment={commentTitle, content, createdByUserId, createdByUserName, createdByUserType}
-        console.log(newComment)
-        fetch("http://localhost:8080/comment/forumDiscussions/" + discussionId + "/comments", {
-            method:"POST", 
-            headers:{"Content-Type":"application/json"}, 
-            body:JSON.stringify(newComment)
-        }).then(()=>{
-            console.log("New Comment Created Successfully!")
-            setRefreshPage(true)
-            setCommentTitle("")
-            setContent("")
-        })
+        setCommentTitleError({ value: false, errorMessage: '' })
+        setContentError({ value: false, errorMessage: '' })
+        if (commentTitle == '') {
+            setCommentTitleError({ value: true, errorMessage: 'Comment Title cannot be empty!' })
+        }
+        if (content == '') {
+            setContentError({ value: true, errorMessage: 'Content cannot be empty!' })
+        }
+        if (commentTitle && content) {
+            var createdByUserId = user.userId
+            var createdByUserName = user.username
+            var createdByUserType = user.userType
+            const newComment={commentTitle, content, createdByUserId, createdByUserName, createdByUserType}
+            console.log(newComment)
+            fetch("http://localhost:8080/comment/forumDiscussions/" + discussionId + "/comments", {
+                method:"POST", 
+                headers:{"Content-Type":"application/json"}, 
+                body:JSON.stringify(newComment)
+            }).then(()=>{
+                console.log("New Comment Created Successfully!")
+                setRefreshPage(true)
+                setCommentTitle("")
+                setContent("")
+            })
+        }
     }
 
     const bull = (
@@ -90,30 +103,22 @@ function TeachingDiscussion(props) {
     const card = (
     <React.Fragment>
         <CardContent>
-        {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Comment
-        </Typography>
-        <Typography variant="h5" component="div">
-            be{bull}nev{bull}o{bull}lent
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            adjective
-        </Typography>
-        <Typography variant="body2">
-            well meaning and kindly.
-            <br />
-            {'"a benevolent smile"'}
-        </Typography> */}
         <TextField id="outlined-basic" label="Comment Title" variant="outlined" fullWidth 
+            required
             style={{margin: '6px 0'}}
             value={commentTitle}
             onChange={(e)=>setCommentTitle(e.target.value)}
+            error={commentTitleError.value}
+            helperText={commentTitleError.errorMessage}
         />
         <TextField
             id="filled-multiline-static" label="Comment Content" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
+            required
             style={{margin: '6px 0'}}
             value={content}
             onChange={(e)=>setContent(e.target.value)}
+            error={contentError.value}
+            helperText={contentError.errorMessage}
         />
         </CardContent>
         <CardActions>
