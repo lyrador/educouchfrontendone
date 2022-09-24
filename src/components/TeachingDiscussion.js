@@ -78,67 +78,62 @@ function TeachingDiscussion(props) {
         })
     }
 
-      const bull = (
-        <Box
-            component="span"
-            sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-        >
-            •
-        </Box>
-        );
-    
-        const card = (
-        <React.Fragment>
-            <CardContent>
-            {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                Comment
-            </Typography>
-            <Typography variant="h5" component="div">
-                be{bull}nev{bull}o{bull}lent
-            </Typography>
-            <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                adjective
-            </Typography>
-            <Typography variant="body2">
-                well meaning and kindly.
-                <br />
-                {'"a benevolent smile"'}
-            </Typography> */}
-            <TextField id="outlined-basic" label="Comment Title" variant="outlined" fullWidth 
-                style={{margin: '6px 0'}}
-                value={commentTitle}
-                onChange={(e)=>setCommentTitle(e.target.value)}
-            />
-            {/* <TextField id="outlined-basic" label="Comment Content" variant="outlined" fullWidth 
-                style={{margin: '5px 0'}}
-                value={content}
-                onChange={(e)=>setContent(e.target.value)}
-            /> */}
-            <TextField
-                id="filled-multiline-static" label="Comment Content" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
-                style={{margin: '6px 0'}}
-                value={content}
-                onChange={(e)=>setContent(e.target.value)}
-            />
-            </CardContent>
-            <CardActions>
-            <Button 
-                size="small"
-                onClick={createComment}>
-                Post
-            </Button>
-            </CardActions>
-        </React.Fragment>
-        );
+    const bull = (
+    <Box
+        component="span"
+        sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
+    >
+        •
+    </Box>
+    );
 
-        const renderEmptyRowMessage = () => {
-            if (comments.length === 0) {
-              return <div style={{textAlign: 'center'}}>
-                        There are currently no comments in this discussion!
-                    </div>
-                ;
-            }
+    const card = (
+    <React.Fragment>
+        <CardContent>
+        {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Comment
+        </Typography>
+        <Typography variant="h5" component="div">
+            be{bull}nev{bull}o{bull}lent
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+            adjective
+        </Typography>
+        <Typography variant="body2">
+            well meaning and kindly.
+            <br />
+            {'"a benevolent smile"'}
+        </Typography> */}
+        <TextField id="outlined-basic" label="Comment Title" variant="outlined" fullWidth 
+            style={{margin: '6px 0'}}
+            value={commentTitle}
+            onChange={(e)=>setCommentTitle(e.target.value)}
+        />
+        <TextField
+            id="filled-multiline-static" label="Comment Content" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
+            style={{margin: '6px 0'}}
+            value={content}
+            onChange={(e)=>setContent(e.target.value)}
+        />
+        </CardContent>
+        <CardActions>
+        <Button 
+            size="small"
+            onClick={createComment}>
+            Post
+        </Button>
+        </CardActions>
+    </React.Fragment>
+    );
+
+    const renderEmptyRowMessage = () => {
+        if (comments.length === 0) {
+            return <div style={{textAlign: 'center'}}>
+                    There are currently no comments in this discussion!
+                </div>
+            ;
         }
+    }
 
     return (
         <div>

@@ -86,7 +86,7 @@ function TeachingForumList(props) {
         setDeleteDialogOpen(false);
     };
 
-    const handleClickEditDialogOpen = (event, forumId, forumTitle, forumDescription) => {
+    const handleClickEditDialogOpen = (event, forumId, forumTitle) => {
         setEditForumTitle(forumTitle)
         setForumIdToEdit(forumId)
         setEditDialogOpen(true)
@@ -154,6 +154,22 @@ function TeachingForumList(props) {
         }
     }
 
+    const renderExtraActions = (forumId, forumTitle, createdByUserId, createdByUserType) => {
+        if (createdByUserId === user.userId && createdByUserType === user.userType) {
+            return <div>
+                    <IconButton aria-label="settings" 
+                        onClick={event => handleClickDeleteDialogOpen(event, forumId)}>
+                        <DeleteIcon/>
+                    </IconButton>
+                    <IconButton aria-label="settings" 
+                        onClick={event => handleClickEditDialogOpen(event, forumId, forumTitle)}>
+                        <EditIcon/>
+                    </IconButton>
+                </div>
+            ;
+        }
+    }
+
     return (
         <div>
             <Grid container spacing={0}>
@@ -209,14 +225,11 @@ function TeachingForumList(props) {
                                     <TableCell>{forum.createdDateTime}</TableCell>
                                     <TableCell>
                                         <div>
-                                            <IconButton aria-label="settings" 
-                                                onClick={event => handleClickDeleteDialogOpen(event, forum.forumId)}>
-                                                <DeleteIcon/>
-                                            </IconButton>
-                                            <IconButton aria-label="settings" 
-                                                onClick={event => handleClickEditDialogOpen(event, forum.forumId, forum.forumTitle)}>
-                                                <EditIcon/>
-                                            </IconButton>
+                                            {renderExtraActions(
+                                                forum.forumId, 
+                                                forum.forumTitle, 
+                                                forum.createdByUserId, 
+                                                forum.createdByUserType)}
                                         </div>
                                     </TableCell>
                                 </TableRow>

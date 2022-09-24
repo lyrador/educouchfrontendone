@@ -25,6 +25,11 @@ import { AuthProvider } from './context/AuthProvider';
 import { RequireAuth } from './components/RequireAuth';
 import Login from './components/Login';
 import AccountPage from './pages/AccountPage';
+import SignUp from './pages/Signup';
+import Signup from './pages/Signup';
+import RegisterPage from './pages/RegisterPage';
+import RegisterLearnerPage from './pages/RegisterLearnerPage';
+import RegisterOrganisationAdminPage from './pages/RegisterOrganisationAdminPage';
 
 function App() {
   return (
@@ -150,6 +155,11 @@ function App() {
             <Route path="/learnerCreation" element={<LearnerCreation />} />
             <Route path="/viewAllEducators" element={<ViewAllEducators />} />
             <Route path="/viewInstructor" element={<ViewInstructor/> } />
+            <Route path="/signup" element={<Signup/> } />
+            <Route path="/register" element={<RegisterPage/> } />
+            <Route path="/register/learner" element={<RegisterLearnerPage/> } />
+            <Route path="/register/educator" element={<RegisterOrganisationAdminPage/> } />
+            
           </Routes>
         </Router>
       </AuthProvider>

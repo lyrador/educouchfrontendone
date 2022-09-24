@@ -162,6 +162,22 @@ function TeachingForum(props) {
         }
     }
 
+    const renderExtraActions = (forumDiscussionId, forumDiscussionTitle, forumDiscussionDescription, createdByUserId, createdByUserType) => {
+        if (createdByUserId === user.userId && createdByUserType === user.userType) {
+            return <div>
+                    <IconButton aria-label="settings" 
+                        onClick={event => handleClickDeleteDialogOpen(event, forumDiscussionId)}>
+                        <DeleteIcon/>
+                    </IconButton>
+                    <IconButton aria-label="settings" 
+                        onClick={event => handleClickEditDialogOpen(event, forumDiscussionId, forumDiscussionTitle, forumDiscussionDescription)}>
+                        <EditIcon/>
+                    </IconButton>
+                </div>
+            ;
+        }
+    }
+
     return (
         <div>
             <Grid container spacing={0}>
@@ -228,16 +244,12 @@ function TeachingForum(props) {
                                     <TableCell>{discussion.createdByUserName}</TableCell>
                                     <TableCell>{discussion.createdDateTime}</TableCell>
                                     <TableCell>
-                                        <div>
-                                            <IconButton aria-label="settings" 
-                                                onClick={event => handleClickDeleteDialogOpen(event, discussion.forumDiscussionId)}>
-                                                <DeleteIcon/>
-                                            </IconButton>
-                                            <IconButton aria-label="settings" 
-                                                onClick={event => handleClickEditDialogOpen(event, discussion.forumDiscussionId, discussion.forumDiscussionTitle, discussion.forumDiscussionDescription)}>
-                                                <EditIcon/>
-                                            </IconButton>
-                                        </div>
+                                        {renderExtraActions(
+                                            discussion.forumDiscussionId, 
+                                            discussion.forumDiscussionTitle, 
+                                            discussion.forumDiscussionDescription,
+                                            discussion.createdByUserId,
+                                            discussion.createdByUserType)}
                                     </TableCell>
                                 </TableRow>
                                 ))}
