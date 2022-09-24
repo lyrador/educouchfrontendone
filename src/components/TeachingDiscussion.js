@@ -186,6 +186,8 @@ function TeachingDiscussion(props) {
                                     createdByUserType={comment.createdByUserType}
                                     createdByUserId={comment.createdByUserId}
                                     profilePictureURL={comment.createdByUserProfilePictureURL}
+                                    refreshPage={refreshPage}
+                                    setRefreshPage={setRefreshPage}
                                     />
                                     ))
                                 }

@@ -42,8 +42,6 @@ export default function CommentCard(props) {
   const auth = useAuth()
   const user = auth.user
 
-  const [refreshPage,setRefreshPage]=useState('')
-
   const [openMenu, setOpenMenu] = React.useState(false);
   const anchorRef = React.useRef(null);
 
@@ -111,7 +109,7 @@ export default function CommentCard(props) {
         // body:JSON.stringify(newComment)
     }).then(()=>{
         console.log("Comment Deleted Successfully!")
-        setRefreshPage(true)
+        props.setRefreshPage(true)
         handleDeleteDialogClose();
     })
   }
@@ -125,7 +123,7 @@ export default function CommentCard(props) {
         body:JSON.stringify(newComment)
     }).then(()=>{
         console.log("Comment Edited Successfully!")
-        setRefreshPage(true)
+        props.setRefreshPage(true)
         handleEditDialogClose();
     })
   }
