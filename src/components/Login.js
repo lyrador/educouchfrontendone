@@ -15,6 +15,8 @@ import axios from "axios";
 import { useAuth } from '../context/AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { MenuItem } from "@mui/material";
+import { useState } from "react";
 
 function Copyright(props) {
   return (
@@ -37,36 +39,63 @@ export default function Login() {
   const [username, setUsername] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [userType, setUserType] = React.useState("")
+
+  const userGroup = [{ value: 'LEARNER' }, , { value: 'INSTRUCTOR' }, { value: 'ORG_ADMIN' }];
+
+  const [usernameError, setUsernameError] = useState({ value: false, errorMessage: '' })
+  const [passwordError, setPasswordError] = useState({ value: false, errorMessage: '' })
+  const [userTypeError, setUserTypeError] = useState({ value: false, errorMessage: '' })
+
   auth.logout()
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    setPasswordError({ value: false, errorMessage: '' })
+    setUsernameError({ value: false, errorMessage: '' })
+    setUserTypeError({ value: false, errorMessage: '' })
+
+    if (password == '') {
+      setPasswordError({ value: true, errorMessage: 'You must enter a password' })
+    }
+    if (username == '') {
+      setUsernameError({ value: true, errorMessage: 'You must enter a username' })
+    }
+    if (userType == '') {
+      setUserTypeError({ value: true, errorMessage: 'You must select a user type' })
+    }
+
     // console.log(event)
     // console.log(username, password)
     // const data = new FormData(event.currentTarget);
-    try {
-      const response = await axios({
-        method: 'post',
-        url: `http://localhost:8080/login`,
-        headers: {},
-        data: {
-          username: username,
-          password: password,
-          userType: userType
-        }
-      });
-      // axios.post(
-      //     `http://localhost:8080/lmsadmin/login?username=${username}&password=${password}`
-      //   );
+    if (password && username && userType) {
+      try {
+        const response = await axios({
+          method: 'post',
+          url: `http://localhost:8080/login`,
+          headers: {},
+          data: {
+            username: username,
+            password: password,
+            userType: userType
+          }
+        });
+        // axios.post(
+        //     `http://localhost:8080/lmsadmin/login?username=${username}&password=${password}`
+        //   );
 
-      // set the state of the user
-      // store the user in localStorage
-      const user = response.data
-      auth.login(response.data)
-      console.log(response.data)
-      navigate('/home')
-    } catch (error) {
-      // Handle error here
-      console.log(error.message)
+        // set the state of the user
+        // store the user in localStorage
+        const user = response.data
+        auth.login(response.data)
+        console.log(response.data)
+        navigate('/home')
+      } catch (error) {
+        // Handle error here
+        console.log(error.message)
+        setPasswordError({ value: true, errorMessage: 'User does not exist or password does not match' })
+        setUsernameError({ value: true, errorMessage: 'User does not exist or password does not match' })
+        setUserTypeError({ value: true, errorMessage: 'User does not exist or password does not match' })
+      }
     }
 
 
@@ -95,7 +124,7 @@ export default function Login() {
             <Typography component="h1" variant="h5" color={"black"}>
               EduCouch Portal
             </Typography> */}
-            <img src="https://educouchbucket.s3.ap-southeast-1.amazonaws.com/educouchlogo.png" style={{height: 200, width: 300, borderRadius: 30}}/>
+            <img src="https://educouchbucket.s3.ap-southeast-1.amazonaws.com/educouchlogo.png" style={{ height: 200, width: 300, borderRadius: 30 }} />
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
@@ -108,6 +137,8 @@ export default function Login() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoFocus
+                error={usernameError.value}
+                helperText={usernameError.errorMessage}
               />
               <TextField
                 margin="normal"
@@ -120,18 +151,25 @@ export default function Login() {
                 //   autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                error={passwordError.value}
+                helperText={passwordError.errorMessage}
               />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
+              <TextField margin="normal" required fullWidth select
                 id="UserType"
-                label="UserType (LEARNER/INSTRUCTOR/ORG_ADMIN)"
+                label="UserType"
                 name="userType"
                 value={userType}
                 onChange={(e) => setUserType(e.target.value)}
                 autoFocus
-              />
+                error={userTypeError.value}
+                helperText={userTypeError.errorMessage}
+              >
+                {userGroup.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.value}
+                  </MenuItem>
+                ))}
+              </TextField>
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
