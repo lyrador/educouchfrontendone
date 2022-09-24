@@ -6,6 +6,11 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import {
+    Dialog, DialogActions, DialogContent,
+    DialogContentText, Divider
+} from '@mui/material';
+
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InstantErrorMessage from './InstantErrorMessage';
 import InstantSuccessMessage from './InstantSuccessMessage';
@@ -39,6 +44,37 @@ export default function ControlledAccordions({ course, refresh }) {
                 setSuccess(false);
                 console.log(err.message);
             });
+    };
+
+    // go live
+    const goLive = () => {
+        var url = "http://localhost:8080/course/courses/publishCourse/" + course.courseId;
+        console.log('URL is ' + url);
+        fetch(url)
+            .then((result) => {
+                setMessage("Course is live now. ");
+                setError(false);
+                setSuccess(true);
+                refresh();
+            }
+            ).catch((err) => {
+                setMessage("Could not publish course.");
+                setError(true);
+                setSuccess(false);
+                console.log(err.message);
+            });
+    };
+
+    // go live dialog box
+    // approve dialog box
+    const [goLiveDialogBox, setGoLiveDialogBox] = useState(false);
+
+    const openGoLiveDialogBox = () => {
+        setGoLiveDialogBox(true);
+    };
+
+    const closeGoLiveDialogBox = () => {
+        setGoLiveDialogBox(false);
     };
 
     return (
@@ -85,7 +121,7 @@ export default function ControlledAccordions({ course, refresh }) {
                             <div>
                                 <Typography>Congratulations!🎉 Your course has been reviewed and approved my our LMS Admin. It is now ready to go live!</Typography>
                                 <br />
-                                <Button variant="contained" color="success">
+                                <Button variant="contained" color="success" onClick = {openGoLiveDialogBox}>
                                     Go live
                                 </Button>
                             </div>}
@@ -116,9 +152,32 @@ export default function ControlledAccordions({ course, refresh }) {
                                     Re-submit course for approval
                                 </Button>
                             </div>}
+
+                            {course.courseApprovalStatus === 'Live' &&
+                            <div>
+                                <Typography>Congratulations!🎉 Your course is now live.</Typography>
+                                <br />
+                            </div>}
                     </Typography>
                 </AccordionDetails>
             </Accordion>
+
+            <Dialog open={goLiveDialogBox} onClose={closeGoLiveDialogBox} fullWidth="lg">
+                <DialogContent>
+                    <Typography variant="h6">Publish {course.courseCode}</Typography>
+                    <Divider></Divider>
+                    <br />
+                    <DialogContentText>
+                      Are you sure you would like to publish this course? Once made live, this course will be viewable by all users. 
+                    </DialogContentText>
+
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick = {goLive}>Publish</Button>
+                    <Button>Cancel</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }
