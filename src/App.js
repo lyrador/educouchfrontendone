@@ -21,85 +21,186 @@ import ViewInstructor from "./pages/ViewInstructor";
 import TeachingChildFileCover from "./components/TeachingChildFileCover";
 import TeachingCourseSettings from "./components/TeachingCourseSettings";
 
-import TeachingCommentsCreate from "./components/TeachingCommentsCreate";
-
-import TeachingAssessment from "./components/TeachingAssessment";
+import { AuthProvider } from "./context/AuthProvider";
+import { RequireAuth } from "./components/RequireAuth";
+import Login from "./components/Login";
+import AccountPage from "./pages/AccountPage";
 
 function App() {
   return (
     <div className="App">
-      <Router>
-        <Appbar></Appbar>
-        <Routes>
-          <Route path="/" element={<Home />} />
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* <Route path = "/" element={<Home />} /> */}
+            <Route path="/" element={<Login />} />
 
-          <Route
-            path="/myTeachingCoursesList"
-            element={<TeachingCoursesList />}
-          />
-          <Route
-            path="/myTeachingCourse/:courseId"
-            element={<TeachingCourse />}
-          ></Route>
-          <Route path="/myTeachingCourse/new" element={<TeachingCourseNew />} />
+            <Route
+              path="/home"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <Home />
+                </RequireAuth>
+              }
+            />
 
-          <Route
-            path="/myTeachingCourse/:courseId/courseSettings"
-            element={<TeachingCourseSettings />}
-          />
+            <Route
+              path="/account"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <AccountPage />
+                </RequireAuth>
+              }
+            />
 
-          <Route
-            path="/myTeachingCourse/:moduleCode/files"
-            element={<TeachingFileList />}
-          />
-          <Route
-            path="/myTeachingCourse/:moduleCode/files/:folderId"
-            element={<TeachingChildFileCover />}
-          />
-          <Route
-            path="/myTeachingCourse/:courseId/forum"
-            element={<TeachingForumList />}
-          />
-          <Route
-            path="/myTeachingCourse/:courseId/forum/:forumId"
-            element={<TeachingForum />}
-          />
+            <Route
+              path="/myTeachingCoursesList"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingCoursesList />
+                </RequireAuth>
+              }
+            />
 
-          <Route
-            path="/myTeachingCourse/:courseId/forum/:forumId/:discussionId"
-            element={<TeachingDiscussion />}
-          />
+            <Route
+              path="/myTeachingCourse/:courseId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingCourse />
+                </RequireAuth>
+              }
+            />
 
-          <Route
-            path="/myTeachingCourse/:courseId/forum/:forumId/:discussionId/newComment"
-            element={<TeachingCommentsCreate />}
-          />
+            <Route
+              path="/myTeachingCourse/new"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingCourseNew />
+                </RequireAuth>
+              }
+            />
 
-          <Route
-            path="/myTeachingCourse/:courseId/assessments"
-            element={<TeachingAssessment />}
-          />
+            <Route
+              path="/myTeachingCourse/:courseId/courseSettings"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingCourseSettings />
+                </RequireAuth>
+              }
+            />
 
-          <Route
-            path="/myTeachingCourse/:courseId/files"
-            element={<TeachingFileList />}
-          />
-          <Route
-            path="/myTeachingCourse/:courseId/files/:folderId"
-            element={<TeachingChildFileCover />}
-          />
-          <Route
-            path="/myTeachingCourse/:courseId/files"
-            element={<TeachingFileList />}
-          />
-          <Route path="/adminDrawer" element={<SettingsDrawer />} />
+            <Route
+              path="/myTeachingCourse/:moduleCode/files"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingFileList />
+                </RequireAuth>
+              }
+            />
 
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/learnerCreation" element={<LearnerCreation />} />
-          <Route path="/viewAllEducators" element={<ViewAllEducators />} />
-          <Route path="/viewInstructor" element={<ViewInstructor />} />
-        </Routes>
-      </Router>
+            <Route
+              path="/myTeachingCourse/:moduleCode/files/:folderId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingChildFileCover />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/myTeachingCourse/:courseId/forum"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingForumList />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/myTeachingCourse/:courseId/forum/:forumId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingForum />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/myTeachingCourse/:courseId/forum/:forumId/:discussionId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingDiscussion />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/myTeachingCourse/:courseId/files"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingFileList />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/myTeachingCourse/:courseId/files/:folderId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingChildFileCover />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/myTeachingCourse/:moduleCode/files"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingFileList />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/adminDrawer"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <SettingsDrawer />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/settings"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <Settings />
+                </RequireAuth>
+              }
+            />
+
+            <Route path="/learnerCreation" element={<LearnerCreation />} />
+            <Route path="/viewAllEducators" element={<ViewAllEducators />} />
+            <Route path="/viewInstructor" element={<ViewInstructor />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
     </div>
   );
 }
