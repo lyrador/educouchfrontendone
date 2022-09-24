@@ -37,7 +37,30 @@ import MenuList from '@mui/material/MenuList';
 
 import { useAuth } from '../context/AuthProvider';
 
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+
 export default function CommentCard(props) {
+
+    const [openEditSnackbar, setOpenEditSnackbar] = React.useState(false);
+    const [message, setMessage] = React.useState("");
+
+    const handleClickEditSnackbar = (feedback) => {
+        setMessage(feedback);
+        setOpenEditSnackbar(true);
+    };
+
+    const handleCloseEditSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenEditSnackbar(false);
+    };
 
   const auth = useAuth()
   const user = auth.user
@@ -98,33 +121,35 @@ export default function CommentCard(props) {
   };
 
   // const [newComment, setNewComment]=useState([])
-  const [commentTitle,setCommentTitle]=useState(props.commentTitle)
-  const [content,setContent]=useState(props.content)
+  const [commentTitle, setCommentTitle] = useState(props.commentTitle)
+  const [content, setContent] = useState(props.content)
 
-  const deleteComment=(e)=>{
+  const deleteComment = (e) => {
     e.preventDefault()
     fetch("http://localhost:8080/comment/comments/" + props.commentId, {
-        method:"DELETE", 
-        headers:{"Content-Type":"application/json"}, 
-        // body:JSON.stringify(newComment)
-    }).then(()=>{
-        console.log("Comment Deleted Successfully!")
-        props.setRefreshPage(true)
-        handleDeleteDialogClose();
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      // body:JSON.stringify(newComment)
+    }).then(() => {
+      console.log("Comment Deleted Successfully!")
+      props.setRefreshPage(true)
+      handleDeleteDialogClose();
+      handleClickEditSnackbar("Comment Deleted Successfully!")
     })
   }
 
-  const editComment=(e)=>{
+  const editComment = (e) => {
     e.preventDefault()
-    const newComment={commentTitle, content}
+    const newComment = { commentTitle, content }
     fetch("http://localhost:8080/comment/comments/" + props.commentId, {
-        method:"PUT", 
-        headers:{"Content-Type":"application/json"}, 
-        body:JSON.stringify(newComment)
-    }).then(()=>{
-        console.log("Comment Edited Successfully!")
-        props.setRefreshPage(true)
-        handleEditDialogClose();
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newComment)
+    }).then(() => {
+      console.log("Comment Edited Successfully!")
+      props.setRefreshPage(true)
+      handleEditDialogClose();
+      handleClickEditSnackbar("Comment Edited Successfully!")
     })
   }
 
@@ -133,89 +158,94 @@ export default function CommentCard(props) {
     // console.log(user.userType)
     if (props.createdByUserId === user.userId && props.createdByUserType === user.userType) {
       return <div>
-          <IconButton
-            ref={anchorRef}
-            id="composition-button"
-            aria-controls={openMenu ? 'composition-menu' : undefined}
-            aria-expanded={openMenu ? 'true' : undefined}
-            aria-haspopup="true"
-            onClick={handleToggle}
-          >
-            <MoreVertIcon/>
-          </IconButton>
-          <Popper
-            open={openMenu}
-            anchorEl={anchorRef.current}
-            role={undefined}
-            placement="bottom-start"
-            transition
-            disablePortal
-          >
-            {({ TransitionProps, placement }) => (
-              <Grow
-                {...TransitionProps}
-                style={{
-                  transformOrigin:
-                    placement === 'bottom-start' ? 'left top' : 'left bottom',
-                }}
-              >
-                <Paper>
-                  <ClickAwayListener onClickAway={handleCloseMenu}>
-                    <MenuList
-                      autoFocusItem={openMenu}
-                      id="composition-menu"
-                      aria-labelledby="composition-button"
-                      onKeyDown={handleListKeyDown}
-                    >
-                      <MenuItem onClick={handleClickDeleteDialogOpen}>
-                        <DeleteIcon style={{color: 'grey'}}/>
-                        &nbsp;
-                        Delete
-                      </MenuItem>
-                      <MenuItem onClick={handleClickEditDialogOpen}>
-                        <EditIcon style={{color: 'grey'}}/>
-                        &nbsp;
-                        Edit
-                      </MenuItem>
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              </Grow>
-            )}
-          </Popper>
-        </div>
+        <IconButton
+          ref={anchorRef}
+          id="composition-button"
+          aria-controls={openMenu ? 'composition-menu' : undefined}
+          aria-expanded={openMenu ? 'true' : undefined}
+          aria-haspopup="true"
+          onClick={handleToggle}
+        >
+          <MoreVertIcon />
+        </IconButton>
+        <Popper
+          open={openMenu}
+          anchorEl={anchorRef.current}
+          role={undefined}
+          placement="bottom-start"
+          transition
+          disablePortal
+        >
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{
+                transformOrigin:
+                  placement === 'bottom-start' ? 'left top' : 'left bottom',
+              }}
+            >
+              <Paper>
+                <ClickAwayListener onClickAway={handleCloseMenu}>
+                  <MenuList
+                    autoFocusItem={openMenu}
+                    id="composition-menu"
+                    aria-labelledby="composition-button"
+                    onKeyDown={handleListKeyDown}
+                  >
+                    <MenuItem onClick={handleClickDeleteDialogOpen}>
+                      <DeleteIcon style={{ color: 'grey' }} />
+                      &nbsp;
+                      Delete
+                    </MenuItem>
+                    <MenuItem onClick={handleClickEditDialogOpen}>
+                      <EditIcon style={{ color: 'grey' }} />
+                      &nbsp;
+                      Edit
+                    </MenuItem>
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </div>
         ;
     }
   }
 
   return (
     <>
-    <Card sx={{ marginBottom: '10px'}}>
-      <CardHeader
-        avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            <img src={props.profilePictureURL}></img>
-          </Avatar>
-        }
-        action={
-          <div>
-            {renderExtraActions()}
-          </div>
-        }
-        title={props.createdByUserName}
-        subheader={props.timestamp}
-      />
-      <CardContent style={{paddingTop: '0px'}}>
-        <Typography variant="body2" color="text.primary" style={{textDecoration: 'underline'}}>
+      <Snackbar open={openEditSnackbar} autoHideDuration={5000} onClose={handleCloseEditSnackbar}>
+        <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: '100%' }}>
+          {message}
+        </Alert>
+      </Snackbar>
+      <Card sx={{ marginBottom: '10px' }}>
+        <CardHeader
+          avatar={
+            <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+              <img src={props.profilePictureURL}></img>
+            </Avatar>
+          }
+          action={
+            <div>
+              {renderExtraActions()}
+            </div>
+          }
+          title={props.createdByUserName}
+          subheader={props.timestamp}
+        />
+        <CardContent style={{ paddingTop: '0px' }}>
+          <Typography variant="body2" color="text.primary" style={{ textDecoration: 'underline' }}>
             {props.commentTitle}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
             {props.content}
-        </Typography>
-      </CardContent>
-    </Card>
-    <div>
-      <Dialog
+          </Typography>
+        </CardContent>
+      </Card>
+      <div>
+        <Dialog
           open={deleteDialogOpen}
           onClose={handleDeleteDialogClose}
           aria-labelledby="alert-dialog-title"
@@ -236,9 +266,9 @@ export default function CommentCard(props) {
             </Button>
           </DialogActions>
         </Dialog>
-    </div>
-    <div>
-      <Dialog
+      </div>
+      <div>
+        <Dialog
           open={editDialogOpen}
           onClose={handleEditDialogClose}
           aria-labelledby="alert-dialog-title"
@@ -251,16 +281,16 @@ export default function CommentCard(props) {
             <DialogContentText id="alert-dialog-description">
               Enter the new comment details
             </DialogContentText>
-            <TextField id="outlined-basic" label="Comment" variant="outlined" fullWidth 
-              style={{margin: '6px 0'}}
+            <TextField id="outlined-basic" label="Comment" variant="outlined" fullWidth
+              style={{ margin: '6px 0' }}
               value={commentTitle}
-              onChange={(e)=>setCommentTitle(e.target.value)}
+              onChange={(e) => setCommentTitle(e.target.value)}
             />
             <TextField
               id="filled-multiline-static" label="Comment Content" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
-              style={{margin: '5px 0'}}
+              style={{ margin: '5px 0' }}
               value={content}
-              onChange={(e)=>setContent(e.target.value)}
+              onChange={(e) => setContent(e.target.value)}
             />
           </DialogContent>
           <DialogActions>
@@ -270,7 +300,7 @@ export default function CommentCard(props) {
             </Button>
           </DialogActions>
         </Dialog>
-    </div>
+      </div>
     </>
   );
 }

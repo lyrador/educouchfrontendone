@@ -34,7 +34,53 @@ import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAuth } from '../context/AuthProvider';
 
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 function TeachingForum(props) {
+
+    const [openSnackbar, setOpenSnackbar] = React.useState(false);
+
+    const handleClickSnackbar = () => {
+        setOpenSnackbar(true);
+    };
+
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSnackbar(false);
+    };
+
+    const [openDeleteSnackbar, setOpenDeleteSnackbar] = React.useState(false);
+
+    const handleClickDeleteSnackbar = () => {
+        setOpenDeleteSnackbar(true);
+    };
+
+    const handleCloseDeleteSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenDeleteSnackbar(false);
+    };
+
+    const [openEditSnackbar, setOpenEditSnackbar] = React.useState(false);
+
+    const handleClickEditSnackbar = () => {
+        setOpenEditSnackbar(true);
+    };
+
+    const handleCloseEditSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenEditSnackbar(false);
+    };
 
     const auth = useAuth()
     const user = auth.user
@@ -116,6 +162,7 @@ function TeachingForum(props) {
             console.log("Discussion Deleted Successfully!")
             setRefreshPage(true)
             handleDeleteDialogClose()
+            handleClickDeleteSnackbar()
         })
     }
 
@@ -144,6 +191,7 @@ function TeachingForum(props) {
                 setForumDiscussionTitle("")
                 setForumDiscussionDescription("")
                 handleClose()
+                handleClickSnackbar()
             })
         }
     }
@@ -161,6 +209,7 @@ function TeachingForum(props) {
             console.log("Discussion Edited Successfully!")
             setRefreshPage(true)
             handleEditDialogClose()
+            handleClickEditSnackbar();
         })
     }
 
@@ -198,6 +247,21 @@ function TeachingForum(props) {
                     <TeachingCoursesDrawer></TeachingCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
+                    <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
+                        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+                            Forum Discussion Created Succesfully!
+                        </Alert>
+                    </Snackbar>
+                    <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar}>
+                        <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: '100%' }}>
+                            Forum Discussion Deleted Succesfully!
+                        </Alert>
+                    </Snackbar>
+                    <Snackbar open={openEditSnackbar} autoHideDuration={5000} onClose={handleCloseEditSnackbar}>
+                        <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: '100%' }}>
+                            Forum Discussion Updated Succesfully!
+                        </Alert>
+                    </Snackbar>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link to={`${forumsPath}`}
                             style={{ textDecoration: 'none', color: 'grey' }}>

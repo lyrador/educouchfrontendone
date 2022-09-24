@@ -24,7 +24,27 @@ import TextField from '@mui/material/TextField';
 
 import { useAuth } from '../context/AuthProvider';
 
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 function TeachingDiscussion(props) {
+
+    const [openSnackbar, setOpenSnackbar] = React.useState(false);
+
+    const handleClickSnackbar = () => {
+        setOpenSnackbar(true);
+    };
+
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSnackbar(false);
+    };
 
     const auth = useAuth()
     const user = auth.user
@@ -87,6 +107,7 @@ function TeachingDiscussion(props) {
                 setRefreshPage(true)
                 setCommentTitle("")
                 setContent("")
+                handleClickSnackbar()
             })
         }
     }
@@ -147,6 +168,11 @@ function TeachingDiscussion(props) {
                     <TeachingCoursesDrawer></TeachingCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
+                    <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
+                        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+                            Comment Posted Succesfully!
+                        </Alert>
+                    </Snackbar>
                     <div style={{marginRight: '20px'}}>
                         <Breadcrumbs aria-label="breadcrumb">
                             <Link to={`${forumPath}`} 
