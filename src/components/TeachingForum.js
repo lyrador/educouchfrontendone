@@ -22,9 +22,22 @@ import LinkMaterial from '@mui/material/Link';
 
 import { Button } from '@mui/material';
 
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import { useAuth } from '../context/AuthProvider';
+
 function TeachingForum(props) {
 
-    // let { courseId } = useParams();
+    const auth = useAuth()
+    const user = auth.user
 
     //paths
     const location = useLocation();
@@ -32,35 +45,122 @@ function TeachingForum(props) {
     const discussionsPath = location.pathname
 
     const courseId = location.pathname.split('/')[2];
-    console.log(courseId);
-
     const forumId = location.pathname.split('/')[4];
-    console.log(forumId);
-
-    console.log(location.state)
     const forumTitle = location.state.forumTitle;
-
-    // function createData(discussionId, discussionName, numofComments, lastActivity) {
-    //     return {discussionId, discussionName, numofComments, lastActivity};
-    // }
-    
-    // const rows = [
-    //     createData(1, 'Tutorial Grp 1', 20, "1 Sep 2359hrs"),
-    //     createData(2, 'Tutorial Grp 2', 80, "2 Sep 1200hrs"),
-    //     createData(3, 'Tutorial Grp 3', 789, "31 May 2359hrs"),
-    //     createData(4, 'Tutorial Grp 4', 432, "22 Jul 2000hrs"),
-    // ];
 
     const [discussions,setDiscussions]=useState([])
 
+    const [refreshPage,setRefreshPage]=useState('')
+
     React.useEffect(() => {
+        setRefreshPage(false)
         fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions").
         then(res=>res.json()).
         then((result)=>{
           setDiscussions(result);
         }
       )
-      }, [])
+      }, [refreshPage])
+
+    const [open, setOpen] = React.useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+
+    const [forumDiscussionTitle,setForumDiscussionTitle]=useState('')
+    const [forumDiscussionDescription,setForumDiscussionDescription]=useState('')
+    
+    const [discussionIdToDelete,setDiscussionIdToDelete]=useState('')
+
+    const [editForumDiscussionTitle,setEditForumDiscussionTitle]=useState('')
+    const [editForumDiscussionDescription,setEditForumDiscussionDescription]=useState('')
+    const [discussionIdToEdit,setDiscussionIdToEdit]=useState('')
+
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+  
+    const handleClose = () => {
+      setOpen(false);
+    };
+
+    const handleClickDeleteDialogOpen = (event, discussionId) => {
+        setDiscussionIdToDelete(discussionId);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteDialogClose = () => {
+        setDeleteDialogOpen(false);
+    };
+
+    const handleClickEditDialogOpen = (event, discussionId, discussionTitle, discussionDescription) => {
+        setEditForumDiscussionTitle(discussionTitle)
+        setEditForumDiscussionDescription(discussionDescription)
+        setDiscussionIdToEdit(discussionId)
+        setEditDialogOpen(true)
+    };
+  
+    const handleEditDialogClose = () => {
+      setEditDialogOpen(false);
+    };
+
+    const deleteDiscussion=(e)=>{
+        e.preventDefault()
+        fetch("http://localhost:8080/forumDiscussion/forumDiscussions/" + discussionIdToDelete, {
+            method:"DELETE", 
+            headers:{"Content-Type":"application/json"}, 
+            // body:JSON.stringify(newComment)
+        }).then(()=>{
+            console.log("Discussion Deleted Successfully!")
+            setRefreshPage(true)
+            handleDeleteDialogClose()
+        })
+    }
+
+    const createNewDiscussion=(e)=>{
+        e.preventDefault()
+        var createdByUserId = user.userId
+        var createdByUserName = user.username
+        var createdByUserType = user.userType
+        const newDiscussion={forumDiscussionTitle, forumDiscussionDescription, createdByUserId, createdByUserName, createdByUserType}
+        fetch("http://localhost:8080/forumDiscussion/forums/" + forumId + "/forumDiscussions", {
+            method:"POST", 
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify(newDiscussion)
+        }).then(()=>{
+            console.log("New Discussion Created Successfully!")
+            setRefreshPage(true)
+            setForumDiscussionTitle("")
+            setForumDiscussionDescription("")
+            handleClose()
+        })
+    }
+
+    const editDiscussion=(e)=>{
+        e.preventDefault()
+        var forumDiscussionTitle = editForumDiscussionTitle;
+        var forumDiscussionDescription = editForumDiscussionDescription;
+        const newEditedDiscussion={forumDiscussionTitle, forumDiscussionDescription}
+        fetch("http://localhost:8080/forumDiscussion/forumDiscussions/" + discussionIdToEdit, {
+            method:"PUT", 
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify(newEditedDiscussion)
+        }).then(()=>{
+            console.log("Discussion Edited Successfully!")
+            setRefreshPage(true)
+            handleEditDialogClose()
+        })
+    }
+
+    const renderEmptyRowMessage = () => {
+        if (discussions.length === 0) {
+          return <TableRow>
+                    <TableCell colSpan={4} style={{textAlign: 'center'}}>
+                        There are currently no discussions in this forum!
+                    </TableCell>
+                </TableRow>
+            ;
+        }
+    }
 
     return (
         <div>
@@ -70,9 +170,12 @@ function TeachingForum(props) {
                 </Grid>
                 <Grid item xs={10}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <LinkMaterial underline="hover" color="inherit" href={`${forumsPath}`}>
-                            Forum
-                        </LinkMaterial>
+                        <Link to={`${forumsPath}`} 
+                            style={{textDecoration: 'none', color: 'grey'}}>
+                            <LinkMaterial underline="hover" color="inherit">
+                                Forum
+                            </LinkMaterial>
+                        </Link>
                         <Link to={`${discussionsPath}`} 
                             state={{ forumTitle: forumTitle }} 
                             style={{textDecoration: 'none', color: 'grey'}}>
@@ -83,18 +186,16 @@ function TeachingForum(props) {
                     </Breadcrumbs>
                     <div style={{justifyContent: 'center'}}>
                         <h1 style={{justifySelf: 'center', marginLeft: 'auto'}}>List of Discussions</h1>
-                        <Link to ={`/myTeachingCourse/${courseId}/forum/${forumId}/newDiscussion`} style={{textDecoration: 'none'}}>
-                            <Button
-                                className="btn-upload"
-                                color="primary"
-                                variant="contained"
-                                component="span"
-                                // onClick={createNewForum}
-                                style={{float: 'right', marginLeft: 'auto'}}
-                                >
-                                Create New Discussion
-                            </Button>
-                        </Link>
+                        <Button
+                            className="btn-upload"
+                            color="primary"
+                            variant="contained"
+                            component="span"
+                            onClick={handleClickOpen}
+                            style={{float: 'right', marginLeft: 'auto'}}
+                            >
+                            Create New Discussion
+                        </Button>
                     </div>
                     <div style={{padding: '5%'}}>
                         <TableContainer component={Paper}>
@@ -103,13 +204,16 @@ function TeachingForum(props) {
                                 <TableRow>
                                 <TableCell>Discussion Title</TableCell>
                                 <TableCell>Description</TableCell>
-                                <TableCell>Time Created</TableCell>
+                                <TableCell>Created By</TableCell>
+                                <TableCell>Created On</TableCell>
+                                <TableCell>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
+                            {renderEmptyRowMessage()}
                                 {discussions.map((discussion) => (
                                 <TableRow
-                                    key={discussion.discussionId}
+                                    key={discussion.forumDiscussionId}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell component="th" scope="row">
@@ -121,7 +225,20 @@ function TeachingForum(props) {
                                         </Link>
                                     </TableCell>
                                     <TableCell>{discussion.forumDiscussionDescription}</TableCell>
-                                    <TableCell>{discussion.timestamp}</TableCell>
+                                    <TableCell>{discussion.createdByUserName}</TableCell>
+                                    <TableCell>{discussion.createdDateTime}</TableCell>
+                                    <TableCell>
+                                        <div>
+                                            <IconButton aria-label="settings" 
+                                                onClick={event => handleClickDeleteDialogOpen(event, discussion.forumDiscussionId)}>
+                                                <DeleteIcon/>
+                                            </IconButton>
+                                            <IconButton aria-label="settings" 
+                                                onClick={event => handleClickEditDialogOpen(event, discussion.forumDiscussionId, discussion.forumDiscussionTitle, discussion.forumDiscussionDescription)}>
+                                                <EditIcon/>
+                                            </IconButton>
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
                                 ))}
                             </TableBody>
@@ -130,6 +247,86 @@ function TeachingForum(props) {
                     </div>
                 </Grid>
             </Grid>
+            <div>
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle>Create New Discussion</DialogTitle>
+                    <DialogContent>
+                    <TextField id="outlined-basic" label="Discussion Title" variant="outlined" fullWidth 
+                        style={{margin: '6px 0'}}
+                        value={forumDiscussionTitle}
+                        onChange={(e)=>setForumDiscussionTitle(e.target.value)}
+                        />
+                    <TextField
+                        id="filled-multiline-static" label="Discussion Description" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
+                        style={{margin: '6px 0'}}
+                        value={forumDiscussionDescription}
+                        onChange={(e)=>setForumDiscussionDescription(e.target.value)}
+                    />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={createNewDiscussion}>Create</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
+                    open={deleteDialogOpen}
+                    onClose={handleDeleteDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Delete this discussion?"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            These will delete all the comments inside the discussion.
+                            You will not be able to undo this action. Are you sure you want to delete?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDeleteDialogClose}>Cancel</Button>
+                        <Button onClick={deleteDiscussion} autoFocus>
+                        Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
+                    open={editDialogOpen}
+                    onClose={handleEditDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    >
+                    <DialogTitle id="alert-dialog-title">
+                        {"You are editing this discussion"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                        Enter the new discussion details
+                        </DialogContentText>
+                        <TextField id="outlined-basic" label="Discussion Title" variant="outlined" fullWidth 
+                        style={{margin: '6px 0'}}
+                        value={editForumDiscussionTitle}
+                        onChange={(e)=>setEditForumDiscussionTitle(e.target.value)}
+                        />
+                        <TextField
+                        id="filled-multiline-static" label="Discussion Description" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
+                        style={{margin: '6px 0'}}
+                        value={editForumDiscussionDescription}
+                        onChange={(e)=>setEditForumDiscussionDescription(e.target.value)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleEditDialogClose}>Cancel</Button>
+                        <Button onClick={editDiscussion} autoFocus>
+                        Edit
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
         </div>
     )
 }

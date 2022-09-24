@@ -19,41 +19,140 @@ import { Button } from '@mui/material';
 
 import { useState } from 'react';
 
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+
+import { useAuth } from '../context/AuthProvider';
+import { render } from '@testing-library/react';
+
 function TeachingForumList(props) {
 
+    const auth = useAuth()
+    const user = auth.user
+    
     //paths
     const location = useLocation();
     const forumsPath = location.pathname.split('/').slice(0,4).join('/')
 
-    const params = useParams();
-    const courseId = params.courseId;
+    const courseId = location.pathname.split('/')[2];
 
     const [forums,setForums]=useState([])
+    const [forumTitle,setForumTitle]=useState('')
+    const [forumIdToDelete,setForumIdToDelete]=useState('')
+
+    const [refreshPage,setRefreshPage]=useState('')
 
     React.useEffect(() => {
+        setRefreshPage(false)
         fetch("http://localhost:8080/forum/courses/" + courseId + "/forums").
         then(res=>res.json()).
         then((result)=>{
-          setForums(result);
+            setForums(result);
+            console.log(result);
         }
-      )
-      }, [])
+        )
+    }, [refreshPage])
 
-    function createNewForum() {
+    const [open, setOpen] = React.useState(false);
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+
+    const [editForumTitle,setEditForumTitle]=useState('')
+    const [forumIdToEdit,setForumIdToEdit]=useState('')
+
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+  
+    const handleClose = () => {
+      setOpen(false);
+    };
+
+    const handleClickDeleteDialogOpen = (event, forumId) => {
+        setForumIdToDelete(forumId);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteDialogClose = () => {
+        setDeleteDialogOpen(false);
+    };
+
+    const handleClickEditDialogOpen = (event, forumId, forumTitle, forumDescription) => {
+        setEditForumTitle(forumTitle)
+        setForumIdToEdit(forumId)
+        setEditDialogOpen(true)
+    };
+  
+    const handleEditDialogClose = () => {
+      setEditDialogOpen(false);
+    };
+
+    const createNewForum=(e)=>{
+        e.preventDefault()
+        var createdByUserId = user.userId
+        var createdByUserName = user.username
+        var createdByUserType = user.userType
+        const newForum={forumTitle, createdByUserId, createdByUserName, createdByUserType}
+        console.log(newForum)
+        fetch("http://localhost:8080/forum/courses/" + courseId + "/forums", {
+            method:"POST", 
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify(newForum)
+        }).then(()=>{
+            console.log("New Forum Created Successfully!")
+            setRefreshPage(true)
+            setForumTitle("")
+            handleClose()
+        })
     }
 
-    console.log(courseId);
+    const deleteForum=(e)=>{
+        e.preventDefault()
+        fetch("http://localhost:8080/forum/forums/" + forumIdToDelete, {
+            method:"DELETE", 
+            headers:{"Content-Type":"application/json"}, 
+            // body:JSON.stringify(newComment)
+        }).then(()=>{
+            console.log("Forum Deleted Successfully!")
+            setRefreshPage(true)
+            handleDeleteDialogClose()
+        })
+    }
 
-    // function createData(forumId, forumName, numofDiscussions, lastActivity) {
-    //     return {forumId, forumName, numofDiscussions, lastActivity};
-    // }
-    
-    // const rows = [
-    //     createData(1, 'Finding Agile Squad Teammates', 159, "23 Aug 2359hrs"),
-    //     createData(2, 'Tutorial Swaps', 237, "1 Sep 1200hrs"),
-    //     createData(3, 'Clarifications on Assignment 1', 262, "2 May 2359hrs"),
-    //     createData(4, 'Queries on Final Exam', 305, "13 Sep 2000hrs"),
-    // ];
+    const editForum=(e)=>{
+        e.preventDefault()
+        var forumTitle = editForumTitle;
+        const newEditedForum ={forumTitle}
+        fetch("http://localhost:8080/forum/forums/" + forumIdToEdit, {
+            method:"PUT", 
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify(newEditedForum)
+        }).then(()=>{
+            console.log("Forum Edited Successfully!")
+            setRefreshPage(true)
+            handleEditDialogClose()
+        })
+    }
+
+    const renderEmptyRowMessage = () => {
+        if (forums.length === 0) {
+          return <TableRow>
+                    <TableCell colSpan={4} style={{textAlign: 'center'}}>
+                        There are currently no forums in this course!
+                    </TableCell>
+                </TableRow>
+            ;
+        }
+    }
 
     return (
         <div>
@@ -69,18 +168,16 @@ function TeachingForumList(props) {
                     </Breadcrumbs>
                     <div style={{justifyContent: 'center'}}>
                         <h1 style={{justifySelf: 'center', marginLeft: 'auto'}}>List of Forums</h1>
-                        <Link to ={`/myTeachingCourse/${courseId}/newForum`} style={{textDecoration: 'none'}}>
-                            <Button
-                                className="btn-upload"
-                                color="primary"
-                                variant="contained"
-                                component="span"
-                                // onClick={createNewForum}
-                                style={{float: 'right', marginLeft: 'auto'}}
-                                >
-                                Create New Forum
-                            </Button>
-                        </Link>
+                        <Button
+                            className="btn-upload"
+                            color="primary"
+                            variant="contained"
+                            component="span"
+                            onClick={handleClickOpen}
+                            style={{float: 'right', marginLeft: 'auto'}}
+                            >
+                            Create New Forum
+                        </Button>
                     </div>
                     <div style={{padding: '5%'}}>
                         <TableContainer component={Paper}>
@@ -88,11 +185,13 @@ function TeachingForumList(props) {
                             <TableHead>
                                 <TableRow>
                                 <TableCell>Forum Name</TableCell>
-                                <TableCell>Number of Discussions</TableCell>
-                                <TableCell>Last Post</TableCell>
+                                <TableCell>Created By</TableCell>
+                                <TableCell>Created On</TableCell>
+                                <TableCell>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
+                                {renderEmptyRowMessage()}
                                 {forums.map((forum) => (
                                 <TableRow
                                     key={forum.forumId}
@@ -106,8 +205,20 @@ function TeachingForumList(props) {
                                             {forum.forumTitle}
                                         </Link>
                                     </TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell></TableCell>
+                                    <TableCell>{forum.createdByUserName}</TableCell>
+                                    <TableCell>{forum.createdDateTime}</TableCell>
+                                    <TableCell>
+                                        <div>
+                                            <IconButton aria-label="settings" 
+                                                onClick={event => handleClickDeleteDialogOpen(event, forum.forumId)}>
+                                                <DeleteIcon/>
+                                            </IconButton>
+                                            <IconButton aria-label="settings" 
+                                                onClick={event => handleClickEditDialogOpen(event, forum.forumId, forum.forumTitle)}>
+                                                <EditIcon/>
+                                            </IconButton>
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
                                 ))}
                             </TableBody>
@@ -116,6 +227,89 @@ function TeachingForumList(props) {
                     </div>
                 </Grid>
             </Grid>
+            <div>
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle>Create New Forum</DialogTitle>
+                    <DialogContent>
+                    {/* <DialogContentText>
+                        To subscribe to this website, please enter your email address here. We
+                        will send updates occasionally.
+                    </DialogContentText> */}
+                    {/* <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Forum Title"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        value={forumTitle}
+                        onChange={(e)=>setForumTitle(e.target.value)}
+                    /> */}
+                    <TextField id="outlined-basic" label="Forum Title" variant="outlined" fullWidth 
+                        style={{margin: '6px 0'}}
+                        value={forumTitle}
+                        onChange={(e)=>setForumTitle(e.target.value)}
+                    />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={createNewForum}>Create</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
+                    open={deleteDialogOpen}
+                    onClose={handleDeleteDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Delete this forum?"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            These will delete all the discussions and comments inside the forum.
+                            You will not be able to undo this action. Are you sure you want to delete?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDeleteDialogClose}>Cancel</Button>
+                        <Button onClick={deleteForum} autoFocus>
+                        Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
+                    open={editDialogOpen}
+                    onClose={handleEditDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    >
+                    <DialogTitle id="alert-dialog-title">
+                        {"You are editing this forum"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                        Enter the new forum details
+                        </DialogContentText>
+                        <TextField id="outlined-basic" label="Discussion Title" variant="outlined" fullWidth 
+                        style={{margin: '6px 0'}}
+                        value={editForumTitle}
+                        onChange={(e)=>setEditForumTitle(e.target.value)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleEditDialogClose}>Cancel</Button>
+                        <Button onClick={editForum} autoFocus>
+                        Edit
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
         </div>
     )
 }
