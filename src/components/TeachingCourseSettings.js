@@ -10,6 +10,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import CourseTags from '../components/CourseTags';
 
 export default function TeachingCourseSettings(props) {
 
@@ -21,7 +22,7 @@ export default function TeachingCourseSettings(props) {
     // console.log(JSON.stringify(courseId));
 
     const courseId = location.pathname.split('/')[2];
-    const[course, setCourse] = useState('')
+    const [course, setCourse] = useState('')
 
     React.useEffect(() => {
         fetch("http://localhost:8080/course/courses/" + courseId).
@@ -206,6 +207,14 @@ export default function TeachingCourseSettings(props) {
                 {/* <Paper elevation={3} style={paperStyle}>
                     <h1 style={headingStyle}> Course Description</h1>
                     <Box
+        <Container>
+            <TeachingCoursesDrawer courseId={courseId.courseId}></TeachingCoursesDrawer>
+            <CourseStatusAccordion course={course} refresh = {refresh}></CourseStatusAccordion>
+            <br/>
+            <CourseTags courseId = {courseId.courseId}></CourseTags>
+            <Paper elevation={3} style={paperStyle}>
+                <h1 style={headingStyle}> Course Description</h1>
+                <Box
                     component="form"
                     sx={{
                         '& > :not(style)': { m: 1},
