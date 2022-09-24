@@ -52,7 +52,7 @@ export default function DeleteInstructor(props) {
             <u>Delete Instructor</u>
           </h1>
           <br />
-          <h3>Are you sure? This action is cannot be undone</h3>
+          <p>Are you sure? This action is cannot be undone</p>
           {/* 
           <Stack direction={"row"}>
             <Box justifyContent={"center"} alignContent={"center"}>
@@ -82,14 +82,23 @@ export default function DeleteInstructor(props) {
           <br />
           <br />
           <br />
-          <Link to='/viewAllEducators'>
-            <Button variant="contained" onClick={handleClick}>
-              Confirm
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignContent: "space-around",
+              justifyContent: "space-between",
+            }}
+          >
+            <Button variant="contained" onClick={handleCancel}>
+              Cancel
             </Button>
-          </Link>
-          <Button variant="contained" onClick={handleCancel}>
-            Cancel
-          </Button>
+            <Link to="/viewAllEducators">
+              <Button variant="contained" onClick={handleClick}>
+                Confirm
+              </Button>
+            </Link>
+          </div>
         </Paper>
       </Container>
     </Box>

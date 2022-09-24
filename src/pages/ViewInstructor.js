@@ -16,6 +16,12 @@ export default function ViewInstructor() {
     setOpen(false);
   }
 
+  const [open1, setOpen1] = React.useState(false);
+  const handleOpen1 = () => setOpen1(true);
+  function handleClose1(ed) {
+    setOpen1(false);
+  }
+
   const params = useParams();
   const instructorUsername = params.instructorUsername;
 
@@ -79,15 +85,15 @@ export default function ViewInstructor() {
           style={{ margin: "10px", padding: "15px", textAlign: "left" }}
         >
           <Button
-            onClick={handleOpen}>Delete Instructor</Button>
+            onClick={handleOpen1}>Delete Instructor</Button>
           <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
+            open={open1}
+            onClose={handleClose1}
+            aria-labelledby="modal-deleteInstrucor-title"
+            aria-describedby="modal-deleteInstrucor-description"
           >
             <DeleteInstructor
-              closeModalFunc={handleClose}
+              closeModalFunc={handleClose1}
               instructorProps={instructor}
             ></DeleteInstructor>
           </Modal>
