@@ -12,14 +12,23 @@ import TableRow from "@mui/material/TableRow";
 import { Link } from "react-router-dom";
 
 export default function ViewAllEducators() {
-
-  const viewInstructorPath = "/viewInstructor"
+  const viewInstructorPath = "/viewInstructor";
   const [instructors, setInstructors] = useState([]);
   const instructorTableStyle = {
     padding: "10px 10px",
     width: 1500,
     margin: "20px auto",
   };
+
+  const columns = [
+    { field: "instructorId", headerName: "Instructor ID", width: 100 },
+    { field: "name", headerName: "Name", width: 300 },
+    { field: "username", headerName: "Username", width: 300 },
+    { field: "instructorAccessRight", headerName: "Access Right", width: 200 },
+    { field: "course", headerName: "Assigned Course", width: 300 },
+    { field: "viewProfile", headerName: "View Profile", width: 150},
+  ];
+
   const popupStyle = {
     position: "absolute",
     top: "50%",
@@ -46,7 +55,7 @@ export default function ViewAllEducators() {
       .then((result) => {
         setInstructors(result);
       });
-  }, []);
+  }, [instructors]);
 
   return (
     <div>
@@ -95,7 +104,8 @@ export default function ViewAllEducators() {
                   <TableCell align="right">
                     <Link
                       to={`${viewInstructorPath}/${instructor.username}`}
-                      state={{instructorUsername : instructor.username}}>
+                      state={{ instructorUsername: instructor.username }}
+                    >
                       <Button
                         className="btn-choose"
                         variant="outlined"
@@ -109,6 +119,17 @@ export default function ViewAllEducators() {
               ))}
             </TableBody>
           </Table>
+{/* 
+          <div style={{ height: 400, width: "100%" }}>
+            <DataGrid
+              getRowId={(row) => row.instructorId}
+              rows={instructors}
+              columns={columns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}>
+
+              </DataGrid>
+          </div> */}
         </TableContainer>
 
         <br></br>
