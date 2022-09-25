@@ -196,6 +196,8 @@ export default function TeachingCourseSettings(props) {
             <Container>
                 <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
                 <CourseStatusAccordion course={course} refresh = {refresh}></CourseStatusAccordion>
+                <br/>
+                <CourseTags courseId={courseId}></CourseTags>
                 <Paper elevation={3} style={paperStyle}>
                     <h1 style={headingStyle}> Course Description</h1>
                     <Box
