@@ -162,7 +162,7 @@ function TeachingAssessmentList(props) {
   const deleteAssessment = (e) => {
     e.preventDefault();
     fetch(
-      "http://localhost:8080/assessment/deleteFileSubmissionById/" +
+      "http://localhost:8080/assessment/deleteAssessmentById/" +
         assessmentIdToDelete,
       {
         method: "DELETE",
