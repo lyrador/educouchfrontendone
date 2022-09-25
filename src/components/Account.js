@@ -34,10 +34,10 @@ import Avatar from '@mui/material/Avatar';
 import Box from "@mui/material/Box";
 import { Container } from "@mui/system";
 import {
-  Typography,
-  LinearProgress,
-  ThemeProvider,
-  createTheme,
+    Typography,
+    LinearProgress,
+    ThemeProvider,
+    createTheme,
 } from "@mui/material";
 import UploadService from "../services/UploadFilesService";
 
@@ -45,65 +45,65 @@ function Account(props) {
 
     const theme = createTheme({
         components: {
-          MuiLinearProgress: {
-            styleOverrides: {
-              root: {
-                height: 15,
-                borderRadius: 5,
-              },
-              colorPrimary: {
-                backgroundColor: "#EEEEEE",
-              },
-              bar: {
-                borderRadius: 5,
-                backgroundColor: "#1a90ff",
-              },
+            MuiLinearProgress: {
+                styleOverrides: {
+                    root: {
+                        height: 15,
+                        borderRadius: 5,
+                    },
+                    colorPrimary: {
+                        backgroundColor: "#EEEEEE",
+                    },
+                    bar: {
+                        borderRadius: 5,
+                        backgroundColor: "#1a90ff",
+                    },
+                },
             },
-          },
         },
-      });
+    });
 
     const auth = useAuth()
     const user = auth.user
 
     const [currentFile, setCurrentFile] = useState(undefined);
     const [previewImage, setPreviewImage] = useState(
-      user.profilePictureURL
+        user.profilePictureURL
     );
     const [progress, setProgress] = useState(0);
     const [message, setMessage] = useState("");
     const [isError, setIsError] = useState(false);
     const [isUploaded, setIsUploaded] = useState(false);
-  
-    const [editedProfilePictureURL,setEditedProfilePictureURL]=useState(user.profilePictureURL)
+
+    const [editedProfilePictureURL, setEditedProfilePictureURL] = useState(user.profilePictureURL)
 
     const selectFile = (event) => {
         setCurrentFile(event.target.files[0]);
         setPreviewImage(URL.createObjectURL(event.target.files[0]));
         setProgress(0);
         setMessage("");
-      };
-    
-      const uploadImage = () => {
+    };
+
+    const uploadImage = () => {
         setProgress(0);
         UploadService.upload(currentFile, (event) => {
-          setProgress(Math.round((100 * event.loaded) / event.total));
+            setProgress(Math.round((100 * event.loaded) / event.total));
         })
-          .then((response) => {
-            setMessage("Succesfully Uploaded!");
-            setEditedProfilePictureURL(response.data.fileURL);
-            setIsError(false);
-            setIsUploaded(true);
-            console.log(response);
-          })
-          .catch((err) => {
-            setMessage("Could not upload the image!");
-            setIsError(true);
-            setProgress(0);
-            setCurrentFile(undefined);
-          });
-      };
-    
+            .then((response) => {
+                setMessage("Succesfully Uploaded!");
+                setEditedProfilePictureURL(response.data.fileURL);
+                setIsError(false);
+                setIsUploaded(true);
+                console.log(response);
+            })
+            .catch((err) => {
+                setMessage("Could not upload the image!");
+                setIsError(true);
+                setProgress(0);
+                setCurrentFile(undefined);
+            });
+    };
+
     // React.useEffect(() => {
     //     var userId = user.userId;
 
@@ -118,10 +118,10 @@ function Account(props) {
     //         console.log("Account Fetched Successfully!")
     //     })
     // }, [])
-    
+
     //paths
     const location = useLocation();
-    const forumsPath = location.pathname.split('/').slice(0,4).join('/')
+    const forumsPath = location.pathname.split('/').slice(0, 4).join('/')
 
     const courseId = location.pathname.split('/')[2];
 
@@ -130,19 +130,19 @@ function Account(props) {
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
 
-    const [editedEmail,setEditedEmail]=useState(user.email)
-    const [editedPassword,setEditedPassword]=useState(user.password)
+    const [editedEmail, setEditedEmail] = useState(user.email)
+    const [editedPassword, setEditedPassword] = useState(user.password)
 
     const logout = () => {
         auth.logout()
     }
 
     const handleClickOpen = () => {
-      setOpen(true);
+        setOpen(true);
     };
-  
+
     const handleClose = () => {
-      setOpen(false);
+        setOpen(false);
     };
 
     const handleClickDeleteDialogOpen = () => {
@@ -159,31 +159,31 @@ function Account(props) {
         }
         setEditDialogOpen(true)
     };
-  
+
     const handleEditDialogClose = () => {
-      setEditDialogOpen(false);
+        setEditDialogOpen(false);
     };
 
-    const deleteAccount=(e)=>{
+    const deleteAccount = (e) => {
         e.preventDefault()
         //mandatory unchanged variables
         var userId = user.userId
         var username = user.username
         var userType = user.userType
 
-        const editAccountDTO ={userId, username, userType}
+        const editAccountDTO = { userId, username, userType }
         fetch("http://localhost:8080/account/delete", {
-            method:"DELETE", 
-            headers:{"Content-Type":"application/json"}, 
-            body:JSON.stringify(editAccountDTO)
-        }).then(()=>{
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(editAccountDTO)
+        }).then(() => {
             console.log("Account Deleted Successfully!")
             handleEditDialogClose()
             auth.logout()
         })
     }
 
-    const editAccount=(e)=>{
+    const editAccount = (e) => {
         e.preventDefault()
         //mandatory unchanged variables
         var userId = user.userId
@@ -193,12 +193,12 @@ function Account(props) {
         var email = editedEmail
         var password = editedPassword
         var profilePictureURL = editedProfilePictureURL
-        const editAccountDTO ={userId, username, userType, email, password, profilePictureURL}
+        const editAccountDTO = { userId, username, userType, email, password, profilePictureURL }
         fetch("http://localhost:8080/account/edit", {
-            method:"PUT", 
-            headers:{"Content-Type":"application/json"}, 
-            body:JSON.stringify(editAccountDTO)
-        }).then(()=>{
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(editAccountDTO)
+        }).then(() => {
             console.log("Account Edited Successfully!")
             handleEditDialogClose()
             handleClickOpen()
@@ -212,81 +212,84 @@ function Account(props) {
                     <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}> */}
-                    <div style={{justifyContent: 'center'}}>
-                        <h1 style={{justifySelf: 'center', marginLeft: 'auto'}}>Account Details</h1>
-                        <Button
-                            className="btn-upload"
-                            color="primary"
-                            variant="contained"
-                            component="span"
-                            onClick={handleClickEditDialogOpen}
-                            style={{float: 'right', marginLeft: 'auto'}}
-                            >
-                            Edit Account
-                        </Button>
-                        <Button
-                            className="btn-upload"
-                            color="error"
-                            variant="contained"
-                            component="span"
-                            onClick={handleClickDeleteDialogOpen}
-                            style={{float: 'right', marginLeft: 'auto'}}
-                            >
-                            Delete Account
-                        </Button>
-                    </div>
-                    <div style={{padding: '5%', justifyContent: 'center', borderColor:'black', border:'10px'}}>
-                        <div>
-                            <TableContainer component={Paper} 
-                                // style={{justifyContent: 'center'}} 
-                                sx={{ minWidth: 200, maxWidth: 300, justifyContent: 'center'}}>
-                                <Table aria-label="simple table">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell colSpan={2} style={{textAlign: 'center'}}>User Details</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    <TableRow>
-                                        <TableCell>ID</TableCell>
-                                        <TableCell>{user.userId}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>Name</TableCell>
-                                        <TableCell>{user.name}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>Email</TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>Password</TableCell>
-                                        <TableCell>{user.password}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>Username</TableCell>
-                                        <TableCell>{user.username}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>Profile Picture</TableCell>
-                                        <TableCell>
-                                            <Avatar alt="avatar" src={user.profilePictureURL} />
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>User Type</TableCell>
-                                        <TableCell>{user.userType}</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>User Enum</TableCell>
-                                        <TableCell>{user.userEnum}</TableCell>
-                                    </TableRow>
-                                </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </div>
-                    </div>
-                {/* </Grid>
+            <div style={{ justifyContent: 'center' }}>
+                <h1 style={{ marginLeft: 'auto' }}>Account Details</h1>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', borderColor: 'black', border: '10px', padding: 50}}>
+                <div>
+                    <TableContainer component={Paper}
+                        // style={{justifyContent: 'center'}} 
+                        sx={{ minWidth: 200, maxWidth: 300, justifyContent: 'center' }}>
+                        <Table aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell colSpan={2} style={{ textAlign: 'center' }}>User Details</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell>ID</TableCell>
+                                    <TableCell>{user.userId}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Name</TableCell>
+                                    <TableCell>{user.name}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Email</TableCell>
+                                    <TableCell>{user.email}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Password</TableCell>
+                                    <TableCell>{user.password}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Username</TableCell>
+                                    <TableCell>{user.username}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Profile Picture</TableCell>
+                                    <TableCell>
+                                        <Avatar alt="avatar" src={user.profilePictureURL} />
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>User Type</TableCell>
+                                    <TableCell>{user.userType}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>User Enum</TableCell>
+                                    <TableCell>{user.userEnum}</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Button
+                    className="btn-upload"
+                    color="primary"
+                    variant="contained"
+                    component="span"
+                    onClick={handleClickEditDialogOpen}
+                    style={{ float: 'right' }}
+                >
+                    Edit Account
+                </Button>
+                &nbsp;
+                <Button
+                    className="btn-upload"
+                    color="error"
+                    variant="contained"
+                    component="span"
+                    onClick={handleClickDeleteDialogOpen}
+                    style={{ float: 'right' }}
+                >
+                    Delete Account
+                </Button>
+            </div>
+            {/* </Grid>
             </Grid> */}
             {/* <div>
                 <Dialog open={open} onClose={handleClose}>
@@ -310,7 +313,7 @@ function Account(props) {
                     onClose={handleDeleteDialogClose}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
-                    >
+                >
                     <DialogTitle id="alert-dialog-title">
                         {"Delete your account?"}
                     </DialogTitle>
@@ -323,7 +326,7 @@ function Account(props) {
                     <DialogActions>
                         <Button onClick={handleDeleteDialogClose}>Cancel</Button>
                         <Button onClick={deleteAccount} autoFocus>
-                        Delete
+                            Delete
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -334,7 +337,7 @@ function Account(props) {
                     onClose={handleEditDialogClose}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
-                    >
+                >
                     <DialogTitle id="alert-dialog-title">
                         {"Enter the New Account Details"}
                     </DialogTitle>
@@ -342,62 +345,62 @@ function Account(props) {
                         {/* <DialogContentText id="alert-dialog-description">
                         Enter the new account details
                         </DialogContentText> */}
-                        <TextField id="outlined-basic" label="Email Address" variant="outlined" fullWidth 
-                        style={{margin: '6px 0'}}
-                        value={editedEmail}
-                        onChange={(e)=>setEditedEmail(e.target.value)}
+                        <TextField id="outlined-basic" label="Email Address" variant="outlined" fullWidth
+                            style={{ margin: '6px 0' }}
+                            value={editedEmail}
+                            onChange={(e) => setEditedEmail(e.target.value)}
                         />
-                        <TextField id="outlined-basic" label="Email Address" variant="outlined" fullWidth 
-                        style={{margin: '6px 0'}}
-                        value={editedPassword}
-                        onChange={(e)=>setEditedPassword(e.target.value)}
+                        <TextField id="outlined-basic" label="Password" variant="outlined" fullWidth
+                            style={{ margin: '6px 0' }}
+                            value={editedPassword}
+                            onChange={(e) => setEditedPassword(e.target.value)}
                         />
                         <div>
                             {previewImage && (
-                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                <img
-                                    className="preview my20"
-                                    src={previewImage}
-                                    alt=""
-                                    style={{ height: "40%", width: "40%", justifySelf:'center'}}
-                                />
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <img
+                                        className="preview my20"
+                                        src={previewImage}
+                                        alt=""
+                                        style={{ height: "40%", width: "40%", justifySelf: 'center' }}
+                                    />
                                 </div>
                             )}
                             {currentFile && (
                                 <Box className="my20" display="flex" alignItems="center">
-                                <Box width="100%" mr={1}>
-                                    <ThemeProvider theme={theme}>
-                                    <LinearProgress variant="determinate" value={progress} />
-                                    </ThemeProvider>
-                                </Box>
-                                <Box minWidth={35}>
-                                    <Typography
-                                    variant="body2"
-                                    color="textSecondary"
-                                    >{`${progress}%`}</Typography>
-                                </Box>
+                                    <Box width="100%" mr={1}>
+                                        <ThemeProvider theme={theme}>
+                                            <LinearProgress variant="determinate" value={progress} />
+                                        </ThemeProvider>
+                                    </Box>
+                                    <Box minWidth={35}>
+                                        <Typography
+                                            variant="body2"
+                                            color="textSecondary"
+                                        >{`${progress}%`}</Typography>
+                                    </Box>
                                 </Box>
                             )}
                             {message && (
                                 <Typography
-                                variant="subtitle2"
-                                className={`upload-message ${isError ? "error" : ""}`}
+                                    variant="subtitle2"
+                                    className={`upload-message ${isError ? "error" : ""}`}
                                 >
-                                {message}
+                                    {message}
                                 </Typography>
                             )}
-                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <label htmlFor="btn-upload">
                                     <input
-                                    id="btn-upload"
-                                    name="btn-upload"
-                                    style={{ display: "none"}}
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={selectFile}
+                                        id="btn-upload"
+                                        name="btn-upload"
+                                        style={{ display: "none" }}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={selectFile}
                                     />
                                     <Button className="btn-choose" variant="outlined" component="span">
-                                    Choose Profile Image
+                                        Choose Profile Image
                                     </Button>
                                 </label>
                                 <Button
@@ -408,15 +411,15 @@ function Account(props) {
                                     disabled={!currentFile}
                                     onClick={uploadImage}
                                 >
-                                Upload
-                            </Button>
+                                    Upload
+                                </Button>
                             </div>
                         </div>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleEditDialogClose}>Cancel</Button>
                         <Button onClick={editAccount} autoFocus>
-                        Edit
+                            Edit
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -434,7 +437,7 @@ function Account(props) {
                     </DialogActions>
                 </Dialog>
             </div>
-        </div>
+        </div >
     )
 }
 

@@ -100,6 +100,7 @@ export default function CourseTags({ courseId }) {
 
         <div>
             <Button variant="outlined" startIcon={<AddIcon />} onClick={openAddTagDialogBox}>Add tag</Button>
+            &nbsp;
             <Button variant="outlined" startIcon={<DeleteIcon />} onClick={openRemoveTagDialogBox} >Remove tag</Button>
             <br />
             <br />

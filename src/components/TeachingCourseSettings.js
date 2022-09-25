@@ -202,6 +202,20 @@ export default function TeachingCourseSettings(props) {
                         <CourseStatusAccordion course={course} refresh={refresh}></CourseStatusAccordion>
                         <br />
                         <CourseTags courseId={courseId}></CourseTags>
+
+                        <Paper elevation={3} style={paperStyle}>
+                            <h1 style={headingStyle}> {course.courseCode} - {course.courseTitle} </h1>
+                            <Box
+                                component="form"
+                                sx={{
+                                    '& > :not(style)': { m: 1 },
+                                }}
+                                noValidate
+                                autoComplete="off"
+                            >
+                            </Box>
+                        </Paper>
+
                         <Paper elevation={3} style={paperStyle}>
                             <h1 style={headingStyle}> Course Description</h1>
                             <Box

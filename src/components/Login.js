@@ -85,10 +85,17 @@ export default function Login() {
 
         // set the state of the user
         // store the user in localStorage
+
         const user = response.data
-        auth.login(response.data)
-        console.log(response.data)
-        navigate('/home')
+        if (user.isActive === "false") {
+          setPasswordError({ value: true, errorMessage: 'User is disabled!' })
+          setUsernameError({ value: true, errorMessage: 'User is disabled!' })
+          setUserTypeError({ value: true, errorMessage: 'User is disabled!' })
+        } else {
+          auth.login(response.data)
+          console.log(response.data)
+          navigate('/home')
+        }
       } catch (error) {
         // Handle error here
         console.log(error.message)
@@ -113,7 +120,7 @@ export default function Login() {
           <CssBaseline />
           <Box
             sx={{
-              marginTop: 25,
+              marginTop: 15,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',

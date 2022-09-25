@@ -61,7 +61,7 @@ function CourseExplorerPage(props) {
     const columns = [
         { field: 'courseCode', headerName: 'Course Code', width: 150 },
         { field: 'courseTitle', headerName: 'Course Title', width: 300 },
-        { field: 'courseDescription', headerName: 'Course Descriptionn', width: 300 },
+        { field: 'courseDescription', headerName: 'Course Description', width: 300 },
         // { field: 'courseTimeline', headerName: 'Course Timeline', width: 200 },
         { field: 'ageGroup', headerName: 'Course Age Group', width: 200 },
         { field: 'categoryTags', headerName: 'Category Tags', width: 200 },

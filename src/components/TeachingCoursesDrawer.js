@@ -46,7 +46,7 @@ function TeachingCoursesDrawer(props) {
   const drawer = (
     <div>
       <div className='drawerContainer'>
-        <List>
+        {/* <List>
             {['COURSE NAME'].map((text, index) => (
             <ListItem key={text} style={{textDecoration: 'none', color: 'black', fontFamily:"Helvetica"}} disablePadding>
                 <ListItemButton>
@@ -54,7 +54,7 @@ function TeachingCoursesDrawer(props) {
                 </ListItemButton>
             </ListItem>
             ))}
-        </List>
+        </List> */}
         <br/><br/>
         <Divider />
             <List>

@@ -13,7 +13,7 @@ export default function Home() {
           <Typography variant="h5" color="text.primary" 
           // style={{ textDecoration: 'underline' }}
           >
-            Welcome to EduCouch Portal! This page that is still working in progress.
+            Welcome to EduCouch Portal! This page is still working in progress.
             <br></br>
             Navigate to the other pages by clicking on the items in the navigation bar above!
           </Typography>

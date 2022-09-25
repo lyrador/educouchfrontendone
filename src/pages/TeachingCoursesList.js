@@ -16,12 +16,15 @@ import Typography from '@mui/material/Typography';
 
 import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { useAuth } from "../context/AuthProvider";
 
 export default function TeachingCoursesList() {
   // const [currPage, setCurrPage] = useState("course");
   // function handleChange(newCurrPage) {
   //   setCurrPage(newCurrPage);
   // }
+  const auth = useAuth();
+  const user = auth.user;
 
   return (
     <>
@@ -31,6 +34,7 @@ export default function TeachingCoursesList() {
             <h1 style={{textAlign: 'left', padding: '0 4rem'}}>List of Courses</h1>
           </Grid>
           <Grid item alignItems="stretch" style={{ display: "flex" }}>
+          {user.userType != "LEARNER" && (
             <Link to ='/myTeachingCourse/new' style={{textDecoration: 'none'}}>
               <Button
                 className="btn-upload"
@@ -42,6 +46,7 @@ export default function TeachingCoursesList() {
                 Create New Course
               </Button>
             </Link>
+          )}
           </Grid>
         </Grid>
         <TeachingCoursesCards></TeachingCoursesCards>
