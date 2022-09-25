@@ -9,6 +9,7 @@ import {
   FormControl,
   FormLabel,
   Stack,
+  FormHelperText
 } from "@mui/material";
 import { Paper, Button, createTheme } from "@mui/material";
 import { useState } from "react";
@@ -41,23 +42,80 @@ export default function CreateInstructorForm(props) {
   const [username, setUsername] = useState("");
   const [instructorAccessRight, setinstructorAccessRight] = useState("");
 
+  const [instructorNameError, setInstructorNameError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [emailError, setEmailError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [passwordError, setPasswordError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [usernameError, setUsernameError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [instructorAccessRightError, setInstructorAccessRightError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+
   const handleClick = (e) => {
+    e.preventDefault();
     const educator = { name, email, username, password, instructorAccessRight };
+    setInstructorNameError({ value: false, errorMessage: "" });
+    setEmailError({ value: false, errorMessage: "" });
+    setPasswordError({ value: false, errorMessage: "" });
+    setUsernameError({ value: false, errorMessage: "" });
+    setInstructorAccessRightError({ value: false, errorMessage: "" });
+
+    if (name == "") {
+      setInstructorNameError({
+        value: true,
+        errorMessage: "You must enter a name!",
+      });
+    }
+    if (email == "") {
+      setEmailError({ value: true, errorMessage: "You must enter an email" });
+    }
+    if (password == "") {
+      setPasswordError({
+        value: true,
+        errorMessage: "You must enter a password!",
+      });
+    }
+    if (username == "") {
+      setUsernameError({
+        value: true,
+        errorMessage: "You must enter a username!",
+      });
+    }
+    if (instructorAccessRight == "") {
+      setInstructorAccessRightError({
+        value: true,
+        errorMessage: "You must select an instructorAccessRight!",
+      });
+    }
+
     //organisation (org admin) is hard coded for now until org admin sign up is done
-    fetch("http://localhost:8080/educator/addInstructor?organisationId=1", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(educator),
-    })
-      .then((res) => res.json())
-      .then(props.closeModalFunc())
-      .then(props.refreshProp());
-    console.log("New educator added");
+    if (name && email && username && password && instructorAccessRight) {
+      fetch("http://localhost:8080/educator/addInstructor?organisationId=1", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(educator),
+      })
+        .then((res) => res.json())
+        .then(props.closeModalFunc())
+        .then(props.refreshProp());
+      console.log("New educator added");
+    }
   };
 
   const handleCancel = () => {
     props.closeModalFunc();
-    console.log("child cancel called");
   };
 
   return (
@@ -79,6 +137,9 @@ export default function CreateInstructorForm(props) {
           </h1>
           <br></br>
           <TextField
+            required
+            error={instructorNameError.value}
+            helperText={instructorNameError.errorMessage}
             id="outlined-basic"
             label="Instructor Name"
             variant="outlined"
@@ -88,6 +149,9 @@ export default function CreateInstructorForm(props) {
             onChange={(e) => setName(e.target.value)}
           />
           <TextField
+            required
+            error={emailError.value}
+            helperText={emailError.errorMessage}
             id="outlined-basic"
             label="Instructor Email"
             variant="outlined"
@@ -97,6 +161,9 @@ export default function CreateInstructorForm(props) {
             onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
+            required
+            error={passwordError.value}
+            helperText={passwordError.errorMessage}
             id="outlined-basic"
             label="Instructor Password"
             variant="outlined"
@@ -106,6 +173,9 @@ export default function CreateInstructorForm(props) {
             onChange={(e) => setPassword(e.target.value)}
           />
           <TextField
+            required
+            error={usernameError.value}
+            helperText={usernameError.errorMessage}
             id="outlined-basic"
             label="Instructor Username"
             variant="outlined"
@@ -119,7 +189,10 @@ export default function CreateInstructorForm(props) {
             <Box justifyContent={"center"} alignContent={"center"}>
               <h3>Access Right</h3>
             </Box>
-            <FormControl>
+            <FormControl
+              required
+              error={instructorAccessRightError.value}
+            >
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
                 defaultValue="INSTRUCTOR"
@@ -138,7 +211,8 @@ export default function CreateInstructorForm(props) {
                   label="Head Instructor"
                 />
               </RadioGroup>
-            </FormControl>
+              <FormHelperText>{instructorAccessRightError.value}</FormHelperText>
+              </FormControl>
           </Stack>
           <br />
           <br />
