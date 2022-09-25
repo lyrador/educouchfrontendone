@@ -15,7 +15,13 @@ import { Grid } from "@mui/material";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
 
-import { Button } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 
 import { useState } from "react";
 
@@ -43,8 +49,6 @@ function TeachingAssessmentList(props) {
 
   const courseId = location.pathname.split("/")[2];
 
-  console.log("Assessment Path is " + courseId);
-
   const [assessments, setAssessments] = useState([]);
   const [assessmentTitle, setAssessmentTitle] = useState("");
   const [assessmentDescription, setAssessmentDescription] = useState("");
@@ -53,6 +57,8 @@ function TeachingAssessmentList(props) {
   const [assessmentEndDate, setAssessmentEndDate] = useState("");
   const [assessmentFileSubmissionEnum, setAssessmentFileSubmissionEnum] =
     useState("");
+  const [assessmentIsOpen, setAssessmentIsOpen] = useState("");
+  const [assessmentType, setAssessmentType] = useState("");
   const [assessmentIdToDelete, setAssessmentIdToDelete] = useState("");
 
   const [refreshPage, setRefreshPage] = useState("");
@@ -66,7 +72,7 @@ function TeachingAssessmentList(props) {
       .then((res) => res.json())
       .then((result) => {
         setAssessments(result);
-        console.log(result);
+        console.log(assessments);
       });
   }, [refreshPage]);
 
@@ -136,6 +142,8 @@ function TeachingAssessmentList(props) {
       assessmentMaxScore: assessmentMaxScore,
       assessmentStartDate: assessmentStartDate,
       assessmentEndDate: assessmentEndDate,
+      assessmentIsOpen: "false",
+      assessmentStatusEnum: "PENDING",
       assessmentFileSubmissionEnum: assessmentFileSubmissionEnum,
     };
     console.log(newAssessment);
@@ -240,9 +248,10 @@ function TeachingAssessmentList(props) {
                   <TableRow>
                     <TableCell>Assessment Title</TableCell>
                     <TableCell>Assessment Description</TableCell>
-                    <TableCell>Assessment Max Score</TableCell>
                     <TableCell>Assessment Start Date</TableCell>
                     <TableCell>Assessment End Date</TableCell>
+                    <TableCell>Assessment Status</TableCell>
+                    <TableCell>Assessment Type</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -254,20 +263,21 @@ function TeachingAssessmentList(props) {
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell component="th" scope="row">
-                        <Link
+                        {/* <Link
                           to={`${assessmentsPath}/${assessment.assessmentId}`}
                           state={{
                             assessmentTitle: assessment.assessmentTitle,
                           }}
                           style={{ textDecoration: "none" }}
-                        >
-                          {assessment.assessmentTitle}
-                        </Link>
+                        > */}
+                        {assessment.assessmentTitle}
+                        {/* </Link> */}
                       </TableCell>
                       <TableCell>{assessment.assessmentDescription}</TableCell>
-                      <TableCell>{assessment.assessmentMaxScore}</TableCell>
                       <TableCell>{assessment.assessmentStartDate}</TableCell>
                       <TableCell>{assessment.assessmentEndDate}</TableCell>
+                      <TableCell>{assessment.assessmentIsOpen}</TableCell>
+                      <TableCell>{assessmentType}</TableCell>
                       <TableCell>
                         <div>
                           <IconButton
@@ -312,7 +322,29 @@ function TeachingAssessmentList(props) {
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Create New Assessment</DialogTitle>
           <DialogContent>
+            <FormControl>
+              Select Assessment Type:
+              <RadioGroup
+                required
+                aria-labelledby="demo-radio-buttons-group-label"
+                name="radio-buttons-group"
+                value={assessmentType}
+                onChange={(e) => setAssessmentType(e.target.value)}
+              >
+                <FormControlLabel
+                  value="Quiz"
+                  control={<Radio />}
+                  label="Quiz"
+                />
+                <FormControlLabel
+                  value="File Submission"
+                  control={<Radio />}
+                  label="File Submission"
+                />
+              </RadioGroup>
+            </FormControl>
             <TextField
+              required
               id="outlined-basic"
               label="Assessment Title"
               variant="outlined"
@@ -322,6 +354,7 @@ function TeachingAssessmentList(props) {
               onChange={(e) => setAssessmentTitle(e.target.value)}
             />
             <TextField
+              required
               id="outlined-basic"
               label="Assessment Description"
               variant="outlined"
@@ -331,6 +364,7 @@ function TeachingAssessmentList(props) {
               onChange={(e) => setAssessmentDescription(e.target.value)}
             />
             <TextField
+              required
               id="outlined-basic"
               label="Assessment Max Score"
               variant="outlined"
@@ -340,6 +374,7 @@ function TeachingAssessmentList(props) {
               onChange={(e) => setAssessmentMaxScore(e.target.value)}
             />
             <TextField
+              required
               id="outlined-basic"
               label="Assessment Start Date"
               variant="outlined"
@@ -349,6 +384,7 @@ function TeachingAssessmentList(props) {
               onChange={(e) => setAssessmentStartDate(e.target.value)}
             />
             <TextField
+              required
               id="outlined-basic"
               label="Assessment End Date"
               variant="outlined"
@@ -358,6 +394,7 @@ function TeachingAssessmentList(props) {
               onChange={(e) => setAssessmentEndDate(e.target.value)}
             />
             <TextField
+              required
               id="outlined-basic"
               label="Assessment File Submission Type"
               variant="outlined"
