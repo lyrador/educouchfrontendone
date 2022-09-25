@@ -43,6 +43,8 @@ function TeachingAssessmentList(props) {
 
   const courseId = location.pathname.split("/")[2];
 
+  console.log("Assessment Path is " + courseId);
+
   const [assessments, setAssessments] = useState([]);
   const [assessmentTitle, setAssessmentTitle] = useState("");
   const [assessmentDescription, setAssessmentDescription] = useState("");
@@ -359,7 +361,6 @@ function TeachingAssessmentList(props) {
               id="outlined-basic"
               label="Assessment File Submission Type"
               variant="outlined"
-              defaultValue={"Enter 'INDIVIDUAL' or 'GROUP'"}
               fullWidth
               style={{ margin: "6px 0" }}
               value={assessmentFileSubmissionEnum}
