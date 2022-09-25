@@ -1,7 +1,7 @@
 import * as React from "react";
 import CreateInstructorForm from "../components/CreateInstructorForm";
 import SettingsDrawer from "../components/SettingsDrawer";
-import { Paper, Button, Divider, Chip, Grid, Modal } from "@mui/material";
+import { Paper, Button, Divider, Chip, Grid, Modal, setRef } from "@mui/material";
 import { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -14,11 +14,16 @@ import { Link } from "react-router-dom";
 export default function ViewAllEducators() {
   const viewInstructorPath = "/viewInstructor";
   const [instructors, setInstructors] = useState([]);
+  const [refresh, setRefresh] = useState(false);
   const instructorTableStyle = {
     padding: "10px 10px",
     width: 1500,
     margin: "20px auto",
   };
+
+  const refreshFunction = () => {
+    setRefresh(!refresh);
+  }
 
   const columns = [
     { field: "instructorId", headerName: "Instructor ID", width: 100 },
@@ -55,7 +60,7 @@ export default function ViewAllEducators() {
       .then((result) => {
         setInstructors(result);
       });
-  }, [instructors]);
+  }, [refresh]);
 
   return (
     <div>
@@ -158,6 +163,7 @@ export default function ViewAllEducators() {
           >
             <CreateInstructorForm
               closeModalFunc={handleClose}
+              refreshProp={refreshFunction}
             ></CreateInstructorForm>
           </Modal>
         </Grid>
