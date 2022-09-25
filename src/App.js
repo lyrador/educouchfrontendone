@@ -11,6 +11,7 @@ import Appbar from "./components/Appbar";
 import TeachingCoursesList from "./pages/TeachingCoursesList";
 import TeachingCourse from "./pages/TeachingCourse";
 import TeachingCourseNew from "./pages/TeachingCourseNew";
+import TeachingAssessmentList from "./components/TeachingAssessmentList";
 import TeachingForumList from "./components/TeachingForumList";
 import TeachingDiscussion from "./components/TeachingDiscussion";
 import TeachingForum from "./components/TeachingForum";
@@ -91,6 +92,16 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingCourseSettings />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/myTeachingCourse/:courseId/assessments"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingAssessmentList />
                 </RequireAuth>
               }
             />
