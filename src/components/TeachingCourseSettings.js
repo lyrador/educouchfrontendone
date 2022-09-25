@@ -166,7 +166,7 @@ export default function TeachingCourseSettings(props) {
 
             <Grid container spacing={0}>
                 <Grid item xs={2}><TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer></Grid>
-                <Grid item xs={10}>
+                <Grid item xs={8}>
                     <CourseStatusAccordion course={course} refresh={refresh}>
 
                     </CourseStatusAccordion>
