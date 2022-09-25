@@ -24,7 +24,6 @@ export default function TeachingCourseNew(props) {
         <Grid item xs={10}>
           <TeachingCourseCreate></TeachingCourseCreate>
           <h1>{courseId}</h1>
-          <h2>{instructorId}</h2>
         </Grid>
       </Grid>
 

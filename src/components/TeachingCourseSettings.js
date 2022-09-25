@@ -11,8 +11,43 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import CourseTags from '../components/CourseTags';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 export default function TeachingCourseSettings(props) {
+
+ 
+    const [openDeleteSnackbar, setOpenDeleteSnackbar] = React.useState(false);
+
+    const handleClickDeleteSnackbar = () => {
+        setOpenDeleteSnackbar(true);
+    };
+
+    const handleCloseDeleteSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenDeleteSnackbar(false);
+    };
+
+    const [openEditSnackbar, setOpenEditSnackbar] = React.useState(false);
+
+    const handleClickEditSnackbar = () => {
+        setOpenEditSnackbar(true);
+    };
+
+    const handleCloseEditSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenEditSnackbar(false);
+    };
+
+    const [refreshPage, setRefreshPage] = useState('')
 
 
     const location = useLocation(props);
@@ -46,20 +81,18 @@ export default function TeachingCourseSettings(props) {
     const[courseTimeline1, setCourseTimeline1] = useState(course.courseTimeline)
     const[courseMaxScore1, setCourseMaxScore1] = useState(course.courseMaxScore)
     const[ageGroup1, setAgeGroup1] = useState(course.ageGroup)
-    const[courseApprovalStatus1, setCourseApprovalStatus1] = useState(course.courseApprovalStatus)
 
     const [open, setOpen] = React.useState(false);
 
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-    const handleClickOpen = (event, courseCode, courseTitle, courseDescription, courseTimeline, courseMaxScore, ageGroup, courseApprovalStatus) => {
+    const handleClickOpen = (event, courseCode, courseTitle, courseDescription, courseTimeline, courseMaxScore, ageGroup) => {
         setCourseCode1(courseCode);
         setCourseTitle1(courseTitle)
         setCourseDescription1(courseDescription)
         setCourseTimeline1(courseTimeline)
         setCourseMaxScore1(courseMaxScore)
         setAgeGroup1(ageGroup)
-        setCourseApprovalStatus1(courseApprovalStatus)
         setOpen(true);
     };
     
@@ -86,6 +119,9 @@ export default function TeachingCourseSettings(props) {
         }).then(()=>{
             console.log("Course Deleted Successfully!")
             window.location.reload();
+            setRefreshPage(true)
+            handleDeleteDialogClose()
+            handleClickDeleteSnackbar()
         })
     }
 
@@ -98,30 +134,9 @@ export default function TeachingCourseSettings(props) {
         },
     ];
 
-    const courseApprovalStatuses = [
-        {
-            value: 'Pending Approval', 
-        }, 
-        {
-            value: 'Live',
-        }, 
-        {
-            value: 'Under Construction',
-        }, 
-        {
-            value: 'Rejected',
-        }, 
-        {
-            value: 'Appealed',
-        },
-    ];
 
     const handleChange1 = (event) => {
         setAgeGroup1(event.target.value); 
-    }; 
-
-    const handleChange2 = (event) => {
-        setCourseApprovalStatus1(event.target.value); 
     }; 
 
     const handleClick=(e)=>{
@@ -132,15 +147,17 @@ export default function TeachingCourseSettings(props) {
         var courseTimeline = courseTimeline1
         var courseMaxScore = courseMaxScore1
         var ageGroup = ageGroup1
-        var courseApprovalStatus = courseApprovalStatus1
 
-        const course1 ={courseCode, courseTitle, courseDescription, courseTimeline, courseMaxScore, ageGroup, courseApprovalStatus}
+        const course1 ={courseCode, courseTitle, courseDescription, courseTimeline, courseMaxScore, ageGroup}
         fetch("http://localhost:8080/course/courses/" + courseId , {
             method:"PUT", 
             headers:{"Content-Type":"application/json"}, 
             body:JSON.stringify(course1)
         }).then(()=>{
             console.log("Course Updated Successfully!")  
+            setRefreshPage(true)
+            handleEditDialogClose()
+            handleClickEditSnackbar();
         })
     }
 
@@ -163,6 +180,16 @@ export default function TeachingCourseSettings(props) {
 
     return (
         <div>
+            <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar}>
+                <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: '100%' }}>
+                    Course Deleted Succesfully!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={openEditSnackbar} autoHideDuration={5000} onClose={handleCloseEditSnackbar}>
+                <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: '100%' }}>
+                    Course Updated Succesfully!
+                </Alert>
+            </Snackbar>
             <Container>
                 <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
                 <CourseStatusAccordion course={course} refresh = {refresh}></CourseStatusAccordion>
@@ -272,19 +299,6 @@ export default function TeachingCourseSettings(props) {
                 helperText="Please select your age group"
                 >
                     {ageGroups.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.value}
-                        </MenuItem>
-                    ))}
-                </TextField>
-
-                <TextField id="outlined-select-status" select label="Approval Status" fullWidth
-                style={{margin: '6px 0'}}
-                value={courseApprovalStatus1}
-                onChange={handleChange2}
-                helperText="Please select your approval status"
-                >
-                    {courseApprovalStatuses.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
                             {option.value}
                         </MenuItem>
