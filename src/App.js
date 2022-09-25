@@ -40,7 +40,6 @@ function App() {
           <Routes>
             {/* <Route path = "/" element={<Home />} /> */}
             <Route path="/" element={<Login />} />
-
             <Route
               path="/home"
               element={
@@ -50,7 +49,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/account"
               element={
@@ -60,7 +58,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCoursesList"
               element={
@@ -70,7 +67,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId"
               element={
@@ -80,7 +76,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/new"
               element={
@@ -90,7 +85,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId/courseSettings"
               element={
@@ -100,7 +94,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId/assessments"
               element={
@@ -110,7 +103,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:moduleCode/files"
               element={
@@ -120,7 +112,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:moduleCode/files/:folderId"
               element={
@@ -130,7 +121,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId/forum"
               element={
@@ -140,7 +130,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId/forum/:forumId"
               element={
@@ -150,7 +139,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId/forum/:forumId/:discussionId"
               element={
@@ -160,7 +148,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId/files"
               element={
@@ -170,7 +157,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId/files/:folderId"
               element={
@@ -180,7 +166,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:moduleCode/files"
               element={
@@ -190,7 +175,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/adminDrawer"
               element={
@@ -200,7 +184,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/settings"
               element={
@@ -210,10 +193,33 @@ function App() {
                 </RequireAuth>
               }
             />
-
-            <Route path="/learnerCreation" element={<LearnerCreation />} />
-            <Route path="/viewAllEducators" element={<ViewAllEducators />} />
-            <Route path="/viewInstructor" element={<ViewInstructor />} />
+            <Route
+              path="/learnerCreation"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerCreation />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/viewAllEducators"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <ViewAllEducators />
+                </RequireAuth>
+              }
+            />{" "}
+            <Route
+              path="/viewInstructor/:instructorUsername"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <ViewInstructor />
+                </RequireAuth>
+              }
+            />
             <Route path="/signup" element={<Signup />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/register/learner" element={<RegisterLearnerPage />} />
