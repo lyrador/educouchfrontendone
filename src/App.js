@@ -193,13 +193,6 @@ function App() {
                 </RequireAuth>
               }
             />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/register/learner" element={<RegisterLearnerPage />} />
-            <Route
-              path="/register/educator"
-              element={<RegisterOrganisationAdminPage />}
-            />
             <Route
               path="/learnerCreation"
               element={
@@ -217,10 +210,22 @@ function App() {
                   <ViewAllEducators />
                 </RequireAuth>
               }
-            />
+            />{" "}
             <Route
               path="/viewInstructor/:instructorUsername"
-              element={<ViewInstructor />}
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <ViewInstructor />
+                </RequireAuth>
+              }
+            />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/register/learner" element={<RegisterLearnerPage />} />
+            <Route
+              path="/register/educator"
+              element={<RegisterOrganisationAdminPage />}
             />
           </Routes>
         </Router>
