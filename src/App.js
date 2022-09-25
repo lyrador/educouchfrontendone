@@ -1,4 +1,5 @@
 import "./App.css";
+import AppBar from "./components/Appbar";
 import Learner from "./components/Learner";
 import { Typography } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -10,6 +11,7 @@ import Appbar from "./components/Appbar";
 import TeachingCoursesList from "./pages/TeachingCoursesList";
 import TeachingCourse from "./pages/TeachingCourse";
 import TeachingCourseNew from "./pages/TeachingCourseNew";
+import TeachingAssessmentList from "./components/TeachingAssessmentList";
 import TeachingForumList from "./components/TeachingForumList";
 import TeachingDiscussion from "./components/TeachingDiscussion";
 import TeachingForum from "./components/TeachingForum";
@@ -24,6 +26,11 @@ import { AuthProvider } from "./context/AuthProvider";
 import { RequireAuth } from "./components/RequireAuth";
 import Login from "./components/Login";
 import AccountPage from "./pages/AccountPage";
+import SignUp from "./pages/Signup";
+import Signup from "./pages/Signup";
+import RegisterPage from "./pages/RegisterPage";
+import RegisterLearnerPage from "./pages/RegisterLearnerPage";
+import RegisterOrganisationAdminPage from "./pages/RegisterOrganisationAdminPage";
 
 function App() {
   return (
@@ -90,6 +97,16 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingCourseSettings />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/myTeachingCourse/:courseId/assessments"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingAssessmentList />
                 </RequireAuth>
               }
             />
@@ -193,6 +210,14 @@ function App() {
                 </RequireAuth>
               }
             />
+
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/register/learner" element={<RegisterLearnerPage />} />
+            <Route
+              path="/register/educator"
+              element={<RegisterOrganisationAdminPage />}
+            />
             <Route
               path="/learnerCreation"
               element={
@@ -212,15 +237,9 @@ function App() {
               }
             />
             <Route
-              path="/viewAllEducators"
-              element={
-                <RequireAuth>
-                  <Appbar />
-                  <ViewAllEducators />
-                </RequireAuth>
-              }
+              path="/viewInstructor/:instructorUsername"
+              element={<ViewInstructor />}
             />
-            <Route path="/viewInstructor" element={<ViewInstructor />} />
           </Routes>
         </Router>
       </AuthProvider>
