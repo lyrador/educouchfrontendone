@@ -31,7 +31,7 @@ export default function ViewAllEducators() {
     { field: "username", headerName: "Username", width: 300 },
     { field: "instructorAccessRight", headerName: "Access Right", width: 200 },
     { field: "course", headerName: "Assigned Course", width: 300 },
-    { field: "viewProfile", headerName: "View Profile", width: 150},
+    { field: "viewProfile", headerName: "View Profile", width: 150 },
   ];
 
   const popupStyle = {
@@ -64,67 +64,70 @@ export default function ViewAllEducators() {
 
   return (
     <div>
-      <SettingsDrawer></SettingsDrawer>
+      <Grid container spacing={0}>
+        <Grid item xs={2}>
+          <SettingsDrawer></SettingsDrawer>
+        </Grid>
+        <Grid item xs={10}>
+          <h1>View All instructors</h1>
 
-      <h1>View All instructors</h1>
-
-      <Paper elevation={3} style={instructorTableStyle}>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 450 }} size="small" aria-label="a dense table">
-            <TableHead>
-              <TableRow sx={{ bgcolor: "#1975d2" }}>
-                <TableCell align="right" size="small">
-                  <b>ID</b>
-                </TableCell>
-                <TableCell align="right">
-                  <b>Name</b>
-                </TableCell>
-                <TableCell align="right">
-                  <b>Username</b>
-                </TableCell>
-                <TableCell align="right">
-                  <b>Access Right</b>
-                </TableCell>
-                <TableCell align="right">
-                  <b>Assigned Course</b>
-                </TableCell>
-                <TableCell align="right">
-                  <b>View Profile</b>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {instructors.map((instructor) => (
-                <TableRow
-                  key={instructor.instructorId}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell align="right">{instructor.instructorId}</TableCell>
-                  <TableCell align="right">{instructor.name}</TableCell>
-                  <TableCell align="right">{instructor.username}</TableCell>
-                  <TableCell align="right">
-                    {instructor.instructorAccessRight}
-                  </TableCell>
-                  <TableCell align="right">NULL</TableCell>
-                  <TableCell align="right">
-                    <Link
-                      to={`${viewInstructorPath}/${instructor.username}`}
-                      state={{ instructorUsername: instructor.username }}
+          <Paper elevation={3} style={instructorTableStyle}>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 450 }} size="small" aria-label="a dense table">
+                <TableHead>
+                  <TableRow sx={{ bgcolor: "#1975d2" }}>
+                    <TableCell align="right" size="small">
+                      <b>ID</b>
+                    </TableCell>
+                    <TableCell align="right">
+                      <b>Name</b>
+                    </TableCell>
+                    <TableCell align="right">
+                      <b>Username</b>
+                    </TableCell>
+                    <TableCell align="right">
+                      <b>Access Right</b>
+                    </TableCell>
+                    <TableCell align="right">
+                      <b>Assigned Course</b>
+                    </TableCell>
+                    <TableCell align="right">
+                      <b>View Profile</b>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {instructors.map((instructor) => (
+                    <TableRow
+                      key={instructor.instructorId}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <Button
-                        className="btn-choose"
-                        variant="outlined"
-                        type="submit"
-                      >
-                        View Profile
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-{/* 
+                      <TableCell align="right">{instructor.instructorId}</TableCell>
+                      <TableCell align="right">{instructor.name}</TableCell>
+                      <TableCell align="right">{instructor.username}</TableCell>
+                      <TableCell align="right">
+                        {instructor.instructorAccessRight}
+                      </TableCell>
+                      <TableCell align="right">NULL</TableCell>
+                      <TableCell align="right">
+                        <Link
+                          to={`${viewInstructorPath}/${instructor.username}`}
+                          state={{ instructorUsername: instructor.username }}
+                        >
+                          <Button
+                            className="btn-choose"
+                            variant="outlined"
+                            type="submit"
+                          >
+                            View Profile
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {/* 
           <div style={{ height: 400, width: "100%" }}>
             <DataGrid
               getRowId={(row) => row.instructorId}
@@ -135,39 +138,41 @@ export default function ViewAllEducators() {
 
               </DataGrid>
           </div> */}
-        </TableContainer>
+            </TableContainer>
 
-        <br></br>
-        <Divider>
-          <Chip label="End" />
-        </Divider>
-        {/* <div className="app--shell" onClick={openModal}>
+            <br></br>
+            <Divider>
+              <Chip label="End" />
+            </Divider>
+            {/* <div className="app--shell" onClick={openModal}>
           <ModalManager closeFn={closeModal} modal={modalOpen} />
         </div> */}
-        <br></br>
+            <br></br>
 
-        <Grid container justifyContent={"center"}>
-          <Button
-            className="btn-choose"
-            variant="outlined"
-            type="submit"
-            onClick={handleOpen}
-          >
-            Create new Instructor
-          </Button>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <CreateInstructorForm
-              closeModalFunc={handleClose}
-              refreshProp={refreshFunction}
-            ></CreateInstructorForm>
-          </Modal>
+            <Grid container justifyContent={"center"}>
+              <Button
+                className="btn-choose"
+                variant="outlined"
+                type="submit"
+                onClick={handleOpen}
+              >
+                Create new Instructor
+              </Button>
+              <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <CreateInstructorForm
+                  closeModalFunc={handleClose}
+                  refreshProp={refreshFunction}
+                ></CreateInstructorForm>
+              </Modal>
+            </Grid>
+          </Paper>
         </Grid>
-      </Paper>
-    </div>
+      </Grid>
+    </div >
   );
 }

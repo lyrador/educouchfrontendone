@@ -1,11 +1,12 @@
-import { Button, Paper, Modal  } from "@mui/material";
+import { Button, Paper, Modal } from "@mui/material";
 import * as React from "react";
 import { useState } from "react";
-import { Link, useLocation, useParams} from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import SettingsDrawer from "../components/SettingsDrawer";
 import CreateInstructorForm from "../components/CreateInstructorForm";
 import DeleteInstructor from "../components/DeleteInstructor";
 import UpdateInstructorAccessRight from "../components/UpdateInstructorAccessRight";
+import { Divider, Chip, Grid, setRef } from "@mui/material";
 
 export default function ViewInstructor() {
   const [instructor, setInstructor] = useState("");
@@ -44,77 +45,84 @@ export default function ViewInstructor() {
 
   return (
     <div>
-      <SettingsDrawer></SettingsDrawer>
-      <h1>View Instructor Profile</h1>
 
-      <Paper elevation={3} style={paperStyle}>
-        <Paper
-          elevation={6}
-          style={{ margin: "10px", padding: "15px", textAlign: "left" }}
-        >
-          <Link to={"/viewAllEducators"}>
-            <Button>back</Button>
-          </Link>
-        </Paper>
-        <Paper
-          elevation={6}
-          style={{ margin: "10px", padding: "15px", textAlign: "left" }}
-          key={instructor.instructorId}
-        >
-          Profile Picture:
-          <img
-            className="preview my20"
-            src={instructor.profilePictureURL}
-            alt=""
-            style={{ height: "10%", width: "10%" }}
-          />
-          <br/>
-          InstructorId: {instructor.instructorId}
-          <br />
-          Name: {instructor.name}
-          <br />
-          Acces Right: {instructor.instructorAccessRight}
-          <br />
-          Email: {instructor.email}
-          <br />
-          Username: {instructor.username}
-          <br />
-        </Paper>
-        <Paper
-          elevation={6}
-          style={{ margin: "10px", padding: "15px", textAlign: "left" }}
-        >
-          <Button
-            onClick={handleOpen1}>Delete Instructor</Button>
-          <Modal
-            open={open1}
-            onClose={handleClose1}
-            aria-labelledby="modal-deleteInstrucor-title"
-            aria-describedby="modal-deleteInstrucor-description"
-          >
-            <DeleteInstructor
-              closeModalFunc={handleClose1}
-              instructorProps={instructor}
-            ></DeleteInstructor>
-          </Modal>
-          <br/>
-          <Button
-          onClick={handleOpen}>Edit Instructor Access Right</Button>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <UpdateInstructorAccessRight
-              closeModalFunc={handleClose}
-              instructorProps={instructor}
-              instructorAccessRightProps={instructor.instructorAccessRight}
+      <Grid container spacing={0}>
+        <Grid item xs={2}>
+          <SettingsDrawer></SettingsDrawer>
+        </Grid>
+        <Grid item xs={10}>
+          <h1>View Instructor Profile</h1>
+
+          <Paper elevation={3} style={paperStyle}>
+            <Paper
+              elevation={6}
+              style={{ margin: "10px", padding: "15px", textAlign: "left" }}
             >
-            </UpdateInstructorAccessRight>
-          </Modal>
-        </Paper>
-      </Paper>
+              <Link to={"/viewAllEducators"}>
+                <Button>back</Button>
+              </Link>
+            </Paper>
+            <Paper
+              elevation={6}
+              style={{ margin: "10px", padding: "15px", textAlign: "left" }}
+              key={instructor.instructorId}
+            >
+              Profile Picture:
+              <img
+                className="preview my20"
+                src={instructor.profilePictureURL}
+                alt=""
+                style={{ height: "10%", width: "10%" }}
+              />
+              <br />
+              InstructorId: {instructor.instructorId}
+              <br />
+              Name: {instructor.name}
+              <br />
+              Acces Right: {instructor.instructorAccessRight}
+              <br />
+              Email: {instructor.email}
+              <br />
+              Username: {instructor.username}
+              <br />
+            </Paper>
+            <Paper
+              elevation={6}
+              style={{ margin: "10px", padding: "15px", textAlign: "left" }}
+            >
+              <Button
+                onClick={handleOpen1}>Delete Instructor</Button>
+              <Modal
+                open={open1}
+                onClose={handleClose1}
+                aria-labelledby="modal-deleteInstrucor-title"
+                aria-describedby="modal-deleteInstrucor-description"
+              >
+                <DeleteInstructor
+                  closeModalFunc={handleClose1}
+                  instructorProps={instructor}
+                ></DeleteInstructor>
+              </Modal>
+              <br />
+              <Button
+                onClick={handleOpen}>Edit Instructor Access Right</Button>
+              <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <UpdateInstructorAccessRight
+                  closeModalFunc={handleClose}
+                  instructorProps={instructor}
+                  instructorAccessRightProps={instructor.instructorAccessRight}
+                >
+                </UpdateInstructorAccessRight>
+              </Modal>
+            </Paper>
+          </Paper>
+        </Grid>
+      </Grid>
     </div>
   );
 }

@@ -344,7 +344,7 @@ function TeachingAssessmentList(props) {
     if (assessments.length === 0) {
       return (
         <TableRow>
-          <TableCell colSpan={4} style={{ textAlign: "center" }}>
+          <TableCell colSpan={7} style={{ textAlign: "center" }}>
             There are currently no assessments in this course!
           </TableCell>
         </TableRow>

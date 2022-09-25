@@ -20,26 +20,6 @@ function SettingsDrawer(props) {
     <div>
       <div className="drawerContainer">
         <List>
-          {["Hello, " + user.username].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {["LearnerCreation"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton component={Link} to="/learnerCreation">
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
           {["View Educators"].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton component={Link} to="/viewAllEducators">

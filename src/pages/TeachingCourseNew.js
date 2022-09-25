@@ -19,7 +19,7 @@ export default function TeachingCourseNew(props) {
     <>
       <Grid container spacing={0}>
         <Grid item xs={2}>
-          <TeachingCoursesDrawer></TeachingCoursesDrawer>
+          {/* <TeachingCoursesDrawer></TeachingCoursesDrawer> */}
         </Grid>
         <Grid item xs={10}>
           <TeachingCourseCreate></TeachingCourseCreate>
