@@ -276,7 +276,6 @@ function TeachingAssessmentList(props) {
                       <TableCell>{assessment.assessmentStartDate}</TableCell>
                       <TableCell>{assessment.assessmentEndDate}</TableCell>
                       <TableCell>{assessment.assessmentIsOpen}</TableCell>
-                      <TableCell>{assessmentType}</TableCell>
                       <TableCell>
                         <div>
                           <IconButton
