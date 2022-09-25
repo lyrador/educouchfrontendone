@@ -9,6 +9,7 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
+import RegisterOrganisationAdminPage from "../pages/RegisterOrganisationAdminPage";
 
 function TeachingCoursesCards() {
   const auth = useAuth();
@@ -51,13 +52,28 @@ function TeachingCoursesCards() {
   const [courses, setCourses] = useState([]);
   const [learnerCourses, setLearnerCourses] = React.useState([]);
   const [instructorCourses, setInstructorCourses] = React.useState([]);
+  const [instructor, setInstructor] = React.useState(''); 
+  const [organisation, setOrganisation] = React.useState(''); 
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   React.useEffect(() => {
-    fetch("http://localhost:8080/course/courses")
+    fetch("http://localhost:8080/educator/findInstructor?instructorUsername=" + user.username)
+    .then((res) => res.json())
+    .then((result) => {
+      setInstructor(result)
+      console.log(instructor)
+    })
+  }, []); 
+
+  console.log(instructor.instructorId)
+
+
+  React.useEffect(() => {
+    fetch("http://localhost:8080/course/instructors/" + instructor.instructorId + "/courses")
       .then((res) => res.json())
       .then((result) => {
         setCourses(result);
@@ -76,7 +92,7 @@ function TeachingCoursesCards() {
             setInstructorCourses([...instructorCourses, approvedCourse])
           )
       );
-  }, []);
+  }, [instructor]);
 
   console.log(courses);
 
@@ -93,8 +109,8 @@ function TeachingCoursesCards() {
                     onChange={handleChange}
                     aria-label="basic tabs example"
                   >
-                    <Tab label="Drafts" {...a11yProps(0)} />
-                    {/* <Tab label="Ongoing" {...a11yProps(1)} />
+                    {/*<Tab label="Drafts" {...a11yProps(0)} />
+                     <Tab label="Ongoing" {...a11yProps(1)} />
                             <Tab label="Completed" {...a11yProps(2)} /> */}
                   </Tabs>
                 )}

@@ -3,8 +3,13 @@ import { useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Container ,Paper, Button, MenuItem} from '@mui/material';
+import { useAuth } from "../context/AuthProvider";
 
 export default function TeachingCourseCreate() {
+
+    const auth = useAuth();
+    const user = auth.user;
+
     const paperStyle={
         padding: '50px 20px', 
         width:600,
@@ -55,6 +60,17 @@ export default function TeachingCourseCreate() {
     const[courseMaxScoreError, setCourseMaxScoreError] = useState({value: false, errorMessage:''})
     const[ageGroupError, setAgeGroupError] = useState({value: false, errorMessage:''})
     const[courseApprovalStatusError, setCourseApprovalStatusError] = useState({value: false, errorMessage:''})
+    const [instructor, setInstructor] = React.useState(''); 
+    
+    React.useEffect(() => {
+        fetch("http://localhost:8080/educator/findInstructor?instructorUsername=" + user.username)
+        .then((res) => res.json())
+        .then((result) => {
+          setInstructor(result)
+          console.log(instructor)
+        })
+      }, []); 
+
 
     const handleChange1 = (event) => {
         setAgeGroup(event.target.value); 
@@ -98,7 +114,7 @@ export default function TeachingCourseCreate() {
         }
 
         if (courseCode && courseTitle && courseDescription && courseTimeline && courseMaxScore && ageGroup && courseApprovalStatus) {
-            fetch("http://localhost:8080/course/courses", {
+            fetch("http://localhost:8080/course/" + instructor.instructorId + "/courses", {
                 method:"POST", 
                 headers:{"Content-Type":"application/json"}, 
                 body:JSON.stringify(course)
