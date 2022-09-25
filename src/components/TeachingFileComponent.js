@@ -24,7 +24,7 @@ import InstantSuccessMessage from './InstantSuccessMessage';
 
 
 
-function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate, changeFolderIdWrapper}) {
+function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate, refresh }) {
     
     // opening mini menu
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -105,9 +105,7 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
     const navigate = useNavigate();
     const navigateChildFolder = () => {
         navigate(`/myTeachingCourse/${courseId}/files/${folder.folderId}`);
-        changeFolderIdWrapper(folder.folderId);
-        console.log("Running " + folder.folderId);
-        
+        window.location.reload(false);
     };
 
 

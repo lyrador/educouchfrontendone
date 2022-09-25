@@ -55,6 +55,7 @@ export default function ControlledAccordions({ course, refresh }) {
                 setMessage("Course is live now. ");
                 setError(false);
                 setSuccess(true);
+                setGoLiveDialogBox(false);
                 refresh();
             }
             ).catch((err) => {
