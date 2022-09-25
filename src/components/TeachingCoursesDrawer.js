@@ -10,10 +10,14 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from "../context/AuthProvider";
 
 import '../css/DrawerLeft.css';
 
 function TeachingCoursesDrawer(props) {
+
+  const auth = useAuth();
+  const user = auth.user;
 
   const location = useLocation();
   const coursePath = location.pathname.split('/').slice(0,3).join('/')
@@ -54,13 +58,15 @@ function TeachingCoursesDrawer(props) {
         <br/><br/>
         <Divider />
             <List>
-                <Link to={{
-                  pathname: `${coursePath}/courseSettings`,
-                }} style={{textDecoration: 'none', color: 'black'}}>
-                    <ListItemButton>
-                      <ListItemText primary="Course Settings"/>
-                    </ListItemButton>
-                </Link>
+              {user.userType != "LEARNER" && (
+                  <Link to={{
+                    pathname: `${coursePath}/courseSettings`,
+                  }} style={{textDecoration: 'none', color: 'black'}}>
+                      <ListItemButton>
+                        <ListItemText primary="Course Settings"/>
+                      </ListItemButton>
+                  </Link>
+                )}
                 <Link to={`${coursePath}/schedule`} style={{textDecoration: 'none', color: 'black'}}>
                     <ListItemButton>
                       <ListItemText primary="Schedule"/>
