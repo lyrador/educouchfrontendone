@@ -31,6 +31,7 @@ import Signup from "./pages/Signup";
 import RegisterPage from "./pages/RegisterPage";
 import RegisterLearnerPage from "./pages/RegisterLearnerPage";
 import RegisterOrganisationAdminPage from "./pages/RegisterOrganisationAdminPage";
+import CourseExplorerPage from "./pages/CourseExplorerPage";
 
 function App() {
   return (
@@ -67,6 +68,16 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingCoursesList />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/courseExplorer"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CourseExplorerPage />
                 </RequireAuth>
               }
             />

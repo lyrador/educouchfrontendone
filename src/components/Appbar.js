@@ -121,52 +121,57 @@ export default function Appbar() {
             </div> */}
             <div style={{ marginLeft: "auto" }}>
               <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
-                  <IconButton
-                    onClick={handleOpenUserMenu}
-                    sx={{ p: 0 }}
-                    style={{ marginLeft: "auto" }}
+                <div style={{float: 'left', paddingRight: 10}}>
+                  <Typography variant="body2">Name: {user.name}</Typography>
+                  <Typography variant="body2">Role: {user.userType}</Typography>
+                </div>
+                <div style={{float: 'right'}}>
+                  <Tooltip title="Open settings">
+                    <IconButton
+                      onClick={handleOpenUserMenu}
+                      sx={{ p: 0 }}
+                      style={{ marginLeft: "auto" }}
+                    >
+                      <Avatar alt="avatar" src={profilePictureURL} />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    id="menu-appbar"
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
                   >
-                    <Avatar alt="avatar" src={profilePictureURL} />
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                >
-                  <Link
-                    to="/account"
-                    style={{ textDecoration: "none", color: "black" }}
-                    onClick={handleCloseUserMenu}
-                  >
-                    <MenuItem style={{ justifyContent: "center" }}>
-                      <AccountCircleIcon color="disabled" />
+                    <Link
+                      to="/account"
+                      style={{ textDecoration: "none", color: "black" }}
+                      onClick={handleCloseUserMenu}
+                    >
+                      <MenuItem style={{ justifyContent: "center" }}>
+                        <AccountCircleIcon color="disabled" />
+                        &nbsp;
+                        <Typography>Profile</Typography>
+                      </MenuItem>
+                    </Link>
+                    <MenuItem
+                      style={{ justifyContent: "center" }}
+                      onClick={handleLogout}
+                    >
+                      <LogoutIcon color="disabled" />
                       &nbsp;
-                      <Typography>Profile</Typography>
+                      <Typography>Logout</Typography>
                     </MenuItem>
-                  </Link>
-                  <MenuItem
-                    style={{ justifyContent: "center" }}
-                    onClick={handleLogout}
-                  >
-                    <LogoutIcon color="disabled" />
-                    &nbsp;
-                    <Typography>Logout</Typography>
-                  </MenuItem>
-                </Menu>
-                {/* <Typography>{user.name}</Typography> */}
+                  </Menu>
+                </div>
               </Box>
             </div>
           </Toolbar>
@@ -180,14 +185,16 @@ export default function Appbar() {
                 </li>
                 <li className="nav-item">
                   <Link to="/myTeachingCoursesList" className="nav-links">
-                    { user.userType == "LEARNER" ? 'My Courses' : 'Teaching Courses'}
+                    {user.userType == "LEARNER" ? 'My Courses' : 'Teaching Courses'}
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <Link to="/home" className="nav-links">
-                    Course Explorer
-                  </Link>
-                </li>
+                {user.userType === "LEARNER" &&
+                  <li className="nav-item">
+                    <Link to="/courseExplorer" className="nav-links">
+                      Course Explorer
+                    </Link>
+                  </li>
+                }
 
                 {user.userType === "ORG_ADMIN" && (
                   <li className="nav-item">
