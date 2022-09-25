@@ -24,7 +24,27 @@ import TextField from '@mui/material/TextField';
 
 import { useAuth } from '../context/AuthProvider';
 
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 function TeachingDiscussion(props) {
+
+    const [openSnackbar, setOpenSnackbar] = React.useState(false);
+
+    const handleClickSnackbar = () => {
+        setOpenSnackbar(true);
+    };
+
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSnackbar(false);
+    };
 
     const auth = useAuth()
     const user = auth.user
@@ -46,6 +66,9 @@ function TeachingDiscussion(props) {
     const [content,setContent]=useState('')
     const [comments,setComments]=useState([])
 
+    const [commentTitleError, setCommentTitleError] = useState({ value: false, errorMessage: '' })
+    const [contentError, setContentError] = useState({ value: false, errorMessage: '' })
+
     const [refreshPage,setRefreshPage]=useState('')
 
     React.useEffect(() => {
@@ -61,84 +84,82 @@ function TeachingDiscussion(props) {
 
     const createComment=(e)=>{
         e.preventDefault()
-        var createdByUserId = user.userId
-        var createdByUserName = user.username
-        var createdByUserType = user.userType
-        const newComment={commentTitle, content, createdByUserId, createdByUserName, createdByUserType}
-        console.log(newComment)
-        fetch("http://localhost:8080/comment/forumDiscussions/" + discussionId + "/comments", {
-            method:"POST", 
-            headers:{"Content-Type":"application/json"}, 
-            body:JSON.stringify(newComment)
-        }).then(()=>{
-            console.log("New Comment Created Successfully!")
-            setRefreshPage(true)
-            setCommentTitle("")
-            setContent("")
-        })
+        setCommentTitleError({ value: false, errorMessage: '' })
+        setContentError({ value: false, errorMessage: '' })
+        if (commentTitle == '') {
+            setCommentTitleError({ value: true, errorMessage: 'Comment Title cannot be empty!' })
+        }
+        if (content == '') {
+            setContentError({ value: true, errorMessage: 'Content cannot be empty!' })
+        }
+        if (commentTitle && content) {
+            var createdByUserId = user.userId
+            var createdByUserName = user.username
+            var createdByUserType = user.userType
+            const newComment={commentTitle, content, createdByUserId, createdByUserName, createdByUserType}
+            console.log(newComment)
+            fetch("http://localhost:8080/comment/forumDiscussions/" + discussionId + "/comments", {
+                method:"POST", 
+                headers:{"Content-Type":"application/json"}, 
+                body:JSON.stringify(newComment)
+            }).then(()=>{
+                console.log("New Comment Created Successfully!")
+                setRefreshPage(true)
+                setCommentTitle("")
+                setContent("")
+                handleClickSnackbar()
+            })
+        }
     }
 
-      const bull = (
-        <Box
-            component="span"
-            sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-        >
-            •
-        </Box>
-        );
-    
-        const card = (
-        <React.Fragment>
-            <CardContent>
-            {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                Comment
-            </Typography>
-            <Typography variant="h5" component="div">
-                be{bull}nev{bull}o{bull}lent
-            </Typography>
-            <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                adjective
-            </Typography>
-            <Typography variant="body2">
-                well meaning and kindly.
-                <br />
-                {'"a benevolent smile"'}
-            </Typography> */}
-            <TextField id="outlined-basic" label="Comment Title" variant="outlined" fullWidth 
-                style={{margin: '6px 0'}}
-                value={commentTitle}
-                onChange={(e)=>setCommentTitle(e.target.value)}
-            />
-            {/* <TextField id="outlined-basic" label="Comment Content" variant="outlined" fullWidth 
-                style={{margin: '5px 0'}}
-                value={content}
-                onChange={(e)=>setContent(e.target.value)}
-            /> */}
-            <TextField
-                id="filled-multiline-static" label="Comment Content" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
-                style={{margin: '6px 0'}}
-                value={content}
-                onChange={(e)=>setContent(e.target.value)}
-            />
-            </CardContent>
-            <CardActions>
-            <Button 
-                size="small"
-                onClick={createComment}>
-                Post
-            </Button>
-            </CardActions>
-        </React.Fragment>
-        );
+    const bull = (
+    <Box
+        component="span"
+        sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
+    >
+        •
+    </Box>
+    );
 
-        const renderEmptyRowMessage = () => {
-            if (comments.length === 0) {
-              return <div style={{textAlign: 'center'}}>
-                        There are currently no comments in this discussion!
-                    </div>
-                ;
-            }
+    const card = (
+    <React.Fragment>
+        <CardContent>
+        <TextField id="outlined-basic" label="Comment Title" variant="outlined" fullWidth 
+            required
+            style={{margin: '6px 0'}}
+            value={commentTitle}
+            onChange={(e)=>setCommentTitle(e.target.value)}
+            error={commentTitleError.value}
+            helperText={commentTitleError.errorMessage}
+        />
+        <TextField
+            id="filled-multiline-static" label="Comment Content" multiline rows={4} defaultValue="Default Value" variant="filled" fullWidth
+            required
+            style={{margin: '6px 0'}}
+            value={content}
+            onChange={(e)=>setContent(e.target.value)}
+            error={contentError.value}
+            helperText={contentError.errorMessage}
+        />
+        </CardContent>
+        <CardActions>
+        <Button 
+            size="small"
+            onClick={createComment}>
+            Post
+        </Button>
+        </CardActions>
+    </React.Fragment>
+    );
+
+    const renderEmptyRowMessage = () => {
+        if (comments.length === 0) {
+            return <div style={{textAlign: 'center'}}>
+                    There are currently no comments in this discussion!
+                </div>
+            ;
         }
+    }
 
     return (
         <div>
@@ -147,6 +168,11 @@ function TeachingDiscussion(props) {
                     <TeachingCoursesDrawer></TeachingCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
+                    <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
+                        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+                            Comment Posted Succesfully!
+                        </Alert>
+                    </Snackbar>
                     <div style={{marginRight: '20px'}}>
                         <Breadcrumbs aria-label="breadcrumb">
                             <Link to={`${forumPath}`} 
@@ -186,6 +212,8 @@ function TeachingDiscussion(props) {
                                     createdByUserType={comment.createdByUserType}
                                     createdByUserId={comment.createdByUserId}
                                     profilePictureURL={comment.createdByUserProfilePictureURL}
+                                    refreshPage={refreshPage}
+                                    setRefreshPage={setRefreshPage}
                                     />
                                     ))
                                 }

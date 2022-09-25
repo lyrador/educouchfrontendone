@@ -133,6 +133,10 @@ function Account(props) {
     const [editedEmail,setEditedEmail]=useState(user.email)
     const [editedPassword,setEditedPassword]=useState(user.password)
 
+    const logout = () => {
+        auth.logout()
+    }
+
     const handleClickOpen = () => {
       setOpen(true);
     };
@@ -197,6 +201,7 @@ function Account(props) {
         }).then(()=>{
             console.log("Account Edited Successfully!")
             handleEditDialogClose()
+            handleClickOpen()
         })
     }
 
@@ -413,6 +418,19 @@ function Account(props) {
                         <Button onClick={editAccount} autoFocus>
                         Edit
                         </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle>Successfully Updated!</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Your account has been edited succesfully. Please proceed to log back in to reflect the changes.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={logout}>Log Out</Button>
                     </DialogActions>
                 </Dialog>
             </div>
