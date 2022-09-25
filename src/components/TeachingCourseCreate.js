@@ -5,7 +5,34 @@ import TextField from '@mui/material/TextField';
 import { Container ,Paper, Button, MenuItem} from '@mui/material';
 import { useAuth } from "../context/AuthProvider";
 
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 export default function TeachingCourseCreate() {
+
+    const [openSnackbar, setOpenSnackbar] = React.useState(false);
+
+    const [refreshPage, setRefreshPage] = useState('')
+
+    const handleClickSnackbar = () => {
+        setOpenSnackbar(true);
+    };
+
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSnackbar(false);
+    };
+
+
+
+
+
 
     const auth = useAuth();
     const user = auth.user;
@@ -28,68 +55,46 @@ export default function TeachingCourseCreate() {
         },
     ];
 
-    const courseApprovalStatuses = [
-        {
-            value: 'Pending Approval', 
-        }, 
-        {
-            value: 'Live',
-        }, 
-        {
-            value: 'Under Construction',
-        }, 
-        {
-            value: 'Rejected',
-        }, 
-        {
-            value: 'Appealed',
-        },
-    ];
-
     const[courseCode,setCourseCode] = useState('')
     const[courseTitle,setCourseTitle]=useState('')
     const[courseDescription, setCourseDescription] = useState('')
     const[courseTimeline, setCourseTimeline] = useState('')
     const[courseMaxScore, setCourseMaxScore] = useState('')
     const[ageGroup, setAgeGroup] = useState('')
-    const[courseApprovalStatus, setCourseApprovalStatus] = useState('')
     const[courseCodeError,setCourseCodeError] = useState({value: false, errorMessage:''})
     const[courseTitleError,setCourseTitleError]=useState({value: false, errorMessage:''})
     const[courseDescriptionError, setCourseDescriptionError] = useState({value: false, errorMessage:''})
     const[courseTimelineError, setCourseTimelineError] = useState({value: false, errorMessage:''})
     const[courseMaxScoreError, setCourseMaxScoreError] = useState({value: false, errorMessage:''})
     const[ageGroupError, setAgeGroupError] = useState({value: false, errorMessage:''})
-    const[courseApprovalStatusError, setCourseApprovalStatusError] = useState({value: false, errorMessage:''})
+
     const [instructor, setInstructor] = React.useState(''); 
     
     React.useEffect(() => {
+        setRefreshPage(false)
         fetch("http://localhost:8080/educator/findInstructor?instructorUsername=" + user.username)
         .then((res) => res.json())
         .then((result) => {
           setInstructor(result)
           console.log(instructor)
         })
-      }, []); 
+      }, [refreshPage]); 
 
 
     const handleChange1 = (event) => {
         setAgeGroup(event.target.value); 
     }; 
 
-    const handleChange2 = (event) => {
-        setCourseApprovalStatus(event.target.value); 
-    }; 
 
     const handleClick=(e)=>{
         e.preventDefault()
-        const course={courseCode, courseTitle, courseDescription, courseTimeline, courseMaxScore, ageGroup, courseApprovalStatus}
+        const course={courseCode, courseTitle, courseDescription, courseTimeline, courseMaxScore, ageGroup}
         setCourseCodeError({value:false, errorMessage:''})
         setCourseTitleError({value: false, errorMessage:''})
         setCourseDescriptionError({value: false, errorMessage:''})
         setCourseTimelineError({value: false, errorMessage:''})
         setCourseMaxScoreError({value: false, errorMessage:''})
         setAgeGroupError({value: false, errorMessage:''})
-        setCourseApprovalStatusError({value: false, errorMessage:''})
 
         if (courseCode == '') {
             setCourseCodeError({value:true, errorMessage:'You must enter a course code'})
@@ -109,17 +114,22 @@ export default function TeachingCourseCreate() {
         if (ageGroup == '') {
             setAgeGroupError({value:true, errorMessage:'You must select a course age group'})
         }
-        if (courseApprovalStatus == '') {
-            setCourseApprovalStatusError({value:true, errorMessage:'You must select a course approval status'})
-        }
 
-        if (courseCode && courseTitle && courseDescription && courseTimeline && courseMaxScore && ageGroup && courseApprovalStatus) {
+        if (courseCode && courseTitle && courseDescription && courseTimeline && courseMaxScore && ageGroup) {
             fetch("http://localhost:8080/course/" + instructor.instructorId + "/courses", {
                 method:"POST", 
                 headers:{"Content-Type":"application/json"}, 
                 body:JSON.stringify(course)
             }).then(()=>{
                 console.log("New Course Created Successfully!")  
+                setRefreshPage(true)
+                setCourseCode("")
+                setCourseTitle("")
+                setCourseDescription("")
+                setCourseTimeline("")
+                setCourseMaxScore("")
+                setAgeGroup("")
+                handleClickSnackbar()
             })
         } 
     }
@@ -128,6 +138,11 @@ export default function TeachingCourseCreate() {
   return (
     <form noValidate autoComplete='off' onSubmit={handleClick}>
         <Container>
+            <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
+                <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+                    Course Initialised Succesfully!
+                </Alert>
+            </Snackbar>
             <Paper elevation={3} style={paperStyle}>
                 <h1 style={{color: "blue"}}> Create New Course </h1>
             <Box
@@ -187,20 +202,6 @@ export default function TeachingCourseCreate() {
             helperText={ageGroupError.errorMessage}
             >
                 {ageGroups.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                        {option.value}
-                    </MenuItem>
-                ))}
-            </TextField>
-
-            <TextField id="outlined-select-status" select label="Approval Status" fullWidth
-            required
-            value={courseApprovalStatus}
-            onChange={handleChange2}
-            error={courseApprovalStatusError.value}
-            helperText={courseApprovalStatusError.errorMessage}
-            >
-                {courseApprovalStatuses.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                         {option.value}
                     </MenuItem>
