@@ -59,7 +59,8 @@ export default function CourseTags({ courseId }) {
 
     const processTagAddition = () => {
         fetch("http://localhost:8080/categoryTag/addTagToCourse?courseId=" + courseId + "&tagId=" + value).then(() => {
-            refresh();
+            alert("Successfully add a tag. ");      
+        refresh();
         }).catch((err) => {
             alert(err.message);
         });
@@ -85,7 +86,8 @@ export default function CourseTags({ courseId }) {
     const [tagToRemove, setTagToRemove] = useState(0);
     const processTagDeletion = (tagName) => {
         fetch("http://localhost:8080/categoryTag/removeTagFromCourse?courseId=" + courseId + "&tagId=" + tagToRemove).then(() => {
-            refresh();
+        alert("Successfully delete a tag. ");    
+        refresh();
         }).catch((err) => {
             alert(err.message);
         });

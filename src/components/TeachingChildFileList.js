@@ -36,10 +36,26 @@ function TeachingChildFileList() {
     const [folderList, setFolderList] = useState([]);
     const [attachmentList, setAttachmentList] = useState([]);
 
+    function changeFolderIdWrapper(num){
+        console.log("Reach " + num);
+        fetch("http://localhost:8080/folder/getFolderByFolderId/" + num)
+            .then(res => res.json())
+            .then((result) => {
+                
+                var fol = result;
+                setFolderList(fol.childFolders);
+                setAttachmentList(fol.attachments);
+            }
+            ).catch((err) => {
+                console.log(err.message);
+            });
+    }
+
     React.useEffect(() => {
         fetch("http://localhost:8080/folder/getFolderByFolderId/" + folderId)
             .then(res => res.json())
             .then((result) => {
+                
                 var fol = result;
                 setFolderList(fol.childFolders);
                 setAttachmentList(fol.attachments);
@@ -74,6 +90,8 @@ function TeachingChildFileList() {
     const closeCreateFolderDialogBox = () => {
         setOpen(false);
     };
+
+
 
 
     // upload dialog box
@@ -231,11 +249,11 @@ function TeachingChildFileList() {
                     <div>
                         {folderList && folderList.length > 0 &&
                             folderList
-                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate} refresh={refresh}></TeachingFileComponent>))
+                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate} changeFolderIdWrapper = {changeFolderIdWrapper}></TeachingFileComponent>))
                         }
                         {attachmentList && attachmentList.length > 0 &&
                             attachmentList
-                                .map((attachment) => (<AttachmentComponent attachment={attachment} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate} refresh={refresh}></AttachmentComponent>))
+                                .map((attachment) => (<AttachmentComponent attachment={attachment} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate}></AttachmentComponent>))
                         }
                         {(!folderList || folderList.length <= 0) && (!attachmentList || attachmentList.length <= 0) &&
                             <p>This folder doesn't have any content currently.</p>}
