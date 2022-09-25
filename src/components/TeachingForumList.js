@@ -33,7 +33,53 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useAuth } from "../context/AuthProvider";
 import { render } from "@testing-library/react";
 
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 function TeachingForumList(props) {
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+
+  const handleClickSnackbar = () => {
+    setOpenSnackbar(true);
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
+
+  const [openDeleteSnackbar, setOpenDeleteSnackbar] = React.useState(false);
+
+  const handleClickDeleteSnackbar = () => {
+    setOpenDeleteSnackbar(true);
+  };
+
+  const handleCloseDeleteSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenDeleteSnackbar(false);
+  };
+
+  const [openEditSnackbar, setOpenEditSnackbar] = React.useState(false);
+
+  const handleClickEditSnackbar = () => {
+    setOpenEditSnackbar(true);
+  };
+
+  const handleCloseEditSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenEditSnackbar(false);
+  };
+
   const auth = useAuth();
   const user = auth.user;
 
@@ -46,6 +92,10 @@ function TeachingForumList(props) {
   const [forums, setForums] = useState([]);
   const [forumTitle, setForumTitle] = useState("");
   const [forumIdToDelete, setForumIdToDelete] = useState("");
+  const [forumTitleError, setForumTitleError] = useState({
+    value: false,
+    errorMessage: "",
+  });
 
   const [refreshPage, setRefreshPage] = useState("");
 
@@ -84,12 +134,7 @@ function TeachingForumList(props) {
     setDeleteDialogOpen(false);
   };
 
-  const handleClickEditDialogOpen = (
-    event,
-    forumId,
-    forumTitle,
-    forumDescription
-  ) => {
+  const handleClickEditDialogOpen = (event, forumId, forumTitle) => {
     setEditForumTitle(forumTitle);
     setForumIdToEdit(forumId);
     setEditDialogOpen(true);
@@ -101,26 +146,35 @@ function TeachingForumList(props) {
 
   const createNewForum = (e) => {
     e.preventDefault();
-    var createdByUserId = user.userId;
-    var createdByUserName = user.username;
-    var createdByUserType = user.userType;
-    const newForum = {
-      forumTitle,
-      createdByUserId,
-      createdByUserName,
-      createdByUserType,
-    };
-    console.log(newForum);
-    fetch("http://localhost:8080/forum/courses/" + courseId + "/forums", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newForum),
-    }).then(() => {
-      console.log("New Forum Created Successfully!");
-      setRefreshPage(true);
-      setForumTitle("");
-      handleClose();
-    });
+    setForumTitleError({ value: false, errorMessage: "" });
+    if (forumTitle == "") {
+      setForumTitleError({
+        value: true,
+        errorMessage: "Forum Title cannot be empty!",
+      });
+    } else {
+      var createdByUserId = user.userId;
+      var createdByUserName = user.username;
+      var createdByUserType = user.userType;
+      const newForum = {
+        forumTitle,
+        createdByUserId,
+        createdByUserName,
+        createdByUserType,
+      };
+      console.log(newForum);
+      fetch("http://localhost:8080/forum/courses/" + courseId + "/forums", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newForum),
+      }).then(() => {
+        console.log("New Forum Created Successfully!");
+        setRefreshPage(true);
+        setForumTitle("");
+        handleClose();
+        handleClickSnackbar();
+      });
+    }
   };
 
   const deleteForum = (e) => {
@@ -133,6 +187,7 @@ function TeachingForumList(props) {
       console.log("Forum Deleted Successfully!");
       setRefreshPage(true);
       handleDeleteDialogClose();
+      handleClickDeleteSnackbar();
     });
   };
 
@@ -148,6 +203,7 @@ function TeachingForumList(props) {
       console.log("Forum Edited Successfully!");
       setRefreshPage(true);
       handleEditDialogClose();
+      handleClickEditSnackbar();
     });
   };
 
@@ -163,6 +219,37 @@ function TeachingForumList(props) {
     }
   };
 
+  const renderExtraActions = (
+    forumId,
+    forumTitle,
+    createdByUserId,
+    createdByUserType
+  ) => {
+    if (
+      createdByUserId === user.userId &&
+      createdByUserType === user.userType
+    ) {
+      return (
+        <div>
+          <IconButton
+            aria-label="settings"
+            onClick={(event) => handleClickDeleteDialogOpen(event, forumId)}
+          >
+            <DeleteIcon />
+          </IconButton>
+          <IconButton
+            aria-label="settings"
+            onClick={(event) =>
+              handleClickEditDialogOpen(event, forumId, forumTitle)
+            }
+          >
+            <EditIcon />
+          </IconButton>
+        </div>
+      );
+    }
+  };
+
   return (
     <div>
       <Grid container spacing={0}>
@@ -170,6 +257,45 @@ function TeachingForumList(props) {
           <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
         </Grid>
         <Grid item xs={10}>
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseSnackbar}
+          >
+            <Alert
+              onClose={handleCloseSnackbar}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
+              Forum Created Succesfully!
+            </Alert>
+          </Snackbar>
+          <Snackbar
+            open={openDeleteSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseDeleteSnackbar}
+          >
+            <Alert
+              onClose={handleCloseDeleteSnackbar}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
+              Forum Deleted Succesfully!
+            </Alert>
+          </Snackbar>
+          <Snackbar
+            open={openEditSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseEditSnackbar}
+          >
+            <Alert
+              onClose={handleCloseEditSnackbar}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
+              Forum Updated Succesfully!
+            </Alert>
+          </Snackbar>
           <Breadcrumbs aria-label="breadcrumb">
             <LinkMaterial
               underline="hover"
@@ -225,26 +351,12 @@ function TeachingForumList(props) {
                       <TableCell>{forum.createdDateTime}</TableCell>
                       <TableCell>
                         <div>
-                          <IconButton
-                            aria-label="settings"
-                            onClick={(event) =>
-                              handleClickDeleteDialogOpen(event, forum.forumId)
-                            }
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                          <IconButton
-                            aria-label="settings"
-                            onClick={(event) =>
-                              handleClickEditDialogOpen(
-                                event,
-                                forum.forumId,
-                                forum.forumTitle
-                              )
-                            }
-                          >
-                            <EditIcon />
-                          </IconButton>
+                          {renderExtraActions(
+                            forum.forumId,
+                            forum.forumTitle,
+                            forum.createdByUserId,
+                            forum.createdByUserType
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -279,9 +391,12 @@ function TeachingForumList(props) {
               label="Forum Title"
               variant="outlined"
               fullWidth
+              required
               style={{ margin: "6px 0" }}
               value={forumTitle}
               onChange={(e) => setForumTitle(e.target.value)}
+              error={forumTitleError.value}
+              helperText={forumTitleError.errorMessage}
             />
           </DialogContent>
           <DialogActions>
