@@ -50,7 +50,8 @@ export default function CreateInstructorForm(props) {
       body: JSON.stringify(educator),
     })
       .then((res) => res.json())
-      .then(props.closeModalFunc());
+      .then(props.closeModalFunc())
+      .then(props.refreshProp());
     console.log("New educator added");
   };
 
@@ -58,7 +59,6 @@ export default function CreateInstructorForm(props) {
     props.closeModalFunc();
     console.log("child cancel called");
   };
-
 
   return (
     <Box
