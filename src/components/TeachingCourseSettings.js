@@ -60,12 +60,13 @@ export default function TeachingCourseSettings(props) {
     const [course, setCourse] = useState('')
 
     React.useEffect(() => {
+        setRefreshPage(false);
         fetch("http://localhost:8080/course/courses/" + courseId).
             then(res => res.json()).then((result) => {
                 setCourse(result);
             }
             )
-    }, [])
+    }, [refreshPage])
 
     const paperStyle = {
         padding: '50px 20px',
@@ -158,7 +159,9 @@ export default function TeachingCourseSettings(props) {
         }).then(()=>{
             console.log("Course Updated Successfully!")  
             setRefreshPage(true)
+            handleClickEditSnackbar();
         })
+        handleClose()
     }
 
     const headingStyle = {
