@@ -31,6 +31,7 @@ import Signup from "./pages/Signup";
 import RegisterPage from "./pages/RegisterPage";
 import RegisterLearnerPage from "./pages/RegisterLearnerPage";
 import RegisterOrganisationAdminPage from "./pages/RegisterOrganisationAdminPage";
+import CourseExplorerPage from "./pages/CourseExplorerPage";
 
 function App() {
   return (
@@ -67,6 +68,16 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingCoursesList />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/courseExplorer"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CourseExplorerPage />
                 </RequireAuth>
               }
             />
@@ -211,15 +222,34 @@ function App() {
               }
             />
 
-            <Route path="/learnerCreation" element={<LearnerCreation />} />
-            <Route path="/viewAllEducators" element={<ViewAllEducators />} />
-            <Route path="/viewInstructor" element={<ViewInstructor />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/register/learner" element={<RegisterLearnerPage />} />
             <Route
               path="/register/educator"
               element={<RegisterOrganisationAdminPage />}
+            />
+            <Route
+              path="/learnerCreation"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerCreation />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/viewAllEducators"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <ViewAllEducators />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/viewInstructor/:instructorUsername"
+              element={<ViewInstructor />}
             />
           </Routes>
         </Router>
