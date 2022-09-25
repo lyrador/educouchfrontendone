@@ -1,7 +1,7 @@
 import * as React from "react";
 import CreateInstructorForm from "../components/CreateInstructorForm";
 import SettingsDrawer from "../components/SettingsDrawer";
-import { Paper, Button, Divider, Chip, Grid, Modal } from "@mui/material";
+import { Paper, Button, Divider, Chip, Grid, Modal, setRef } from "@mui/material";
 import { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -12,12 +12,28 @@ import TableRow from "@mui/material/TableRow";
 import { Link } from "react-router-dom";
 
 export default function ViewAllEducators() {
+  const viewInstructorPath = "/viewInstructor";
   const [instructors, setInstructors] = useState([]);
+  const [refresh, setRefresh] = useState(false);
   const instructorTableStyle = {
     padding: "10px 10px",
     width: 1500,
     margin: "20px auto",
   };
+
+  const refreshFunction = () => {
+    setRefresh(!refresh);
+  }
+
+  const columns = [
+    { field: "instructorId", headerName: "Instructor ID", width: 100 },
+    { field: "name", headerName: "Name", width: 300 },
+    { field: "username", headerName: "Username", width: 300 },
+    { field: "instructorAccessRight", headerName: "Access Right", width: 200 },
+    { field: "course", headerName: "Assigned Course", width: 300 },
+    { field: "viewProfile", headerName: "View Profile", width: 150},
+  ];
+
   const popupStyle = {
     position: "absolute",
     top: "50%",
@@ -44,7 +60,7 @@ export default function ViewAllEducators() {
       .then((result) => {
         setInstructors(result);
       });
-  }, []);
+  }, [refresh]);
 
   return (
     <div>
@@ -62,6 +78,9 @@ export default function ViewAllEducators() {
                 </TableCell>
                 <TableCell align="right">
                   <b>Name</b>
+                </TableCell>
+                <TableCell align="right">
+                  <b>Username</b>
                 </TableCell>
                 <TableCell align="right">
                   <b>Access Right</b>
@@ -82,12 +101,16 @@ export default function ViewAllEducators() {
                 >
                   <TableCell align="right">{instructor.instructorId}</TableCell>
                   <TableCell align="right">{instructor.name}</TableCell>
+                  <TableCell align="right">{instructor.username}</TableCell>
                   <TableCell align="right">
                     {instructor.instructorAccessRight}
                   </TableCell>
                   <TableCell align="right">NULL</TableCell>
                   <TableCell align="right">
-                    <Link to="/viewInstructor">
+                    <Link
+                      to={`${viewInstructorPath}/${instructor.username}`}
+                      state={{ instructorUsername: instructor.username }}
+                    >
                       <Button
                         className="btn-choose"
                         variant="outlined"
@@ -101,6 +124,17 @@ export default function ViewAllEducators() {
               ))}
             </TableBody>
           </Table>
+{/* 
+          <div style={{ height: 400, width: "100%" }}>
+            <DataGrid
+              getRowId={(row) => row.instructorId}
+              rows={instructors}
+              columns={columns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}>
+
+              </DataGrid>
+          </div> */}
         </TableContainer>
 
         <br></br>
@@ -129,6 +163,7 @@ export default function ViewAllEducators() {
           >
             <CreateInstructorForm
               closeModalFunc={handleClose}
+              refreshProp={refreshFunction}
             ></CreateInstructorForm>
           </Modal>
         </Grid>

@@ -7,7 +7,6 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import TeachingCoursesCards from '../components/TeachingCoursesCards';
-import { useAuth } from "../context/AuthProvider";
 
 
 import PropTypes from 'prop-types';
@@ -24,9 +23,6 @@ export default function TeachingCoursesList() {
   //   setCurrPage(newCurrPage);
   // }
 
-  const auth = useAuth();
-  const user = auth.user;
-
   return (
     <>
       <div>
@@ -35,19 +31,17 @@ export default function TeachingCoursesList() {
             <h1 style={{textAlign: 'left', padding: '0 4rem'}}>List of Courses</h1>
           </Grid>
           <Grid item alignItems="stretch" style={{ display: "flex" }}>
-            { ((user.userType === "ORG_ADMIN") || (user.userType === "INSTRUCTOR")) &&
-              <Link to='/myTeachingCourse/new' style={{ textDecoration: 'none' }}>
-                <Button
-                  className="btn-upload"
-                  color="primary"
-                  variant="contained"
-                  component="span"
+            <Link to ='/myTeachingCourse/new' style={{textDecoration: 'none'}}>
+              <Button
+                className="btn-upload"
+                color="primary"
+                variant="contained"
+                component="span"
                 //onClick={uploadImage}
                 >
-                  Create New Course
-                </Button>
-              </Link>
-            }
+                Create New Course
+              </Button>
+            </Link>
           </Grid>
         </Grid>
         <TeachingCoursesCards></TeachingCoursesCards>
