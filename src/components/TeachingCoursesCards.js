@@ -87,7 +87,7 @@ function TeachingCoursesCards() {
           <Box sx={{ width: "100%" }}>
             <div style={{ paddingLeft: "3%" }}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                {user.userType === "ORG_ADMIN" && (
+                {((user.userType === "ORG_ADMIN") || (user.userType === "INSTRUCTOR")) && (
                   <Tabs
                     value={value}
                     onChange={handleChange}
@@ -102,7 +102,7 @@ function TeachingCoursesCards() {
             </div>
             <TabPanel value={value} index={0}>
               <div className="cards-wrapper">
-                {user.userType === "ORG_ADMIN" && (
+                {((user.userType === "ORG_ADMIN") || (user.userType === "INSTRUCTOR")) && (
                   <ul className="cards-items">
                     {courses.map((course) => (
                       <CardItem
@@ -128,19 +128,6 @@ function TeachingCoursesCards() {
                     {learnerCourses.values.length === 0 && (
                       <h3>You don't have any courses!</h3>
                     )}
-                  </ul>
-                )}
-
-                {user.userType === "INSTRUCTOR" && (
-                  <ul className="cards-items">
-                    {learnerCourses.map((course) => (
-                      <CardItem
-                        src="images/computing.jpg"
-                        text={course.courseTitle}
-                        label={course.courseCode}
-                        courseId={course.courseId}
-                      />
-                    ))}
                   </ul>
                 )}
               </div>
