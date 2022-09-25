@@ -58,7 +58,6 @@ function TeachingAssessmentList(props) {
   const [assessmentFileSubmissionEnum, setAssessmentFileSubmissionEnum] =
     useState("");
   const [assessmentIsOpen, setAssessmentIsOpen] = useState("");
-  const [assessmentType, setAssessmentType] = useState("");
   const [assessmentIdToDelete, setAssessmentIdToDelete] = useState("");
 
   const [refreshPage, setRefreshPage] = useState("");
@@ -320,29 +319,8 @@ function TeachingAssessmentList(props) {
       </Grid>
       <div>
         <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Create New Assessment</DialogTitle>
+          <DialogTitle>Create New File Submission Assessment</DialogTitle>
           <DialogContent>
-            <FormControl>
-              Select Assessment Type:
-              <RadioGroup
-                required
-                aria-labelledby="demo-radio-buttons-group-label"
-                name="radio-buttons-group"
-                value={assessmentType}
-                onChange={(e) => setAssessmentType(e.target.value)}
-              >
-                <FormControlLabel
-                  value="Quiz"
-                  control={<Radio />}
-                  label="Quiz"
-                />
-                <FormControlLabel
-                  value="File Submission"
-                  control={<Radio />}
-                  label="File Submission"
-                />
-              </RadioGroup>
-            </FormControl>
             <TextField
               required
               id="outlined-basic"
