@@ -111,6 +111,8 @@ export default function TeachingCourseSettings(props) {
         setDeleteDialogOpen(false);
     };
 
+
+
     const deleteCourse=(e)=>{
         e.preventDefault()
         fetch("http://localhost:8080/course/courses/" + courseIdToDelete, {
@@ -156,8 +158,6 @@ export default function TeachingCourseSettings(props) {
         }).then(()=>{
             console.log("Course Updated Successfully!")  
             setRefreshPage(true)
-            handleEditDialogClose()
-            handleClickEditSnackbar();
         })
     }
 
@@ -262,7 +262,7 @@ export default function TeachingCourseSettings(props) {
             </Container>
             <div>
                 <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Create New Discussion</DialogTitle>
+                    <DialogTitle>Update Course</DialogTitle>
                     <DialogContent>
                     <TextField id="outlined-basic" label="Course Code" variant="outlined" fullWidth 
                     style={{margin: '6px 0'}}
