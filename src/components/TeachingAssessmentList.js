@@ -253,6 +253,16 @@ function TeachingAssessmentList(props) {
       setAssessmentFileSubmissionEnumError({ value: true, errorMessage: 'Assessment File Submission Enum cannot be empty!' })
     }
 
+    const newStartDate = new Date(assessmentStartDate);
+    const newEndDate = new Date(assessmentEndDate)
+
+    const dateComparisonBoolean = newEndDate.getTime() < newStartDate.getTime()
+
+    if (dateComparisonBoolean) {
+      setAssessmentEndDateError({ value: true, errorMessage: 'Assessment End Date cannot be earlier than startDate!' })
+      setAssessmentStartDateError({ value: true, errorMessage: 'Assessment End Date cannot be earlier than startDate!' })
+    }
+
     // if (!isValidDate(assessmentEndDate)) {
     //   setAssessmentEndDateError({ value: true, errorMessage: 'Assessment End Date needs to be in valid YYYY-MM-DD format!' })
     // }
@@ -261,7 +271,8 @@ function TeachingAssessmentList(props) {
     //   setAssessmentStartDateError({ value: true, errorMessage: 'Assessment Start Date needs to be in valid YYYY-MM-DD format!' })
     // }
 
-    if (assessmentTitle && assessmentDescription && assessmentMaxScore && assessmentStartDate && assessmentEndDate && assessmentFileSubmissionEnum && !isNaN(assessmentMaxScore)) {
+    if (assessmentTitle && assessmentDescription && assessmentMaxScore && assessmentStartDate && assessmentEndDate && assessmentFileSubmissionEnum && !isNaN(assessmentMaxScore)
+    && !dateComparisonBoolean) {
       const newAssessment = {
         assessmentTitle: assessmentTitle,
         assessmentDescription: assessmentDescription,

@@ -17,15 +17,15 @@ export default function TeachingCourseNew(props) {
 
   return (
     <>
-      <Grid container spacing={0}>
+      {/* <Grid container spacing={0}>
         <Grid item xs={2}>
-          {/* <TeachingCoursesDrawer></TeachingCoursesDrawer> */}
+         <TeachingCoursesDrawer></TeachingCoursesDrawer>
         </Grid>
-        <Grid item xs={10}>
+        <Grid item xs={10}> */}
           <TeachingCourseCreate></TeachingCourseCreate>
-          <h1>{courseId}</h1>
+          {/* <h1>{courseId}</h1>
         </Grid>
-      </Grid>
+      </Grid> */}
 
     </>
   );
