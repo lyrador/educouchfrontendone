@@ -9,6 +9,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import RadioGroup, { useRadioGroup } from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
+import { useAuth } from "../context/AuthProvider";
 
 const paperStyle = {
     padding: '50px 20px',
@@ -20,6 +21,8 @@ const paperStyle = {
 };
 
 export default function CourseTags({ courseId }) {
+    const auth = useAuth();
+    const user = auth.user;
     // current course tags
     const [listOfCourseTags, setListOfCourseTags] = useState([]);
     var url = "http://localhost:8080/categoryTag/getCourseCategoryTag/" + courseId;
@@ -32,6 +35,7 @@ export default function CourseTags({ courseId }) {
     // add tag
     const [addTagDialogBox, setAddTagDialogBox] = useState(false);
 
+   
     const openAddTagDialogBox = () => {
         var url = "http://localhost:8080/categoryTag/getCategoryTagNotInCourse?courseId=" + courseId;
         fetch(url)
@@ -67,6 +71,7 @@ export default function CourseTags({ courseId }) {
         closeAddTagDialogBox();
 
     };
+   
 
     // remove tag
     const [removeTagDialogBox, setRemoveTagDialogBox] = useState(false);
@@ -99,9 +104,12 @@ export default function CourseTags({ courseId }) {
     return (
 
         <div>
+            {user.userEnum == "HEAD_INSTRUCTOR" &&(
             <Button variant="outlined" startIcon={<AddIcon />} onClick={openAddTagDialogBox}>Add tag</Button>
-            &nbsp;
+            )}
+            {user.userEnum == "HEAD_INSTRUCTOR" &&(
             <Button variant="outlined" startIcon={<DeleteIcon />} onClick={openRemoveTagDialogBox} >Remove tag</Button>
+            )}
             <br />
             <br />
             <Stack spacing={1} direction="row">

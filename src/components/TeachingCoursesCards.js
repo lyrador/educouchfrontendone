@@ -71,9 +71,19 @@ function TeachingCoursesCards() {
 
   console.log(instructor.instructorId)
 
+  React.useEffect(() => {
+    fetch("http://localhost:8080/educator/findOrganisation/" + instructor.instructorId)
+    .then((res) => res.json())
+    .then((result) => {
+      setOrganisation(result)
+      console.log(organisation)
+    })
+  }, [instructor]); 
+
+  console.log(organisation.organisationId)
 
   React.useEffect(() => {
-    fetch("http://localhost:8080/course/instructors/" + instructor.instructorId + "/courses")
+    fetch("http://localhost:8080/course/organisation/" + organisation.organisationId + "/courses")
       .then((res) => res.json())
       .then((result) => {
         setCourses(result);
@@ -92,7 +102,7 @@ function TeachingCoursesCards() {
             setInstructorCourses([...instructorCourses, approvedCourse])
           )
       );
-  }, [instructor]);
+  }, [organisation]);
 
   console.log(courses);
 

@@ -34,7 +34,7 @@ export default function TeachingCoursesList() {
             <h1 style={{textAlign: 'left', padding: '0 4rem'}}>List of Courses</h1>
           </Grid>
           <Grid item alignItems="stretch" style={{ display: "flex" }}>
-          {user.userType != "LEARNER" && (
+          {user.userType != "LEARNER" && user.userEnum == "HEAD_INSTRUCTOR" &&(
             <Link to ='/myTeachingCourse/new' style={{textDecoration: 'none'}}>
               <Button
                 className="btn-upload"

@@ -14,8 +14,12 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InstantErrorMessage from './InstantErrorMessage';
 import InstantSuccessMessage from './InstantSuccessMessage';
+import { useAuth } from "../context/AuthProvider";
 
 export default function ControlledAccordions({ course, refresh }) {
+    const auth = useAuth();
+    const user = auth.user;
+    
     const [expanded, setExpanded] = React.useState(false);
 
     const toggleAccordion = (panel) => (event, isExpanded) => {
@@ -98,7 +102,9 @@ export default function ControlledAccordions({ course, refresh }) {
                     <Typography sx={{ color: 'text.secondary' }}>{course.courseApprovalStatus}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
+                {user.userEnum == "HEAD_INSTRUCTOR" &&(
                     <Typography>
+                    
                         {course.courseApprovalStatus === 'Under Construction' &&
                             <div>
                                 <p>This course is currently under construction. Please fill in the details in course settings and upload all teaching files before submitting for approval.</p>
@@ -159,7 +165,9 @@ export default function ControlledAccordions({ course, refresh }) {
                                 <Typography>Congratulations!🎉 Your course is now live.</Typography>
                                 <br />
                             </div>}
+                    
                     </Typography>
+                    )}
                 </AccordionDetails>
             </Accordion>
 

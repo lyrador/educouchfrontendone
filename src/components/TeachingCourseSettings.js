@@ -13,6 +13,7 @@ import TextField from '@mui/material/TextField';
 import CourseTags from '../components/CourseTags';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import { useAuth } from "../context/AuthProvider";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -20,6 +21,8 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 export default function TeachingCourseSettings(props) {
 
+    const auth = useAuth();
+    const user = auth.user;
 
     const [openDeleteSnackbar, setOpenDeleteSnackbar] = React.useState(false);
 
@@ -236,6 +239,7 @@ export default function TeachingCourseSettings(props) {
                             <p>{course.courseTimeline}</p>
                         </Paper>
 
+                        {user.userEnum == "HEAD_INSTRUCTOR" &&(
                         <Button
                             className="btn-upload"
                             color="primary"
@@ -245,6 +249,8 @@ export default function TeachingCourseSettings(props) {
                             style={{ float: 'right', marginLeft: 'auto', margin: '0px 6px', left: "150px" }}>
                             Update
                         </Button>
+                        )}
+                        {user.userEnum == "HEAD_INSTRUCTOR" &&(
                         <Button
                             className="btn-upload"
                             color="primary"
@@ -254,6 +260,7 @@ export default function TeachingCourseSettings(props) {
                             style={{ float: 'right', marginLeft: 'auto', margin: '0px 6px', left: "150px" }}>
                             Delete
                         </Button>
+                        )}
                     </Grid>
                 </Grid>
             </Container>
