@@ -2,6 +2,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Container } from "@mui/system";
+import { useAuth } from "../context/AuthProvider";
 
 import {
   Radio,
@@ -35,6 +36,8 @@ export default function CreateInstructorForm(props) {
       },
     },
   });
+  const auth = useAuth();
+  const user = auth.user;
 
   const paperStyle = { padding: "50px 20px", width: 600, margin: "20px auto" };
   const [name, setName] = useState("");
@@ -103,7 +106,8 @@ export default function CreateInstructorForm(props) {
 
     //organisation (org admin) is hard coded for now until org admin sign up is done
     if (name && email && username && password && instructorAccessRight) {
-      fetch("http://localhost:8080/educator/addInstructor?organisationId=1", {
+      console.log(user.organisationId)
+      fetch("http://localhost:8080/educator/addInstructor?organisationId=" + user.organisationId, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(educator),
