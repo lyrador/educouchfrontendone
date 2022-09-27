@@ -137,6 +137,16 @@ export default function RegisterOrganisationAdminPage() {
         setOpen(false);
     };
 
+    const [openError, setOpenError] = React.useState(false);
+
+    const handleClickOpenError = () => {
+        setOpenError(true);
+    };
+
+    const handleCloseError = () => {
+        setOpenError(false);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -150,40 +160,42 @@ export default function RegisterOrganisationAdminPage() {
         setOrganisationDescriptionError({ value: false, errorMessage: '' })
         setPaymentAccountError({ value: false, errorMessage: '' })
 
-        if (name == '') {
+        if (name === '') {
             setNameError({ value: true, errorMessage: 'You must enter a name' })
         }
-        if (email == '') {
+        if (email === '') {
             setEmailError({ value: true, errorMessage: 'You must enter a email' })
         }
-        if (phone == '') {
+        if(!email.includes("@") || !email.includes(".com")) {
+            setEmailError({ value: true, errorMessage: 'Invalid Email Address format' })
+          }
+        if (phone === '') {
             setPhoneError({ value: true, errorMessage: 'You must enter a phone number' })
         }
-        if (username == '') {
+        if (username === '') {
             setUsernameError({ value: true, errorMessage: 'You must enter a username' })
         }
-        if (password == '') {
+        if (password === '') {
             setPasswordError({ value: true, errorMessage: 'You must enter a password' })
         }
-        if (confirmPassword == '') {
+        if (confirmPassword === '') {
             setConfirmPasswordError({ value: true, errorMessage: 'You must confirm your password' })
         }
-        if (confirmPassword != password) {
+        if (organisationName === '') {
+            setOrganisationNameError({ value: true, errorMessage: 'You must enter a organisation name' })
+        }
+        if (organisationDescription === '') {
+            setOrganisationDescriptionError({ value: true, errorMessage: 'You must enter a organisation description' })
+        }
+        if (paymentAccount === '') {
+            setPaymentAccountError({ value: true, errorMessage: 'You must enter a payment account number' })
+        }
+        if (confirmPassword !== password) {
             setPasswordError({ value: true, errorMessage: 'Password does not match confirm password' })
             setConfirmPasswordError({ value: true, errorMessage: 'Password does not match confirm password' })
         }
-        if (organisationName == '') {
-            setOrganisationNameError({ value: true, errorMessage: 'You must enter a organisation name' })
-        }
-        if (organisationDescription == '') {
-            setOrganisationDescriptionError({ value: true, errorMessage: 'You must enter a organisation description' })
-        }
-        if (paymentAccount == '') {
-            setPaymentAccountError({ value: true, errorMessage: 'You must enter a payment account number' })
-        }
-
-
-        if (name && email && password && username && confirmPassword && phone && organisationDescription && organisationName && paymentAccount && fileStorageName) {
+        else if (name && email && password && username && confirmPassword && phone && organisationDescription && organisationName && paymentAccount && fileStorageName
+            && email.includes("@") && email.includes(".com")) {
             var adminName = name
             var adminEmail = email
             var adminNumber = phone
@@ -420,6 +432,19 @@ export default function RegisterOrganisationAdminPage() {
                         <Link to="/" style={{ textDecoration: 'none' }}>
                             <Button>Go Back to Home Page</Button>
                         </Link>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog open={openError} onClose={handleCloseError}>
+                    <DialogTitle>Error when creating account!</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Username has been taken or email is already registered. Please try another username or re-enter the correct email.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseError}>Close</Button>
                     </DialogActions>
                 </Dialog>
             </div>

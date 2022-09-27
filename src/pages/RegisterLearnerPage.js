@@ -87,6 +87,16 @@ export default function RegisterLearnerPage() {
         setOpen(false);
     };
 
+    const [openError, setOpenError] = React.useState(false);
+
+    const handleClickOpenError = () => {
+        setOpenError(true);
+    };
+
+    const handleCloseError = () => {
+        setOpenError(false);
+    };
+
     const handleChangeAgeGroup = (event) => {
         setAgeGroup(event.target.value);
     };
@@ -101,30 +111,33 @@ export default function RegisterLearnerPage() {
         setAgeGroupError({ value: false, errorMessage: '' })
         setConfirmPasswordError({ value: false, errorMessage: '' })
 
-        if (name == '') {
+        if (name === '') {
             setNameError({ value: true, errorMessage: 'You must enter a name' })
         }
-        if (email == '') {
+        if (email === '') {
             setEmailError({ value: true, errorMessage: 'You must enter a email' })
         }
-        if (password == '') {
+        if (!email.includes("@") || !email.includes(".com")) {
+            setEmailError({ value: true, errorMessage: 'Invalid Email Address format' })
+        }
+        if (password === '') {
             setPasswordError({ value: true, errorMessage: 'You must enter a password' })
         }
-        if (username == '') {
+        if (username === '') {
             setUsernameError({ value: true, errorMessage: 'You must enter a username' })
         }
-        if (ageGroup == '') {
+        if (ageGroup === '') {
             setAgeGroupError({ value: true, errorMessage: 'You must select an age group' })
         }
-        if (confirmPassword == '') {
+        if (confirmPassword === '') {
             setConfirmPasswordError({ value: true, errorMessage: 'You must confirm your password' })
         }
-        if (confirmPassword != password) {
+        if (confirmPassword !== password) {
             setPasswordError({ value: true, errorMessage: 'Password does not match confirm password' })
             setConfirmPasswordError({ value: true, errorMessage: 'Password does not match confirm password' })
         }
-
-        if (name && email && password && username && ageGroup) {
+        else if (name && email && password && username && ageGroup && confirmPassword
+            && email.includes("@") && email.includes(".com")) {
             var isKid = ""
             console.log(ageGroup)
             if (ageGroup === 'Kid') {
@@ -143,13 +156,22 @@ export default function RegisterLearnerPage() {
                 isKid
             };
             console.log(learner);
-            fetch("http://localhost:8080/learner/add", {
+            return fetch("http://localhost:8080/learner/add", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(learner),
-            })
-            console.log("New Learner added");
-            handleClickOpen()
+            }).then((response) => {
+                console.log(response);
+                if (response.ok == false) {
+                    handleClickOpenError();
+                } else {
+                    console.log("New Learner added");
+                    handleClickOpen()
+                }
+            }).catch((err) => {
+                console.log(err);
+                handleClickOpenError();
+            });
         }
     };
 
@@ -364,6 +386,19 @@ export default function RegisterLearnerPage() {
                         <Link to="/" style={{ textDecoration: 'none' }}>
                             <Button>Go Back to Home Page</Button>
                         </Link>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog open={openError} onClose={handleCloseError}>
+                    <DialogTitle>Error when creating account!</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Username has been taken or email is already registered. Please try another username or re-enter the correct email.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseError}>Close</Button>
                     </DialogActions>
                 </Dialog>
             </div>
