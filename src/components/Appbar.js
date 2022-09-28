@@ -123,7 +123,12 @@ export default function Appbar() {
               <Box sx={{ flexGrow: 0 }}>
                 <div style={{float: 'left', paddingRight: 10}}>
                   <Typography variant="body2">Name: {user.name}</Typography>
+                  {user.userType === "INSTRUCTOR" && (
+                  <Typography variant="body2">Role: {user.userEnum}</Typography>
+                  )}
+                  {user.userType !== "INSTRUCTOR" && (
                   <Typography variant="body2">Role: {user.userType}</Typography>
+                  )}
                 </div>
                 <div style={{float: 'right'}}>
                   <Tooltip title="Open settings">

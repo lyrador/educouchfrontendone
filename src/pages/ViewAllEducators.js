@@ -10,6 +10,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 
 export default function ViewAllEducators() {
   const viewInstructorPath = "/viewInstructor";
@@ -20,6 +21,9 @@ export default function ViewAllEducators() {
     width: 1500,
     margin: "20px auto",
   };
+
+  const auth = useAuth();
+  const user = auth.user;
 
   const refreshFunction = () => {
     setRefresh(!refresh);
@@ -55,7 +59,7 @@ export default function ViewAllEducators() {
 
   //organisation (org admin) is hard coded for now until org admin sign up is done
   React.useEffect(() => {
-    fetch("http://localhost:8080/educator/findAllInstructors/?organisationId=1")
+    fetch("http://localhost:8080/educator/findAllInstructors/?organisationId=" + user.organisationId)
       .then((res) => res.json())
       .then((result) => {
         setInstructors(result);
@@ -76,9 +80,9 @@ export default function ViewAllEducators() {
               <Table sx={{ minWidth: 450 }} size="small" aria-label="a dense table">
                 <TableHead>
                   <TableRow sx={{ bgcolor: "#1975d2" }}>
-                    <TableCell align="right" size="small">
+                    {/* <TableCell align="right" size="small">
                       <b>ID</b>
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell align="right">
                       <b>Name</b>
                     </TableCell>
@@ -102,7 +106,7 @@ export default function ViewAllEducators() {
                       key={instructor.instructorId}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell align="right">{instructor.instructorId}</TableCell>
+                      {/* <TableCell align="right">{instructor.instructorId}</TableCell> */}
                       <TableCell align="right">{instructor.name}</TableCell>
                       <TableCell align="right">{instructor.username}</TableCell>
                       <TableCell align="right">
