@@ -21,6 +21,7 @@ import ViewAllEducators from "./pages/ViewAllEducators";
 import ViewInstructor from "./pages/ViewInstructor";
 import TeachingChildFileCover from "./components/TeachingChildFileCover";
 import TeachingCourseSettings from "./components/TeachingCourseSettings";
+import TeachingCourseCalender from "./components/TeachingCourseCalender"; 
 
 import { AuthProvider } from "./context/AuthProvider";
 import { RequireAuth } from "./components/RequireAuth";
@@ -102,6 +103,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingCourseSettings />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/courseCalender"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingCourseCalender />
                 </RequireAuth>
               }
             />
