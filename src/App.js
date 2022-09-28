@@ -32,6 +32,8 @@ import RegisterPage from "./pages/RegisterPage";
 import RegisterLearnerPage from "./pages/RegisterLearnerPage";
 import RegisterOrganisationAdminPage from "./pages/RegisterOrganisationAdminPage";
 import CourseExplorerPage from "./pages/CourseExplorerPage";
+import CourseEnrollment from "./pages/CourseEnrollment";
+import LearnerCourseDetails from "./pages/LearnerCourseDetails";
 
 function App() {
   return (
@@ -115,6 +117,24 @@ function App() {
               }
             />
             <Route
+              path="/myTeachingCourse/:courseId/courseEnrollment"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CourseEnrollment />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerCourseDetails />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/myTeachingCourse/:moduleCode/files"
               element={
                 <RequireAuth>
@@ -132,6 +152,7 @@ function App() {
                 </RequireAuth>
               }
             />
+            
             <Route
               path="/myTeachingCourse/:courseId/forum"
               element={

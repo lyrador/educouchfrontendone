@@ -54,8 +54,8 @@ function CourseExplorerPage(props) {
 
     const handleOnClick = (e, course) => {
         e.preventDefault();
-        console.log(course)
-        navigate(`/myTeachingCourse/${course.id}`)
+        console.log(course);
+        navigate(`/learnerCourseDetails/${course.id}/`);
     };
 
     const columns = [
