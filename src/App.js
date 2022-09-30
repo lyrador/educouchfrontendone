@@ -32,7 +32,7 @@ import RegisterPage from "./pages/RegisterPage";
 import RegisterLearnerPage from "./pages/RegisterLearnerPage";
 import RegisterOrganisationAdminPage from "./pages/RegisterOrganisationAdminPage";
 import CourseExplorerPage from "./pages/CourseExplorerPage";
-import CourseEnrollment from "./pages/CourseEnrollment";
+import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
 import LearnerCourseDetails from "./pages/LearnerCourseDetails";
 
 function App() {
@@ -121,7 +121,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <CourseEnrollment />
+                  <CourseEnrollmentPage />
                 </RequireAuth>
               }
             />
