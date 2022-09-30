@@ -21,6 +21,7 @@ import ViewAllEducators from "./pages/ViewAllEducators";
 import ViewInstructor from "./pages/ViewInstructor";
 import TeachingChildFileCover from "./components/TeachingChildFileCover";
 import TeachingCourseSettings from "./components/TeachingCourseSettings";
+import TeachingCourseCalender from "./components/TeachingCourseCalender"; 
 
 import { AuthProvider } from "./context/AuthProvider";
 import { RequireAuth } from "./components/RequireAuth";
@@ -34,6 +35,7 @@ import RegisterOrganisationAdminPage from "./pages/RegisterOrganisationAdminPage
 import CourseExplorerPage from "./pages/CourseExplorerPage";
 import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
 import LearnerCourseDetails from "./pages/LearnerCourseDetails";
+import TeachingCourseClassRuns from "./components/TeachingCourseClassRuns";
 
 function App() {
   return (
@@ -104,6 +106,24 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingCourseSettings />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/courseCalender"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingCourseCalender />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/classRuns"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingCourseClassRuns />
                 </RequireAuth>
               }
             />
