@@ -60,30 +60,31 @@ function TeachingCoursesCards() {
     setValue(newValue);
   };
 
+  // React.useEffect(() => {
+  //   fetch("http://localhost:8080/educator/findInstructor?instructorUsername=" + user.username)
+  //   .then((res) => res.json())
+  //   .then((result) => {
+  //     setInstructor(result)
+  //     console.log(instructor)
+  //   })
+  // }, []); 
+
+  // console.log(instructor.instructorId)
+
+  // React.useEffect(() => {
+  //   fetch("http://localhost:8080/educator/findOrganisation/" + instructor.instructorId)
+  //   .then((res) => res.json())
+  //   .then((result) => {
+  //     setOrganisation(result)
+  //     console.log(organisation)
+  //   })
+  // }, [instructor]); 
+
+  // console.log(organisation.organisationId)
+
   React.useEffect(() => {
-    fetch("http://localhost:8080/educator/findInstructor?instructorUsername=" + user.username)
-    .then((res) => res.json())
-    .then((result) => {
-      setInstructor(result)
-      console.log(instructor)
-    })
-  }, []); 
-
-  console.log(instructor.instructorId)
-
-  React.useEffect(() => {
-    fetch("http://localhost:8080/educator/findOrganisation/" + instructor.instructorId)
-    .then((res) => res.json())
-    .then((result) => {
-      setOrganisation(result)
-      console.log(organisation)
-    })
-  }, [instructor]); 
-
-  console.log(organisation.organisationId)
-
-  React.useEffect(() => {
-    fetch("http://localhost:8080/course/organisation/" + organisation.organisationId + "/courses")
+    console.log(user)
+    fetch("http://localhost:8080/course/organisation/" + user.organisationId + "/courses")
       .then((res) => res.json())
       .then((result) => {
         setCourses(result);

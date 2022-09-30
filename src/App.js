@@ -33,6 +33,7 @@ import RegisterPage from "./pages/RegisterPage";
 import RegisterLearnerPage from "./pages/RegisterLearnerPage";
 import RegisterOrganisationAdminPage from "./pages/RegisterOrganisationAdminPage";
 import CourseExplorerPage from "./pages/CourseExplorerPage";
+import TeachingCourseClassRuns from "./components/TeachingCourseClassRuns";
 
 function App() {
   return (
@@ -112,6 +113,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingCourseCalender />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/classRuns"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingCourseClassRuns />
                 </RequireAuth>
               }
             />

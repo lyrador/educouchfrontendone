@@ -72,6 +72,11 @@ function TeachingCoursesDrawer(props) {
                       <ListItemText primary="Course Calender"/>
                     </ListItemButton>
                 </Link>
+                <Link to={`${coursePath}/classRuns`} style={{textDecoration: 'none', color: 'black'}}>
+                    <ListItemButton>
+                      <ListItemText primary="Class Runs"/>
+                    </ListItemButton>
+                </Link>
             </List>
             <Divider />
             <List>
