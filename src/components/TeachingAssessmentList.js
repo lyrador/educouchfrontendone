@@ -520,6 +520,15 @@ function TeachingAssessmentList(props) {
               Error! Invalid Details!
             </Alert>
           </Snackbar>
+          <Breadcrumbs aria-label="breadcrumb">
+            <LinkMaterial
+              underline="hover"
+              color="inherit"
+              href={`${assessmentsPath}`}
+            >
+              Assessments
+            </LinkMaterial>
+          </Breadcrumbs>
           <div style={{ justifyContent: "center" }}>
             <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
               List of Assessments
@@ -541,7 +550,6 @@ function TeachingAssessmentList(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell>Title</TableCell>
-                    <TableCell>Description</TableCell>
                     <TableCell>Max Score</TableCell>
                     <TableCell>Start Date</TableCell>
                     <TableCell>End Date</TableCell>
@@ -568,7 +576,6 @@ function TeachingAssessmentList(props) {
                           {assessment.assessmentTitle}
                         </Link>
                       </TableCell>
-                      <TableCell>{assessment.assessmentDescription}</TableCell>
                       <TableCell>{assessment.assessmentMaxScore}</TableCell>
                       <TableCell>{assessment.assessmentStartDate}</TableCell>
                       <TableCell>{assessment.assessmentEndDate}</TableCell>
