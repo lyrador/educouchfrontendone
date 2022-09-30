@@ -77,7 +77,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId"
               element={
@@ -111,6 +110,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingAssessmentList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/assessments/:assessmentId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingForum />
                 </RequireAuth>
               }
             />
