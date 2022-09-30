@@ -7,6 +7,12 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+
+import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs from "dayjs";
 
 import { Link, useLocation, useParams } from "react-router-dom";
 import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
@@ -41,8 +47,8 @@ import { render } from "@testing-library/react";
 
 import { MenuItem } from "@mui/material";
 
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -59,7 +65,7 @@ function TeachingAssessmentList(props) {
   };
 
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setOpenSnackbar(false);
@@ -72,7 +78,7 @@ function TeachingAssessmentList(props) {
   };
 
   const handleCloseDeleteSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setOpenDeleteSnackbar(false);
@@ -85,13 +91,12 @@ function TeachingAssessmentList(props) {
   };
 
   const handleCloseEditSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setOpenEditSnackbar(false);
   };
 
-  
   const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
 
   const handleClickErrorSnackbar = () => {
@@ -99,7 +104,7 @@ function TeachingAssessmentList(props) {
   };
 
   const handleCloseErrorSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setOpenErrorSnackbar(false);
@@ -115,34 +120,68 @@ function TeachingAssessmentList(props) {
   const [assessmentTitle, setAssessmentTitle] = useState("");
   const [assessmentDescription, setAssessmentDescription] = useState("");
   const [assessmentMaxScore, setAssessmentMaxScore] = useState("");
-  const [assessmentStartDate, setAssessmentStartDate] = useState("");
-  const [assessmentEndDate, setAssessmentEndDate] = useState("");
-  const [assessmentFileSubmissionEnum, setAssessmentFileSubmissionEnum] = useState("");
+  const [assessmentStartDate, setAssessmentStartDate] = useState(dayjs());
+  const [assessmentEndDate, setAssessmentEndDate] = useState(dayjs());
+  const [assessmentFileSubmissionEnum, setAssessmentFileSubmissionEnum] =
+    useState("");
   const [assessmentIsOpen, setAssessmentIsOpen] = useState("");
   const [assessmentStatusEnum, setAssessmentStatusEnum] = useState("");
   const [assessmentIdToDelete, setAssessmentIdToDelete] = useState("");
 
-  const [assessmentTitleError, setAssessmentTitleError] = useState({ value: false, errorMessage: "" });
-  const [assessmentDescriptionError, setAssessmentDescriptionError] = useState({ value: false, errorMessage: "" });
-  const [assessmentMaxScoreError, setAssessmentMaxScoreError] = useState({ value: false, errorMessage: "" });
-  const [assessmentStartDateError, setAssessmentStartDateError] = useState({ value: false, errorMessage: "" });
-  const [assessmentEndDateError, setAssessmentEndDateError] = useState({ value: false, errorMessage: "" });
-  const [assessmentFileSubmissionEnumError, setAssessmentFileSubmissionEnumError] = useState({ value: false, errorMessage: "" });
-  const [assessmentIsOpenError, setAssessmentIsOpenError] = useState({ value: false, errorMessage: "" });
-  const [assessmentStatusEnumError, setAssessmentStatusEnumError] = useState({ value: false, errorMessage: "" });
-  const [assessmentIdToDeleteError, setAssessmentIdToDeleteError] = useState({ value: false, errorMessage: "" });
+  const handleStartDateChange = (newAssessmentStartDate) => {
+    setAssessmentStartDate(newAssessmentStartDate);
+  };
 
+  const handleEndDateChange = (newAssessmentEndDate) => {
+    setAssessmentEndDate(newAssessmentEndDate);
+  };
 
+  const [assessmentTitleError, setAssessmentTitleError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [assessmentDescriptionError, setAssessmentDescriptionError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [assessmentMaxScoreError, setAssessmentMaxScoreError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [assessmentStartDateError, setAssessmentStartDateError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [assessmentEndDateError, setAssessmentEndDateError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [
+    assessmentFileSubmissionEnumError,
+    setAssessmentFileSubmissionEnumError,
+  ] = useState({ value: false, errorMessage: "" });
+  const [assessmentIsOpenError, setAssessmentIsOpenError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [assessmentStatusEnumError, setAssessmentStatusEnumError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [assessmentIdToDeleteError, setAssessmentIdToDeleteError] = useState({
+    value: false,
+    errorMessage: "",
+  });
 
   const [refreshPage, setRefreshPage] = useState("");
 
-  const enumGroup = [{ value: 'INDIVIDUAL' }, { value: 'GROUP' }];
+  const enumGroup = [{ value: "INDIVIDUAL" }, { value: "GROUP" }];
 
   React.useEffect(() => {
     setRefreshPage(false);
     fetch(
       "http://localhost:8080/assessment/getAllFileSubmissionsByCourseId/" +
-      courseId
+        courseId
     )
       .then((res) => res.json())
       .then((result) => {
@@ -157,11 +196,17 @@ function TeachingAssessmentList(props) {
   const [editDialogOpen, setEditDialogOpen] = React.useState(false);
 
   const [editAssessmentTitle, setEditAssessmentTitle] = useState("");
-  const [editAssessmentDescription, setEditAssessmentDescription] = useState("");
+  const [editAssessmentDescription, setEditAssessmentDescription] =
+    useState("");
   const [editAssessmentMaxScore, setEditAssessmentMaxScore] = useState("");
-  const [editAssessmentStartDate, setEditAssessmentStartDate] = useState("");
-  const [editAssessmentEndDate, setEditAssessmentEndDate] = useState("");
-  const [editAssessmentFileSubmissionEnum, setEditAssessmentFileSubmissionEnum] = useState("");
+  const [editAssessmentStartDate, setEditAssessmentStartDate] = useState(
+    dayjs()
+  );
+  const [editAssessmentEndDate, setEditAssessmentEndDate] = useState(dayjs());
+  const [
+    editAssessmentFileSubmissionEnum,
+    setEditAssessmentFileSubmissionEnum,
+  ] = useState("");
   const [assessmentIdToEdit, setAssessmentIdToEdit] = useState("");
 
   const handleClickOpen = () => {
@@ -221,6 +266,14 @@ function TeachingAssessmentList(props) {
     setEditDialogOpen(false);
   };
 
+  const handleEditStartDateChange = (newAssessmentStartDate) => {
+    setEditAssessmentStartDate(newAssessmentStartDate);
+  };
+
+  const handleEditEndDateChange = (newAssessmentEndDate) => {
+    setEditAssessmentEndDate(newAssessmentEndDate);
+  };
+
   const createNewAssessment = (e) => {
     e.preventDefault();
     setAssessmentTitleError({ value: false, errorMessage: "" });
@@ -231,48 +284,63 @@ function TeachingAssessmentList(props) {
     setAssessmentFileSubmissionEnumError({ value: false, errorMessage: "" });
     // setAssessmentIsOpenError({ value: false, errorMessage: "" });
     // setAssessmentStatusEnumError({ value: false, errorMessage: "" });
-    if (assessmentTitle == '') {
-      setAssessmentTitleError({ value: true, errorMessage: 'Assessment Title cannot be empty!' })
+    if (assessmentTitle == "") {
+      setAssessmentTitleError({
+        value: true,
+        errorMessage: "Assessment Title cannot be empty!",
+      });
     }
-    if (assessmentDescription == '') {
-      setAssessmentDescriptionError({ value: true, errorMessage: 'Assessment Description cannot be empty!' })
+    if (assessmentDescription == "") {
+      setAssessmentDescriptionError({
+        value: true,
+        errorMessage: "Assessment Description cannot be empty!",
+      });
     }
     if (isNaN(assessmentMaxScore)) {
-      setAssessmentMaxScoreError({ value: true, errorMessage: 'Assessment max score is not a valid number!' })
+      setAssessmentMaxScoreError({
+        value: true,
+        errorMessage: "Assessment max score is not a valid number!",
+      });
     }
-    if (assessmentMaxScore == '') {
-      setAssessmentMaxScoreError({ value: true, errorMessage: 'Assessment MaxScore cannot be empty!' })
+    if (assessmentMaxScore == "") {
+      setAssessmentMaxScoreError({
+        value: true,
+        errorMessage: "Assessment MaxScore cannot be empty!",
+      });
     }
-    if (assessmentStartDate == '') {
-      setAssessmentStartDateError({ value: true, errorMessage: 'Assessment Start Date cannot be empty!' })
-    }
-    if (assessmentEndDate == '') {
-      setAssessmentEndDateError({ value: true, errorMessage: 'Assessment End Date cannot be empty!' })
-    }
-    if (assessmentFileSubmissionEnum == '') {
-      setAssessmentFileSubmissionEnumError({ value: true, errorMessage: 'Assessment File Submission Enum cannot be empty!' })
+    if (assessmentFileSubmissionEnum == "") {
+      setAssessmentFileSubmissionEnumError({
+        value: true,
+        errorMessage: "Assessment File Submission Enum cannot be empty!",
+      });
     }
 
-    const newStartDate = new Date(assessmentStartDate);
-    const newEndDate = new Date(assessmentEndDate)
+    const newStartDate = assessmentStartDate;
+    const newEndDate = assessmentEndDate;
 
-    const dateComparisonBoolean = newEndDate.getTime() < newStartDate.getTime()
+    const dateComparisonBoolean = newEndDate < newStartDate;
 
     if (dateComparisonBoolean) {
-      setAssessmentEndDateError({ value: true, errorMessage: 'Assessment End Date cannot be earlier than startDate!' })
-      setAssessmentStartDateError({ value: true, errorMessage: 'Assessment End Date cannot be earlier than startDate!' })
+      setAssessmentEndDateError({
+        value: true,
+        errorMessage: "Assessment End Date cannot be earlier than Start Date!",
+      });
+      setAssessmentStartDateError({
+        value: true,
+        errorMessage: "Assessment End Date cannot be earlier than Start Date!",
+      });
     }
 
-    // if (!isValidDate(assessmentEndDate)) {
-    //   setAssessmentEndDateError({ value: true, errorMessage: 'Assessment End Date needs to be in valid YYYY-MM-DD format!' })
-    // }
-
-    // if (!isValidDate(assessmentStartDate)) {
-    //   setAssessmentStartDateError({ value: true, errorMessage: 'Assessment Start Date needs to be in valid YYYY-MM-DD format!' })
-    // }
-
-    if (assessmentTitle && assessmentDescription && assessmentMaxScore && assessmentStartDate && assessmentEndDate && assessmentFileSubmissionEnum && !isNaN(assessmentMaxScore)
-    && !dateComparisonBoolean) {
+    if (
+      assessmentTitle &&
+      assessmentDescription &&
+      assessmentMaxScore &&
+      assessmentStartDate &&
+      assessmentEndDate &&
+      assessmentFileSubmissionEnum &&
+      !isNaN(assessmentMaxScore) &&
+      !dateComparisonBoolean
+    ) {
       const newAssessment = {
         assessmentTitle: assessmentTitle,
         assessmentDescription: assessmentDescription,
@@ -284,26 +352,34 @@ function TeachingAssessmentList(props) {
         assessmentFileSubmissionEnum: assessmentFileSubmissionEnum,
       };
       console.log(newAssessment);
-      fetch("http://localhost:8080/assessment/addNewFileSubmission/" + courseId, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newAssessment),
-      }).then((response) => {
-        console.log("New File Submission Assessment Created Successfully!");
-        setRefreshPage(true);
-        setAssessmentTitle("");
-        handleClose();
-        handleClickSnackbar()
-      }).catch((err) => {
-        handleClickErrorSnackbar()
-      });
+      fetch(
+        "http://localhost:8080/assessment/addNewFileSubmission/" + courseId,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newAssessment),
+        }
+      )
+        .then((response) => {
+          console.log("New File Submission Assessment Created Successfully!");
+          setRefreshPage(true);
+          setAssessmentTitle("");
+          handleClose();
+          handleClickSnackbar();
+        })
+        .catch((err) => {
+          handleClickErrorSnackbar();
+        });
     }
   };
 
   const deleteAssessment = (e) => {
     e.preventDefault();
     fetch(
-      "http://localhost:8080/assessment/deleteAssessmentByIdFromCourseId/" + assessmentIdToDelete + "/" + courseId,
+      "http://localhost:8080/assessment/deleteAssessmentByIdFromCourseId/" +
+        assessmentIdToDelete +
+        "/" +
+        courseId,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -313,42 +389,64 @@ function TeachingAssessmentList(props) {
       console.log("Assessment Deleted Successfully!");
       setRefreshPage(true);
       handleDeleteDialogClose();
-      handleClickDeleteSnackbar()
+      handleClickDeleteSnackbar();
     });
   };
 
   const editAssessment = (e) => {
     e.preventDefault();
-    var assessmentTitle = editAssessmentTitle;
-    var assessmentDescription = editAssessmentDescription;
-    var assessmentMaxScore = editAssessmentMaxScore;
-    var assessmentStartDate = editAssessmentStartDate;
-    var assessmentEndDate = editAssessmentEndDate;
-    var assessmentIsOpen = "false";
-    var assessmentStatusEnum = "PENDING";
-    var assessmentFileSubmissionEnum = editAssessmentFileSubmissionEnum;
-    const newEditedAssessment = {
-      assessmentTitle,
-      assessmentDescription,
-      assessmentMaxScore,
-      assessmentStartDate,
-      assessmentEndDate,
-      assessmentFileSubmissionEnum,
-      assessmentIsOpen,
-      assessmentStatusEnum
-    };
-    fetch(
-      "http://localhost:8080/assessment/updateFileSubmission/" + assessmentIdToEdit, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newEditedAssessment),
+    setAssessmentStartDateError({ value: false, errorMessage: "" });
+    setAssessmentEndDateError({ value: false, errorMessage: "" });
+
+    const editStartDate = editAssessmentStartDate;
+    const editEndDate = editAssessmentEndDate;
+
+    const editDateComparisonBoolean = editEndDate < editStartDate;
+
+    if (editDateComparisonBoolean) {
+      setAssessmentEndDateError({
+        value: true,
+        errorMessage: "Assessment End Date cannot be earlier than Start Date!",
+      });
+      setAssessmentStartDateError({
+        value: true,
+        errorMessage: "Assessment End Date cannot be earlier than Start Date!",
+      });
     }
-    ).then(() => {
-      console.log("Assessment Edited Successfully!");
-      setRefreshPage(true);
-      handleEditDialogClose();
-      handleClickEditSnackbar();
-    });
+    if (!editDateComparisonBoolean) {
+      var assessmentTitle = editAssessmentTitle;
+      var assessmentDescription = editAssessmentDescription;
+      var assessmentMaxScore = editAssessmentMaxScore;
+      var assessmentStartDate = editAssessmentStartDate;
+      var assessmentEndDate = editAssessmentEndDate;
+      var assessmentIsOpen = "false";
+      var assessmentStatusEnum = "PENDING";
+      var assessmentFileSubmissionEnum = editAssessmentFileSubmissionEnum;
+      const newEditedAssessment = {
+        assessmentTitle,
+        assessmentDescription,
+        assessmentMaxScore,
+        assessmentStartDate,
+        assessmentEndDate,
+        assessmentFileSubmissionEnum,
+        assessmentIsOpen,
+        assessmentStatusEnum,
+      };
+      fetch(
+        "http://localhost:8080/assessment/updateFileSubmission/" +
+          assessmentIdToEdit,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newEditedAssessment),
+        }
+      ).then(() => {
+        console.log("Assessment Edited Successfully!");
+        setRefreshPage(true);
+        handleEditDialogClose();
+        handleClickEditSnackbar();
+      });
+    }
   };
 
   const renderEmptyRowMessage = () => {
@@ -370,23 +468,55 @@ function TeachingAssessmentList(props) {
           <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
         </Grid>
         <Grid item xs={10}>
-          <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
-            <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseSnackbar}
+          >
+            <Alert
+              onClose={handleCloseSnackbar}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
               Assessment Created Succesfully!
             </Alert>
           </Snackbar>
-          <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar}>
-            <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: '100%' }}>
+          <Snackbar
+            open={openDeleteSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseDeleteSnackbar}
+          >
+            <Alert
+              onClose={handleCloseDeleteSnackbar}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
               Assessment Deleted Succesfully!
             </Alert>
           </Snackbar>
-          <Snackbar open={openEditSnackbar} autoHideDuration={5000} onClose={handleCloseEditSnackbar}>
-            <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: '100%' }}>
+          <Snackbar
+            open={openEditSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseEditSnackbar}
+          >
+            <Alert
+              onClose={handleCloseEditSnackbar}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
               Assessment Updated Succesfully!
             </Alert>
           </Snackbar>
-          <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={handleCloseErrorSnackbar}>
-            <Alert onClose={handleCloseErrorSnackbar} severity="warning" sx={{ width: '100%' }}>
+          <Snackbar
+            open={openErrorSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseErrorSnackbar}
+          >
+            <Alert
+              onClose={handleCloseErrorSnackbar}
+              severity="warning"
+              sx={{ width: "100%" }}
+            >
               Error! Invalid Details!
             </Alert>
           </Snackbar>
@@ -442,7 +572,9 @@ function TeachingAssessmentList(props) {
                       <TableCell>{assessment.assessmentMaxScore}</TableCell>
                       <TableCell>{assessment.assessmentStartDate}</TableCell>
                       <TableCell>{assessment.assessmentEndDate}</TableCell>
-                      <TableCell>{assessment.assessmentFileSubmissionEnum}</TableCell>
+                      <TableCell>
+                        {assessment.assessmentFileSubmissionEnum}
+                      </TableCell>
                       {/* <TableCell>{assessment.assessmentIsOpen}</TableCell> */}
                       <TableCell>
                         <div>
@@ -468,7 +600,7 @@ function TeachingAssessmentList(props) {
                                 assessment.assessmentMaxScore,
                                 assessment.assessmentStartDate,
                                 assessment.assessmentEndDate,
-                                assessment.assessmentFileSubmissionEnum,
+                                assessment.assessmentFileSubmissionEnum
                                 // assessment.assessmentIsOpen,
                                 // assessment.assessmentStatusEnum
                               )
@@ -526,30 +658,40 @@ function TeachingAssessmentList(props) {
               error={assessmentMaxScoreError.value}
               helperText={assessmentMaxScoreError.errorMessage}
             />
-            <TextField
-              required
-              id="outlined-basic"
-              label="Assessment Start Date (YYYY-MM-DD)"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={assessmentStartDate}
-              onChange={(e) => setAssessmentStartDate(e.target.value)}
-              error={assessmentStartDateError.value}
-              helperText={assessmentStartDateError.errorMessage}
-            />
-            <TextField
-              required
-              id="outlined-basic"
-              label="Assessment End Date (YYYY-MM-DD)"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={assessmentEndDate}
-              onChange={(e) => setAssessmentEndDate(e.target.value)}
-              error={assessmentEndDateError.value}
-              helperText={assessmentEndDateError.errorMessage}
-            />
+            <Stack spacing={1}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="Start Date"
+                  inputFormat="MM/DD/YYYY"
+                  value={assessmentStartDate}
+                  onChange={handleStartDateChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      sx={{ width: "100%" }}
+                      error={assessmentStartDateError.value}
+                      helperText={assessmentStartDateError.errorMessage}
+                    />
+                  )}
+                />
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="End Date"
+                  inputFormat="MM/DD/YYYY"
+                  value={assessmentEndDate}
+                  onChange={handleEndDateChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      sx={{ width: "100%" }}
+                      error={assessmentEndDateError.value}
+                      helperText={assessmentEndDateError.errorMessage}
+                    />
+                  )}
+                />
+              </LocalizationProvider>
+            </Stack>
             <TextField
               required
               select
@@ -642,24 +784,40 @@ function TeachingAssessmentList(props) {
               value={editAssessmentMaxScore}
               onChange={(e) => setEditAssessmentMaxScore(e.target.value)}
             />
-            <TextField
-              id="outlined-basic"
-              label="New Assessment Start Date (YYYY-MM-DD)"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={editAssessmentStartDate}
-              onChange={(e) => setEditAssessmentStartDate(e.target.value)}
-            />
-            <TextField
-              id="outlined-basic"
-              label="New Assessment End Date (YYYY-MM-DD)"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={editAssessmentEndDate}
-              onChange={(e) => setEditAssessmentEndDate(e.target.value)}
-            />
+            <Stack spacing={1}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="New Assessment Start Date"
+                  inputFormat="MM/DD/YYYY"
+                  value={editAssessmentStartDate}
+                  onChange={handleEditStartDateChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      sx={{ width: "100%" }}
+                      error={assessmentStartDateError.value}
+                      helperText={assessmentStartDateError.errorMessage}
+                    />
+                  )}
+                />
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="New Assessment End Date"
+                  inputFormat="MM/DD/YYYY"
+                  value={editAssessmentEndDate}
+                  onChange={handleEditEndDateChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      sx={{ width: "100%" }}
+                      error={assessmentEndDateError.value}
+                      helperText={assessmentEndDateError.errorMessage}
+                    />
+                  )}
+                />
+              </LocalizationProvider>
+            </Stack>
             <TextField
               id="outlined-basic"
               label="New Assessment File Submission Type"
