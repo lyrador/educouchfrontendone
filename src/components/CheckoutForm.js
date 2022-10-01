@@ -8,7 +8,7 @@ import CardSection from './CardSection';
 import { useAuth } from "../context/AuthProvider";
 
 
-export default function CheckoutForm({ clientSecret, closePaymentDialogBox, handleNext }) {
+export default function CheckoutForm({ clientSecret, closePaymentDialogBox, handleNext, requestDepositRecord }) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -82,6 +82,7 @@ export default function CheckoutForm({ clientSecret, closePaymentDialogBox, hand
         handleClickSuccessPaymentSnackbar();
         setMessage('Congratulation! You have successfully sent your payment!');
         closePaymentDialogBox();
+        requestDepositRecord();
         handleNext();
       }
     }

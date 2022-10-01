@@ -29,13 +29,28 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import CheckoutForm from './CheckoutForm';
 import SuccessReservation from './SuccessReservation';
+import { useAuth } from '../context/AuthProvider';
+
 
 const steps = ['Select class run schedule', 'Enrollment guidelines', 'Payment', 'Completed'];
 
 const publicKey = "pk_test_51LnPrnBx7BYbBg97eaxGtJNPIBG88wK36CGBCzldo5RmE5w3F9G7JKI7sOLafQB6yBdgfVsz6VHUpx5ja4LeVhp700UuLU3SOn";
 const stripePromise = loadStripe(publicKey);
 
+//days of week
+var weekday = new Array(7);
+weekday[0] = "Monday";
+weekday[1] = "Tuesday";
+weekday[2] = "Wednesday";
+weekday[3] = "Thursday";
+weekday[4] = "Friday";
+weekday[5] = "Saturday";
+weekday[6] = "Sunday";
+
 export default function CourseEnrollment({ courseId }) {
+    // user
+    const auth = useAuth();
+    const user = auth.user;
     // stepper
     const [activeStep, setActiveStep] = React.useState(0);
 
@@ -110,6 +125,7 @@ export default function CourseEnrollment({ courseId }) {
 
     };
 
+
     // opening up dialog box
     // rename dialog box
     const [paymentDialogBox, setPaymentDialogBox] = useState(false);
@@ -122,7 +138,24 @@ export default function CourseEnrollment({ courseId }) {
         setPaymentDialogBox(false);
     };
 
+    // sending over record payment
+    const requestDepositRecord = () => {
+        // send request to create payment record
+        const depositRecord = { "classRunId": classRunChosen.classRunId, "learnerId": user.userId, "amount": amountToBePaid  };
+        console.log('Deposit record is ' + JSON.stringify(depositRecord));
+        var url = "http://localhost:8080/payment/trackDeposit";
+        fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(depositRecord)
 
+        }).
+            then(res => res.json())
+            .then((result) => {
+                setListOfClassRun(result);
+            }
+            )
+    }
 
 
     return (
@@ -176,11 +209,21 @@ export default function CourseEnrollment({ courseId }) {
                                                         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                                                             Class Run Id: {classRun.classRunId}
                                                         </Typography>
-                                                        <Typography variant="h7" component="div">
-                                                            Start: {classRun.classRunStart}
+                                                        <Divider></Divider>
+                                                        <br />
+                                                        <Typography variant="h6" component="div">
+                                                            {classRun.classRunDaysOfTheWeek.map(x => { return (<Typography variant="h6">{weekday[x]} </Typography>) })}
                                                         </Typography>
-                                                        <Typography variant="h7" component="div">
-                                                            End: {classRun.classRunEnd}
+                                                        <br />
+                                                        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                                            {classRun.classRunStartTime} - {classRun.classRunEndTime}
+                                                        </Typography>
+                                                        <Typography variant="body2">
+                                                            Start Date: {classRun.classRunStart}
+                                                        </Typography>
+
+                                                        <Typography variant="body2">
+                                                            End Date: {classRun.classRunEnd}
                                                         </Typography>
                                                     </CardContent>
                                                     <CardActions>
@@ -377,27 +420,21 @@ export default function CourseEnrollment({ courseId }) {
                                     <TableBody>
                                         <TableRow>
                                             <TableCell component="th" scope="row">
-                                                Start Date
+                                                Date
                                             </TableCell>
-                                            <TableCell align="right">{classRunChosen.classRunStart}</TableCell>
+                                            <TableCell align="right">{classRunChosen.classRunStart} - {classRunChosen.classRunEnd}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell component="th" scope="row">
-                                                End Date
+                                                Time
                                             </TableCell>
-                                            <TableCell align="right">{classRunChosen.classRunEnd}</TableCell>
+                                            <TableCell align="right">{classRunChosen.classRunStartTime} - {classRunChosen.classRunEndTime}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell component="th" scope="row">
-                                                Placeholder
+                                                Days of week
                                             </TableCell>
-                                            <TableCell align="right">Placeholder</TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell component="th" scope="row">
-                                                Placeholder
-                                            </TableCell>
-                                            <TableCell align="right">Placeholder</TableCell>
+                                            <TableCell align="right">  {classRunChosen.classRunDaysOfTheWeek.map(x => { return (<p>{weekday[x]}</p>) })}</TableCell>
                                         </TableRow>
                                     </TableBody>
                                 </Table>
@@ -437,7 +474,7 @@ export default function CourseEnrollment({ courseId }) {
                                 <Button onClick={handleBack} variant="contained">
                                     Back
                                 </Button>
-                                <Button onClick={checkout} variant="contained">
+                                <Button onClick={checkout} variant="contained" startIcon={<ShoppingCartIcon />}>
                                     Checkout
                                 </Button>
 
@@ -451,8 +488,8 @@ export default function CourseEnrollment({ courseId }) {
                     )}
                     {activeStep === 3 && (
                         <React.Fragment>
-                            
-                            <SuccessReservation courseName = {currentCourse.courseName}></SuccessReservation>
+
+                            <SuccessReservation courseName={currentCourse.courseName}></SuccessReservation>
 
                         </React.Fragment>
                     )}
@@ -467,7 +504,7 @@ export default function CourseEnrollment({ courseId }) {
                     </DialogTitle>
 
                     <Elements stripe={stripePromise}>
-                        <CheckoutForm clientSecret={clientSecret} closePaymentDialogBox = {closePaymentDialogBox} handleNext = {handleNext}/>
+                        <CheckoutForm clientSecret={clientSecret} closePaymentDialogBox={closePaymentDialogBox} handleNext={handleNext} requestDepositRecord={requestDepositRecord} />
                     </Elements>
                 </DialogContent>
             </Dialog>
