@@ -54,7 +54,9 @@ function FileSubmission(props) {
 
   React.useEffect(() => {
     setRefreshPage(false);
-    fetch("http://localhost:8080/getFileSubmissionById/" + assessmentId)
+    fetch(
+      "http://localhost:8080/assessment/getFileSubmissionById/" + assessmentId
+    )
       .then((res) => res.json())
       .then((result) => {
         setFileSubmission(result);
