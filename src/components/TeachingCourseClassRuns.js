@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import TeachingCoursesDrawer from '../components/TeachingCoursesDrawer';
-import CourseStatusAccordion from '../components/CourseStatusAccordion';
 import { Container, Paper, Box, Button, MenuItem, Grid } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -10,9 +9,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import CourseTags from '../components/CourseTags';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
 import { useAuth } from "../context/AuthProvider";
 
 import PropTypes from 'prop-types';
@@ -28,30 +24,17 @@ import Typography from '@mui/material/Typography';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
-export default function TeachingCourseClassRuns(props) {
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
-    function createData(name, calories, fat, carbs, protein, price) {
-        return {
-            name,
-            calories,
-            fat,
-            carbs,
-            protein,
-            price,
-            history: [
-                {
-                    date: '2020-01-05',
-                    customerId: '11091700',
-                    amount: 3,
-                },
-                {
-                    date: '2020-01-02',
-                    customerId: 'Anonymous',
-                    amount: 1,
-                },
-            ],
-        };
-    }
+import FormLabel from '@mui/material/FormLabel';
+import FormControl from '@mui/material/FormControl';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Checkbox from '@mui/material/Checkbox';
+
+export default function TeachingCourseClassRuns(props) {
 
     function Row(props) {
         const { row } = props;
@@ -76,13 +59,35 @@ export default function TeachingCourseClassRuns(props) {
                     <TableCell align="right">{row.classRunDescription}</TableCell>
                     <TableCell align="right">{row.classRunStart}</TableCell>
                     <TableCell align="right">{row.classRunEnd}</TableCell>
+                    <TableCell align="right">{row.classRunStartTime}</TableCell>
+                    <TableCell align="right">{row.classRunEndTime}</TableCell>
                     <TableCell align="right">{row.minClassSize}</TableCell>
                     <TableCell align="right">{row.maximumCapacity}</TableCell>
                     <TableCell align="right">{row.classRunDaysOfTheWeek.toString()}</TableCell>
                     <TableCell align="right">{row.recurringEnumString}</TableCell>
                     <TableCell align="right">{row.instructorUsername}</TableCell>
+                    <TableCell align="right">
+                        <div>
+                            <IconButton
+                                aria-label="settings"
+                                onClick={(event) => handleClickDeleteDialogOpen(event, row.classRunId)}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                            {/* <IconButton
+                                aria-label="settings"
+                                onClick={(event) =>
+                                    handleClickEditDialogOpen(event, forumId, forumTitle)
+                                }
+                            >
+                                <EditIcon />
+                            </IconButton> */}
+                            <Button variant='contained' onClick={(event) => generateClassEventsForClassRun(event, row.classRunId)}>
+                                Generate Events
+                            </Button>
+                        </div></TableCell>
                 </TableRow>
-                {/* <TableRow>
+                <TableRow>
                     <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
                         <Collapse in={open} timeout="auto" unmountOnExit>
                             <Box sx={{ margin: 1 }}>
@@ -92,25 +97,25 @@ export default function TeachingCourseClassRuns(props) {
                                 <Table size="small" aria-label="purchases">
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>Date</TableCell>
-                                            <TableCell>Start Time</TableCell>
-                                            <TableCell>End Time</TableCell>
-                                            <TableCell>Customer</TableCell>
-                                            <TableCell align="right">Amount</TableCell
-                                            <TableCell align="right">Total price ($)</TableCell>
+                                            <TableCell>Event ID</TableCell>
+                                            <TableCell align="right">Title</TableCell>
+                                            <TableCell align="right">Description</TableCell>
+                                            <TableCell align="right">Date</TableCell>
+                                            <TableCell align="right">Start Time</TableCell>
+                                            <TableCell align="right">End Time</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {row.history.map((historyRow) => (
-                                            <TableRow key={historyRow.date}>
+                                        {row.classEvents.map((classEventRow) => (
+                                            <TableRow key={classEventRow.date}>
                                                 <TableCell component="th" scope="row">
-                                                    {historyRow.date}
+                                                    {classEventRow.eventId}
                                                 </TableCell>
-                                                <TableCell>{historyRow.customerId}</TableCell>
-                                                <TableCell align="right">{historyRow.amount}</TableCell>
-                                                <TableCell align="right">
-                                                    {Math.round(historyRow.amount * row.price * 100) / 100}
-                                                </TableCell>
+                                                <TableCell align="right">{classEventRow.title}</TableCell>
+                                                <TableCell align="right">{classEventRow.eventDescription}</TableCell>
+                                                <TableCell align="right">{classEventRow.startDate.substring(0, 10)}</TableCell>
+                                                <TableCell align="right">{classEventRow.startDate.substring(11, 16)}</TableCell>
+                                                <TableCell align="right">{classEventRow.endDate.substring(11, 16)}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -118,33 +123,28 @@ export default function TeachingCourseClassRuns(props) {
                             </Box>
                         </Collapse>
                     </TableCell>
-                </TableRow> */}
+                </TableRow>
             </React.Fragment>
         );
     }
 
-    Row.propTypes = {
-        row: PropTypes.shape({
-            calories: PropTypes.number.isRequired,
-            carbs: PropTypes.number.isRequired,
-            fat: PropTypes.number.isRequired,
-            history: PropTypes.arrayOf(
-                PropTypes.shape({
-                    amount: PropTypes.number.isRequired,
-                    customerId: PropTypes.string.isRequired,
-                    date: PropTypes.string.isRequired,
-                }),
-            ).isRequired,
-            name: PropTypes.string.isRequired,
-            price: PropTypes.number.isRequired,
-            protein: PropTypes.number.isRequired,
-        }).isRequired,
-    };
-
-    const rows = [
-        createData('Frozen yoghurt', 159, 6.0, 24, 4.0, 3.99),
-        createData('Ice cream sandwich', 237, 9.0, 37, 4.3, 4.99),
-    ];
+    // Row.propTypes = {
+    //     row: PropTypes.shape({
+    //         calories: PropTypes.number.isRequired,
+    //         carbs: PropTypes.number.isRequired,
+    //         fat: PropTypes.number.isRequired,
+    //         history: PropTypes.arrayOf(
+    //             PropTypes.shape({
+    //                 amount: PropTypes.number.isRequired,
+    //                 customerId: PropTypes.string.isRequired,
+    //                 date: PropTypes.string.isRequired,
+    //             }),
+    //         ).isRequired,
+    //         name: PropTypes.string.isRequired,
+    //         price: PropTypes.number.isRequired,
+    //         protein: PropTypes.number.isRequired,
+    //     }).isRequired,
+    // };
 
     const auth = useAuth();
     const user = auth.user;
@@ -157,10 +157,33 @@ export default function TeachingCourseClassRuns(props) {
     const courseId = location.pathname.split('/')[2];
     const [course, setCourse] = useState('')
 
+    const [state, setState] = React.useState({
+        mon: false,
+        tue: false,
+        wed: false,
+        thu: false,
+        fri: false,
+        sat: false,
+        sun: false
+    });
+
+    const handleChange = (event) => {
+        setState({
+            ...state,
+            [event.target.name]: event.target.checked,
+        });
+        // setClassRunDaysOfTheWeek(daysArray)
+    };
+
+    const { mon, tue, wed, thu, fri, sat, sun } = state;
+    const error = [mon, tue, wed, thu, fri, sat, sun].filter((v) => v).length < 1;
+
     const [classRuns, setClassRuns] = useState([])
     const [classRunId, setClassRunId] = useState("");
     const [classRunStart, setClassRunStart] = useState("");
     const [classRunEnd, setClassRunEnd] = useState("");
+    const [classRunStartTime, setClassRunStartTime] = useState("");
+    const [classRunEndTime, setClassRunEndTime] = useState("");
     const [minClassSize, setMinClassSize] = useState("");
     const [maximumCapacity, setMaximumCapacity] = useState("");
     const [classRunDaysOfTheWeek, setClassRunDaysOfTheWeek] = useState([]);
@@ -170,13 +193,38 @@ export default function TeachingCourseClassRuns(props) {
     const [classRunName, setClassRunName] = useState("");
     const [classRunDescription, setClassRunDescription] = useState("");
 
+
+    const [classRunIdToDelete, setClassRunIdToDelete] = useState("");
+    const [classRunIdToGenerate, setClassRunIdToGenerate] = useState("");
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+
+    const handleClickDeleteDialogOpen = (event, classRunId) => {
+        setClassRunIdToDelete(classRunId);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteDialogClose = () => {
+        setDeleteDialogOpen(false);
+    };
+
+    // const handleClickEditDialogOpen = (event, forumId, forumTitle) => {
+    //     setEditForumTitle(forumTitle);
+    //     setForumIdToEdit(forumId);
+    //     setEditDialogOpen(true);
+    // };
+
+    const handleEditDialogClose = () => {
+        setEditDialogOpen(false);
+    };
+
     React.useEffect(() => {
         setRefreshPage(false);
         fetch("http://localhost:8080/classRun/getClassRunsFromCourseId/" + courseId).
             then(res => res.json())
             .then((result) => {
                 console.log(result)
-                // console.log(result.instructor.username)
                 setClassRuns(result);
             });
     }, [refreshPage]);
@@ -191,7 +239,7 @@ export default function TeachingCourseClassRuns(props) {
 
     const [openAddClassRun, setOpenAddClassRun] = React.useState(false);
 
-    const handleClickOpenAddClassRun = (event, courseCode, courseTitle, courseDescription, courseTimeline, courseMaxScore, ageGroup) => {
+    const handleClickOpenAddClassRun = (event, courseId) => {
         // setCourseCode1(courseCode);
         // setCourseTitle1(courseTitle)
         // setCourseDescription1(courseDescription)
@@ -250,11 +298,20 @@ export default function TeachingCourseClassRuns(props) {
 
     const createClassRun = (e) => {
         e.preventDefault()
-        var days = [0, 2];
-        setClassRunDaysOfTheWeek(days)
+        var daysArray = new Array()
+        if (sun === true) { daysArray.push(0) }
+        if (mon === true) { daysArray.push(1) }
+        if (tue === true) { daysArray.push(2) }
+        if (wed === true) { daysArray.push(3) }
+        if (thu === true) { daysArray.push(4) }
+        if (fri === true) { daysArray.push(5) }
+        if (sat === true) { daysArray.push(6) }
+        console.log(daysArray)
+        var classRunDaysOfTheWeek = daysArray
         const newClassRun = {
             classRunName, classRunDescription, classRunDaysOfTheWeek,
-            classRunStart, classRunEnd, calendarId, instructorUsername, recurringEnumString, minClassSize, maximumCapacity
+            classRunStart, classRunEnd, classRunStartTime, classRunEndTime,
+            calendarId, instructorUsername, recurringEnumString, minClassSize, maximumCapacity
         }
         fetch("http://localhost:8080/classRun/addToCourseId/" + courseId, {
             method: "POST",
@@ -266,6 +323,31 @@ export default function TeachingCourseClassRuns(props) {
         })
         handleCloseAddClassRun()
     }
+
+    const deleteClassRun = (e) => {
+        e.preventDefault();
+        fetch("http://localhost:8080/classRun/delete/" + classRunIdToDelete, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+        }).then(() => {
+            console.log("Class Run Deleted Successfully!");
+            setRefreshPage(true);
+            handleDeleteDialogClose();
+        });
+    };
+
+    const generateClassEventsForClassRun = (e, classRunIdToGenerate) => {
+        console.log("HELLO")
+        console.log(classRunIdToGenerate)
+        e.preventDefault();
+        fetch("http://localhost:8080/classRun/generateClassEventsFromClassRunId/" + classRunIdToGenerate, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+        }).then(() => {
+            console.log("Class Events Generated Successfully!");
+            setRefreshPage(true);
+        });
+    };
 
     const headingStyle = {
         color: "blue",
@@ -297,11 +379,14 @@ export default function TeachingCourseClassRuns(props) {
                                                 <TableCell align="right">Description</TableCell>
                                                 <TableCell align="right">Start Date</TableCell>
                                                 <TableCell align="right">End Date</TableCell>
+                                                <TableCell align="right">Start Time</TableCell>
+                                                <TableCell align="right">End Time</TableCell>
                                                 <TableCell align="right">Min Size</TableCell>
                                                 <TableCell align="right">Max Size</TableCell>
                                                 <TableCell align="right">Days of the Week</TableCell>
                                                 <TableCell align="right">Recurring Enum</TableCell>
                                                 <TableCell align="right">Instructor Username</TableCell>
+                                                <TableCell align="right">Actions</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -347,13 +432,86 @@ export default function TeachingCourseClassRuns(props) {
                         <TextField id="outlined-basic" label="Start Date" variant="outlined" fullWidth
                             style={{ margin: '6px 0' }}
                             value={classRunStart}
-                            onChange={(e) => setClassRunStart(e.target.value)} />
-
+                            onChange={(e) => setClassRunStart(e.target.value)}
+                        />
 
                         <TextField id="outlined-basic" label="End Date" variant="outlined" fullWidth
                             style={{ margin: '6px 0' }}
                             value={classRunEnd}
-                            onChange={(e) => setClassRunEnd(e.target.value)} />
+                            onChange={(e) => setClassRunEnd(e.target.value)}
+                        />
+                        <div>
+                        <Paper variant="outlined">
+                        <div style={{ padding: '15px' }}>
+                            <FormLabel component="legend" style={{ paddingBottom: '5px' }}>Class Days of the Week</FormLabel>
+                            <FormControl
+                                required
+                                error={error}
+                                component="fieldset"
+                                sx={{ m: 0 }}
+                                variant="standard"
+                            >
+                                {/* <FormLabel component="legend">Pick at least one</FormLabel> */}
+                                <FormGroup>
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox checked={mon} onChange={handleChange} name="mon" />
+                                        }
+                                        label="Mon"
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox checked={tue} onChange={handleChange} name="tue" />
+                                        }
+                                        label="Tue"
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox checked={wed} onChange={handleChange} name="wed" />
+                                        }
+                                        label="Wed"
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox checked={thu} onChange={handleChange} name="thu" />
+                                        }
+                                        label="Thu"
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox checked={fri} onChange={handleChange} name="fri" />
+                                        }
+                                        label="Fri"
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox checked={sat} onChange={handleChange} name="sat" />
+                                        }
+                                        label="Sat"
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox checked={sun} onChange={handleChange} name="sun" />
+                                        }
+                                        label="Sun"
+                                    />
+                                </FormGroup>
+                                <FormHelperText>Pick at least one day*</FormHelperText>
+                            </FormControl>
+                        </div>
+                        </Paper>
+                        </div>
+                        <TextField id="outlined-basic" label="Start Time" variant="outlined" fullWidth
+                            style={{ margin: '6px 0' }}
+                            value={classRunStartTime}
+                            onChange={(e) => setClassRunStartTime(e.target.value)}
+                        />
+
+                        <TextField id="outlined-basic" label="End Time" variant="outlined" fullWidth
+                            style={{ margin: '6px 0' }}
+                            value={classRunEndTime}
+                            onChange={(e) => setClassRunEndTime(e.target.value)}
+                        />
 
                         <TextField id="outlined-basic" label="Min Size" fullWidth defaultValue=""
                             style={{ margin: '6px 0' }}
@@ -398,6 +556,63 @@ export default function TeachingCourseClassRuns(props) {
                     </DialogActions>
                 </Dialog>
             </div>
+            <div>
+                <Dialog
+                    open={deleteDialogOpen}
+                    onClose={handleDeleteDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Delete this class run?"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            These will delete all the class events inside the
+                            class run. You will not be able to undo this action. Are you sure you
+                            want to delete?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDeleteDialogClose}>Cancel</Button>
+                        <Button onClick={deleteClassRun} autoFocus>
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            {/* <div>
+                <Dialog
+                    open={editDialogOpen}
+                    onClose={handleEditDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"You are editing this forum"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Enter the new forum details
+                        </DialogContentText>
+                        <TextField
+                            id="outlined-basic"
+                            label="Discussion Title"
+                            variant="outlined"
+                            fullWidth
+                            style={{ margin: "6px 0" }}
+                            value={editForumTitle}
+                            onChange={(e) => setEditForumTitle(e.target.value)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleEditDialogClose}>Cancel</Button>
+                        <Button onClick={editForum} autoFocus>
+                            Edit
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div> */}
         </div>);
 
 
