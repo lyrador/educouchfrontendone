@@ -12,6 +12,7 @@ import TeachingCoursesList from "./pages/TeachingCoursesList";
 import TeachingCourse from "./pages/TeachingCourse";
 import TeachingCourseNew from "./pages/TeachingCourseNew";
 import TeachingAssessmentList from "./components/TeachingAssessmentList";
+import FileSubmission from "./components/FileSubmission";
 import TeachingForumList from "./components/TeachingForumList";
 import TeachingDiscussion from "./components/TeachingDiscussion";
 import TeachingForum from "./components/TeachingForum";
@@ -21,13 +22,12 @@ import ViewAllEducators from "./pages/ViewAllEducators";
 import ViewInstructor from "./pages/ViewInstructor";
 import TeachingChildFileCover from "./components/TeachingChildFileCover";
 import TeachingCourseSettings from "./components/TeachingCourseSettings";
-import TeachingCourseCalender from "./components/TeachingCourseCalender"; 
+import TeachingCourseCalender from "./components/TeachingCourseCalender";
 
 import { AuthProvider } from "./context/AuthProvider";
 import { RequireAuth } from "./components/RequireAuth";
 import Login from "./components/Login";
 import AccountPage from "./pages/AccountPage";
-import SignUp from "./pages/Signup";
 import Signup from "./pages/Signup";
 import RegisterPage from "./pages/RegisterPage";
 import RegisterLearnerPage from "./pages/RegisterLearnerPage";
@@ -81,7 +81,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId"
               element={
@@ -137,6 +136,15 @@ function App() {
               }
             />
             <Route
+              path="/myTeachingCourse/:courseId/assessments/:assessmentId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <FileSubmission />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/myTeachingCourse/:courseId/courseEnrollment"
               element={
                 <RequireAuth>
@@ -172,7 +180,6 @@ function App() {
                 </RequireAuth>
               }
             />
-            
             <Route
               path="/myTeachingCourse/:courseId/forum"
               element={
