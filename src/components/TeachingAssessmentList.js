@@ -173,20 +173,36 @@ function TeachingAssessmentList(props) {
     errorMessage: "",
   });
 
-  const [refreshPage, setRefreshPage] = useState("");
+  const [refreshPage, setRefreshPage] = useState(false);
 
   const enumGroup = [{ value: "INDIVIDUAL" }, { value: "GROUP" }];
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // get all assessments here
   React.useEffect(() => {
     setRefreshPage(false);
     fetch(
-      "http://localhost:8080/assessment/getAllFileSubmissionsByCourseId/" +
-        courseId
+      "http://localhost:8080/assessment/getAllAssessmentsByCourseId?courseId=" +courseId
     )
       .then((res) => res.json())
       .then((result) => {
         setAssessments(result);
-        console.log(assessments);
+        console.log("list of assessments: " + assessments + " course id: " + courseId);
       });
   }, [refreshPage]);
 
@@ -544,6 +560,22 @@ function TeachingAssessmentList(props) {
               Create New Assessment
             </Button>
           </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          {/* table is here */}
           <div style={{ padding: "5%" }}>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -569,17 +601,17 @@ function TeachingAssessmentList(props) {
                         <Link
                           to={`${assessmentsPath}/${assessment.assessmentId}`}
                           state={{
-                            assessmentTitle: assessment.assessmentTitle,
+                            assessmentTitle: assessment.title,
                           }}
                           style={{ textDecoration: "none" }}
                         >
-                          {assessment.assessmentTitle}
+                          {assessment.title}
                         </Link>
                       </TableCell>
-                      <TableCell>{assessment.assessmentMaxScore}</TableCell>
-                      <TableCell>{assessment.assessmentStartDate}</TableCell>
-                      <TableCell>{assessment.assessmentEndDate}</TableCell>
-                      <TableCell>{" File Submission "}</TableCell>
+                      <TableCell>{assessment.maxScore}</TableCell>
+                      <TableCell>{assessment.startDate}</TableCell>
+                      <TableCell>{assessment.endDate}</TableCell>
+                      <TableCell>{assessment.assessmentType}</TableCell>
                       {/* <TableCell>{assessment.assessmentIsOpen}</TableCell> */}
                       <TableCell>
                         <div>
