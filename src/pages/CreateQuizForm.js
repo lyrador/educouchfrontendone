@@ -26,13 +26,13 @@ export default function CreateQuizForm(props) {
   const [onEdit, setOnEdit] = useState(false);
   const [textField, setTextField] = useState("");
 
-  const editFieldTitle = (fieldName, fieldLabel) => {
+  const editFieldTitle = (fieldName, questionTitle) => {
     const formFields = [...formContent];
     const fieldIndex = formFields.findIndex((f) => f.name == fieldName);
     if (fieldIndex > -1) {
-      formFields[fieldIndex].label = fieldLabel;
+      formFields[fieldIndex].questionTitle = questionTitle;
       setFormContent(formFields);
-    }
+    } 
   };
 
   const editFieldType = (fieldName, questionType) => {
@@ -57,8 +57,8 @@ export default function CreateQuizForm(props) {
   const addQuestion = () => {
     const questionNumber = formContent.length + 1;
     const field = {
+      name: "question"+questionNumber,
       questionTitle: "Question " + questionNumber,
-      label: "Untitled Question",
       questionType: "shortAnswer",
       list: [],
     };
