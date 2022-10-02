@@ -119,7 +119,7 @@ export default function CreateQuizForm(props) {
                   direction="row"
                   justifyContent={"space-between"}
                 >
-                  <Grid item key={field.name}>
+                  <Grid item key={field.name} style={{marginBottom: 30}}>
                     {onEdit ? (
                       <input
                         type="text"
@@ -149,13 +149,13 @@ export default function CreateQuizForm(props) {
                   <Grid container direction="column">
                     <Grid item>
                       {field.questionType == "shortAnswer" && (
-                        <input type="text" placeholder={field.questionType} />
+                        <input type="text" placeholder={field.questionType} style={{ width: 600, fontSize: 20, padding: 6 }} />
                       )}
                       {field.questionType == "mcq" && (
                         <div>
-                          <select style={{ width: 600 }}>
+                          <select style={{ width: 600,  fontSize: 20, padding: 6 }}>
                             {field.list.map((item) => (
-                              <option key={item} value={item}>
+                              <option key={item} value={item} >
                                 {item}
                               </option>
                             ))}
@@ -166,6 +166,7 @@ export default function CreateQuizForm(props) {
                               onChange={(e) => setTextField(e.target.value)}
                               value={textField}
                               placeholder="Add Option"
+                              style={{ width: 600,  fontSize: 20, padding: 6, marginTop: 10 }}
                             />
                             <Button onClick={ () => addFieldOption(field.name, textField)}>Add</Button>
                           </div>
