@@ -36,6 +36,7 @@ import CourseExplorerPage from "./pages/CourseExplorerPage";
 import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
 import LearnerCourseDetails from "./pages/LearnerCourseDetails";
 import TeachingCourseClassRuns from "./components/TeachingCourseClassRuns";
+import CreateQuizForm from "./pages/CreateQuizForm";
 
 function App() {
   return (
@@ -285,6 +286,15 @@ function App() {
             <Route
               path="/register/educator"
               element={<RegisterOrganisationAdminPage />}
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/assessments/createQuiz"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateQuizForm />
+                </RequireAuth>
+              }
             />
           </Routes>
         </Router>
