@@ -13,41 +13,51 @@ import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
 
 export default function CreateQuizForm(props) {
-
   const location = useLocation();
   const assessmentPath = location.pathname.split("/").slice(0, 4).join("/");
 
   const [formContent, setFormContent] = useState([]);
   const [textField, setTextField] = useState("");
-
+  const question = {
+    name: "",
+    questionTitle: " ",
+    questionType: "",
+    options: [],
+  };
 
   function editQuestionTitle(questionName, questionTitle) {
     const formQuestions = [...formContent];
-    const questionIndex = formQuestions.findIndex((f) => f.name == questionName);
+    const questionIndex = formQuestions.findIndex(
+      (f) => f.name == questionName
+    );
     if (questionIndex > -1) {
       formQuestions[questionIndex].questionTitle = questionTitle;
       setFormContent(formQuestions);
     }
-  };
+  }
 
   function editQuestionType(questionName, questionType) {
     const formQuestions = [...formContent];
-    const questionIndex = formQuestions.findIndex((f) => f.name == questionName);
+    const questionIndex = formQuestions.findIndex(
+      (f) => f.name == questionName
+    );
     if (questionIndex > -1) {
       formQuestions[questionIndex].questionType = questionType;
       setFormContent(formQuestions);
     }
-  };
+  }
 
   function addQuestionOption(questionName, option) {
     const formQuestions = [...formContent];
-    const questionIndex = formQuestions.findIndex((f) => f.name == questionName);
+    const questionIndex = formQuestions.findIndex(
+      (f) => f.name == questionName
+    );
     if (option && option != "") {
-      formQuestions[questionIndex].list.push(option);
+      formQuestions[questionIndex].options.push(option);
       setFormContent(formQuestions);
       setTextField("");
     }
-  };
+  }
 
   const addQuestion = () => {
     const questionNumber = formContent.length + 1;
@@ -55,7 +65,7 @@ export default function CreateQuizForm(props) {
       name: "question" + questionNumber,
       questionTitle: "Question " + questionNumber,
       questionType: "shortAnswer",
-      list: [],
+      options: [],
     };
     setFormContent([...formContent, question]);
     console.log("added question: " + question.questionType);
@@ -100,9 +110,7 @@ export default function CreateQuizForm(props) {
         </Breadcrumbs>
 
         <Container>
-          <h1>
-            <u>Quiz Creation</u>
-          </h1>
+          <h1>Quiz Creation</h1>
           <br></br>
           <Grid container style={{ margin: 50 }}>
             <Button variant="contained" onClick={() => addQuestion()}>
