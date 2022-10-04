@@ -33,8 +33,6 @@ const changeEditingAppointment = (editingAppointment) => {
 
 const allowDrag = ({id}) => !(id == 0); 
 
-
-
 const commitChanges = ({added, changed, deleted}) => {
     
     if (changed) {
@@ -68,7 +66,7 @@ React.useEffect(() => {
             setEvents(result);
         }
         )
-}, [])
+}, [refreshPage])
 
 const saveAppointment = (data) => {
     console.log(data)
