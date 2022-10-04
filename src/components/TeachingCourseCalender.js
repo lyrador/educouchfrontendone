@@ -3,7 +3,7 @@ import * as React from "react";
 import  { ViewState } from '@devexpress/dx-react-scheduler';
 import { EditingState } from '@devexpress/dx-react-scheduler';
 import { IntegratedEditing } from '@devexpress/dx-react-scheduler';
-import { Scheduler, WeekView, Appointments, AppointmentForm, Toolbar, DateNavigator, TodayButton} from '@devexpress/dx-react-scheduler-material-ui';
+import { Scheduler, WeekView, Appointments, AppointmentTooltip, AppointmentForm, Toolbar, DateNavigator, TodayButton, ConfirmationDialog, DragDropProvider} from '@devexpress/dx-react-scheduler-material-ui';
 
 
 
@@ -31,9 +31,11 @@ const changeEditingAppointment = (editingAppointment) => {
      setEditingAppointment(editingAppointment); 
 }
 
+const allowDrag = ({id}) => !(id == 0); 
 
 
-const commitChanges = ({added, changed}) => {
+
+const commitChanges = ({added, changed, deleted}) => {
     
     if (changed) {
 
@@ -51,6 +53,11 @@ const commitChanges = ({added, changed}) => {
         //const startingAddedId = events1.length > 0 ? events1[events1.length - 1].id + 1 : 0;
         //events1 = [...events1, { id: startingAddedId, ...added }];
         saveAppointment(addedAppointment)
+    }
+
+    if (deleted !== undefined) {
+        
+        deleteAppointment(editingAppointment); 
     }
 }
   
@@ -89,6 +96,19 @@ const editAppointment = (data) => {
         })
 }
 
+const deleteAppointment = (data) => {
+    console.log(data)
+    fetch("http://localhost:8080/event/events/" + data.id , {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        }).then(() => {
+            console.log("Event Deleted Successfully!")
+            setRefreshPage(true)
+        
+        })
+}
+
 console.log(events); 
     return (
         <div id="calender">
@@ -101,7 +121,10 @@ console.log(events);
                 firstDayOfWeek={0}
                 >
                 <ViewState />
-                <WeekView />
+                <WeekView 
+                    startDayHour={8}
+                    endDayHour={22}
+                />
                 <EditingState 
                     onCommitChanges={commitChanges}
                     addedAppointment = {addedAppointment}
@@ -116,6 +139,14 @@ console.log(events);
                 <DateNavigator />
                 <TodayButton />
                 <Appointments />
+                <ConfirmationDialog
+                />
+                <AppointmentTooltip
+                    showOpenButton
+                />
+                <DragDropProvider
+                    allowDrag = {allowDrag}
+                />
                 <AppointmentForm />
             </Scheduler>
         </div>
