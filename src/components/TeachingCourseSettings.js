@@ -15,6 +15,19 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useAuth } from "../context/AuthProvider";
 
+import PropTypes from 'prop-types';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -52,12 +65,8 @@ export default function TeachingCourseSettings(props) {
 
     const [refreshPage, setRefreshPage] = useState('')
 
-
     const location = useLocation(props);
     const settingsPath = location.pathname.split('/').slice(0, 4).join('/')
-
-    // const courseId = useParams();
-    // console.log(JSON.stringify(courseId));
 
     const courseId = location.pathname.split('/')[2];
     const [course, setCourse] = useState('')
@@ -114,8 +123,6 @@ export default function TeachingCourseSettings(props) {
     const handleDeleteDialogClose = () => {
         setDeleteDialogOpen(false);
     };
-
-
 
     const deleteCourse = (e) => {
         e.preventDefault()
@@ -202,9 +209,9 @@ export default function TeachingCourseSettings(props) {
                         <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
                     </Grid>
                     <Grid item xs={10}>
-                        <CourseStatusAccordion course={course} refresh={refresh}></CourseStatusAccordion>
+                        {/* <CourseStatusAccordion course={course} refresh={refresh}></CourseStatusAccordion>
                         <br />
-                        <CourseTags courseId={courseId}></CourseTags>
+                        <CourseTags courseId={courseId}></CourseTags> */}
 
                         <Paper elevation={3} style={paperStyle}>
                             <h1 style={headingStyle}> {course.courseCode} - {course.courseTitle} </h1>
@@ -239,27 +246,27 @@ export default function TeachingCourseSettings(props) {
                             <p>{course.courseTimeline}</p>
                         </Paper>
 
-                        {user.userEnum == "HEAD_INSTRUCTOR" &&(
-                        <Button
-                            className="btn-upload"
-                            color="primary"
-                            variant="contained"
-                            component="span"
-                            onClick={event => handleClickOpen(event, course.courseCode, course.courseTitle, course.courseDescription, course.courseTimeline, course.courseMaxScore, course.ageGroup, course.courseApprovalStatus)}
-                            style={{ float: 'right', marginLeft: 'auto', margin: '0px 6px', left: "150px" }}>
-                            Update
-                        </Button>
+                        {user.userEnum == "HEAD_INSTRUCTOR" && (
+                            <Button
+                                className="btn-upload"
+                                color="primary"
+                                variant="contained"
+                                component="span"
+                                onClick={event => handleClickOpen(event, course.courseCode, course.courseTitle, course.courseDescription, course.courseTimeline, course.courseMaxScore, course.ageGroup, course.courseApprovalStatus)}
+                                style={{ float: 'right', marginLeft: 'auto', margin: '0px 6px', left: "150px" }}>
+                                Update
+                            </Button>
                         )}
-                        {user.userEnum == "HEAD_INSTRUCTOR" &&(
-                        <Button
-                            className="btn-upload"
-                            color="primary"
-                            variant="contained"
-                            component="span"
-                            onClick={event => handleClickDeleteDialogOpen(event, course.courseId)}
-                            style={{ float: 'right', marginLeft: 'auto', margin: '0px 6px', left: "150px" }}>
-                            Delete
-                        </Button>
+                        {user.userEnum == "HEAD_INSTRUCTOR" && (
+                            <Button
+                                className="btn-upload"
+                                color="primary"
+                                variant="contained"
+                                component="span"
+                                onClick={event => handleClickDeleteDialogOpen(event, course.courseId)}
+                                style={{ float: 'right', marginLeft: 'auto', margin: '0px 6px', left: "150px" }}>
+                                Delete
+                            </Button>
                         )}
                     </Grid>
                 </Grid>
