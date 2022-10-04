@@ -13,9 +13,6 @@ import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
 
 export default function CreateQuizForm(props) {
-  React.useEffect(() => {
-    console.log("assessment path: " + assessmentPath);
-  }, []);
 
   const location = useLocation();
   const assessmentPath = location.pathname.split("/").slice(0, 4).join("/");
@@ -23,44 +20,45 @@ export default function CreateQuizForm(props) {
   const [formContent, setFormContent] = useState([]);
   const [textField, setTextField] = useState("");
 
-  const editFieldTitle = (fieldName, questionTitle) => {
-    const formFields = [...formContent];
-    const fieldIndex = formFields.findIndex((f) => f.name == fieldName);
-    if (fieldIndex > -1) {
-      formFields[fieldIndex].questionTitle = questionTitle;
-      setFormContent(formFields);
+
+  function editQuestionTitle(questionName, questionTitle) {
+    const formQuestions = [...formContent];
+    const questionIndex = formQuestions.findIndex((f) => f.name == questionName);
+    if (questionIndex > -1) {
+      formQuestions[questionIndex].questionTitle = questionTitle;
+      setFormContent(formQuestions);
     }
   };
 
-  const editFieldType = (fieldName, questionType) => {
-    const formFields = [...formContent];
-    const fieldIndex = formFields.findIndex((f) => f.name == fieldName);
-    if (fieldIndex > -1) {
-      formFields[fieldIndex].questionType = questionType;
-      setFormContent(formFields);
+  function editQuestionType(questionName, questionType) {
+    const formQuestions = [...formContent];
+    const questionIndex = formQuestions.findIndex((f) => f.name == questionName);
+    if (questionIndex > -1) {
+      formQuestions[questionIndex].questionType = questionType;
+      setFormContent(formQuestions);
     }
   };
 
-  const addFieldOption = (fieldName, option) => {
-    const formFields = [...formContent];
-    const fieldIndex = formFields.findIndex((f) => f.name == fieldName);
+  function addQuestionOption(questionName, option) {
+    const formQuestions = [...formContent];
+    const questionIndex = formQuestions.findIndex((f) => f.name == questionName);
     if (option && option != "") {
-      formFields[fieldIndex].list.push(option);
-      setFormContent(formFields);
+      formQuestions[questionIndex].list.push(option);
+      setFormContent(formQuestions);
       setTextField("");
     }
   };
 
   const addQuestion = () => {
     const questionNumber = formContent.length + 1;
-    const field = {
+    const question = {
       name: "question" + questionNumber,
       questionTitle: "Question " + questionNumber,
       questionType: "shortAnswer",
       list: [],
     };
-    setFormContent([...formContent, field]);
-    console.log("added question: " + field.questionType);
+    setFormContent([...formContent, question]);
+    console.log("added question: " + question.questionType);
   };
 
   const handleSave = (e) => {
@@ -120,14 +118,14 @@ export default function CreateQuizForm(props) {
             </Paper>
           )}
 
-          {formContent.map((field, index) => {
+          {formContent.map((question, index) => {
             return (
               <Paper elevation={3} style={{ margin: 50, padding: 30 }}>
                 <QuizQuestionComponent
-                  fieldProp={field}
-                  editFieldTitleProp={editFieldTitle()}
-                  editFieldTypeProp={editFieldType()}
-                  addFieldOptionProp={addFieldOption()}
+                  questionProp={question}
+                  editQuestionTitleProp={editQuestionTitle}
+                  editQuestionTypeProp={editQuestionType}
+                  addQuestionOptionProp={addQuestionOption}
                   textFieldProp={textField}
                   setTextFieldProp={setTextField}
                 />

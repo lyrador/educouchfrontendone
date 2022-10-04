@@ -3,7 +3,7 @@ import { Button } from "@mui/material";
 import React, { useState } from "react";
 
 export default function QuizQuestionComponent(props) {
-  const [field, setField] = useState(props.fieldProp);
+  const [question, setQuestion] = useState(props.questionProp);
   const [index, setIndex] = useState(props.indexProp);
 
   const [onEdit, setOnEdit] = useState(false);
@@ -15,28 +15,36 @@ export default function QuizQuestionComponent(props) {
       direction="row"
       justifyContent={"space-between"}
     >
-      <Grid item key={props.fieldProp.name} style={{ marginBottom: 30 }}>
+      <Grid item key={props.questionProp.name} style={{ marginBottom: 30 }}>
         {onEdit ? (
           <input
             type="text"
             style={{ fontSize: 30 }}
-            value={props.fieldProp.questionTitle}
+            value={props.questionProp.questionTitle}
             onChange={(e) =>
-              props.editFieldTitleProp(props.fieldProp.name, e.target.value)
+              props.editQuestionTitleProp(
+                props.questionProp.name,
+                e.target.value
+              )
             }
             onBlur={() => setOnEdit(false)}
           />
         ) : (
           <label style={{ fontSize: 30 }} onClick={() => setOnEdit(true)}>
-            {props.fieldProp.questionTitle}
+            {props.questionProp.questionTitle}
           </label>
         )}
       </Grid>
       <Grid item>
         <select
           style={{ fontSize: 20 }}
-          value={props.fieldProp.questionType}
-          onChange={(e) => props.editFieldTypeProp(props.fieldProp.name, e.target.value)}
+          value={props.questionProp.questionType}
+          onChange={(e) =>
+            props.editQuestionTypeProp(
+              props.questionProp.name,
+              e.target.value
+            )
+          }
         >
           <option value="shortAnswer">Short Answer</option>
           <option value="mcq">Multiple Choice</option>
@@ -45,17 +53,17 @@ export default function QuizQuestionComponent(props) {
 
       <Grid container direction="column">
         <Grid item>
-          {props.fieldProp.questionType == "shortAnswer" && (
+          {props.questionProp.questionType == "shortAnswer" && (
             <input
               type="text"
-              placeholder={props.fieldProp.questionType}
+              placeholder={props.questionProp.questionType}
               style={{ width: 600, fontSize: 20, padding: 6 }}
             />
           )}
-          {props.fieldProp.questionType == "mcq" && (
+          {props.questionProp.questionType == "mcq" && (
             <div>
               <select style={{ width: 600, fontSize: 20, padding: 6 }}>
-                {field.list.map((item) => (
+                {question.list.map((item) => (
                   <option key={item} value={item}>
                     {item}
                   </option>
@@ -76,7 +84,10 @@ export default function QuizQuestionComponent(props) {
                 />
                 <Button
                   onClick={() =>
-                    props.addFieldOptionProp(props.fieldProp.name, props.textFieldProp)
+                    props.addQuestionOptionProp(
+                      props.questionProp.name,
+                      props.textFieldProp
+                    )
                   }
                 >
                   Add
