@@ -66,9 +66,7 @@ export default function RegisterLearnerPage() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [profilePictureURL, setProfilePictureURL] = useState("");
     const [username, setUsername] = useState("");
-    const [ageGroup, setAgeGroup] = useState('');
-    const [paymentAcc, setPaymentAcc] = useState("")
-    
+    const [ageGroup, setAgeGroup] = useState('')
 
     const [nameError, setNameError] = useState({ value: false, errorMessage: '' })
     const [emailError, setEmailError] = useState({ value: false, errorMessage: '' })
@@ -76,7 +74,6 @@ export default function RegisterLearnerPage() {
     const [confirmPasswordError, setConfirmPasswordError] = useState({ value: false, errorMessage: '' })
     const [usernameError, setUsernameError] = useState({ value: false, errorMessage: '' })
     const [ageGroupError, setAgeGroupError] = useState({ value: false, errorMessage: '' })
-    const [paymentAccError, setpaymentAccError] = useState({ value: false, errorMessage: '' })
 
     const ageGroups = [{ value: 'Adult' }, { value: 'Kid' }];
 
@@ -113,7 +110,6 @@ export default function RegisterLearnerPage() {
         setUsernameError({ value: false, errorMessage: '' })
         setAgeGroupError({ value: false, errorMessage: '' })
         setConfirmPasswordError({ value: false, errorMessage: '' })
-        setpaymentAccError({ value: false, errorMessage: '' })
 
         if (name === '') {
             setNameError({ value: true, errorMessage: 'You must enter a name' })
@@ -132,9 +128,6 @@ export default function RegisterLearnerPage() {
         }
         if (ageGroup === '') {
             setAgeGroupError({ value: true, errorMessage: 'You must select an age group' })
-        }
-        if (paymentAcc === '') {
-            setpaymentAccError({ value: true, errorMessage: 'You must enter a payment account number' })
         }
         if (confirmPassword === '') {
             setConfirmPasswordError({ value: true, errorMessage: 'You must confirm your password' })
@@ -160,8 +153,7 @@ export default function RegisterLearnerPage() {
                 password,
                 username,
                 profilePictureURL,
-                isKid, 
-                paymentAcc
+                isKid
             };
             console.log(learner);
             return fetch("http://localhost:8080/learner/add", {
@@ -293,8 +285,6 @@ export default function RegisterLearnerPage() {
                             onChange={handleChangeAgeGroup}
                             error={ageGroupError.value}
                             helperText={ageGroupError.errorMessage}
-                            style={{ paddingBottom: "10px" }}
-
                         >
                             {ageGroups.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>
@@ -302,14 +292,6 @@ export default function RegisterLearnerPage() {
                                 </MenuItem>
                             ))}
                         </TextField>
-                        <TextField id="outlined-basic" label="Payment Account" variant="outlined" fullWidth
-                            required
-                            value={paymentAcc}
-                            onChange={(e) => setPaymentAcc(e.target.value)}
-                            error={paymentAccError.value}
-                            helperText={paymentAccError.errorMessage}
-                            style={{ paddingBottom: "10px" }}
-                        />
                         {/* </form> */}
                         <div style={{ textAlign: 'center', paddingTop: 20, paddingBottom: 50 }}>
                             {previewImage && (
@@ -354,7 +336,7 @@ export default function RegisterLearnerPage() {
                                     accept="image/*"
                                     onChange={selectFile}
                                 />
-                                <Button className="btn-choose" variant="outlined" component="span" onClick={selectFile}>
+                                <Button className="btn-choose" variant="outlined" component="span">
                                     Choose Profile Image
                                 </Button>
                             </label>
