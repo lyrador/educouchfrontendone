@@ -2,17 +2,19 @@ import { Grid } from "@mui/material";
 import { Button } from "@mui/material";
 import React, { useState } from "react";
 import McqBodyComponent from "./McqBodyComponent";
+import QuizContentComponent from "./QuizContentComponent";
 import QuizTitleComponent from "./QuizTitleComponent";
 import QuizTypeDropdownComponent from "./QuizTypeDropdownComponent";
+import ShortAnswerComponent from "./ShortAnswerComponent";
 import TrueFalseComponent from "./TrueFalseComponent";
 
 export default function QuizQuestionComponent(props) {
   const [question, setQuestion] = useState(props.questionProp);
   const [index, setIndex] = useState(props.indexProp);
   const [onEdit, setOnEdit] = useState(false);
-  
 
   return (
+    
     <Grid
       container
       style={{ margin: 20 }}
@@ -32,14 +34,18 @@ export default function QuizQuestionComponent(props) {
       />
 
       <Grid container direction="column">
+        <Grid>
+          <QuizContentComponent
+            questionIdProp={props.questionProp.id}
+            questionContentProp={props.questionProp.questionContent}
+            editQuestionContentProp={props.editQuestionContentProp}
+          />
+        </Grid>
+
         <Grid item>
           {props.questionProp.questionType == "shortAnswer" && (
-            <input
-              type="text"
-              placeholder={props.questionProp.questionType}
-              style={{ width: "70%", fontSize: 20, padding: 6 }}
-            />
-          )}
+            <ShortAnswerComponent />
+          )}  
           {props.questionProp.questionType == "mcq" && (
             <div>
               <McqBodyComponent
@@ -61,10 +67,8 @@ export default function QuizQuestionComponent(props) {
             </div>
           )}
         </Grid>
-        <Grid style={{marginTop: 15}}>
-          <Button>
-            Remove Question
-          </Button>
+        <Grid style={{ marginTop: 15 }}>
+          <Button>Remove Question</Button>
         </Grid>
       </Grid>
     </Grid>

@@ -16,59 +16,72 @@ export default function CreateQuizForm(props) {
   const location = useLocation();
   const assessmentPath = location.pathname.split("/").slice(0, 4).join("/");
 
-  const [formContent, setFormContent] = useState([]);
+  const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
   const question = {
-    id: "",
+    id: "", 
     questionTitle: " ",
     questionType: "",
+    questionContent: "",
     options: [], //array of string to store mcq options OR trueFalse options
+
   };
 
   function editQuestionTitle(questionId, questionTitle) {
-    const formQuestions = [...formContent];
-    const questionIndex = formQuestions.findIndex(
-      (f) => f.id == questionId
-    );
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex((f) => f.id == questionId);
     if (questionIndex > -1) {
-      formQuestions[questionIndex].questionTitle = questionTitle;
-      setFormContent(formQuestions);
+      tempFormQuestions[questionIndex].questionTitle = questionTitle;
+      setFormQuestions(tempFormQuestions  );
     }
   }
 
   function editQuestionType(questionId, questionType) {
-    const formQuestions = [...formContent];
-    const questionIndex = formQuestions.findIndex(
-      (f) => f.id == questionId
-    );
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex((f) => f.id == questionId);
     if (questionIndex > -1) {
-      formQuestions[questionIndex].questionType = questionType;
-      setFormContent(formQuestions);
+      tempFormQuestions[questionIndex].questionType = questionType;
+      setFormQuestions(tempFormQuestions);
+    }
+  }
+
+  function editQuestionContent(questionId, questionContent) {
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex((f) => f.id == questionId);
+    if (questionIndex > -1) {
+      tempFormQuestions[questionIndex].questionContent = questionContent;
+      setFormQuestions(tempFormQuestions);
     }
   }
 
   function addQuestionOption(questionId, option) {
-    const formQuestions = [...formContent];
-    const questionIndex = formQuestions.findIndex(
-      (f) => f.id == questionId
-    );
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex((f) => f.id == questionId);
     if (option && option != "") {
-      formQuestions[questionIndex].options.push(option);
-      setFormContent(formQuestions);
+      tempFormQuestions[questionIndex].options.push(option);
+      setFormQuestions(tempFormQuestions);
       setTextField("");
     }
   }
 
   const addQuestion = () => {
-    const questionNumber = formContent.length + 1;
+    const questionNumber = formQuestions.length + 1;
     const question = {
       id: "question" + questionNumber,
       questionTitle: "Question " + questionNumber,
       questionType: "shortAnswer",
+      questionContent: "Type Question Body here...",
       options: [],
     };
-    setFormContent([...formContent, question]);
+    setFormQuestions([...formQuestions, question]);
     console.log("added question: " + question.questionType);
+  };
+
+  const removeQuestion = (questionId) => {
+    const questionIndex = formQuestions.findIndex((f) => f.id == questionId);
+    if (questionIndex > -1) {
+    }
+    console.log("removed question: " + questionId);
   };
 
   const handleSave = (e) => {
@@ -118,7 +131,7 @@ export default function CreateQuizForm(props) {
             </Button>
           </Grid>
 
-          {formContent.length == 0 && (
+          {formQuestions.length == 0 && (
             <Paper elevation={3} style={{ margin: 50, padding: 30 }}>
               <h3>Currently no questions!</h3>
               <br />
@@ -126,16 +139,17 @@ export default function CreateQuizForm(props) {
             </Paper>
           )}
 
-          {formContent.map((question, index) => {
+          {formQuestions.map((question, index) => {
             return (
               <Paper elevation={3} style={{ margin: 50, padding: 30 }}>
                 <QuizQuestionComponent
+                  textFieldProp={textField}
+                  setTextFieldProp={setTextField}
                   questionProp={question}
                   editQuestionTitleProp={editQuestionTitle}
                   editQuestionTypeProp={editQuestionType}
                   addQuestionOptionProp={addQuestionOption}
-                  textFieldProp={textField}
-                  setTextFieldProp={setTextField}
+                  editQuestionContentProp={editQuestionContent}
                 />
               </Paper>
             );
