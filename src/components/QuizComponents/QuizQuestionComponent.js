@@ -18,7 +18,7 @@ export default function QuizQuestionComponent(props) {
       justifyContent={"space-between"}
     >
       <QuizTitleComponent
-        questionNameProp={props.questionProp.name}
+        questionIdProp={props.questionProp.id}
         questionTitleProp={props.questionProp.questionTitle}
         editQuestionTitleProp={props.editQuestionTitleProp}
       />
@@ -26,7 +26,7 @@ export default function QuizQuestionComponent(props) {
       <QuizTypeDropdownComponent
         questionTypeProp={props.questionProp.questionType}
         editQuestionTypeProp={props.editQuestionTypeProp}
-        questionNameProp={props.questionProp.name}
+        questionIdProp={props.questionProp.id}
       />
 
       <Grid container direction="column">
@@ -45,7 +45,7 @@ export default function QuizQuestionComponent(props) {
                 textFieldProp={props.textFieldProp}
                 setTextFieldProp={props.setTextFieldProp}
                 addQuestionOptionProp={props.addQuestionOptionProp}
-                questionNameProp={ props.questionProp.name }
+                questionIdProp={ props.questionProp.id }
               />
             </div>
           )}

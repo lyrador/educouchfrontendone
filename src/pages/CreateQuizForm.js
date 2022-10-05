@@ -19,16 +19,16 @@ export default function CreateQuizForm(props) {
   const [formContent, setFormContent] = useState([]);
   const [textField, setTextField] = useState("");
   const question = {
-    name: "",
+    id: "",
     questionTitle: " ",
     questionType: "",
     options: [],
   };
 
-  function editQuestionTitle(questionName, questionTitle) {
+  function editQuestionTitle(questionId, questionTitle) {
     const formQuestions = [...formContent];
     const questionIndex = formQuestions.findIndex(
-      (f) => f.name == questionName
+      (f) => f.id == questionId
     );
     if (questionIndex > -1) {
       formQuestions[questionIndex].questionTitle = questionTitle;
@@ -36,10 +36,10 @@ export default function CreateQuizForm(props) {
     }
   }
 
-  function editQuestionType(questionName, questionType) {
+  function editQuestionType(questionId, questionType) {
     const formQuestions = [...formContent];
     const questionIndex = formQuestions.findIndex(
-      (f) => f.name == questionName
+      (f) => f.id == questionId
     );
     if (questionIndex > -1) {
       formQuestions[questionIndex].questionType = questionType;
@@ -47,10 +47,10 @@ export default function CreateQuizForm(props) {
     }
   }
 
-  function addQuestionOption(questionName, option) {
+  function addQuestionOption(questionId, option) {
     const formQuestions = [...formContent];
     const questionIndex = formQuestions.findIndex(
-      (f) => f.name == questionName
+      (f) => f.id == questionId
     );
     if (option && option != "") {
       formQuestions[questionIndex].options.push(option);
@@ -62,7 +62,7 @@ export default function CreateQuizForm(props) {
   const addQuestion = () => {
     const questionNumber = formContent.length + 1;
     const question = {
-      name: "question" + questionNumber,
+      id: "question" + questionNumber,
       questionTitle: "Question " + questionNumber,
       questionType: "shortAnswer",
       options: [],

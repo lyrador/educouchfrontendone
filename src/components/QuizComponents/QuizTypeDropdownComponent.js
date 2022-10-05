@@ -9,7 +9,7 @@ export default function QuizTypeDropdownComponent(props) {
           value={props.questionTypeProp}
           onChange={(e) =>
             props.editQuestionTypeProp(
-              props.questionNameProp,
+              props.questionIdProp,
               e.target.value
             )
           }

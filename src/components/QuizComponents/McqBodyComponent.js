@@ -4,16 +4,7 @@ export default function McqBodyComponent(props) {
 
 
     return (
-      
-    //     mcqOptionsProp={question.list}
-    //     textFieldProp={props.textFieldProp}
-    //     setTextFieldProp={props.setTextFieldProp}
-    //     addQuestionOptionProp={props.addQuestionOptionProp}
-    // questionNameProp = { props.questionProp.name }
-            
-        
-        
-        
+
     <div>
       <div>Options</div>
 
@@ -40,7 +31,7 @@ export default function McqBodyComponent(props) {
         <Button
           onClick={() =>
             props.addQuestionOptionProp(
-              props.questionNameProp,
+              props.questionIdProp,
               props.textFieldProp
             )
           }

@@ -7,14 +7,14 @@ export default function QuizTitleComponent(props) {
 
     
   return (
-    <Grid item key={props.questionNameProp} style={{ marginBottom: 30 }}>
+    <Grid item key={props.questionIdProp} style={{ marginBottom: 30 }}>
       {onEdit ? (
         <input
           type="text"
           style={{ fontSize: 30 }}
           value={props.questionTitleProp}
           onChange={(e) =>
-            props.editQuestionTitleProp(props.questionNameProp, e.target.value)
+            props.editQuestionTitleProp(props.questionIdProp, e.target.value)
           }
           onBlur={() => setOnEdit(false)}
         />
