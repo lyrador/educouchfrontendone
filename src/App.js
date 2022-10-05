@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Settings from "./pages/Settings";
 import Home from "./pages/Home";
 import LearnerCreation from "./pages/LearnerCreation";
+import LearnerCoursesList from "./pages/LearnerCoursesList";
 import Appbar from "./components/Appbar";
 import TeachingCoursesList from "./pages/TeachingCoursesList";
 import TeachingCourse from "./pages/TeachingCourse";
@@ -73,11 +74,11 @@ function App() {
               }
             />
             <Route
-              path="/courseExplorer"
+              path="/myLearnerCoursesList"
               element={
                 <RequireAuth>
                   <Appbar />
-                  <CourseExplorerPage />
+                  <LearnerCoursesList/>
                 </RequireAuth>
               }
             />
@@ -159,6 +160,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <LearnerCourseDetails />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/courseExplorer/"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CourseExplorerPage/>
                 </RequireAuth>
               }
             />

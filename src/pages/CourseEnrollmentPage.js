@@ -16,6 +16,8 @@ import BookIcon from '@mui/icons-material/Book';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import CourseFeePayment from '../components/CourseFeePayment';
+import EnrolledStatus from '../components/EnrolledStatus';
 
 
 export default function CourseEnrollmentPage() {
@@ -32,6 +34,7 @@ export default function CourseEnrollmentPage() {
     function handleStatusChange(status) {
         setCourseLearnerStatus(status);
     };
+    const [classRunRegistered, setClassRunRegistered] = useState();
 
     React.useEffect(() => {
         setRefreshPage(false);
@@ -43,6 +46,9 @@ export default function CourseEnrollmentPage() {
             .then((result) => {
                 console.log('Result is ' + JSON.stringify(result));
                 handleStatusChange(result.status);
+                if(result.status != "NOTENROLLED") {
+                    setClassRunRegistered(result.classRun);
+                }
                 console.log('Course learner status is ' + courseLearnerStatus);
             })
             .finally(() => {
@@ -170,5 +176,9 @@ export default function CourseEnrollmentPage() {
 
             </>
         );
+    } else if (courseLearnerStatus === "RESERVED") {
+        return(<CourseFeePayment courseId={courseId} classRunRegistered = {classRunRegistered} ></CourseFeePayment>);
+    } else if (courseLearnerStatus === "ENROLLED") {
+        return(<EnrolledStatus courseId = {courseId}></EnrolledStatus>);
     }
 }
