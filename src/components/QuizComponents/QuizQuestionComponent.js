@@ -4,11 +4,13 @@ import React, { useState } from "react";
 import McqBodyComponent from "./McqBodyComponent";
 import QuizTitleComponent from "./QuizTitleComponent";
 import QuizTypeDropdownComponent from "./QuizTypeDropdownComponent";
+import TrueFalseComponent from "./TrueFalseComponent";
 
 export default function QuizQuestionComponent(props) {
   const [question, setQuestion] = useState(props.questionProp);
   const [index, setIndex] = useState(props.indexProp);
   const [onEdit, setOnEdit] = useState(false);
+  
 
   return (
     <Grid
@@ -45,10 +47,24 @@ export default function QuizQuestionComponent(props) {
                 textFieldProp={props.textFieldProp}
                 setTextFieldProp={props.setTextFieldProp}
                 addQuestionOptionProp={props.addQuestionOptionProp}
-                questionIdProp={ props.questionProp.id }
+                questionIdProp={props.questionProp.id}
               />
             </div>
           )}
+          {props.questionProp.questionType == "trueFalse" && (
+            <div>
+              <TrueFalseComponent
+                questionIdProp={props.questionProp.id}
+                booleanOptionsProp={question.options}
+                addBooleanOptionsProp={props.addQuestionOptionProp}
+              />
+            </div>
+          )}
+        </Grid>
+        <Grid style={{marginTop: 15}}>
+          <Button>
+            Remove Question
+          </Button>
         </Grid>
       </Grid>
     </Grid>

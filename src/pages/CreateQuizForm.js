@@ -22,7 +22,7 @@ export default function CreateQuizForm(props) {
     id: "",
     questionTitle: " ",
     questionType: "",
-    options: [],
+    options: [], //array of string to store mcq options OR trueFalse options
   };
 
   function editQuestionTitle(questionId, questionTitle) {

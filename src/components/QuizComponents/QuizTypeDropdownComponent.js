@@ -16,6 +16,7 @@ export default function QuizTypeDropdownComponent(props) {
         >
           <option value="shortAnswer">Short Answer</option>
           <option value="mcq">Multiple Choice</option>
+          <option value="trueFalse">True False</option>
         </select>
       </Grid>
     )

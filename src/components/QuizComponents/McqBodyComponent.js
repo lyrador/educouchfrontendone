@@ -31,7 +31,7 @@ export default function McqBodyComponent(props) {
         <Button
           onClick={() =>
             props.addQuestionOptionProp(
-              props.questionIdProp,
+              props.questionNameProp,
               props.textFieldProp
             )
           }
