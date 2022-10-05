@@ -8,7 +8,24 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
-import Grid from "@mui/material/Grid";
+import {
+  Grid,
+  LinearProgress,
+  ThemeProvider,
+  createTheme,
+  Typography,
+  Button,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  SpeedDial,
+  SpeedDialIcon,
+  SpeedDialAction,
+  Box,
+} from "@mui/material";
 import { useState } from "react";
 
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
@@ -18,15 +35,13 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
 
-import { Button } from "@mui/material";
-
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import { useAuth } from "../context/AuthProvider";
+
+import EditIcon from "@mui/icons-material/Edit";
+import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+
+import UploadService from "../services/UploadFilesService";
 
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
@@ -46,23 +61,43 @@ function FileSubmission(props) {
   const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
   const fileSubmissionPath = location.pathname;
 
-  const assessmentId = location.pathname.split("/")[4];
+  const fileSubmissionId = location.pathname.split("/")[4];
   const assessmentTitle = location.state.assessmentTitle;
 
   const [fileSubmission, setFileSubmission] = useState("");
-  const [submittingFileTypes, setSubmittingFileTypes] = useState("");
+  const [attachmentList, setAttachmentList] = useState([]);
+
+  const [uploadDialogBox, setUploadDialogBox] = useState(false);
+
+  const openUploadDialogBox = () => {
+    setUploadDialogBox(true);
+  };
+
+  const closeUploadDialogBox = () => {
+    setUploadDialogBox(false);
+  };
+
+  // dial speed
+  const actions = [
+    {
+      icon: <AttachFileIcon />,
+      name: "Upload new file",
+      action: openUploadDialogBox,
+    },
+  ];
 
   const [refreshPage, setRefreshPage] = useState("");
 
   React.useEffect(() => {
     setRefreshPage(false);
     fetch(
-      "http://localhost:8080/assessment/getFileSubmissionById/" + assessmentId
+      "http://localhost:8080/assessment/getFileSubmissionById/" +
+        fileSubmissionId
     )
       .then((res) => res.json())
       .then((result) => {
         setFileSubmission(result);
-        console.log("assessment Id: " + assessmentId);
+        console.log("assessment Id: " + fileSubmissionId);
       });
   }, [refreshPage]);
 
@@ -93,6 +128,63 @@ function FileSubmission(props) {
     e.preventDefault();
     handleClickSnackbar();
   };
+
+  const [message, setMessage] = useState("");
+  const [isError, setError] = useState(false);
+  const [isSuccess, setSuccess] = useState(false);
+
+  const [currentFile, setCurrentFile] = useState(undefined);
+  const [progress, setProgress] = useState(0);
+
+  const selectFile = (event) => {
+    setCurrentFile(event.target.files[0]);
+    setProgress(0);
+    setMessage("");
+  };
+
+  const uploadAttachment = () => {
+    setProgress(0);
+    UploadService.uploadAttachmentToFileSubmission(
+      fileSubmissionId,
+      currentFile,
+      (event) => {
+        setProgress(Math.round((100 * event.loaded) / event.total));
+      }
+    )
+      .then((response) => {
+        setMessage("Succesfully Uploaded!");
+        setError(false);
+        console.log(response);
+        closeUploadDialogBox();
+      })
+      .catch((err) => {
+        setMessage("Could not upload the file!");
+        setError(true);
+        setProgress(0);
+        setCurrentFile(undefined);
+      });
+  };
+
+  // progress bar
+  const theme = createTheme({
+    components: {
+      MuiLinearProgress: {
+        styleOverrides: {
+          root: {
+            height: 15,
+            borderRadius: 5,
+          },
+          colorPrimary: {
+            backgroundColor: "#EEEEEE",
+          },
+          bar: {
+            borderRadius: 5,
+            backgroundColor: "#1a90ff",
+          },
+        },
+      },
+    },
+  });
 
   return (
     <div>
@@ -197,6 +289,66 @@ function FileSubmission(props) {
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={editFileSubmissionDetails}>Create</Button>
+        </DialogActions>
+      </Dialog>
+      <SpeedDial
+        ariaLabel="SpeedDial openIcon example"
+        sx={{ position: "absolute", bottom: 16, right: 16 }}
+        icon={<SpeedDialIcon openIcon={<EditIcon />} />}
+      >
+        {actions.map((action) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            tooltipTitle={action.name}
+            onClick={action.action}
+          />
+        ))}
+      </SpeedDial>
+      <Dialog
+        open={uploadDialogBox}
+        onClose={closeUploadDialogBox}
+        fullWidth="lg"
+      >
+        <DialogContent>
+          <DialogContentText>Upload file</DialogContentText>
+
+          <br />
+          <label htmlFor="btn-upload">
+            <input
+              id="btn-upload"
+              name="btn-upload"
+              style={{ display: "none" }}
+              type="file"
+              accept=".doc,.docx,.pdf, .mp4"
+              onChange={selectFile}
+            />
+            <Button className="btn-choose" variant="outlined" component="span">
+              Choose File
+            </Button>
+          </label>
+          <divider></divider>
+          {currentFile && (
+            <Box className="my20" display="flex" alignItems="center">
+              <Box width="100%" mr={1}>
+                <ThemeProvider theme={theme}>
+                  <LinearProgress variant="determinate" value={progress} />
+                </ThemeProvider>
+              </Box>
+              <Box minWidth={35}>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                >{`${progress}%`}</Typography>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button disabled={!currentFile} onClick={uploadAttachment}>
+            Upload
+          </Button>
+          <Button onClick={closeUploadDialogBox}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </div>
