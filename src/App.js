@@ -37,6 +37,7 @@ import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
 import LearnerCourseDetails from "./pages/LearnerCourseDetails";
 import TeachingCourseClassRuns from "./components/TeachingCourseClassRuns";
 import CreateQuizForm from "./pages/CreateQuizForm";
+import CreateAssessment from "./pages/CreateAssessment";
 
 function App() {
   return (
@@ -142,6 +143,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <FileSubmission />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/assessments/createAssessment"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateAssessment />
                 </RequireAuth>
               }
             />
