@@ -366,7 +366,7 @@ function TeachingAssessmentList(props) {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify(newAssessment),
+          body: JSON.stringify(newAssessment),
         }
       )
         .then((response) => {
