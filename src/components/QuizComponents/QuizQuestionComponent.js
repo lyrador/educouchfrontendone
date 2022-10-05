@@ -68,7 +68,9 @@ export default function QuizQuestionComponent(props) {
           )}
         </Grid>
         <Grid style={{ marginTop: 15 }}>
-          <Button>Remove Question</Button>
+          <Button
+            onClick={() => props.removeQuestionProp(props.questionProp.id)}
+          >Remove Question</Button>
         </Grid>
       </Grid>
     </Grid>
