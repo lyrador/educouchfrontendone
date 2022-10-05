@@ -31,6 +31,8 @@ import { useAuth } from "../context/AuthProvider";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
+import Moment from "moment";
+
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -44,11 +46,11 @@ function FileSubmission(props) {
   const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
   const fileSubmissionPath = location.pathname;
 
-  const courseId = location.pathname.split("/")[2];
   const assessmentId = location.pathname.split("/")[4];
   const assessmentTitle = location.state.assessmentTitle;
 
   const [fileSubmission, setFileSubmission] = useState("");
+  const [submittingFileTypes, setSubmittingFileTypes] = useState("");
 
   const [refreshPage, setRefreshPage] = useState("");
 
@@ -60,7 +62,7 @@ function FileSubmission(props) {
       .then((res) => res.json())
       .then((result) => {
         setFileSubmission(result);
-        console.log(result);
+        console.log("assessment Id: " + assessmentId);
       });
   }, [refreshPage]);
 
@@ -152,25 +154,26 @@ function FileSubmission(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell>
-                      <b>Deadline</b> {fileSubmission.assessmentEndDate}
+                      <b>Deadline: </b>{" "}
+                      {Moment(fileSubmission.endDate).format("YYYY-MM-DD")}
                     </TableCell>
                     <TableCell>
-                      <b>Submitting</b>
+                      <b>Submitting: </b>
                     </TableCell>
                     <TableCell>
-                      <b>Allowed Attempts</b>
+                      <b>Allowed Attempts: </b>
                     </TableCell>
                     <TableCell>
-                      <b>Attempts</b>
+                      <b>Attempts: </b>
                     </TableCell>
                   </TableRow>
                 </TableHead>
               </Table>
-              <TableBody>
-                <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
-                  {fileSubmission.assessmentDescription}
-                </h1>
-              </TableBody>
+              <TableRow>
+                <TableCell style={{ textAlign: "justify" }}>
+                  {fileSubmission.description}
+                </TableCell>
+              </TableRow>
             </TableContainer>
           </div>
         </Grid>

@@ -49,8 +49,6 @@ import { MenuItem } from "@mui/material";
 
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import CreateInstructorForm from "./CreateInstructorForm";
-import CreateQuizForm from "../pages/CreateQuizForm";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -234,7 +232,6 @@ function TeachingAssessmentList(props) {
     setDeleteDialogOpen(false);
   };
 
-
   // function isValidDate(dateToCheck) {
   //   var dateArray = dateToCheck.split("-");
   //   if (dateArray.length != 3) return false;
@@ -256,8 +253,8 @@ function TeachingAssessmentList(props) {
     assessmentStartDate,
     assessmentEndDate,
     assessmentFileSubmissionEnum
-  //   // isOpen,
-  //   // statusEnum
+    //   // isOpen,
+    //   // statusEnum
   ) => {
     setEditAssessmentTitle(assessmentTitle);
     setEditAssessmentDescription(assessmentDescription);
@@ -266,8 +263,8 @@ function TeachingAssessmentList(props) {
     setEditAssessmentEndDate(assessmentEndDate);
     setEditAssessmentFileSubmissionEnum(assessmentFileSubmissionEnum);
     setAssessmentIdToEdit(assessmentId);
-  //   // setAssessmentIsOpen(isOpen);
-  //   // setAssessmentStatusEnum(statusEnum);
+    //   // setAssessmentIsOpen(isOpen);
+    //   // setAssessmentStatusEnum(statusEnum);
     setEditDialogOpen(true);
   };
 
@@ -291,8 +288,8 @@ function TeachingAssessmentList(props) {
     setAssessmentStartDateError({ value: false, errorMessage: "" });
     setAssessmentEndDateError({ value: false, errorMessage: "" });
     setAssessmentFileSubmissionEnumError({ value: false, errorMessage: "" });
-  //   // setAssessmentIsOpenError({ value: false, errorMessage: "" });
-  //   // setAssessmentStatusEnumError({ value: false, errorMessage: "" });
+    //   // setAssessmentIsOpenError({ value: false, errorMessage: "" });
+    //   // setAssessmentStatusEnumError({ value: false, errorMessage: "" });
     if (assessmentTitle == "") {
       setAssessmentTitleError({
         value: true,
@@ -366,7 +363,7 @@ function TeachingAssessmentList(props) {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify(newAssessment),
+          body: JSON.stringify(newAssessment),
         }
       )
         .then((response) => {
