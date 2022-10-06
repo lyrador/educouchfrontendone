@@ -33,6 +33,8 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
+import DoneIcon from '@mui/icons-material/Done';
+import AddIcon from '@mui/icons-material/Add';
 
 export default function TeachingCourseClassRuns(props) {
 
@@ -88,7 +90,7 @@ export default function TeachingCourseClassRuns(props) {
                         </div></TableCell>
                 </TableRow>
                 <TableRow>
-                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
+                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
                         <Collapse in={open} timeout="auto" unmountOnExit>
                             <Box sx={{ margin: 1 }}>
                                 <Typography variant="h6" gutterBottom component="div">
@@ -103,6 +105,7 @@ export default function TeachingCourseClassRuns(props) {
                                             <TableCell align="right">Date</TableCell>
                                             <TableCell align="right">Start Time</TableCell>
                                             <TableCell align="right">End Time</TableCell>
+                                            <TableCell align="right" width="700">Actions</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -116,8 +119,110 @@ export default function TeachingCourseClassRuns(props) {
                                                 <TableCell align="right">{classEventRow.startDate.substring(0, 10)}</TableCell>
                                                 <TableCell align="right">{classEventRow.startDate.substring(11, 16)}</TableCell>
                                                 <TableCell align="right">{classEventRow.endDate.substring(11, 16)}</TableCell>
+                                                <TableCell align="right">
+                                                    <div>
+                                                        <IconButton
+                                                            aria-label="settings"
+                                                            onClick={(event) => handleClickDeleteEventDialogOpen(event, classEventRow.eventId)}
+                                                        >
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                        {/* <IconButton
+                                                            aria-label="settings"
+                                                            onClick={(event) => generateClassEventsForClassRun(event, row.classRunId)}
+                                                        >
+                                                            <DoneIcon />
+                                                        </IconButton> */}
+                                                        <IconButton
+                                                            aria-label="settings"
+                                                            onClick={(event) => deleteClassEvent(event, classEventRow.eventId)}
+                                                        >
+                                                            <EditIcon />
+                                                        </IconButton>
+                                                    </div>
+                                                </TableCell>
                                             </TableRow>
                                         ))}
+                                        <TableRow>
+                                            <TableCell>New Class Event</TableCell>
+                                            <TableCell align="right">
+                                                <TextField id="outlined-basic" label="Title" variant="outlined" fullWidth
+                                                    style={{ margin: '6px 0' }}
+                                                    value={classRunStartTime}
+                                                    // inputProps={{style: {fontSize: 11}}}
+                                                    // size="small"
+                                                    sx={{ width: 100 }}
+                                                    InputProps={{ sx: { height: '35px' }, style: { fontSize: 15 } }}
+                                                    onChange={(e) => setClassRunStartTime(e.target.value)}
+                                                />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <TextField id="outlined-basic" label="Description" variant="outlined" fullWidth
+                                                    style={{ margin: '6px 0' }}
+                                                    value={classRunStartTime}
+                                                    // inputProps={{style: {fontSize: 11}}}
+                                                    // size="small"
+                                                    sx={{ width: 140 }}
+                                                    InputProps={{ sx: { height: '35px' }, style: { fontSize: 15 } }}
+                                                    onChange={(e) => setClassRunStartTime(e.target.value)}
+                                                />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <TextField id="outlined-basic" label="Date" variant="outlined" fullWidth
+                                                    style={{ margin: '6px 0' }}
+                                                    value={classRunStartTime}
+                                                    // inputProps={{style: {fontSize: 11}}}
+                                                    // size="small"
+                                                    sx={{ width: 100 }}
+                                                    InputProps={{ sx: { height: '35px' }, style: { fontSize: 15 } }}
+                                                    onChange={(e) => setClassRunStartTime(e.target.value)}
+                                                />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <TextField id="outlined-basic" label="Start Time" variant="outlined" fullWidth
+                                                    style={{ margin: '6px 0' }}
+                                                    value={classRunStartTime}
+                                                    // inputProps={{style: {fontSize: 11}}}
+                                                    // size="small"
+                                                    sx={{ width: 80 }}
+                                                    InputProps={{ sx: { height: '35px' }, style: { fontSize: 15 } }}
+                                                    onChange={(e) => setClassRunStartTime(e.target.value)}
+                                                />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <TextField id="outlined-basic" label="End Time" variant="outlined" fullWidth
+                                                    style={{ margin: '6px 0' }}
+                                                    value={classRunStartTime}
+                                                    sx={{ width: 80 }}
+                                                    InputProps={{ sx: { height: '35px' }, style: { fontSize: 15 } }}
+                                                    onChange={(e) => setClassRunStartTime(e.target.value)}
+                                                />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <div>
+                                                    <IconButton
+                                                        aria-label="settings"
+                                                        onClick={(event) => handleClickDeleteDialogOpen(event, row.classRunId)}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        aria-label="settings"
+                                                        onClick={(event) => generateClassEventsForClassRun(event, row.classRunId)}
+                                                    >
+                                                        <DoneIcon />
+                                                    </IconButton>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell colSpan={13} style={{ textAlign: "center" }}>
+                                                <Button variant='contained' onClick={(event) => generateClassEventsForClassRun(event, row.classRunId)}>
+                                                    <AddIcon style={{fontSize: '16px'}}/>
+                                                    Add New Class Event
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
                                     </TableBody>
                                 </Table>
                             </Box>
@@ -193,6 +298,12 @@ export default function TeachingCourseClassRuns(props) {
     const [classRunName, setClassRunName] = useState("");
     const [classRunDescription, setClassRunDescription] = useState("");
 
+    const [newClassEventTitle, setNewClassEventTitle] = useState("");
+    const [newClassEventDescription, setNewClassEventDescription] = useState("");
+    const [newClassEventDate, setNewClassEventDate] = useState("");
+    const [newClassEventStartTime, setNewClassEventStartTime] = useState("");
+    const [newClassEventEndTime, setNewClassEventEndTime] = useState("");
+
 
     const [classRunIdToDelete, setClassRunIdToDelete] = useState("");
     const [classRunIdToGenerate, setClassRunIdToGenerate] = useState("");
@@ -207,6 +318,18 @@ export default function TeachingCourseClassRuns(props) {
 
     const handleDeleteDialogClose = () => {
         setDeleteDialogOpen(false);
+    };
+
+    const [deleteEventDialogOpen, setDeleteEventDialogOpen] = React.useState(false);
+    const [classEventIdToDelete, setClassEventIdToDelete] = useState("");
+
+    const handleClickDeleteEventDialogOpen = (event, classEventId) => {
+        setClassEventIdToDelete(classEventId);
+        setDeleteEventDialogOpen(true);
+    };
+
+    const handleDeleteEventDialogClose = () => {
+        setDeleteEventDialogOpen(false);
     };
 
     // const handleClickEditDialogOpen = (event, forumId, forumTitle) => {
@@ -228,14 +351,6 @@ export default function TeachingCourseClassRuns(props) {
                 setClassRuns(result);
             });
     }, [refreshPage]);
-
-    // const paperStyle = {
-    //     padding: '30px 10px',
-    //     width: 1000,
-    //     margin: "10px auto",
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    // }
 
     const [openAddClassRun, setOpenAddClassRun] = React.useState(false);
 
@@ -349,6 +464,22 @@ export default function TeachingCourseClassRuns(props) {
         });
     };
 
+    const createNewClassEvent = (e, classRunIdToGenerate) => {
+        var title = newClassEventTitle;
+        var eventDescription = newClassEventDescription;
+        var startDate = newClassEventDate;
+        var endDate = newClassEventDate;
+        var endDate = newClassEventEndTime;
+        e.preventDefault();
+        fetch("http://localhost:8080/classRun/generateClassEventsFromClassRunId/" + classRunIdToGenerate, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+        }).then(() => {
+            console.log("New Class Event created Successfully!");
+            setRefreshPage(true);
+        });
+    };
+
     const headingStyle = {
         color: "blue",
         textAlign: "left",
@@ -356,6 +487,18 @@ export default function TeachingCourseClassRuns(props) {
         top: "-30px",
         fontFamily: "Fira Mono"
 
+    };
+
+    const deleteClassEvent = (e) => {
+        e.preventDefault();
+        fetch("http://localhost:8080/classRun/classEvents/delete/" + classEventIdToDelete, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+        }).then(() => {
+            console.log("Class Event Deleted Successfully!");
+            setRefreshPage(true);
+            handleDeleteEventDialogClose();
+        });
     };
 
     return (
@@ -441,65 +584,65 @@ export default function TeachingCourseClassRuns(props) {
                             onChange={(e) => setClassRunEnd(e.target.value)}
                         />
                         <div>
-                        <Paper variant="outlined">
-                        <div style={{ padding: '15px' }}>
-                            <FormLabel component="legend" style={{ paddingBottom: '5px' }}>Class Days of the Week</FormLabel>
-                            <FormControl
-                                required
-                                error={error}
-                                component="fieldset"
-                                sx={{ m: 0 }}
-                                variant="standard"
-                            >
-                                {/* <FormLabel component="legend">Pick at least one</FormLabel> */}
-                                <FormGroup>
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox checked={mon} onChange={handleChange} name="mon" />
-                                        }
-                                        label="Mon"
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox checked={tue} onChange={handleChange} name="tue" />
-                                        }
-                                        label="Tue"
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox checked={wed} onChange={handleChange} name="wed" />
-                                        }
-                                        label="Wed"
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox checked={thu} onChange={handleChange} name="thu" />
-                                        }
-                                        label="Thu"
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox checked={fri} onChange={handleChange} name="fri" />
-                                        }
-                                        label="Fri"
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox checked={sat} onChange={handleChange} name="sat" />
-                                        }
-                                        label="Sat"
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox checked={sun} onChange={handleChange} name="sun" />
-                                        }
-                                        label="Sun"
-                                    />
-                                </FormGroup>
-                                <FormHelperText>Pick at least one day*</FormHelperText>
-                            </FormControl>
-                        </div>
-                        </Paper>
+                            <Paper variant="outlined">
+                                <div style={{ padding: '15px' }}>
+                                    <FormLabel component="legend" style={{ paddingBottom: '5px' }}>Class Days of the Week</FormLabel>
+                                    <FormControl
+                                        required
+                                        error={error}
+                                        component="fieldset"
+                                        sx={{ m: 0 }}
+                                        variant="standard"
+                                    >
+                                        {/* <FormLabel component="legend">Pick at least one</FormLabel> */}
+                                        <FormGroup>
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={mon} onChange={handleChange} name="mon" />
+                                                }
+                                                label="Mon"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={tue} onChange={handleChange} name="tue" />
+                                                }
+                                                label="Tue"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={wed} onChange={handleChange} name="wed" />
+                                                }
+                                                label="Wed"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={thu} onChange={handleChange} name="thu" />
+                                                }
+                                                label="Thu"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={fri} onChange={handleChange} name="fri" />
+                                                }
+                                                label="Fri"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={sat} onChange={handleChange} name="sat" />
+                                                }
+                                                label="Sat"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={sun} onChange={handleChange} name="sun" />
+                                                }
+                                                label="Sun"
+                                            />
+                                        </FormGroup>
+                                        <FormHelperText>Pick at least one day*</FormHelperText>
+                                    </FormControl>
+                                </div>
+                            </Paper>
                         </div>
                         <TextField id="outlined-basic" label="Start Time" variant="outlined" fullWidth
                             style={{ margin: '6px 0' }}
@@ -613,6 +756,29 @@ export default function TeachingCourseClassRuns(props) {
                     </DialogActions>
                 </Dialog>
             </div> */}
+            <div>
+                <Dialog
+                    open={deleteEventDialogOpen}
+                    onClose={handleDeleteEventDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Delete this class event?"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            You cannot undo this action. Confirm delete?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDeleteEventDialogClose}>Cancel</Button>
+                        <Button onClick={deleteClassEvent} autoFocus>
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
         </div>);
 
 
