@@ -74,21 +74,17 @@ function FileSubmission(props) {
 
   const [refreshPage, setRefreshPage] = useState("");
 
-  React.useEffect(() => {
-    setRefreshPage(false);
-    fetch(
-      "http://localhost:8080/assessment/getFileSubmissionById/" +
-        fileSubmissionId
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        setFileSubmission(result);
-        setAttachmentList(result.attachments);
-        console.log(JSON.stringify(result));
-        console.log("assessment Id: " + fileSubmissionId);
-        console.log("Length of attachment is " + attachmentList.length);
-      });
-  }, [refreshPage]);
+  // React.useEffect(() => {
+  //   setRefreshPage(false);
+  //   fetch(
+  //     "http://localhost:8080/assessment/getFileSubmissionById/" + assessmentId
+  //   )
+  //     .then((res) => res.json())
+  //     .then((result) => {
+  //       setFileSubmission(result);
+  //       console.log(result);
+  //     });
+  // }, [refreshPage]);
 
   const refresh = () => {
     fetch(

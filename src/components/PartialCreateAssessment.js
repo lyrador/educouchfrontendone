@@ -179,29 +179,39 @@ export default function PartialCreateAssessment(props) {
         assessmentFileSubmissionEnum: "INDIVIDUAL",
       };
       setNewDocSub(newDocSub);
-      fetch(
-        "http://localhost:8080/assessment/addNewFileSubmission/" +
-          props.courseIdProp,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newDocSub),
+
+      navigate(`${assessmentsPath}/createFileSubmission`, {
+        state: {
+          assessmentsPathProp: assessmentsPath,
+          createAssessmentPathProp: createAssessmentPath,
+          newDocSubProp: newDocSub,
         }
-      )
-        ///stopped here, cannot get the id of document got controller does not return documentsub with id
-        .then((res) => res.json())
-        .then((result) => {
-          const docSubId = result.assessmentStatus;
-          console.log(
-            "New File Submission Assessment: " +
-              docSubId +
-              " Created Successfully!"
-          );
-        })
-        .then((response) => {
-          cleanupFields();
-          handleClickSnackbar();
-        });
+      })
+
+
+      // fetch(
+      //   "http://localhost:8080/assessment/addNewFileSubmission/" +
+      //     props.courseIdProp,
+      //   {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify(newDocSub),
+      //   }
+      // )
+      //   ///stopped here, cannot get the id of document got controller does not return documentsub with id
+      //   .then((res) => res.json())
+      //   .then((result) => {
+      //     const docSubId = result.assessmentStatus;
+      //     console.log(
+      //       "New File Submission Assessment: " +
+      //         docSubId +
+      //         " Created Successfully!"
+      //     );
+      //   })
+      //   .then((response) => {
+      //     cleanupFields();
+      //     handleClickSnackbar();
+      //   });
     }
   }
 
