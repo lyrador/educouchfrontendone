@@ -6,27 +6,55 @@ import { useAuth } from "../context/AuthProvider";
 import { Link, useLocation, useParams } from "react-router-dom";
 import LinkMaterial from "@mui/material/Link";
 
-import { Breadcrumbs, Grid } from "@mui/material";
-import { Paper, Button, createTheme } from "@mui/material";
+import {
+  Breadcrumbs,
+  Grid,
+  IconButton,
+  Modal,
+  Paper,
+  Button,
+} from "@mui/material";
 import { useState } from "react";
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
+import SettingsIcon from "@mui/icons-material/Settings";
+import AddIcon from "@mui/icons-material/Add";
+import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsComponent";
 
 export default function CreateQuizForm(props) {
   const location = useLocation();
   const assessmentsPath = location.state.assessmentsPathProp;
   const createAssessmentPath = location.state.createAssessmentPathProp;
   const createQuizFormPath = location.pathname;
-
+  const currentQuiz = location.state.newQuizProp;
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
-  const question = {
-    id: "",
-    questionTitle: " ",
-    questionType: "",
-    questionContent: "",
-    options: [], //array of string to store mcq options OR trueFalse options
-  };
+
+  React.useEffect(() => {
+    currentQuiz.questions = formQuestions;
+  },[])
+
+  const [open, setOpen] = React.useState(false);
+  function handleOpenSettingsDialogue() {
+    setOpen(true);
+  }
+
+  function handleCloseSettingsDialogue(ed) {
+    setOpen(false);
+  }
+
+  //need function to link questions to quiz prop
+
+  function editQuizSettings(title, description, maxScore, startDate, endDate, hasTimeLimit, timeLimit, isAutoRelease) {
+    currentQuiz.assessmentTitle = title;
+    currentQuiz.assessmentDescription = description;
+    currentQuiz.assessmentMaxScore = maxScore;
+    currentQuiz.assessmentStartDate = startDate;
+    currentQuiz.assessmentEndDate = endDate;
+    currentQuiz.hasTimeLimit = hasTimeLimit;
+    currentQuiz.timeLimit = timeLimit
+    currentQuiz.isAutoRelease = isAutoRelease;
+  }
 
   function editQuestionTitle(questionId, questionTitle) {
     const tempFormQuestions = [...formQuestions];
@@ -152,15 +180,29 @@ export default function CreateQuizForm(props) {
           </Link>
         </Breadcrumbs>
 
-        <Container>
-          <h1>Quiz Creation</h1>
-          <br></br>
-          <Grid container style={{ margin: 50 }}>
-            <Button variant="contained" onClick={() => addQuestion()}>
-              Add Question
-            </Button>
+        <Grid item width={"80%"}>
+          <Grid container direction={"row"} justifyContent={"space-between"}>
+            <h1>Quiz Creation</h1>
+            <IconButton
+              aria-label="settings"
+              onClick={() => handleOpenSettingsDialogue()}
+            >
+              Edit Quiz Settings
+              <SettingsIcon />
+            </IconButton>
+            <Modal
+              open={open}
+              onClose={handleCloseSettingsDialogue}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <QuizSettingsComponents
+                quizSettingsProp={currentQuiz}
+                editQuizSettingsProp={editQuizSettings}
+                closeQuizSettingsProp={handleCloseSettingsDialogue}
+              ></QuizSettingsComponents>
+            </Modal>
           </Grid>
-
           {formQuestions.length == 0 && (
             <Paper elevation={3} style={{ margin: 50, padding: 30 }}>
               <h3>Currently no questions!</h3>
@@ -171,7 +213,7 @@ export default function CreateQuizForm(props) {
 
           {formQuestions.map((question, index) => {
             return (
-              <Paper elevation={3} style={{ margin: 50, padding: 30 }}>
+              <Paper elevation={3} style={{ margin: 10, padding: 30 }}>
                 <QuizQuestionComponent
                   textFieldProp={textField}
                   setTextFieldProp={setTextField}
@@ -188,10 +230,21 @@ export default function CreateQuizForm(props) {
 
           <Grid
             container
-            style={{ margin: 20 }}
+            style={{ marginBottom: 90 }}
             direction="row"
             justifyContent={"space-between"}
           >
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={() => addQuestion()}
+            >
+              <AddIcon />
+              Add Question
+            </Button>
+          </Grid>
+
+          <Grid container direction="row" justifyContent={"space-between"}>
             <Link to={assessmentsPath}>
               <Button variant="contained">Cancel</Button>
             </Link>
@@ -199,7 +252,7 @@ export default function CreateQuizForm(props) {
               Submit
             </Button>
           </Grid>
-        </Container>
+        </Grid>
       </Grid>
     </Grid>
   );

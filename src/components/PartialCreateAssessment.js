@@ -9,7 +9,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import {
   Alert,
   Button,
@@ -24,6 +24,7 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
 
 export default function PartialCreateAssessment(props) {
+  const navigate = useNavigate();
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
 
@@ -59,7 +60,7 @@ export default function PartialCreateAssessment(props) {
   const [assessmentStartDate, setAssessmentStartDate] = useState(dayjs());
   const [assessmentEndDate, setAssessmentEndDate] = useState(dayjs());
   const [newDocSub, setNewDocSub] = useState();
-  const [newQuiz, setNewQuiz] = useState();
+  const [newQuiz, setNewQuiz] = useState("emptyQuiz");
 
   const handleStartDateChange = (newAssessmentStartDate) => {
     setAssessmentStartDate(newAssessmentStartDate);
@@ -215,10 +216,18 @@ export default function PartialCreateAssessment(props) {
         assessmentIsOpen: "false",
         assessmentStatusEnum: "PENDING",
         hasTimeLimit: "false",
+        timeLimit: 60,
         isAutoRelease: "false",
         questions: [],
       };
       setNewQuiz(newQuiz);
+      navigate(`${assessmentsPath}/createQuiz`, {
+        state: {
+          assessmentsPathProp: assessmentsPath,
+          createAssessmentPathProp: createAssessmentPath,
+          newQuizProp: newQuiz,
+        }
+      })
     }
   }
 
@@ -272,7 +281,7 @@ export default function PartialCreateAssessment(props) {
           error={assessmentMaxScoreError.value}
           helperText={assessmentMaxScoreError.errorMessage}
           id="outlined-basic"
-          label="Assessment Max Score"
+          label="Assessment Max Score, this can be edited in later stages"
           variant="outlined"
           fullWidth
           style={{ margin: "6px 0" }}
@@ -322,18 +331,9 @@ export default function PartialCreateAssessment(props) {
         alignContent={"center"}
         style={{ marginTop: 60 }}
       >
-
-        <Link
-          to={`${assessmentsPath}/createQuiz`}
-          state={{
-            assessmentsPathProp: assessmentsPath,
-            createAssessmentPathProp: createAssessmentPath,
-          }}
-        >
-          <Button variant="contained" type="submit">
+        <Button variant="contained" type="submit" onClick={continueAsQuiz}>
             Continue as New Quiz
-          </Button>
-        </Link>
+        </Button>
         <Button
           variant="contained"
           type="submit"
