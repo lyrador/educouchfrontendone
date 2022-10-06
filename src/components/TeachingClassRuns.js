@@ -49,6 +49,7 @@ import Stack from '@mui/material/Stack';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import InputLabel from '@mui/material/InputLabel';
 
@@ -141,8 +142,8 @@ function TeachingClassRuns(props) {
 
     const [classRuns, setClassRuns] = useState([])
     const [classRunId, setClassRunId] = useState("");
-    const [classRunStart, setClassRunStart] = useState("");
-    const [classRunEnd, setClassRunEnd] = useState("");
+    const [classRunStartDateNonString, setClassRunStartDateNonString] = useState("");
+    const [classRunEndDateNonString, setClassRunEndDateNonString] = useState("");
     const [classRunStartTimeNonString, setClassRunStartTimeNonString] = useState("");
     const [classRunEndTimeNonString, setClassRunEndTimeNonString] = useState("");
     const [minClassSize, setMinClassSize] = useState("");
@@ -153,12 +154,6 @@ function TeachingClassRuns(props) {
     const [instructorUsername, setInstructorUsername] = useState("");
     const [classRunName, setClassRunName] = useState("");
     const [classRunDescription, setClassRunDescription] = useState("");
-
-    const [newClassEventTitle, setNewClassEventTitle] = useState("");
-    const [newClassEventDescription, setNewClassEventDescription] = useState("");
-    const [newClassEventDate, setNewClassEventDate] = useState("");
-    const [newClassEventStartTime, setNewClassEventStartTime] = useState("");
-    const [newClassEventEndTime, setNewClassEventEndTime] = useState("");
 
     const [classRunIdToDelete, setClassRunIdToDelete] = useState("");
     const [classRunIdToGenerate, setClassRunIdToGenerate] = useState("");
@@ -237,6 +232,8 @@ function TeachingClassRuns(props) {
         var classRunDaysOfTheWeek = daysArray
         var classRunStartTime = classRunStartTimeNonString.format("HH:mm")
         var classRunEndTime = classRunEndTimeNonString.format("HH:mm")
+        var classRunStart = classRunStartDateNonString.format("YYYY-MM-DD")
+        var classRunEnd = classRunEndDateNonString.format("YYYY-MM-DD")
         const newClassRun = {
             classRunName, classRunDescription, classRunDaysOfTheWeek,
             classRunStart, classRunEnd, classRunStartTime: classRunStartTime, classRunEndTime,
@@ -501,17 +498,42 @@ function TeachingClassRuns(props) {
                             onChange={(e) => setClassRunDescription(e.target.value)}
                         />
 
-                        <TextField id="outlined-basic" label="Start Date" variant="outlined" fullWidth
+                        {/* <TextField id="outlined-basic" label="Start Date" variant="outlined" fullWidth
                             style={{ margin: '6px 0' }}
-                            value={classRunStart}
-                            onChange={(e) => setClassRunStart(e.target.value)}
+                            value={classRunStartDateNonString}
+                            onChange={(e) => setClassRunStartDateNonString(e.target.value)}
                         />
 
                         <TextField id="outlined-basic" label="End Date" variant="outlined" fullWidth
                             style={{ margin: '6px 0' }}
-                            value={classRunEnd}
-                            onChange={(e) => setClassRunEnd(e.target.value)}
-                        />
+                            value={classRunEndDateNonString}
+                            onChange={(e) => setClassRunEndDateNonString(e.target.value)}
+                        /> */}
+
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
+                            <Stack spacing={1} style={{ margin: '8px 0' }}>
+                                <DatePicker
+                                    value={classRunStartDateNonString}
+                                    onChange={(newValue) => setClassRunStartDateNonString(newValue)}
+                                    renderInput={(params) => <TextField {...params} />}
+                                    ampm={false}
+                                    label="Classrun Start Date"
+                                />
+                            </Stack>
+                        </LocalizationProvider>
+
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
+                            <Stack spacing={1} style={{ margin: '8px 0' }}>
+                                <DatePicker
+                                    value={classRunEndDateNonString}
+                                    onChange={(newValue) => setClassRunEndDateNonString(newValue)}
+                                    renderInput={(params) => <TextField {...params} />}
+                                    ampm={false}
+                                    label="Classrun End Date"
+                                />
+                            </Stack>
+                        </LocalizationProvider>
+
                         <div>
                             <Paper variant="outlined">
                                 <div style={{ padding: '15px' }}>

@@ -107,6 +107,11 @@ function TeachingClassRuns(props) {
     const auth = useAuth();
     const user = auth.user;
 
+    var utc = require('dayjs/plugin/utc')
+    var timezone = require('dayjs/plugin/timezone') // dependent on utc plugin
+    dayjs.extend(utc)
+    dayjs.extend(timezone)
+
     const [refreshPage, setRefreshPage] = useState("");
 
     //paths
@@ -122,8 +127,8 @@ function TeachingClassRuns(props) {
     const [classEvents, setClassEvents] = useState([])
 
     let currentDate = new Date()
-    const offset = currentDate.getTimezoneOffset(); 
-    currentDate = new Date(currentDate.getTime() + (offset*60*1000)); 
+    const offset = currentDate.getTimezoneOffset();
+    currentDate = new Date(currentDate.getTime() + (offset * 60 * 1000));
 
     // const systemDateToLocalDateConverter = (dateToConvert) => {
     //     console.log(dateToConvert)
@@ -188,8 +193,8 @@ function TeachingClassRuns(props) {
     const handleClickEditDialogOpen = (event, classEventId, classEventTitle, classEventNotes, classEventStartDateTime, classEventEndDateTime) => {
         setEditClassEventTitle(classEventTitle)
         setEditClassEventDescription(classEventNotes)
-        setEditClassEventStartDateTime(classEventStartDateTime)
-        setEditClassEventEndDateTime(classEventEndDateTime)
+        setEditClassEventStartDateTime(dayjs(classEventStartDateTime).local().format())
+        setEditClassEventEndDateTime(dayjs(classEventEndDateTime).local().format())
         setEditDialogOpen(true);
     };
 
@@ -197,7 +202,7 @@ function TeachingClassRuns(props) {
         setEditDialogOpen(false);
     };
 
-    
+
     const handleClickDeleteDialogOpen = (event, classEventId) => {
         setClassEventIdToDelete(classEventId);
         setDeleteDialogOpen(true);
@@ -213,7 +218,7 @@ function TeachingClassRuns(props) {
         var startDate = newClassEventStartDateTime;
         var endDate = newClassEventEndDateTime;
         var allDay = false;
-        var newClassEvent = {title, notes, startDate, endDate, allDay};
+        var newClassEvent = { title, notes, startDate, endDate, allDay };
         e.preventDefault();
         fetch("http://localhost:8080/event/classRun/" + classRunId + "/events/", {
             method: "POST",
@@ -232,7 +237,7 @@ function TeachingClassRuns(props) {
         var startDate = editClassEventStartDateTime;
         var endDate = editClassEventEndDateTime;
         var allDay = false;
-        var editClassEvent = {title, notes, startDate, endDate, allDay};
+        var editClassEvent = { title, notes, startDate, endDate, allDay };
         e.preventDefault();
         fetch("http://localhost:8080/event/classRun/" + classRunId + "/events/", {
             method: "POST",
@@ -371,10 +376,10 @@ function TeachingClassRuns(props) {
                                             </TableCell>
                                             <TableCell align="right">{row.title}</TableCell>
                                             <TableCell align="right">{row.notes}</TableCell>
-                                            <TableCell align="right">{row.startDate.substring(0, 10)}</TableCell>
-                                            <TableCell align="right">{row.startDate.substring(11, 16)}</TableCell>
-                                            <TableCell align="right">{row.endDate.substring(0, 10)}</TableCell>
-                                            <TableCell align="right">{row.endDate.substring(11, 16)}</TableCell>
+                                            <TableCell align="right">{dayjs(row.startDate).local().format().substring(0,10)}</TableCell>
+                                            <TableCell align="right">{dayjs(row.startDate).local().format().substring(11,16)}</TableCell>
+                                            <TableCell align="right">{dayjs(row.endDate).local().format().substring(0,10)}</TableCell>
+                                            <TableCell align="right">{dayjs(row.endDate).local().format().substring(11,16)}</TableCell>
                                             <TableCell align="right">
                                                 <div>
                                                     <IconButton
