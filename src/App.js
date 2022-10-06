@@ -35,7 +35,8 @@ import RegisterOrganisationAdminPage from "./pages/RegisterOrganisationAdminPage
 import CourseExplorerPage from "./pages/CourseExplorerPage";
 import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
 import LearnerCourseDetails from "./pages/LearnerCourseDetails";
-import TeachingCourseClassRuns from "./components/TeachingCourseClassRuns";
+import TeachingClassRuns from "./components/TeachingClassRuns";
+import TeachingClassEvents from "./components/TeachingClassEvents";
 
 function App() {
   return (
@@ -122,7 +123,16 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <TeachingCourseClassRuns />
+                  <TeachingClassRuns />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/classRuns/:classRunId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingClassEvents/>
                 </RequireAuth>
               }
             />
