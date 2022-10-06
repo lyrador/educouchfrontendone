@@ -42,6 +42,16 @@ import Checkbox from '@mui/material/Checkbox';
 import DoneIcon from '@mui/icons-material/Done';
 import AddIcon from '@mui/icons-material/Add';
 
+import dayjs from 'dayjs';
+import 'dayjs/locale/ru';
+import 'dayjs/locale/ar-sa';
+import Stack from '@mui/material/Stack';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import InputLabel from '@mui/material/InputLabel';
+
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
@@ -133,8 +143,8 @@ function TeachingClassRuns(props) {
     const [classRunId, setClassRunId] = useState("");
     const [classRunStart, setClassRunStart] = useState("");
     const [classRunEnd, setClassRunEnd] = useState("");
-    const [classRunStartTime, setClassRunStartTime] = useState("");
-    const [classRunEndTime, setClassRunEndTime] = useState("");
+    const [classRunStartTimeNonString, setClassRunStartTimeNonString] = useState("");
+    const [classRunEndTimeNonString, setClassRunEndTimeNonString] = useState("");
     const [minClassSize, setMinClassSize] = useState("");
     const [maximumCapacity, setMaximumCapacity] = useState("");
     const [classRunDaysOfTheWeek, setClassRunDaysOfTheWeek] = useState([]);
@@ -225,9 +235,11 @@ function TeachingClassRuns(props) {
         if (sat === true) { daysArray.push(6) }
         console.log(daysArray)
         var classRunDaysOfTheWeek = daysArray
+        var classRunStartTime = classRunStartTimeNonString.format("HH:mm")
+        var classRunEndTime = classRunEndTimeNonString.format("HH:mm")
         const newClassRun = {
             classRunName, classRunDescription, classRunDaysOfTheWeek,
-            classRunStart, classRunEnd, classRunStartTime, classRunEndTime,
+            classRunStart, classRunEnd, classRunStartTime: classRunStartTime, classRunEndTime,
             calendarId, instructorUsername, recurringEnumString, minClassSize, maximumCapacity
         }
         fetch("http://localhost:8080/classRun/addToCourseId/" + courseId, {
@@ -265,44 +277,6 @@ function TeachingClassRuns(props) {
             setRefreshPage(true);
         });
     };
-
-    const createNewClassEvent = (e, classRunIdToGenerate) => {
-        var title = newClassEventTitle;
-        var eventDescription = newClassEventDescription;
-        var startDate = newClassEventDate;
-        var endDate = newClassEventDate;
-        var endDate = newClassEventEndTime;
-        e.preventDefault();
-        fetch("http://localhost:8080/classRun/generateClassEventsFromClassRunId/" + classRunIdToGenerate, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-        }).then(() => {
-            console.log("New Class Event created Successfully!");
-            setRefreshPage(true);
-        });
-    };
-
-    const headingStyle = {
-        color: "blue",
-        textAlign: "left",
-        position: "relative",
-        top: "-30px",
-        fontFamily: "Fira Mono"
-
-    };
-
-    // const deleteClassEvent = (e) => {
-    //     e.preventDefault();
-    //     fetch("http://localhost:8080/classRun/classEvents/delete/" + classEventIdToDelete, {
-    //         method: "DELETE",
-    //         headers: { "Content-Type": "application/json" },
-    //     }).then(() => {
-    //         console.log("Class Event Deleted Successfully!");
-    //         setRefreshPage(true);
-    //         handleDeleteEventDialogClose();
-    //     });
-    // };
-
 
     const renderEmptyRowMessage = () => {
         if (classRuns.length === 0) {
@@ -599,7 +573,7 @@ function TeachingClassRuns(props) {
                                 </div>
                             </Paper>
                         </div>
-                        <TextField id="outlined-basic" label="Start Time" variant="outlined" fullWidth
+                        {/* <TextField id="outlined-basic" label="Start Time" variant="outlined" fullWidth
                             style={{ margin: '6px 0' }}
                             value={classRunStartTime}
                             onChange={(e) => setClassRunStartTime(e.target.value)}
@@ -609,7 +583,31 @@ function TeachingClassRuns(props) {
                             style={{ margin: '6px 0' }}
                             value={classRunEndTime}
                             onChange={(e) => setClassRunEndTime(e.target.value)}
-                        />
+                        /> */}
+
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
+                            <Stack spacing={1} style={{ margin: '8px 0' }}>
+                                <TimePicker
+                                    value={classRunStartTimeNonString}
+                                    onChange={(newValue) => setClassRunStartTimeNonString(newValue)}
+                                    renderInput={(params) => <TextField {...params} />}
+                                    ampm={false}
+                                    label="Classrun Start Time"
+                                />
+                            </Stack>
+                        </LocalizationProvider>
+
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
+                            <Stack spacing={1} style={{ margin: '8px 0' }}>
+                                <TimePicker
+                                    value={classRunEndTimeNonString}
+                                    onChange={(newValue) => setClassRunEndTimeNonString(newValue)}
+                                    renderInput={(params) => <TextField {...params} />}
+                                    ampm={false}
+                                    label="Classrun End Time"
+                                />
+                            </Stack>
+                        </LocalizationProvider>
 
                         <TextField id="outlined-basic" label="Min Size" fullWidth defaultValue=""
                             style={{ margin: '6px 0' }}
