@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import AttachmentFileSubmissionComponent from "./AttachmentFileSubmissionComponent";
+
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -97,9 +99,29 @@ function FileSubmission(props) {
       .then((res) => res.json())
       .then((result) => {
         setFileSubmission(result);
+        setAttachmentList(result.attachments);
+        console.log(JSON.stringify(result));
         console.log("assessment Id: " + fileSubmissionId);
+        console.log("Length of attachment is " + attachmentList.length);
       });
   }, [refreshPage]);
+
+  const refresh = () => {
+    fetch(
+      "http://localhost:8080/assessment/getFileSubmissionById/" +
+        fileSubmissionId
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        var fol = result;
+        console.log(JSON.stringify(fol));
+        setAttachmentList(fol.attachments);
+        console.log("Length of attachment is " + attachmentList.length);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
 
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
 
@@ -140,6 +162,22 @@ function FileSubmission(props) {
     setCurrentFile(event.target.files[0]);
     setProgress(0);
     setMessage("");
+  };
+
+  const handleRefreshDelete = () => {
+    refresh();
+    //notification
+    setMessage("Item is successfully deleted!");
+    setError(false);
+    setSuccess(true);
+  };
+
+  const handleRefreshUpdate = () => {
+    refresh();
+    //notification
+    setMessage("Item is successfully updated!");
+    setError(false);
+    setSuccess(true);
   };
 
   const uploadAttachment = () => {
@@ -268,10 +306,43 @@ function FileSubmission(props) {
               </TableRow>
             </TableContainer>
           </div>
+          <div style={{ padding: "5%" }}>
+            {attachmentList &&
+              attachmentList.length > 0 &&
+              attachmentList.map((attachment) => (
+                <AttachmentFileSubmissionComponent
+                  attachment={attachment}
+                  courseId={fileSubmissionId}
+                  handleRefreshDeleteFileSubmission={handleRefreshDelete}
+                  handleRefreshUpdateFileSubmission={handleRefreshUpdate}
+                ></AttachmentFileSubmissionComponent>
+              ))}
+            {(!attachmentList || attachmentList.length <= 0) && (
+              <p>
+                This file submission assessment doesn't have any attachments
+                currently. Upload attachments?
+              </p>
+            )}
+
+            <SpeedDial
+              ariaLabel="SpeedDial openIcon example"
+              sx={{ position: "absolute", right: 16 }}
+              icon={<SpeedDialIcon openIcon={<EditIcon />} />}
+            >
+              {actions.map((action) => (
+                <SpeedDialAction
+                  key={action.name}
+                  icon={action.icon}
+                  tooltipTitle={action.name}
+                  onClick={action.action}
+                />
+              ))}
+            </SpeedDial>
+          </div>
         </Grid>
       </Grid>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Create New File Submission Assessment</DialogTitle>
+        <DialogTitle>Edit File Submission Assessment</DialogTitle>
         <DialogContent>
           {/* <TextField
               required
@@ -291,20 +362,6 @@ function FileSubmission(props) {
           <Button onClick={editFileSubmissionDetails}>Create</Button>
         </DialogActions>
       </Dialog>
-      <SpeedDial
-        ariaLabel="SpeedDial openIcon example"
-        sx={{ position: "absolute", bottom: 16, right: 16 }}
-        icon={<SpeedDialIcon openIcon={<EditIcon />} />}
-      >
-        {actions.map((action) => (
-          <SpeedDialAction
-            key={action.name}
-            icon={action.icon}
-            tooltipTitle={action.name}
-            onClick={action.action}
-          />
-        ))}
-      </SpeedDial>
       <Dialog
         open={uploadDialogBox}
         onClose={closeUploadDialogBox}
