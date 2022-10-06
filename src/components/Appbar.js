@@ -121,16 +121,16 @@ export default function Appbar() {
             </div> */}
             <div style={{ marginLeft: "auto" }}>
               <Box sx={{ flexGrow: 0 }}>
-                <div style={{float: 'left', paddingRight: 10}}>
+                <div style={{ float: 'left', paddingRight: 10 }}>
                   <Typography variant="body2">Name: {user.name}</Typography>
                   {user.userType === "INSTRUCTOR" && (
-                  <Typography variant="body2">Role: {user.userEnum}</Typography>
+                    <Typography variant="body2">Role: {user.userEnum}</Typography>
                   )}
                   {user.userType !== "INSTRUCTOR" && (
-                  <Typography variant="body2">Role: {user.userType}</Typography>
+                    <Typography variant="body2">Role: {user.userType}</Typography>
                   )}
                 </div>
-                <div style={{float: 'right'}}>
+                <div style={{ float: 'right' }}>
                   <Tooltip title="Open settings">
                     <IconButton
                       onClick={handleOpenUserMenu}
@@ -188,11 +188,23 @@ export default function Appbar() {
                     Dashboard
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <Link to="/myTeachingCoursesList" className="nav-links">
-                    {user.userType == "LEARNER" ? 'My Courses' : 'Teaching Courses'}
-                  </Link>
-                </li>
+                {user.userType == "LEARNER" &&
+                  <li className="nav-item">
+                    <Link to="/myLearnerCoursesList" className="nav-links">
+                      My courses
+                    </Link>
+                  </li>
+
+                }
+                {user.userType != "LEARNER" &&
+                  <li className="nav-item">
+                    <Link to="/myTeachingCoursesList" className="nav-links">
+                      My Teaching Courses
+                    </Link>
+                  </li>
+
+                }
+
                 {user.userType === "LEARNER" &&
                   <li className="nav-item">
                     <Link to="/courseExplorer" className="nav-links">

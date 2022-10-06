@@ -1,19 +1,11 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { Link, useLocation, useParams, useNavigate } from 'react-router-dom';
-import TeachingCoursesDrawer from '../components/TeachingCoursesDrawer';
-import CourseStatusAccordion from '../components/CourseStatusAccordion';
-import { Container, Paper, Box, Button, MenuItem, Grid } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
-import CourseTags from '../components/CourseTags';
-import Snackbar from '@mui/material/Snackbar';
+import LearnerCourseDrawer from '../components/LearnerCourseDrawer';
+import { Container, Paper, Box, Button, MenuItem, Grid, CircularProgress } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { useAuth } from "../context/AuthProvider";
+
 
 const headingStyle = {
     color: "blue",
@@ -36,39 +28,36 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 export default function LearnerCourseDetails(props) {
-    console.log('Opened this');
+
+    // user
+    const auth = useAuth();
+    const user = auth.user;
+
     const location = useLocation(props);
     const courseId = location.pathname.split('/')[2];
+
     const [course, setCourse] = useState('');
-    const navigate = useNavigate();
     const [refreshPage, setRefreshPage] = useState('');
 
     React.useEffect(() => {
         setRefreshPage(false);
-        fetch("http://localhost:8080/course/courses/" + courseId).
-            then(res => res.json()).then((result) => {
+        fetch("http://localhost:8080/course/courses/" + courseId)
+            .then(res => res.json())
+            .then((result) => {
                 setCourse(result);
+                console.log('Course id is '+ course.courseId);
             }
-            )
-    }, [refreshPage])
-
-    const navigateToCourseEnrollment = () => {
-        navigate(`/myTeachingCourse/${course.courseId}/courseEnrollment`);
-    };
-
-    
-
+            );
+    }, [refreshPage]);
 
     return (
         <div>
             <Container>
                 <Grid container spacing={0}>
                     <Grid item xs={2}>
-                        <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
+                        <LearnerCourseDrawer courseId={courseId}></LearnerCourseDrawer>
                     </Grid>
                     <Grid item xs={10}>
-                        <CourseTags courseId={courseId}></CourseTags>
-                        <Button variant="outlined" onClick = {navigateToCourseEnrollment} >Enroll</Button>
                         <Paper elevation={3} style={paperStyle}>
                             <h1 style={headingStyle}> {course.courseCode} - {course.courseTitle} </h1>
                             <Box

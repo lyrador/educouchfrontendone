@@ -11,7 +11,7 @@ import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import TimelineDot from '@mui/lab/TimelineDot';
-import LearnerCourseDrawer from './LearnerCourseDrawer';
+import TeachingCoursesDrawer from './TeachingCoursesDrawer';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import Typography from '@mui/material/Typography';
 import BookIcon from '@mui/icons-material/Book';
@@ -28,11 +28,12 @@ import TableRow from '@mui/material/TableRow';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import CheckoutForm from './CheckoutForm';
-import SuccessReservation from './SuccessReservation';
+import SuccessEnrolment from './SuccessEnrolment';
 import { useAuth } from '../context/AuthProvider';
+import LearnerCoursesDrawer from './LearnerCourseDrawer';
 
 
-const steps = ['Select class run schedule', 'Enrollment guidelines', 'Payment', 'Completed'];
+const steps = ['Course Enrolment Status', 'Payment', 'Completed'];
 
 const publicKey = "pk_test_51LnPrnBx7BYbBg97eaxGtJNPIBG88wK36CGBCzldo5RmE5w3F9G7JKI7sOLafQB6yBdgfVsz6VHUpx5ja4LeVhp700UuLU3SOn";
 const stripePromise = loadStripe(publicKey);
@@ -47,7 +48,7 @@ weekday[4] = "Friday";
 weekday[5] = "Saturday";
 weekday[6] = "Sunday";
 
-export default function CourseEnrollment({ courseId }) {
+export default function CourseFeePayment({ courseId, classRunRegistered }) {
     // user
     const auth = useAuth();
     const user = auth.user;
@@ -55,12 +56,6 @@ export default function CourseEnrollment({ courseId }) {
     const [activeStep, setActiveStep] = React.useState(0);
 
     const handleNext = () => {
-        if (activeStep == 0) {
-            if (classRunChosen === '') {
-                alert('Please choose one of the class run!');
-                return;
-            }
-        }
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
 
@@ -73,23 +68,6 @@ export default function CourseEnrollment({ courseId }) {
     };
 
 
-    // list of class runs
-    const [listOfClassRun, setListOfClassRun] = useState([]);
-    const [classRunChosen, setClassRunChosen] = useState('');
-
-    React.useEffect(() => {
-        var url = "http://localhost:8080/course/getClassRunByCourseId/" + courseId;
-        fetch(url).
-            then(res => res.json())
-            .then((result) => {
-                setListOfClassRun(result);
-            }
-            )
-    }, []);
-
-    const chooseClassRun = (num) => {
-        setClassRunChosen(num);
-    };
 
     // course details
     const [currentCourse, setCurrentCourse] = useState('');
@@ -107,7 +85,7 @@ export default function CourseEnrollment({ courseId }) {
     const [amountToBePaid, setAmountToBePaid] = useState(0);
     const [clientSecret, setClientSecret] = useState('');
     const checkout = () => {
-        setAmountToBePaid(currentCourse.courseFee * 0.10);
+        setAmountToBePaid(currentCourse.courseFee * 0.90);
         if (amountToBePaid != 0) {
             var url = "http://localhost:8080/payment/checkout?amount=" + amountToBePaid;
             console.log('Url is ' + url);
@@ -139,22 +117,17 @@ export default function CourseEnrollment({ courseId }) {
     };
 
     // sending over record payment
-    const requestDepositRecord = () => {
+    const requestFullCourseFeeTransactionRecord = () => {
         // send request to create payment record
-        const depositRecord = { "classRunId": classRunChosen.classRunId, "learnerId": user.userId, "amount": amountToBePaid  };
-        console.log('Deposit record is ' + JSON.stringify(depositRecord));
-        var url = "http://localhost:8080/payment/trackDeposit";
+        const courseFeeRecord = { "classRunId": classRunRegistered.classRunId, "learnerId": user.userId, "amount": amountToBePaid  };
+        console.log('courseFeeRecord ' + JSON.stringify(courseFeeRecord));
+        var url = "http://localhost:8080/payment/trackRemainingCourseFee";
         fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(depositRecord)
+            body: JSON.stringify(courseFeeRecord)
 
-        }).
-            then(res => res.json())
-            .then((result) => {
-                setListOfClassRun(result);
-            }
-            )
+        });
     }
 
 
@@ -162,10 +135,10 @@ export default function CourseEnrollment({ courseId }) {
         <>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <LearnerCourseDrawer courseId={courseId}></LearnerCourseDrawer>
+                    <LearnerCoursesDrawer courseId={courseId}></LearnerCoursesDrawer>
                 </Grid>
                 <Grid item xs={8}>
-                    <Typography variant="h4">Course Enrollment</Typography>
+                    <Typography variant="h4">Course Fee Payment</Typography>
                     <Divider></Divider>
                     <br />
                     <br />
@@ -185,81 +158,6 @@ export default function CourseEnrollment({ courseId }) {
                             <br />
                             <br />
                             <Typography>
-                                Select a class run that fits your schedule!
-                            </Typography>
-                            <br />
-                            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                                Class Run Chosen: <Chip label={classRunChosen.classRunId} variant="outlined" />
-                            </Typography>
-                            <br />
-                            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-
-                                <br />
-                                <Stack
-                                    direction="row"
-                                    spacing={2}
-                                >
-                                    {listOfClassRun && listOfClassRun.length > 0 &&
-                                        listOfClassRun
-                                            .map((classRun) => (
-                                                <Card sx={{ minWidth: 275 }}>
-
-                                                    <CardContent>
-                                                        <CalendarMonthIcon></CalendarMonthIcon>
-                                                        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                                                            Class Run Id: {classRun.classRunId}
-                                                        </Typography>
-                                                        <Divider></Divider>
-                                                        <br />
-                                                        <Typography variant="h6" component="div">
-                                                            {classRun.classRunDaysOfTheWeek.map(x => { return (<Typography variant="h6">{weekday[x]} </Typography>) })}
-                                                        </Typography>
-                                                        <br />
-                                                        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                                                            {classRun.classRunStartTime} - {classRun.classRunEndTime}
-                                                        </Typography>
-                                                        <Typography variant="body2">
-                                                            Start Date: {classRun.classRunStart}
-                                                        </Typography>
-
-                                                        <Typography variant="body2">
-                                                            End Date: {classRun.classRunEnd}
-                                                        </Typography>
-                                                    </CardContent>
-                                                    <CardActions>
-                                                        <Button size="small" onClick={() => chooseClassRun(classRun)}>Choose</Button>
-                                                    </CardActions>
-                                                </Card>
-                                            ))
-                                    }
-                                </Stack>
-
-                                <br />
-
-                            </Box>
-                            <br />
-                            <br />
-                            <Stack
-                                direction="row"
-                                spacing={2}
-                            >
-                                <Button onClick={handleBack} variant="contained">
-                                    Back
-                                </Button>
-                                <Button onClick={handleNext} variant="contained">
-                                    Next
-                                </Button>
-
-
-                            </Stack>
-
-                        </React.Fragment>
-                    )}
-                    {activeStep === 1 && (
-                        <React.Fragment>
-                            <br />
-                            <br />
-                            <Typography>
                                 Please read the enrollment guideline below.
                             </Typography>
                             <br />
@@ -267,17 +165,9 @@ export default function CourseEnrollment({ courseId }) {
                             <div class="enrollment-guideline">
                                 <Timeline position="alternate">
                                     <TimelineItem>
-                                        <TimelineOppositeContent
-                                            sx={{ m: 'auto 0' }}
-                                            align="right"
-                                            variant="body2"
-                                            color="text.secondary"
-                                        >
-                                            Today
-                                        </TimelineOppositeContent>
                                         <TimelineSeparator>
                                             <TimelineConnector />
-                                            <TimelineDot color="secondary">
+                                            <TimelineDot color="grey">
                                                 <BookIcon />
                                             </TimelineDot>
                                             <TimelineConnector />
@@ -299,7 +189,7 @@ export default function CourseEnrollment({ courseId }) {
                                         </TimelineOppositeContent>
                                         <TimelineSeparator>
                                             <TimelineConnector />
-                                            <TimelineDot color="secondary">
+                                            <TimelineDot color="grey">
                                                 <WatchLaterIcon />
                                             </TimelineDot>
                                             <TimelineConnector />
@@ -317,7 +207,7 @@ export default function CourseEnrollment({ courseId }) {
                                             variant="body2"
                                             color="text.secondary"
                                         >
-                                            Within 7 Days before the start of the course
+                                            Now
                                         </TimelineOppositeContent>
                                         <TimelineSeparator>
                                             <TimelineConnector />
@@ -336,7 +226,7 @@ export default function CourseEnrollment({ courseId }) {
                                     <TimelineItem>
                                         <TimelineSeparator>
                                             <TimelineConnector />
-                                            <TimelineDot color="secondary">
+                                            <TimelineDot color="grey">
                                                 <TaskAltIcon />
                                             </TimelineDot>
                                             <TimelineConnector />
@@ -367,7 +257,7 @@ export default function CourseEnrollment({ courseId }) {
                             </Stack>
                         </React.Fragment>
                     )}
-                    {activeStep === 2 && (
+                    {activeStep === 1 && (
                         <React.Fragment>
                             <br />
                             <br />
@@ -422,19 +312,19 @@ export default function CourseEnrollment({ courseId }) {
                                             <TableCell component="th" scope="row">
                                                 Date
                                             </TableCell>
-                                            <TableCell align="right">{classRunChosen.classRunStart} - {classRunChosen.classRunEnd}</TableCell>
+                                            <TableCell align="right">{classRunRegistered.classRunStart} - {classRunRegistered.classRunEnd}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell component="th" scope="row">
                                                 Time
                                             </TableCell>
-                                            <TableCell align="right">{classRunChosen.classRunStartTime} - {classRunChosen.classRunEndTime}</TableCell>
+                                            <TableCell align="right">{classRunRegistered.classRunStartTime} - {classRunRegistered.classRunEndTime}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell component="th" scope="row">
                                                 Days of week
                                             </TableCell>
-                                            <TableCell align="right">  {classRunChosen.classRunDaysOfTheWeek.map(x => { return (<p>{weekday[x]}</p>) })}</TableCell>
+                                            <TableCell align="right">  {classRunRegistered.classRunDaysOfTheWeek.map(x => { return (<p>{weekday[x]}</p>) })}</TableCell>
                                         </TableRow>
                                     </TableBody>
                                 </Table>
@@ -452,13 +342,13 @@ export default function CourseEnrollment({ courseId }) {
                                     <TableBody>
                                         <TableRow>
                                             <TableCell component="th" scope="row">
-                                                Course Fee
+                                                Remaining Course Fee
                                             </TableCell>
-                                            <TableCell align="right">SGD {currentCourse.courseFee}</TableCell>
+                                            <TableCell align="right">SGD {currentCourse.courseFee * 0.90}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell component="th" scope="row">
-                                                Deposit Required
+                                                Deposit Paid Before
                                             </TableCell>
                                             <TableCell align="right">SGD {currentCourse.courseFee * 0.10}</TableCell>
                                         </TableRow>
@@ -486,10 +376,10 @@ export default function CourseEnrollment({ courseId }) {
 
                         </React.Fragment>
                     )}
-                    {activeStep === 3 && (
+                    {activeStep === 2 && (
                         <React.Fragment>
 
-                            <SuccessReservation courseName={currentCourse.courseName}></SuccessReservation>
+                            <SuccessEnrolment courseName={currentCourse.courseName}></SuccessEnrolment>
 
                         </React.Fragment>
                     )}
@@ -504,7 +394,7 @@ export default function CourseEnrollment({ courseId }) {
                     </DialogTitle>
 
                     <Elements stripe={stripePromise}>
-                        <CheckoutForm clientSecret={clientSecret} closePaymentDialogBox={closePaymentDialogBox} handleNext={handleNext} requestTransactionRecord={requestDepositRecord} />
+                        <CheckoutForm clientSecret={clientSecret} closePaymentDialogBox={closePaymentDialogBox} handleNext={handleNext} requestTransactionRecord = {requestFullCourseFeeTransactionRecord}/>
                     </Elements>
                 </DialogContent>
             </Dialog>
