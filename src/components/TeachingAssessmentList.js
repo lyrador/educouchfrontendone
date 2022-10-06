@@ -484,7 +484,7 @@ function TeachingAssessmentList(props) {
               severity="success"
               sx={{ width: "100%" }}
             >
-              Assessment Created Succesfully!
+              Assessment Created Successfully!
             </Alert>
           </Snackbar>
           <Snackbar

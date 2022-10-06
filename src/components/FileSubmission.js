@@ -23,9 +23,6 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  SpeedDial,
-  SpeedDialIcon,
-  SpeedDialAction,
   Box,
 } from "@mui/material";
 import { useState } from "react";
@@ -38,10 +35,6 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
 
 import { useAuth } from "../context/AuthProvider";
-
-import EditIcon from "@mui/icons-material/Edit";
-import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 import UploadService from "../services/UploadFilesService";
 
@@ -78,15 +71,6 @@ function FileSubmission(props) {
   const closeUploadDialogBox = () => {
     setUploadDialogBox(false);
   };
-
-  // dial speed
-  const actions = [
-    {
-      icon: <AttachFileIcon />,
-      name: "Upload new file",
-      action: openUploadDialogBox,
-    },
-  ];
 
   const [refreshPage, setRefreshPage] = useState("");
 
@@ -125,8 +109,6 @@ function FileSubmission(props) {
 
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
 
-  const [open, setOpen] = React.useState(false);
-
   const handleClickSnackbar = () => {
     setOpenSnackbar(true);
   };
@@ -138,22 +120,10 @@ function FileSubmission(props) {
     setOpenSnackbar(false);
   };
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   const editFileSubmissionDetails = (e) => {
     e.preventDefault();
     handleClickSnackbar();
   };
-
-  const [message, setMessage] = useState("");
-  const [isError, setError] = useState(false);
-  const [isSuccess, setSuccess] = useState(false);
 
   const [currentFile, setCurrentFile] = useState(undefined);
   const [progress, setProgress] = useState(0);
@@ -161,23 +131,14 @@ function FileSubmission(props) {
   const selectFile = (event) => {
     setCurrentFile(event.target.files[0]);
     setProgress(0);
-    setMessage("");
   };
 
   const handleRefreshDelete = () => {
     refresh();
-    //notification
-    setMessage("Item is successfully deleted!");
-    setError(false);
-    setSuccess(true);
   };
 
   const handleRefreshUpdate = () => {
     refresh();
-    //notification
-    setMessage("Item is successfully updated!");
-    setError(false);
-    setSuccess(true);
   };
 
   const uploadAttachment = () => {
@@ -190,14 +151,11 @@ function FileSubmission(props) {
       }
     )
       .then((response) => {
-        setMessage("Succesfully Uploaded!");
-        setError(false);
         console.log(response);
         closeUploadDialogBox();
+        refresh();
       })
       .catch((err) => {
-        setMessage("Could not upload the file!");
-        setError(true);
         setProgress(0);
         setCurrentFile(undefined);
       });
@@ -223,6 +181,59 @@ function FileSubmission(props) {
       },
     },
   });
+
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+
+  const [editAssessmentDescription, setEditAssessmentDescription] =
+    useState("");
+  const [assessmentIdToEdit, setAssessmentIdToEdit] = useState("");
+  const [assessmentDescription, setAssessmentDescription] = useState("");
+  const [assessmentMaxScore, setAssessmentMaxScore] = useState("");
+  const [assessmentFileSubmissionEnum, setAssessmentFileSubmissionEnum] =
+    useState("");
+
+  const handleClickEditDialogOpen = (
+    event,
+    assessmentId,
+    assessmentDescription
+    //   // isOpen,
+    //   // statusEnum
+  ) => {
+    setEditAssessmentDescription(assessmentDescription);
+    setAssessmentIdToEdit(assessmentId);
+    //   // setAssessmentIsOpen(isOpen);
+    //   // setAssessmentStatusEnum(statusEnum);
+    setEditDialogOpen(true);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
+  };
+
+  const editAssessment = (e) => {
+    e.preventDefault();
+    var assessmentDescription = editAssessmentDescription;
+    const newEditedAssessment = {
+      assessmentTitle,
+      assessmentDescription,
+      assessmentMaxScore,
+      assessmentFileSubmissionEnum,
+    };
+    fetch(
+      "http://localhost:8080/assessment/updateFileSubmission/" +
+        assessmentIdToEdit,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newEditedAssessment),
+      }
+    ).then(() => {
+      console.log("Assessment Edited Successfully!");
+      setRefreshPage(true);
+      handleEditDialogClose();
+      handleClickSnackbar();
+    });
+  };
 
   return (
     <div>
@@ -263,7 +274,7 @@ function FileSubmission(props) {
               </LinkMaterial>
             </Link>
           </Breadcrumbs>
-          <div style={{ justifyContent: "center" }}>
+          <div style={{ padding: "5%", justifyContent: "center" }}>
             <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
               {assessmentTitle}
             </h1>
@@ -272,10 +283,17 @@ function FileSubmission(props) {
               color="primary"
               variant="contained"
               component="span"
-              onClick={handleClickOpen}
+              onClick={(event) =>
+                handleClickEditDialogOpen(
+                  event,
+                  fileSubmission.assessmentDescription
+                  // assessment.assessmentIsOpen,
+                  // assessment.assessmentStatusEnum
+                )
+              }
               style={{ float: "right", marginLeft: "auto" }}
             >
-              Edit File Submission Details
+              Edit Details
             </Button>
           </div>
           <div style={{ padding: "5%" }}>
@@ -301,6 +319,7 @@ function FileSubmission(props) {
               </Table>
               <TableRow>
                 <TableCell style={{ textAlign: "justify" }}>
+                  <b>Assessment Description: </b> <br /> <br />
                   {fileSubmission.description}
                 </TableCell>
               </TableRow>
@@ -320,46 +339,45 @@ function FileSubmission(props) {
             {(!attachmentList || attachmentList.length <= 0) && (
               <p>
                 This file submission assessment doesn't have any attachments
-                currently. Upload attachments?
+                currently.
               </p>
             )}
-
-            <SpeedDial
-              ariaLabel="SpeedDial openIcon example"
-              sx={{ position: "absolute", right: 16 }}
-              icon={<SpeedDialIcon openIcon={<EditIcon />} />}
+            <Button
+              color="primary"
+              variant="contained"
+              component="span"
+              onClick={openUploadDialogBox}
+              style={{ float: "right", marginLeft: "auto" }}
             >
-              {actions.map((action) => (
-                <SpeedDialAction
-                  key={action.name}
-                  icon={action.icon}
-                  tooltipTitle={action.name}
-                  onClick={action.action}
-                />
-              ))}
-            </SpeedDial>
+              Upload Attachment
+            </Button>
           </div>
         </Grid>
       </Grid>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Edit File Submission Assessment</DialogTitle>
+      <Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
+        <DialogTitle id="alert-dialog-title">
+          {"You are editing this assessment"}
+        </DialogTitle>
         <DialogContent>
-          {/* <TextField
-              required
-              id="outlined-basic"
-              label="Assessment Title"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={assessmentTitle}
-              onChange={(e) => setAssessmentTitle(e.target.value)}
-              error={assessmentTitleError.value}
-              helperText={assessmentTitleError.errorMessage}
-            /> */}
+          <DialogContentText id="alert-dialog-description">
+            Edit File Submission details
+          </DialogContentText>
+          <TextField
+            id="outlined-multiline-flexible"
+            label="Detailed Description"
+            multiline
+            maxRows={4}
+            fullWidth
+            style={{ margin: "6px 0" }}
+            value={editAssessmentDescription}
+            onChange={(e) => setEditAssessmentDescription(e.target.value)}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={editFileSubmissionDetails}>Create</Button>
+          <Button onClick={handleEditDialogClose}>Cancel</Button>
+          <Button onClick={editAssessment} autoFocus>
+            Edit
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog
