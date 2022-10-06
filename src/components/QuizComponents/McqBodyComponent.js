@@ -1,53 +1,45 @@
-import { Button } from "@mui/material";
+import { Button, Grid, MenuItem, Select, TextField } from "@mui/material";
+import { useState } from "react";
 
 export default function McqBodyComponent(props) {
 
+  const [addOptionText, setAddOptionText] = useState("");
 
-    return (
-      
-    //     mcqOptionsProp={question.list}
-    //     textFieldProp={props.textFieldProp}
-    //     setTextFieldProp={props.setTextFieldProp}
-    //     addQuestionOptionProp={props.addQuestionOptionProp}
-    // questionNameProp = { props.questionProp.name }
-            
-        
-        
-        
+  function handleClick() {
+    props.addQuestionOptionProp(props.questionIdProp, addOptionText)
+    setAddOptionText("")
+  }
+  return (
+    
     <div>
       <div>Options</div>
 
-      <select style={{ width: "70%", fontSize: 20, padding: 6 }}>
+      <Select style={{ width: "70%", fontSize: 16 }}>
         {props.mcqOptionsProp.map((item) => (
-          <option key={item} value={item}>
+          <MenuItem key={item} value={item}>
             {item}
-          </option>
+          </MenuItem>
         ))}
-      </select>
-      <div>
-        <input
+      </Select>
+      <Grid container flexDirection={"row"} justifyItems={ "center"}>
+        <TextField
           type="text"
-          onChange={(e) => props.setTextFieldProp(e.target.value)}
-          value={props.textFieldProp}
+          onChange={(e) => setAddOptionText(e.target.value)}
+          value={addOptionText}
           placeholder="Add Option"
           style={{
             width: "70%",
-            fontSize: 16,
-            padding: 6,
+            fontSize: 14,
             marginTop: 10,
           }}
         />
         <Button
-          onClick={() =>
-            props.addQuestionOptionProp(
-              props.questionNameProp,
-              props.textFieldProp
-            )
+          onClick={() => handleClick()
           }
         >
           Add
         </Button>
-      </div>
+      </Grid>
     </div>
   );
 }

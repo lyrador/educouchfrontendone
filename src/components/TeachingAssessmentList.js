@@ -110,7 +110,7 @@ function TeachingAssessmentList(props) {
     setOpenErrorSnackbar(false);
   };
 
-  //paths
+  // paths
   const location = useLocation();
   const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
 
@@ -232,17 +232,8 @@ function TeachingAssessmentList(props) {
     setDeleteDialogOpen(false);
   };
 
-  // function isValidDate(dateToCheck) {
-  //   var dateArray = dateToCheck.split("-");
-  //   if (dateArray.length != 3) return false;
-  //   if (Number(dateArray[0]) < 2022) {
-  //     if (Number(dateArray[1]) > 0 && (Number(dateArray[1]) < 13)) {
-  //       if (Number(dateArray[2]) > 0 && (Number(dateArray[2]) < 32)) {
-  //         return true;
-  //     }
-  //   }
-  // }
-  // }
+
+
 
   const handleClickEditDialogOpen = (
     event,
@@ -288,8 +279,7 @@ function TeachingAssessmentList(props) {
     setAssessmentStartDateError({ value: false, errorMessage: "" });
     setAssessmentEndDateError({ value: false, errorMessage: "" });
     setAssessmentFileSubmissionEnumError({ value: false, errorMessage: "" });
-    //   // setAssessmentIsOpenError({ value: false, errorMessage: "" });
-    //   // setAssessmentStatusEnumError({ value: false, errorMessage: "" });
+
     if (assessmentTitle == "") {
       setAssessmentTitleError({
         value: true,
@@ -558,9 +548,10 @@ function TeachingAssessmentList(props) {
                 Create New Document Submission
               </Button>
 
-              <Link to={`${assessmentsPath}/createQuiz`}>
+              <Link to={`${assessmentsPath}/createAssessment`}
+                state={{assessmentPathProp : assessmentsPath}}>
                 <Button variant="contained" type="submit">
-                  Create new Quiz
+                  Create new Assessment
                 </Button>
               </Link>
             </Grid>
@@ -646,106 +637,106 @@ function TeachingAssessmentList(props) {
           </div>
         </Grid>
       </Grid>
-      <div>
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Create New File Submission Assessment</DialogTitle>
-          <DialogContent>
-            <TextField
-              required
-              id="outlined-basic"
-              label="Assessment Title"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={assessmentTitle}
-              onChange={(e) => setAssessmentTitle(e.target.value)}
-              error={assessmentTitleError.value}
-              helperText={assessmentTitleError.errorMessage}
-            />
-            <TextField
-              required
-              id="outlined-basic"
-              label="Assessment Description"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={assessmentDescription}
-              onChange={(e) => setAssessmentDescription(e.target.value)}
-              error={assessmentDescriptionError.value}
-              helperText={assessmentDescriptionError.errorMessage}
-            />
-            <TextField
-              required
-              id="outlined-basic"
-              label="Assessment Max Score"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={assessmentMaxScore}
-              onChange={(e) => setAssessmentMaxScore(e.target.value)}
-              error={assessmentMaxScoreError.value}
-              helperText={assessmentMaxScoreError.errorMessage}
-            />
-            <Stack spacing={1}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DesktopDatePicker
-                  label="Start Date"
-                  inputFormat="MM/DD/YYYY"
-                  value={assessmentStartDate}
-                  onChange={handleStartDateChange}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      sx={{ width: "100%" }}
-                      error={assessmentStartDateError.value}
-                      helperText={assessmentStartDateError.errorMessage}
-                    />
-                  )}
-                />
-              </LocalizationProvider>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DesktopDatePicker
-                  label="End Date"
-                  inputFormat="MM/DD/YYYY"
-                  value={assessmentEndDate}
-                  onChange={handleEndDateChange}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      sx={{ width: "100%" }}
-                      error={assessmentEndDateError.value}
-                      helperText={assessmentEndDateError.errorMessage}
-                    />
-                  )}
-                />
-              </LocalizationProvider>
-            </Stack>
-            <TextField
-              required
-              select
-              id="outlined-basic"
-              label="Assessment File Submission Type"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={assessmentFileSubmissionEnum}
-              onChange={(e) => setAssessmentFileSubmissionEnum(e.target.value)}
-              error={assessmentFileSubmissionEnumError.value}
-              helperText={assessmentFileSubmissionEnumError.errorMessage}
-            >
-              {enumGroup.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.value}
-                </MenuItem>
-              ))}
-            </TextField>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={createNewAssessment}>Create</Button>
-          </DialogActions>
-        </Dialog>
-      </div>
+        {/* <div>
+          <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>Create New File Submission Assessment</DialogTitle>
+            <DialogContent>
+              <TextField
+                required
+                id="outlined-basic"
+                label="Assessment Title"
+                variant="outlined"
+                fullWidth
+                style={{ margin: "6px 0" }}
+                value={assessmentTitle}
+                onChange={(e) => setAssessmentTitle(e.target.value)}
+                error={assessmentTitleError.value}
+                helperText={assessmentTitleError.errorMessage}
+              />
+              <TextField
+                required
+                id="outlined-basic"
+                label="Assessment Description"
+                variant="outlined"
+                fullWidth
+                style={{ margin: "6px 0" }}
+                value={assessmentDescription}
+                onChange={(e) => setAssessmentDescription(e.target.value)}
+                error={assessmentDescriptionError.value}
+                helperText={assessmentDescriptionError.errorMessage}
+              />
+              <TextField
+                required
+                id="outlined-basic"
+                label="Assessment Max Score"
+                variant="outlined"
+                fullWidth
+                style={{ margin: "6px 0" }}
+                value={assessmentMaxScore}
+                onChange={(e) => setAssessmentMaxScore(e.target.value)}
+                error={assessmentMaxScoreError.value}
+                helperText={assessmentMaxScoreError.errorMessage}
+              />
+              <Stack spacing={1}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DesktopDatePicker
+                    label="Start Date"
+                    inputFormat="MM/DD/YYYY"
+                    value={assessmentStartDate}
+                    onChange={handleStartDateChange}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        sx={{ width: "100%" }}
+                        error={assessmentStartDateError.value}
+                        helperText={assessmentStartDateError.errorMessage}
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DesktopDatePicker
+                    label="End Date"
+                    inputFormat="MM/DD/YYYY"
+                    value={assessmentEndDate}
+                    onChange={handleEndDateChange}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        sx={{ width: "100%" }}
+                        error={assessmentEndDateError.value}
+                        helperText={assessmentEndDateError.errorMessage}
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
+              </Stack>
+              <TextField
+                required
+                select
+                id="outlined-basic"
+                label="Assessment File Submission Type"
+                variant="outlined"
+                fullWidth
+                style={{ margin: "6px 0" }}
+                value={assessmentFileSubmissionEnum}
+                onChange={(e) => setAssessmentFileSubmissionEnum(e.target.value)}
+                error={assessmentFileSubmissionEnumError.value}
+                helperText={assessmentFileSubmissionEnumError.errorMessage}
+              >
+                {enumGroup.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.value}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={createNewAssessment}>Create</Button>
+            </DialogActions>
+          </Dialog>
+        </div> */}
       <div>
         <Dialog
           open={deleteDialogOpen}

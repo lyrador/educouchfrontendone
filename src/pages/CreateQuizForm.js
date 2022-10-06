@@ -6,69 +6,125 @@ import { useAuth } from "../context/AuthProvider";
 import { Link, useLocation, useParams } from "react-router-dom";
 import LinkMaterial from "@mui/material/Link";
 
-import { Breadcrumbs, Grid } from "@mui/material";
-import { Paper, Button, createTheme } from "@mui/material";
+import {
+  Breadcrumbs,
+  Grid,
+  IconButton,
+  Modal,
+  Paper,
+  Button,
+} from "@mui/material";
 import { useState } from "react";
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
+import SettingsIcon from "@mui/icons-material/Settings";
+import AddIcon from "@mui/icons-material/Add";
+import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsComponent";
 
 export default function CreateQuizForm(props) {
   const location = useLocation();
-  const assessmentPath = location.pathname.split("/").slice(0, 4).join("/");
-
-  const [formContent, setFormContent] = useState([]);
+  const assessmentsPath = location.state.assessmentsPathProp;
+  const createAssessmentPath = location.state.createAssessmentPathProp;
+  const createQuizFormPath = location.pathname;
+  const currentQuiz = location.state.newQuizProp;
+  const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
-  const question = {
-    name: "",
-    questionTitle: " ",
-    questionType: "",
-    options: [],
-  };
 
-  function editQuestionTitle(questionName, questionTitle) {
-    const formQuestions = [...formContent];
-    const questionIndex = formQuestions.findIndex(
-      (f) => f.name == questionName
+  React.useEffect(() => {
+    currentQuiz.questions = formQuestions;
+  },[])
+
+  const [open, setOpen] = React.useState(false);
+  function handleOpenSettingsDialogue() {
+    setOpen(true);
+  }
+
+  function handleCloseSettingsDialogue(ed) {
+    setOpen(false);
+  }
+
+  //need function to link questions to quiz prop
+
+  function editQuizSettings(title, description, maxScore, startDate, endDate, hasTimeLimit, timeLimit, isAutoRelease) {
+    currentQuiz.assessmentTitle = title;
+    currentQuiz.assessmentDescription = description;
+    currentQuiz.assessmentMaxScore = maxScore;
+    currentQuiz.assessmentStartDate = startDate;
+    currentQuiz.assessmentEndDate = endDate;
+    currentQuiz.hasTimeLimit = hasTimeLimit;
+    currentQuiz.timeLimit = timeLimit
+    currentQuiz.isAutoRelease = isAutoRelease;
+  }
+
+  function editQuestionTitle(questionId, questionTitle) {
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.id == questionId
     );
     if (questionIndex > -1) {
-      formQuestions[questionIndex].questionTitle = questionTitle;
-      setFormContent(formQuestions);
+      tempFormQuestions[questionIndex].questionTitle = questionTitle;
+      setFormQuestions(tempFormQuestions);
     }
   }
 
-  function editQuestionType(questionName, questionType) {
-    const formQuestions = [...formContent];
-    const questionIndex = formQuestions.findIndex(
-      (f) => f.name == questionName
+  function editQuestionType(questionId, questionType) {
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.id == questionId
     );
     if (questionIndex > -1) {
-      formQuestions[questionIndex].questionType = questionType;
-      setFormContent(formQuestions);
+      tempFormQuestions[questionIndex].questionType = questionType;
+      setFormQuestions(tempFormQuestions);
     }
   }
 
-  function addQuestionOption(questionName, option) {
-    const formQuestions = [...formContent];
-    const questionIndex = formQuestions.findIndex(
-      (f) => f.name == questionName
+  function editQuestionContent(questionId, questionContent) {
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.id == questionId
+    );
+    if (questionIndex > -1) {
+      tempFormQuestions[questionIndex].questionContent = questionContent;
+      setFormQuestions(tempFormQuestions);
+    }
+  }
+
+  function addQuestionOption(questionId, option) {
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.id == questionId
     );
     if (option && option != "") {
-      formQuestions[questionIndex].options.push(option);
-      setFormContent(formQuestions);
+      tempFormQuestions[questionIndex].options.push(option);
+      setFormQuestions(tempFormQuestions);
       setTextField("");
     }
   }
 
   const addQuestion = () => {
-    const questionNumber = formContent.length + 1;
+    const questionNumber = formQuestions.length + 1;
     const question = {
-      name: "question" + questionNumber,
+      id: "question" + questionNumber,
       questionTitle: "Question " + questionNumber,
       questionType: "shortAnswer",
+      questionContent: "Type Question Body here...",
       options: [],
     };
-    setFormContent([...formContent, question]);
+    setFormQuestions([...formQuestions, question]);
     console.log("added question: " + question.questionType);
+  };
+
+  const removeQuestion = (questionId) => {
+    const questionIndex = formQuestions.findIndex((f) => f.id == questionId);
+    const tempFormQuestions = [...formQuestions];
+    if (questionIndex > -1) {
+      setFormQuestions(
+        tempFormQuestions.filter((question) => {
+          return question.id !== questionId;
+        })
+      );
+    }
+    console.log("removed question: " + questionId);
   };
 
   const handleSave = (e) => {
@@ -95,30 +151,59 @@ export default function CreateQuizForm(props) {
       <Grid item xs={10}>
         <Breadcrumbs aria-label="breadcrumb">
           <Link
-            to={`${assessmentPath}`}
+            to={`${assessmentsPath}`}
             style={{ textDecoration: "none", color: "grey" }}
           >
             <LinkMaterial underline="hover" color="inherit">
               Assessments
             </LinkMaterial>
           </Link>
-          <Link to="" style={{ textDecoration: "none", color: "grey" }}>
+          <Link
+            to={`${createAssessmentPath}`}
+            style={{ textDecoration: "none", color: "grey" }}
+            state={{
+              createAssessmentPathProp: { createAssessmentPath },
+              assessmentsPathProp: { assessmentsPath },
+            }}
+          >
+            <LinkMaterial underline="hover" color="inherit">
+              Create Assessment
+            </LinkMaterial>
+          </Link>
+          <Link
+            to={`${createQuizFormPath}`}
+            style={{ textDecoration: "none", color: "grey" }}
+          >
             <LinkMaterial underline="hover" color="inherit">
               Create Quiz
             </LinkMaterial>
           </Link>
         </Breadcrumbs>
 
-        <Container>
-          <h1>Quiz Creation</h1>
-          <br></br>
-          <Grid container style={{ margin: 50 }}>
-            <Button variant="contained" onClick={() => addQuestion()}>
-              Add Question
-            </Button>
+        <Grid item width={"80%"}>
+          <Grid container direction={"row"} justifyContent={"space-between"}>
+            <h1>Quiz Creation</h1>
+            <IconButton
+              aria-label="settings"
+              onClick={() => handleOpenSettingsDialogue()}
+            >
+              Edit Quiz Settings
+              <SettingsIcon />
+            </IconButton>
+            <Modal
+              open={open}
+              onClose={handleCloseSettingsDialogue}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <QuizSettingsComponents
+                quizSettingsProp={currentQuiz}
+                editQuizSettingsProp={editQuizSettings}
+                closeQuizSettingsProp={handleCloseSettingsDialogue}
+              ></QuizSettingsComponents>
+            </Modal>
           </Grid>
-
-          {formContent.length == 0 && (
+          {formQuestions.length == 0 && (
             <Paper elevation={3} style={{ margin: 50, padding: 30 }}>
               <h3>Currently no questions!</h3>
               <br />
@@ -126,16 +211,18 @@ export default function CreateQuizForm(props) {
             </Paper>
           )}
 
-          {formContent.map((question, index) => {
+          {formQuestions.map((question, index) => {
             return (
-              <Paper elevation={3} style={{ margin: 50, padding: 30 }}>
+              <Paper elevation={3} style={{ margin: 10, padding: 30 }}>
                 <QuizQuestionComponent
+                  textFieldProp={textField}
+                  setTextFieldProp={setTextField}
                   questionProp={question}
                   editQuestionTitleProp={editQuestionTitle}
                   editQuestionTypeProp={editQuestionType}
                   addQuestionOptionProp={addQuestionOption}
-                  textFieldProp={textField}
-                  setTextFieldProp={setTextField}
+                  editQuestionContentProp={editQuestionContent}
+                  removeQuestionProp={removeQuestion}
                 />
               </Paper>
             );
@@ -143,18 +230,29 @@ export default function CreateQuizForm(props) {
 
           <Grid
             container
-            style={{ margin: 20 }}
+            style={{ marginBottom: 90 }}
             direction="row"
             justifyContent={"space-between"}
           >
-            <Link to={assessmentPath}>
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={() => addQuestion()}
+            >
+              <AddIcon />
+              Add Question
+            </Button>
+          </Grid>
+
+          <Grid container direction="row" justifyContent={"space-between"}>
+            <Link to={assessmentsPath}>
               <Button variant="contained">Cancel</Button>
             </Link>
             <Button variant="contained" onClick={handleSave}>
               Submit
             </Button>
           </Grid>
-        </Container>
+        </Grid>
       </Grid>
     </Grid>
   );

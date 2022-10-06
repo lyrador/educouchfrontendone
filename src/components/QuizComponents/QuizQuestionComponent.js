@@ -2,8 +2,11 @@ import { Grid } from "@mui/material";
 import { Button } from "@mui/material";
 import React, { useState } from "react";
 import McqBodyComponent from "./McqBodyComponent";
+import QuizContentComponent from "./QuizContentComponent";
 import QuizTitleComponent from "./QuizTitleComponent";
 import QuizTypeDropdownComponent from "./QuizTypeDropdownComponent";
+import ShortAnswerComponent from "./ShortAnswerComponent";
+import TrueFalseComponent from "./TrueFalseComponent";
 
 export default function QuizQuestionComponent(props) {
   const [question, setQuestion] = useState(props.questionProp);
@@ -11,6 +14,7 @@ export default function QuizQuestionComponent(props) {
   const [onEdit, setOnEdit] = useState(false);
 
   return (
+    
     <Grid
       container
       style={{ margin: 20 }}
@@ -18,7 +22,7 @@ export default function QuizQuestionComponent(props) {
       justifyContent={"space-between"}
     >
       <QuizTitleComponent
-        questionNameProp={props.questionProp.name}
+        questionIdProp={props.questionProp.id}
         questionTitleProp={props.questionProp.questionTitle}
         editQuestionTitleProp={props.editQuestionTitleProp}
       />
@@ -26,18 +30,22 @@ export default function QuizQuestionComponent(props) {
       <QuizTypeDropdownComponent
         questionTypeProp={props.questionProp.questionType}
         editQuestionTypeProp={props.editQuestionTypeProp}
-        questionNameProp={props.questionProp.name}
+        questionIdProp={props.questionProp.id}
       />
 
       <Grid container direction="column">
+        <Grid>
+          <QuizContentComponent
+            questionIdProp={props.questionProp.id}
+            questionContentProp={props.questionProp.questionContent}
+            editQuestionContentProp={props.editQuestionContentProp}
+          />
+        </Grid>
+
         <Grid item>
           {props.questionProp.questionType == "shortAnswer" && (
-            <input
-              type="text"
-              placeholder={props.questionProp.questionType}
-              style={{ width: "70%", fontSize: 20, padding: 6 }}
-            />
-          )}
+            <ShortAnswerComponent />
+          )}  
           {props.questionProp.questionType == "mcq" && (
             <div>
               <McqBodyComponent
@@ -45,10 +53,24 @@ export default function QuizQuestionComponent(props) {
                 textFieldProp={props.textFieldProp}
                 setTextFieldProp={props.setTextFieldProp}
                 addQuestionOptionProp={props.addQuestionOptionProp}
-                questionNameProp={ props.questionProp.name }
+                questionIdProp={props.questionProp.id}
               />
             </div>
           )}
+          {props.questionProp.questionType == "trueFalse" && (
+            <div>
+              <TrueFalseComponent
+                questionIdProp={props.questionProp.id}
+                booleanOptionsProp={question.options}
+                addBooleanOptionsProp={props.addQuestionOptionProp}
+              />
+            </div>
+          )}
+        </Grid>
+        <Grid style={{ marginTop: 15 }}>
+          <Button
+            onClick={() => props.removeQuestionProp(props.questionProp.id)}
+          >Remove Question</Button>
         </Grid>
       </Grid>
     </Grid>
