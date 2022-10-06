@@ -53,15 +53,18 @@ function FileSubmission(props) {
 
   //paths
   const location = useLocation();
-  const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
+  // const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
   const fileSubmissionPath = location.pathname;
+  
+  const documentSubmissionProp = props.newDocSubProp;
+  const assessmentsPath = props.assessmentsPathProp;
+  const createAssessmentPath = props.createAssessmentPathProp
 
   const fileSubmissionId = location.pathname.split("/")[4];
   const assessmentTitle = location.state.assessmentTitle;
 
   const [fileSubmission, setFileSubmission] = useState("");
   const [attachmentList, setAttachmentList] = useState([]);
-
   const [uploadDialogBox, setUploadDialogBox] = useState(false);
 
   const openUploadDialogBox = () => {
