@@ -49,6 +49,9 @@ export default function CreateAssessment(props) {
         <Breadcrumbs aria-label="breadcrumb">
           <Link
             to={`${assessmentPath}`}
+            state={{
+              assessmentsPathProp: { assessmentPath },
+            }}
             style={{ textDecoration: "none", color: "grey" }}
           >
             <LinkMaterial underline="hover" color="inherit">

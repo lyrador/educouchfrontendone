@@ -14,33 +14,36 @@ import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComp
 
 export default function CreateQuizForm(props) {
   const location = useLocation();
-  const assessmentPath = location.state.assessmentPathProp;
+  const assessmentsPath = location.state.assessmentsPathProp;
   const createAssessmentPath = location.state.createAssessmentPathProp;
-  const createQuizFormPath = location.pathname
+  const createQuizFormPath = location.pathname;
 
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
   const question = {
-    id: "", 
+    id: "",
     questionTitle: " ",
     questionType: "",
     questionContent: "",
     options: [], //array of string to store mcq options OR trueFalse options
-
   };
 
   function editQuestionTitle(questionId, questionTitle) {
     const tempFormQuestions = [...formQuestions];
-    const questionIndex = tempFormQuestions.findIndex((f) => f.id == questionId);
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.id == questionId
+    );
     if (questionIndex > -1) {
       tempFormQuestions[questionIndex].questionTitle = questionTitle;
-      setFormQuestions(tempFormQuestions  );
+      setFormQuestions(tempFormQuestions);
     }
   }
 
   function editQuestionType(questionId, questionType) {
     const tempFormQuestions = [...formQuestions];
-    const questionIndex = tempFormQuestions.findIndex((f) => f.id == questionId);
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.id == questionId
+    );
     if (questionIndex > -1) {
       tempFormQuestions[questionIndex].questionType = questionType;
       setFormQuestions(tempFormQuestions);
@@ -49,7 +52,9 @@ export default function CreateQuizForm(props) {
 
   function editQuestionContent(questionId, questionContent) {
     const tempFormQuestions = [...formQuestions];
-    const questionIndex = tempFormQuestions.findIndex((f) => f.id == questionId);
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.id == questionId
+    );
     if (questionIndex > -1) {
       tempFormQuestions[questionIndex].questionContent = questionContent;
       setFormQuestions(tempFormQuestions);
@@ -58,7 +63,9 @@ export default function CreateQuizForm(props) {
 
   function addQuestionOption(questionId, option) {
     const tempFormQuestions = [...formQuestions];
-    const questionIndex = tempFormQuestions.findIndex((f) => f.id == questionId);
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.id == questionId
+    );
     if (option && option != "") {
       tempFormQuestions[questionIndex].options.push(option);
       setFormQuestions(tempFormQuestions);
@@ -84,12 +91,10 @@ export default function CreateQuizForm(props) {
     const tempFormQuestions = [...formQuestions];
     if (questionIndex > -1) {
       setFormQuestions(
-        tempFormQuestions.filter(
-          question => {
-            return question.id !== questionId;
-          }
-        )
-      )
+        tempFormQuestions.filter((question) => {
+          return question.id !== questionId;
+        })
+      );
     }
     console.log("removed question: " + questionId);
   };
@@ -118,19 +123,29 @@ export default function CreateQuizForm(props) {
       <Grid item xs={10}>
         <Breadcrumbs aria-label="breadcrumb">
           <Link
-            to={`${assessmentPath}`}
+            to={`${assessmentsPath}`}
             style={{ textDecoration: "none", color: "grey" }}
           >
             <LinkMaterial underline="hover" color="inherit">
               Assessments
             </LinkMaterial>
           </Link>
-          <Link to={`${createAssessmentPath}`} style={{ textDecoration: "none", color: "grey" }}>
+          <Link
+            to={`${createAssessmentPath}`}
+            style={{ textDecoration: "none", color: "grey" }}
+            state={{
+              createAssessmentPathProp: { createAssessmentPath },
+              assessmentsPathProp: { assessmentsPath },
+            }}
+          >
             <LinkMaterial underline="hover" color="inherit">
               Create Assessment
             </LinkMaterial>
           </Link>
-          <Link to={`${createQuizFormPath}`}  style={{ textDecoration: "none", color: "grey" }}>
+          <Link
+            to={`${createQuizFormPath}`}
+            style={{ textDecoration: "none", color: "grey" }}
+          >
             <LinkMaterial underline="hover" color="inherit">
               Create Quiz
             </LinkMaterial>
@@ -165,7 +180,7 @@ export default function CreateQuizForm(props) {
                   editQuestionTypeProp={editQuestionType}
                   addQuestionOptionProp={addQuestionOption}
                   editQuestionContentProp={editQuestionContent}
-                  removeQuestionProp={ removeQuestion}
+                  removeQuestionProp={removeQuestion}
                 />
               </Paper>
             );
@@ -177,7 +192,7 @@ export default function CreateQuizForm(props) {
             direction="row"
             justifyContent={"space-between"}
           >
-            <Link to={assessmentPath}>
+            <Link to={assessmentsPath}>
               <Button variant="contained">Cancel</Button>
             </Link>
             <Button variant="contained" onClick={handleSave}>

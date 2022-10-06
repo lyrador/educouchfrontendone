@@ -51,7 +51,7 @@ export default function PartialCreateAssessment(props) {
 
   const location = useLocation();
   const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
-
+  const createAssessmentPath = location.pathname;
   const [assessments, setAssessments] = useState([]);
   const [assessmentTitle, setAssessmentTitle] = useState("");
   const [assessmentDescription, setAssessmentDescription] = useState("");
@@ -151,13 +151,7 @@ export default function PartialCreateAssessment(props) {
         errorMessage: "Assessment End Date cannot be earlier than Start Date!",
       });
     }
-  }
 
-  function continueAsDocumentSubmission() {
-    validateNewAssessment();
-    const newStartDate = assessmentStartDate;
-    const newEndDate = assessmentEndDate;
-    const dateComparisonBoolean = newEndDate < newStartDate;
     if (
       assessmentTitle &&
       assessmentDescription &&
@@ -167,6 +161,12 @@ export default function PartialCreateAssessment(props) {
       !isNaN(assessmentMaxScore) &&
       !dateComparisonBoolean
     ) {
+      return true;
+    }
+  }
+
+  function continueAsDocumentSubmission() {
+    if (validateNewAssessment()) {
       const newDocSub = {
         assessmentTitle: assessmentTitle,
         assessmentDescription: assessmentDescription,
@@ -180,23 +180,45 @@ export default function PartialCreateAssessment(props) {
       setNewDocSub(newDocSub);
       fetch(
         "http://localhost:8080/assessment/addNewFileSubmission/" +
-        props.courseIdProp,
+          props.courseIdProp,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newDocSub),
         }
       )
+        ///stopped here, cannot get the id of document got controller does not return documentsub with id
+        .then((res) => res.json())
+        .then((result) => {
+          const docSubId = result.assessmentStatus;
+          console.log(
+            "New File Submission Assessment: " +
+              docSubId +
+              " Created Successfully!"
+          );
+        })
         .then((response) => {
-          console.log("New File Submission Assessment Created Successfully!");
           cleanupFields();
           handleClickSnackbar();
-        })
-        .catch((err) => {
-          handleClickErrorSnackbar();
         });
-    } else {
-      console.log("not g fam")
+    }
+  }
+
+  function continueAsQuiz() {
+    if (validateNewAssessment()) {
+      const newQuiz = {
+        assessmentTitle: assessmentTitle,
+        assessmentDescription: assessmentDescription,
+        assessmentMaxScore: assessmentMaxScore,
+        assessmentStartDate: assessmentStartDate,
+        assessmentEndDate: assessmentEndDate,
+        assessmentIsOpen: "false",
+        assessmentStatusEnum: "PENDING",
+        hasTimeLimit: "false",
+        isAutoRelease: "false",
+        questions: [],
+      };
+      setNewQuiz(newQuiz);
     }
   }
 
@@ -220,7 +242,6 @@ export default function PartialCreateAssessment(props) {
           Assessment Created Succesfully!
         </Alert>
       </Snackbar>
-
       <Paper style={{ width: "70%" }}>
         <TextField
           required
@@ -301,16 +322,25 @@ export default function PartialCreateAssessment(props) {
         alignContent={"center"}
         style={{ marginTop: 60 }}
       >
-        <Button variant="contained" type="submit">
-          Continue as New Quiz
-        </Button>
-          <Button
-            variant="contained"
-            type="submit"
-            onClick={continueAsDocumentSubmission}
-          >
-            Continue as Document Submission
+
+        <Link
+          to={`${assessmentsPath}/createQuiz`}
+          state={{
+            assessmentsPathProp: assessmentsPath,
+            createAssessmentPathProp: createAssessmentPath,
+          }}
+        >
+          <Button variant="contained" type="submit">
+            Continue as New Quiz
           </Button>
+        </Link>
+        <Button
+          variant="contained"
+          type="submit"
+          onClick={continueAsDocumentSubmission}
+        >
+          Continue as Document Submission
+        </Button>
       </Grid>
     </Grid>
   );
