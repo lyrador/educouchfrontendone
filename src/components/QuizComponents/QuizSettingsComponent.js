@@ -13,7 +13,7 @@ import React, { useState } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
-import { ConstructionOutlined } from "@mui/icons-material";
+import { SettingsOutlined } from "@mui/icons-material";
 
 export default function QuizSettingsComponents(props) {
   const paperStyle = { padding: "50px 20px", width: 1200, margin: "20px auto" };
@@ -24,7 +24,7 @@ export default function QuizSettingsComponents(props) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [hasTimeLimit, setHasTimeLimit] = useState("");
-  const [timeLimit, setTimeLimit] = useState("");
+  const [timeLimit, setTimeLimit] = useState();
   const [isAutoRelease, setIsAutoRelease] = useState("");
 
   const [titleError, setTitleError] = useState({
@@ -59,6 +59,7 @@ export default function QuizSettingsComponents(props) {
     setStartDate(quizSettings.assessmentStartDate);
     setEndDate(quizSettings.assessmentEndDate);
     setHasTimeLimit(quizSettings.hasTimeLimit);
+    setTimeLimit(quizSettings.timeLimit);
     setIsAutoRelease(quizSettings.isAutoRelease);
   }, []);
 
@@ -282,7 +283,9 @@ export default function QuizSettingsComponents(props) {
               fullWidth
               style={{ paddingBottom: "10px", marginTop: "20px" }}
               value={timeLimit}
-              onChange={(e) => setTimeLimit(e.target.value)}
+              defaultValue={timeLimit}
+              onChange={(e) => setTimeLimit(e.target.value)
+              }
             />
           )}
 
