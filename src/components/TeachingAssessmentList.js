@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 
 import { Link, useLocation, useParams } from "react-router-dom";
 import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
-import { Grid } from "@mui/material";
+import { Grid, Modal } from "@mui/material";
 
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
@@ -173,20 +173,26 @@ function TeachingAssessmentList(props) {
     errorMessage: "",
   });
 
-  const [refreshPage, setRefreshPage] = useState("");
+  const [refreshPage, setRefreshPage] = useState(false);
+  const refreshFunction = () => {
+    setRefreshPage(!refreshPage);
+  };
 
   const enumGroup = [{ value: "INDIVIDUAL" }, { value: "GROUP" }];
 
+  // get all assessments here
   React.useEffect(() => {
     setRefreshPage(false);
     fetch(
-      "http://localhost:8080/assessment/getAllFileSubmissionsByCourseId/" +
+      "http://localhost:8080/assessment/getAllAssessmentsByCourseId?courseId=" +
         courseId
     )
       .then((res) => res.json())
       .then((result) => {
         setAssessments(result);
-        console.log(assessments);
+        console.log(
+          "list of assessments: " + assessments + " course id: " + courseId
+        );
       });
   }, [refreshPage]);
 
@@ -247,8 +253,8 @@ function TeachingAssessmentList(props) {
     assessmentStartDate,
     assessmentEndDate,
     assessmentFileSubmissionEnum
-    // isOpen,
-    // statusEnum
+    //   // isOpen,
+    //   // statusEnum
   ) => {
     setEditAssessmentTitle(assessmentTitle);
     setEditAssessmentDescription(assessmentDescription);
@@ -257,8 +263,8 @@ function TeachingAssessmentList(props) {
     setEditAssessmentEndDate(assessmentEndDate);
     setEditAssessmentFileSubmissionEnum(assessmentFileSubmissionEnum);
     setAssessmentIdToEdit(assessmentId);
-    // setAssessmentIsOpen(isOpen);
-    // setAssessmentStatusEnum(statusEnum);
+    //   // setAssessmentIsOpen(isOpen);
+    //   // setAssessmentStatusEnum(statusEnum);
     setEditDialogOpen(true);
   };
 
@@ -282,8 +288,8 @@ function TeachingAssessmentList(props) {
     setAssessmentStartDateError({ value: false, errorMessage: "" });
     setAssessmentEndDateError({ value: false, errorMessage: "" });
     setAssessmentFileSubmissionEnumError({ value: false, errorMessage: "" });
-    // setAssessmentIsOpenError({ value: false, errorMessage: "" });
-    // setAssessmentStatusEnumError({ value: false, errorMessage: "" });
+    //   // setAssessmentIsOpenError({ value: false, errorMessage: "" });
+    //   // setAssessmentStatusEnumError({ value: false, errorMessage: "" });
     if (assessmentTitle == "") {
       setAssessmentTitleError({
         value: true,
@@ -478,7 +484,7 @@ function TeachingAssessmentList(props) {
               severity="success"
               sx={{ width: "100%" }}
             >
-              Assessment Created Succesfully!
+              Assessment Created Successfully!
             </Alert>
           </Snackbar>
           <Snackbar
@@ -529,21 +535,38 @@ function TeachingAssessmentList(props) {
               Assessments
             </LinkMaterial>
           </Breadcrumbs>
+
           <div style={{ justifyContent: "center" }}>
             <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
               List of Assessments
             </h1>
-            <Button
-              className="btn-upload"
-              color="primary"
-              variant="contained"
-              component="span"
-              onClick={handleClickOpen}
-              style={{ float: "right", marginLeft: "auto" }}
+            <Grid
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyItems: "flex-end",
+              }}
             >
-              Create New Assessment
-            </Button>
+              <Button
+                className="btn-upload"
+                color="primary"
+                variant="contained"
+                component="span"
+                onClick={handleClickOpen}
+                style={{ float: "right", marginLeft: "auto" }}
+              >
+                Create New Document Submission
+              </Button>
+
+              <Link to={`${assessmentsPath}/createQuiz`}>
+                <Button variant="contained" type="submit">
+                  Create new Quiz
+                </Button>
+              </Link>
+            </Grid>
           </div>
+
+          {/* table is here */}
           <div style={{ padding: "5%" }}>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -569,17 +592,17 @@ function TeachingAssessmentList(props) {
                         <Link
                           to={`${assessmentsPath}/${assessment.assessmentId}`}
                           state={{
-                            assessmentTitle: assessment.assessmentTitle,
+                            assessmentTitle: assessment.title,
                           }}
                           style={{ textDecoration: "none" }}
                         >
-                          {assessment.assessmentTitle}
+                          {assessment.title}
                         </Link>
                       </TableCell>
-                      <TableCell>{assessment.assessmentMaxScore}</TableCell>
-                      <TableCell>{assessment.assessmentStartDate}</TableCell>
-                      <TableCell>{assessment.assessmentEndDate}</TableCell>
-                      <TableCell>{" File Submission "}</TableCell>
+                      <TableCell>{assessment.maxScore}</TableCell>
+                      <TableCell>{assessment.startDate}</TableCell>
+                      <TableCell>{assessment.endDate}</TableCell>
+                      <TableCell>{assessment.assessmentType}</TableCell>
                       {/* <TableCell>{assessment.assessmentIsOpen}</TableCell> */}
                       <TableCell>
                         <div>

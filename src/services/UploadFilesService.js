@@ -7,7 +7,14 @@ class UploadFilesService {
     const fileURL = "";
     const fileType = "";
     const fileSize = "";
-    const attachment = { attachmentId, fileOriginalName, fileStorageName, fileURL, fileType, fileSize }
+    const attachment = {
+      attachmentId,
+      fileOriginalName,
+      fileStorageName,
+      fileURL,
+      fileType,
+      fileSize,
+    };
     let formData = new FormData();
     formData.append("file", file);
     return http.post("/uploadFile", formData, {
@@ -26,7 +33,14 @@ class UploadFilesService {
     const fileURL = "";
     const fileType = "";
     const fileSize = "";
-    const attachment = { attachmentId, fileOriginalName, fileStorageName, fileURL, fileType, fileSize }
+    const attachment = {
+      attachmentId,
+      fileOriginalName,
+      fileStorageName,
+      fileURL,
+      fileType,
+      fileSize,
+    };
     let formData = new FormData();
     formData.append("file", file);
     return http.post("/uploadFileToFolder?folderId=" + folderId, formData, {
@@ -36,6 +50,36 @@ class UploadFilesService {
       body: JSON.stringify(attachment),
       onUploadProgress,
     });
+  }
+
+  uploadAttachmentToFileSubmission(fileSubmissionId, file, onUploadProgress) {
+    const attachmentId = "";
+    const fileOriginalName = "";
+    const fileStorageName = "";
+    const fileURL = "";
+    const fileType = "";
+    const fileSize = "";
+    const attachment = {
+      attachmentId,
+      fileOriginalName,
+      fileStorageName,
+      fileURL,
+      fileType,
+      fileSize,
+    };
+    let formData = new FormData();
+    formData.append("file", file);
+    return http.post(
+      "/uploadAttachmentToFileSubmission?fileSubmissionId=" + fileSubmissionId,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        body: JSON.stringify(attachment),
+        onUploadProgress,
+      }
+    );
   }
 }
 export default new UploadFilesService();
