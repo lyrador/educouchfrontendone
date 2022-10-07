@@ -107,6 +107,17 @@ export default function CreateQuizForm(props) {
     }
   }
 
+  function editQuestionMaxPoints(questionId, questionMaxPoints) {
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.id == questionId
+    );
+    if (questionIndex > -1) {
+      tempFormQuestions[questionIndex].questionMaxPoints = questionMaxPoints;
+      setFormQuestions(tempFormQuestions);
+    }
+  }
+
   function addQuestionOption(questionId, option) {
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
@@ -126,6 +137,7 @@ export default function CreateQuizForm(props) {
       questionTitle: "Question " + questionNumber,
       questionType: "shortAnswer",
       questionContent: "Type Question Body here...",
+      questionMaxPoints: "",
       options: [],
     };
     setFormQuestions([...formQuestions, question]);
@@ -232,7 +244,7 @@ export default function CreateQuizForm(props) {
             </Modal>
           </Grid>
           {formQuestions.length == 0 && (
-            <Paper elevation={3} style={{ padding: 30, marginTop: 50}}>
+            <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
               <h3>Currently no questions!</h3>
               <br />
               <p>Start adding questions by clicking on "Add Question" Button</p>
@@ -258,7 +270,7 @@ export default function CreateQuizForm(props) {
 
           <Grid
             container
-            style={{ marginBottom: 90, marginTop: 20}}
+            style={{ marginBottom: 90, marginTop: 20 }}
             direction="row"
             justifyContent={"space-between"}
           >
@@ -276,7 +288,7 @@ export default function CreateQuizForm(props) {
             container
             direction="row"
             justifyContent={"space-between"}
-            style={{marginTop: "80px" }}
+            style={{ marginTop: "80px" }}
           >
             <Button variant="contained" onClick={handleCancel}>
               Cancel

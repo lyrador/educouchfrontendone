@@ -7,7 +7,9 @@ import QuizTitleComponent from "./QuizTitleComponent";
 import QuizTypeDropdownComponent from "./QuizTypeDropdownComponent";
 import ShortAnswerComponent from "./ShortAnswerComponent";
 import TrueFalseComponent from "./TrueFalseComponent";
-import DeleteIcon from '@mui/icons-material/Delete';export default function QuizQuestionComponent(props) {
+import DeleteIcon from "@mui/icons-material/Delete";
+import QuestionMaxPoints from "./QuestionMaxPoints";
+export default function QuizQuestionComponent(props) {
   const [question, setQuestion] = useState(props.questionProp);
   const [index, setIndex] = useState(props.indexProp);
   const [onEdit, setOnEdit] = useState(false);
@@ -65,7 +67,12 @@ import DeleteIcon from '@mui/icons-material/Delete';export default function Quiz
             </div>
           )}
         </Grid>
-        <Grid item style={{ marginTop: 50, marginLeft: -9 }}>
+        <Grid item style={{ marginTop: 50,}}>
+          <QuestionMaxPoints
+            questionIdProp={props.questionProp.id}
+            questionMaxPointsProp={props.questionProp.questionMaxPoints}
+            editQuestionContentProp={props.editQuestionContentProp}
+          />
           <Button
             onClick={() => props.removeQuestionProp(props.questionProp.id)}
             color="secondary"
