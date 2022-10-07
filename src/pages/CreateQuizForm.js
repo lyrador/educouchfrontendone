@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Container } from "@mui/system";
 import { useAuth } from "../context/AuthProvider";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import LinkMaterial from "@mui/material/Link";
 
 import {
@@ -23,6 +23,7 @@ import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsCom
 
 export default function CreateQuizForm(props) {
   const location = useLocation();
+  const navgiate = useNavigate();
   const assessmentsPath = location.state.assessmentsPathProp;
   const createAssessmentPath = location.state.createAssessmentPathProp;
   const createQuizFormPath = location.pathname;
@@ -32,7 +33,7 @@ export default function CreateQuizForm(props) {
 
   React.useEffect(() => {
     currentQuiz.questions = formQuestions;
-  },[])
+  }, []);
 
   const [open, setOpen] = React.useState(false);
   function handleOpenSettingsDialogue() {
@@ -45,14 +46,23 @@ export default function CreateQuizForm(props) {
 
   //need function to link questions to quiz prop
 
-  function editQuizSettings(title, description, maxScore, startDate, endDate, hasTimeLimit, timeLimit, isAutoRelease) {
+  function editQuizSettings(
+    title,
+    description,
+    maxScore,
+    startDate,
+    endDate,
+    hasTimeLimit,
+    timeLimit,
+    isAutoRelease
+  ) {
     currentQuiz.assessmentTitle = title;
     currentQuiz.assessmentDescription = description;
     currentQuiz.assessmentMaxScore = maxScore;
     currentQuiz.assessmentStartDate = startDate;
     currentQuiz.assessmentEndDate = endDate;
     currentQuiz.hasTimeLimit = hasTimeLimit;
-    currentQuiz.timeLimit = timeLimit
+    currentQuiz.timeLimit = timeLimit;
     currentQuiz.isAutoRelease = isAutoRelease;
   }
 
@@ -142,7 +152,9 @@ export default function CreateQuizForm(props) {
     //   .then(props.closeModalProp())
     //   .then(props.refreshProp());
   };
-
+  const handleCancel = (e) => {
+   navgiate(`${assessmentsPath}`) 
+  }
   return (
     <Grid container spacing={0}>
       <Grid item xs={2}>
@@ -245,9 +257,9 @@ export default function CreateQuizForm(props) {
           </Grid>
 
           <Grid container direction="row" justifyContent={"space-between"}>
-            <Link to={assessmentsPath}>
-              <Button variant="contained">Cancel</Button>
-            </Link>
+            <Button variant="contained" onClick={handleCancel}>
+              Cancel
+            </Button>
             <Button variant="contained" onClick={handleSave}>
               Submit
             </Button>

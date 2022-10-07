@@ -13,7 +13,7 @@ import React, { useState } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
-import { SettingsOutlined } from "@mui/icons-material";
+import { Padding, SettingsOutlined } from "@mui/icons-material";
 
 export default function QuizSettingsComponents(props) {
   const paperStyle = { padding: "50px 20px", width: 1200, margin: "20px auto" };
@@ -164,7 +164,7 @@ export default function QuizSettingsComponents(props) {
         timeLimit,
         isAutoRelease
       );
-      handleCancel()
+      handleCancel();
     } else {
       console.log("did not pass the vibe check");
     }
@@ -182,45 +182,56 @@ export default function QuizSettingsComponents(props) {
     <Box component="form">
       <Container>
         <Paper elevation={3} style={paperStyle}>
-          <h1> quiz settings dis 1</h1>
+          <h3
+            style={{
+              backgroundColor: "#1975D2",
+              fontSize: "30px",
+              marginBottom: "40px",
+              padding: "6px", }}
+          >
+            Quiz Settings{" "}
+          </h3>
+          <p style={{ color: "grey" }}>Quiz Title</p>
           <TextField
             required
             error={titleError.value}
             helperText={titleError.errorMessage}
             id="outlined-basic"
-            label="Quiz Title"
             variant="outlined"
             fullWidth
-            style={{ paddingBottom: "10px" }}
+            style={{ paddingBottom: "10px", marginBottom: "20px" }}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
+          <p style={{ color: "grey" }}>Quiz Description</p>
           <TextField
             multiline
             required
             error={descriptionError.value}
             helperText={descriptionError.errorMessage}
             id="outlined-basic"
-            label="Quiz Description"
             variant="outlined"
             fullWidth
-            style={{ paddingBottom: "10px" }}
+            style={{ paddingBottom: "10px", marginBottom: "20px" }}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+          <p style={{ color: "grey" }}>Quiz Max Score</p>
           <TextField
             required
             error={maxScoreError.value}
             helperText={maxScoreError.errorMessage}
             id="outlined-basic"
-            label="Quiz Max Score"
             variant="outlined"
             fullWidth
-            style={{ paddingBottom: "10px" }}
+            style={{ paddingBottom: "10px", marginBottom: "20px" }}
             value={maxScore}
             onChange={(e) => setMaxScore(e.target.value)}
           />
-          <Stack spacing={1}>
+          <Stack
+            spacing={1}
+            style={{ paddingBottom: "10px", marginBottom: "20px" }}
+          >
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
                 label="Quiz Start Date"
@@ -259,9 +270,7 @@ export default function QuizSettingsComponents(props) {
             spacing={1}
             style={{ paddingBottom: "10px", marginTop: "20px" }}
           >
-            <InputLabel id="select-timeLimit-trueFalse">
-              Quiz Time Limit
-            </InputLabel>
+            <p style={{ color: "grey" }}>Quiz Time Limit</p>
             <Select
               id="select-trueFalse"
               value={hasTimeLimit}
@@ -281,11 +290,14 @@ export default function QuizSettingsComponents(props) {
               label="Time Limit in minutes"
               variant="outlined"
               fullWidth
-              style={{ paddingBottom: "10px", marginTop: "20px" }}
+              style={{
+                paddingBottom: "10px",
+                marginTop: "20px",
+                marginBottom: "20px",
+              }}
               value={timeLimit}
               defaultValue={timeLimit}
-              onChange={(e) => setTimeLimit(e.target.value)
-              }
+              onChange={(e) => setTimeLimit(e.target.value)}
             />
           )}
 
