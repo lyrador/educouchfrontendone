@@ -104,6 +104,15 @@ function TeachingClassRuns(props) {
         setOpenEditSnackbar(false);
     };
 
+    const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
+
+    const handleClickErrorSnackbar = () => { setOpenErrorSnackbar(true) };
+
+    const handleCloseErrorSnackbar = (event, reason) => {
+        if (reason === "clickaway") { return }
+        setOpenErrorSnackbar(false);
+    };
+
     const auth = useAuth();
     const user = auth.user;
 
@@ -119,6 +128,7 @@ function TeachingClassRuns(props) {
     const classRunsPath = location.pathname.split("/").slice(0, 4).join("/");
     const classEventsPath = location.pathname.split("/").slice(0, 5).join("/");
     const classRunName = location.state.classRunName;
+    var classRunNameDup = classRunName;
 
     const courseId = location.pathname.split("/")[2];
 
@@ -130,27 +140,30 @@ function TeachingClassRuns(props) {
     const offset = currentDate.getTimezoneOffset();
     currentDate = new Date(currentDate.getTime() + (offset * 60 * 1000));
 
-    // const systemDateToLocalDateConverter = (dateToConvert) => {
-    //     console.log(dateToConvert)
-    //     let date = new Date(dateToConvert)
-    //     const offset = date.getTimezoneOffset(); 
-    //     date = new Date(date.getTime() + (offset*60*1000)); 
-    //     return date.toISOString().split('T')[0]
-    // }
-
     const [newClassEventTitle, setNewClassEventTitle] = useState("");
     const [newClassEventDescription, setNewClassEventDescription] = useState("");
     const [newClassEventStartDateTime, setNewClassEventStartDateTime] = React.useState(dayjs(currentDate.toISOString().split('T')[0]));
     const [newClassEventEndDateTime, setNewClassEventEndDateTime] = React.useState(dayjs(currentDate.toISOString().split('T')[0]));
 
+    const [newClassEventTitleError, setNewClassEventTitleError] = useState({ value: false, errorMessage: '' })
+    const [newClassEventDescriptionError, setNewClassEventDescriptionError] = useState({ value: false, errorMessage: '' })
+    const [newClassEventStartDateTimeError, setNewClassEventStartDateTimeError] = useState({ value: false, errorMessage: '' })
+    const [newClassEventEndDateTimeError, setNewClassEventEndDateTimeError] = useState({ value: false, errorMessage: '' })
+
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [classEventIdToDelete, setClassEventIdToDelete] = useState("");
 
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+    const [editClassEventId, setEditClassEventId] = useState("");
     const [editClassEventTitle, setEditClassEventTitle] = useState("");
     const [editClassEventDescription, setEditClassEventDescription] = useState("");
     const [editClassEventStartDateTime, setEditClassEventStartDateTime] = React.useState(dayjs(currentDate.toISOString().split('T')[0]));
     const [editClassEventEndDateTime, setEditClassEventEndDateTime] = React.useState(dayjs(currentDate.toISOString().split('T')[0]));
+
+    const [editClassEventTitleError, setEditClassEventTitleError] = useState({ value: false, errorMessage: '' })
+    const [editClassEventDescriptionError, setEditClassEventDescriptionError] = useState({ value: false, errorMessage: '' })
+    const [editClassEventStartDateTimeError, setEditClassEventStartDateTimeError] = useState({ value: false, errorMessage: '' })
+    const [editClassEventEndDateTimeError, setEditClassEventEndDateTimeError] = useState({ value: false, errorMessage: '' })
 
     React.useEffect(() => {
         setRefreshPage(false);
@@ -162,19 +175,12 @@ function TeachingClassRuns(props) {
             });
     }, [refreshPage]);
 
-    // const [open, setOpen] = React.useState(false);
-
     const [openAddClassEvent, setOpenAddClassEvent] = React.useState(false);
 
     const ageGroups = [{ value: 'Adults', }, { value: 'Kids', }];
 
-    const handleClickOpenAddClassEvent = (event) => {
-        // setCourseCode1(courseCode);
-        // setCourseTitle1(courseTitle)
-        // setCourseDescription1(courseDescription)
-        // setCourseTimeline1(courseTimeline)
-        // setCourseMaxScore1(courseMaxScore)
-        // setAgeGroup1(ageGroup)
+    //add
+    const handleClickOpenAddClassEvent = () => {
         setOpenAddClassEvent(true);
     };
 
@@ -182,15 +188,13 @@ function TeachingClassRuns(props) {
         setOpenAddClassEvent(false);
     };
 
-    const handleClickOpen = () => {
-        setOpenAddClassEvent(true);
-    };
-
     const handleClose = () => {
         setOpenAddClassEvent(false);
     };
 
+    //edit
     const handleClickEditDialogOpen = (event, classEventId, classEventTitle, classEventNotes, classEventStartDateTime, classEventEndDateTime) => {
+        setEditClassEventId(classEventId)
         setEditClassEventTitle(classEventTitle)
         setEditClassEventDescription(classEventNotes)
         setEditClassEventStartDateTime(dayjs(classEventStartDateTime).local().format())
@@ -212,42 +216,122 @@ function TeachingClassRuns(props) {
         setDeleteDialogOpen(false);
     };
 
-    const createNewClassEvent = (e) => {
-        var title = newClassEventTitle;
-        var notes = newClassEventDescription;
-        var startDate = newClassEventStartDateTime;
-        var endDate = newClassEventEndDateTime;
-        var allDay = false;
-        var newClassEvent = { title, notes, startDate, endDate, allDay };
-        e.preventDefault();
-        fetch("http://localhost:8080/event/classRun/" + classRunId + "/events/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newClassEvent)
-        }).then(() => {
-            console.log("New Class Event created Successfully!");
-            setRefreshPage(true);
+    const createNewClassEvent = async (e) => {
+        setNewClassEventTitleError({ value: false, errorMessage: '' })
+        setNewClassEventDescriptionError({ value: false, errorMessage: '' })
+        setNewClassEventStartDateTimeError({ value: false, errorMessage: '' })
+        setNewClassEventEndDateTimeError({ value: false, errorMessage: '' })
+        if (newClassEventTitle == '') {
+            setNewClassEventTitleError({ value: true, errorMessage: 'Event title cannot be empty!' })
+        }
+        if (newClassEventDescription == '') {
+            setNewClassEventDescriptionError({ value: true, errorMessage: 'Event Description cannot be empty!' })
+        }
+        if (newClassEventStartDateTime == '') {
+            setNewClassEventStartDateTimeError({ value: true, errorMessage: 'Event Start DateTime cannot be empty!' })
+        }
+        if (newClassEventEndDateTime == '') {
+            setNewClassEventEndDateTimeError({ value: true, errorMessage: 'Event End DateTime cannot be empty!' })
+        }
+        if (dayjs(newClassEventStartDateTime).isValid() === false) {
+            setNewClassEventStartDateTimeError({ value: true, errorMessage: 'Invalid Start DateTime!' })
+        }
+        if (dayjs(newClassEventEndDateTime).isValid() === false) {
+            setNewClassEventEndDateTimeError({ value: true, errorMessage: 'Invalid End DateTime!' })
+        }
+        if (dayjs(newClassEventStartDateTime).isAfter(dayjs(newClassEventEndDateTime))) {
+            setNewClassEventStartDateTimeError({ value: true, errorMessage: 'End DateTime cannot be earlier than Start DateTime!' })
+            setNewClassEventEndDateTimeError({ value: true, errorMessage: 'End DateTime cannot be earlier than Start DateTime!' })
+        }
+        else if (newClassEventTitle && newClassEventDescription
+            && dayjs(newClassEventStartDateTime).isValid() && dayjs(newClassEventEndDateTime).isValid()) {
+            var title = newClassEventTitle;
+            var notes = newClassEventDescription;
+            var startDate = newClassEventStartDateTime;
+            var endDate = newClassEventEndDateTime;
+            var allDay = false;
+            var newClassEvent = { title, notes, startDate, endDate, allDay };
+            e.preventDefault();
+            try {
+                const response = await fetch("http://localhost:8080/event/classRun/" + classRunId + "/events/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newClassEvent)
+                });
+                console.log(response);
+                if (response.ok == false) {
+                    console.log("Error");
+                    handleClickErrorSnackbar()
+                } else {
+                    console.log("New Class Event created Successfully!");
+                    handleClickSnackbar()
+                }
+            } catch (err) {
+                console.log(err);
+                handleClickErrorSnackbar()
+            }
+            setRefreshPage(true)
             handleCloseAddClassEvent()
-        });
+        }
     };
 
-    const editClassEvent = (e) => {
-        var title = editClassEventTitle;
-        var notes = editClassEventDescription;
-        var startDate = editClassEventStartDateTime;
-        var endDate = editClassEventEndDateTime;
-        var allDay = false;
-        var editClassEvent = { title, notes, startDate, endDate, allDay };
-        e.preventDefault();
-        fetch("http://localhost:8080/event/classRun/" + classRunId + "/events/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(editClassEvent)
-        }).then(() => {
-            console.log("Class Event edited Successfully!");
-            setRefreshPage(true);
+    const editClassEvent = async (e) => {
+        setEditClassEventTitleError({ value: false, errorMessage: '' })
+        setEditClassEventDescriptionError({ value: false, errorMessage: '' })
+        setEditClassEventStartDateTimeError({ value: false, errorMessage: '' })
+        setEditClassEventEndDateTimeError({ value: false, errorMessage: '' })
+        if (editClassEventTitle == '') {
+            setEditClassEventTitleError({ value: true, errorMessage: 'Event title cannot be empty!' })
+        }
+        if (editClassEventDescription == '') {
+            setEditClassEventDescriptionError({ value: true, errorMessage: 'Event Description cannot be empty!' })
+        }
+        if (editClassEventStartDateTime == '') {
+            setEditClassEventStartDateTimeError({ value: true, errorMessage: 'Event Start DateTime cannot be empty!' })
+        }
+        if (editClassEventEndDateTime == '') {
+            setEditClassEventEndDateTimeError({ value: true, errorMessage: 'Event End DateTime cannot be empty!' })
+        }
+        if (dayjs(editClassEventStartDateTime).isValid() === false) {
+            setEditClassEventStartDateTimeError({ value: true, errorMessage: 'Invalid Start DateTime!' })
+        }
+        if (dayjs(editClassEventEndDateTime).isValid() === false) {
+            setEditClassEventEndDateTimeError({ value: true, errorMessage: 'Invalid End DateTime!' })
+        }
+        if (dayjs(editClassEventStartDateTime).isAfter(dayjs(editClassEventEndDateTime))) {
+            setEditClassEventStartDateTimeError({ value: true, errorMessage: 'End DateTime cannot be earlier than Start DateTime!' })
+            setEditClassEventEndDateTimeError({ value: true, errorMessage: 'End DateTime cannot be earlier than Start DateTime!' })
+        }
+        else if (editClassEventTitle && editClassEventDescription
+            && dayjs(editClassEventStartDateTime).isValid() && dayjs(editClassEventEndDateTime).isValid()) {
+            var title = editClassEventTitle;
+            var notes = editClassEventDescription;
+            var startDate = editClassEventStartDateTime;
+            var endDate = editClassEventEndDateTime;
+            var allDay = false;
+            var editClassEvent = { title, notes, startDate, endDate, allDay };
+            e.preventDefault();
+            try {
+                const response = await fetch("http://localhost:8080/event/events/" + editClassEventId, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(editClassEvent)
+                });
+                console.log(response)
+                if (response.ok == false) {
+                    console.log("Error");
+                    handleClickErrorSnackbar()
+                } else {
+                    console.log("Class Event edited Successfully!");
+                    handleClickEditSnackbar()
+                }
+            } catch (err) {
+                console.log(err);
+                handleClickErrorSnackbar()
+            }
+            setRefreshPage(true)
             handleEditDialogClose();
-        });
+        }
     };
 
     const deleteClassEvent = (e) => {
@@ -317,7 +401,20 @@ function TeachingClassRuns(props) {
                             severity="success"
                             sx={{ width: "100%" }}
                         >
-                            Class Events Updated Succesfully!
+                            Class Event Updated Succesfully!
+                        </Alert>
+                    </Snackbar>
+                    <Snackbar
+                        open={openErrorSnackbar}
+                        autoHideDuration={5000}
+                        onClose={handleCloseErrorSnackbar}
+                    >
+                        <Alert
+                            onClose={handleCloseErrorSnackbar}
+                            severity="error"
+                            sx={{ width: "100%" }}
+                        >
+                            Error!
                         </Alert>
                     </Snackbar>
                     <Breadcrumbs aria-label="breadcrumb">
@@ -328,6 +425,7 @@ function TeachingClassRuns(props) {
                             </LinkMaterial>
                         </Link>
                         <Link to={`${classEventsPath}`}
+                            state={{ classRunName: classRunNameDup }}
                             style={{ textDecoration: 'none', color: 'grey' }}>
                             <LinkMaterial underline="hover" color="inherit">
                                 {classRunName}
@@ -343,7 +441,7 @@ function TeachingClassRuns(props) {
                             color="primary"
                             variant="contained"
                             component="span"
-                            onClick={handleClickOpen}
+                            onClick={handleClickOpenAddClassEvent}
                             style={{ float: "right", marginLeft: "auto" }}
                         >
                             Create New Class Event
@@ -376,10 +474,10 @@ function TeachingClassRuns(props) {
                                             </TableCell>
                                             <TableCell align="right">{row.title}</TableCell>
                                             <TableCell align="right">{row.notes}</TableCell>
-                                            <TableCell align="right">{dayjs(row.startDate).local().format().substring(0,10)}</TableCell>
-                                            <TableCell align="right">{dayjs(row.startDate).local().format().substring(11,16)}</TableCell>
-                                            <TableCell align="right">{dayjs(row.endDate).local().format().substring(0,10)}</TableCell>
-                                            <TableCell align="right">{dayjs(row.endDate).local().format().substring(11,16)}</TableCell>
+                                            <TableCell align="right">{dayjs(row.startDate).local().format().substring(0, 10)}</TableCell>
+                                            <TableCell align="right">{dayjs(row.startDate).local().format().substring(11, 16)}</TableCell>
+                                            <TableCell align="right">{dayjs(row.endDate).local().format().substring(0, 10)}</TableCell>
+                                            <TableCell align="right">{dayjs(row.endDate).local().format().substring(11, 16)}</TableCell>
                                             <TableCell align="right">
                                                 <div>
                                                     <IconButton
@@ -424,12 +522,18 @@ function TeachingClassRuns(props) {
                             style={{ margin: '6px 0' }}
                             value={newClassEventTitle}
                             onChange={(e) => setNewClassEventTitle(e.target.value)}
+                            error={newClassEventTitleError.value}
+                            helperText={newClassEventTitleError.errorMessage}
+                            required
                         />
 
                         <TextField id="outlined-multiline-static" label="Class Event Description" multiline rows={6} fullWidth defaultValue=""
                             style={{ margin: '6px 0' }}
                             value={newClassEventDescription}
                             onChange={(e) => setNewClassEventDescription(e.target.value)}
+                            error={newClassEventDescriptionError.value}
+                            helperText={newClassEventDescriptionError.errorMessage}
+                            required
                         />
 
                         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
@@ -437,7 +541,10 @@ function TeachingClassRuns(props) {
                                 <DateTimePicker
                                     value={newClassEventStartDateTime}
                                     onChange={(newValue) => setNewClassEventStartDateTime(newValue)}
-                                    renderInput={(params) => <TextField {...params} />}
+                                    renderInput={(params) => <TextField {...params}
+                                        error={newClassEventStartDateTimeError.value}
+                                        helperText={newClassEventStartDateTimeError.errorMessage}
+                                        required />}
                                     ampm={false}
                                     label="Event Start Date Time"
                                 />
@@ -455,7 +562,10 @@ function TeachingClassRuns(props) {
                                 <DateTimePicker
                                     value={newClassEventEndDateTime}
                                     onChange={(newValue) => setNewClassEventEndDateTime(newValue)}
-                                    renderInput={(params) => <TextField {...params} />}
+                                    renderInput={(params) => <TextField {...params}
+                                        error={newClassEventEndDateTimeError.value}
+                                        helperText={newClassEventEndDateTimeError.errorMessage}
+                                        required />}
                                     ampm={false}
                                     label="Event End Date Time"
                                 />
@@ -501,12 +611,18 @@ function TeachingClassRuns(props) {
                             style={{ margin: '6px 0' }}
                             value={editClassEventTitle}
                             onChange={(e) => setEditClassEventTitle(e.target.value)}
+                            error={editClassEventTitleError.value}
+                            helperText={editClassEventTitleError.errorMessage}
+                            required
                         />
 
                         <TextField id="outlined-multiline-static" label="Class Event Description" multiline rows={6} fullWidth defaultValue=""
                             style={{ margin: '6px 0' }}
                             value={editClassEventDescription}
                             onChange={(e) => setEditClassEventDescription(e.target.value)}
+                            error={editClassEventDescriptionError.value}
+                            helperText={editClassEventDescriptionError.errorMessage}
+                            required
                         />
 
                         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
@@ -514,7 +630,10 @@ function TeachingClassRuns(props) {
                                 <DateTimePicker
                                     value={editClassEventStartDateTime}
                                     onChange={(newValue) => setEditClassEventStartDateTime(newValue)}
-                                    renderInput={(params) => <TextField {...params} />}
+                                    renderInput={(params) => <TextField {...params}
+                                        error={editClassEventStartDateTimeError.value}
+                                        helperText={editClassEventStartDateTimeError.errorMessage}
+                                        required />}
                                     ampm={false}
                                     label="Event Start Date Time"
                                 />
@@ -526,7 +645,10 @@ function TeachingClassRuns(props) {
                                 <DateTimePicker
                                     value={editClassEventEndDateTime}
                                     onChange={(newValue) => setEditClassEventEndDateTime(newValue)}
-                                    renderInput={(params) => <TextField {...params} />}
+                                    renderInput={(params) => <TextField {...params}
+                                        error={editClassEventEndDateTimeError.value}
+                                        helperText={editClassEventEndDateTimeError.errorMessage}
+                                        required />}
                                     ampm={false}
                                     label="Event End Date Time"
                                 />
@@ -535,8 +657,8 @@ function TeachingClassRuns(props) {
 
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={editClassEvent}>Create</Button>
+                        <Button onClick={handleEditDialogClose}>Cancel</Button>
+                        <Button onClick={editClassEvent}>Edit</Button>
                     </DialogActions>
                 </Dialog>
             </div>

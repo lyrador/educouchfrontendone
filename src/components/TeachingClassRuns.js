@@ -10,7 +10,7 @@ import Paper from "@mui/material/Paper";
 
 import { Link, useLocation, useParams } from "react-router-dom";
 import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
-import { Grid } from "@mui/material";
+import { Grid, MenuItem } from "@mui/material";
 
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
@@ -63,43 +63,39 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 function TeachingClassRuns(props) {
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
 
-    const handleClickSnackbar = () => {
-        setOpenSnackbar(true);
-    };
+    const handleClickSnackbar = () => { setOpenSnackbar(true) };
 
     const handleCloseSnackbar = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
+        if (reason === "clickaway") { return }
         setOpenSnackbar(false);
     };
 
     const [openDeleteSnackbar, setOpenDeleteSnackbar] = React.useState(false);
 
-    const handleClickDeleteSnackbar = () => {
-        setOpenDeleteSnackbar(true);
-    };
+    const handleClickDeleteSnackbar = () => { setOpenDeleteSnackbar(true) };
 
     const handleCloseDeleteSnackbar = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
+        if (reason === "clickaway") { return }
         setOpenDeleteSnackbar(false);
     };
 
     const [openEditSnackbar, setOpenEditSnackbar] = React.useState(false);
 
-    const handleClickEditSnackbar = () => {
-        setOpenEditSnackbar(true);
-    };
+    const handleClickEditSnackbar = () => { setOpenEditSnackbar(true) };
 
     const handleCloseEditSnackbar = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
+        if (reason === "clickaway") { return }
         setOpenEditSnackbar(false);
     };
 
+    const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
+
+    const handleClickErrorSnackbar = () => { setOpenErrorSnackbar(true) };
+
+    const handleCloseErrorSnackbar = (event, reason) => {
+        if (reason === "clickaway") { return }
+        setOpenErrorSnackbar(false);
+    };
 
 
     const auth = useAuth();
@@ -115,59 +111,17 @@ function TeachingClassRuns(props) {
     const [course, setCourse] = useState('')
 
     const [state, setState] = React.useState({
-        mon: false,
-        tue: false,
-        wed: false,
-        thu: false,
-        fri: false,
-        sat: false,
-        sun: false
+        mon: false, tue: false, wed: false, thu: false, fri: false, sat: false, sun: false
     });
 
     const { mon, tue, wed, thu, fri, sat, sun } = state;
-    const error = [mon, tue, wed, thu, fri, sat, sun].filter((v) => v).length < 1;
+    // const error = [mon, tue, wed, thu, fri, sat, sun].filter((v) => v).length < 1;
 
     const handleChange = (event) => {
         setState({
             ...state,
             [event.target.name]: event.target.checked,
         });
-        // setClassRunDaysOfTheWeek(daysArray)
-    };
-
-    // const [forumTitleError, setForumTitleError] = useState({
-    //     value: false,
-    //     errorMessage: "",
-    // });
-
-    const [classRuns, setClassRuns] = useState([])
-    const [classRunId, setClassRunId] = useState("");
-    const [classRunStartDateNonString, setClassRunStartDateNonString] = useState("");
-    const [classRunEndDateNonString, setClassRunEndDateNonString] = useState("");
-    const [classRunStartTimeNonString, setClassRunStartTimeNonString] = useState("");
-    const [classRunEndTimeNonString, setClassRunEndTimeNonString] = useState("");
-    const [minClassSize, setMinClassSize] = useState("");
-    const [maximumCapacity, setMaximumCapacity] = useState("");
-    const [classRunDaysOfTheWeek, setClassRunDaysOfTheWeek] = useState([]);
-    const [recurringEnumString, setRecurringEnumString] = useState("");
-    const [calendarId, setCalendarId] = useState("");
-    const [instructorUsername, setInstructorUsername] = useState("");
-    const [classRunName, setClassRunName] = useState("");
-    const [classRunDescription, setClassRunDescription] = useState("");
-
-    const [classRunIdToDelete, setClassRunIdToDelete] = useState("");
-    const [classRunIdToGenerate, setClassRunIdToGenerate] = useState("");
-
-    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-
-    const handleClickDeleteDialogOpen = (event, classRunId) => {
-        setClassRunIdToDelete(classRunId);
-        setDeleteDialogOpen(true);
-    };
-
-    const handleDeleteDialogClose = () => {
-        setDeleteDialogOpen(false);
     };
 
     React.useEffect(() => {
@@ -180,19 +134,41 @@ function TeachingClassRuns(props) {
             });
     }, [refreshPage]);
 
-    // const [open, setOpen] = React.useState(false);
+    const [classRuns, setClassRuns] = useState([])
+    const [classRunStartDateNonString, setClassRunStartDateNonString] = useState("");
+    const [classRunEndDateNonString, setClassRunEndDateNonString] = useState("");
+    const [classRunStartTimeNonString, setClassRunStartTimeNonString] = useState("");
+    const [classRunEndTimeNonString, setClassRunEndTimeNonString] = useState("");
+    const [minClassSize, setMinClassSize] = useState("");
+    const [maximumCapacity, setMaximumCapacity] = useState("");
+    const [recurringEnumString, setRecurringEnumString] = useState("");
+    const [calendarId, setCalendarId] = useState("");
+    const [instructorUsername, setInstructorUsername] = useState("");
+    const [classRunName, setClassRunName] = useState("");
+    const [classRunDescription, setClassRunDescription] = useState("");
 
+    const [classRunStartDateNonStringError, setClassRunStartDateNonStringError] = useState({ value: false, errorMessage: '' })
+    const [classRunEndDateNonStringError, setClassRunEndDateNonStringError] = useState({ value: false, errorMessage: '' })
+    const [classRunStartTimeNonStringError, setClassRunStartTimeNonStringError] = useState({ value: false, errorMessage: '' })
+    const [classRunEndTimeNonStringError, setClassRunEndTimeNonStringError] = useState({ value: false, errorMessage: '' })
+    const [minClassSizeError, setMinClassSizeError] = useState({ value: false, errorMessage: '' })
+    const [maximumCapacityError, setMaximumCapacityError] = useState({ value: false, errorMessage: '' })
+    const [recurringEnumStringError, setRecurringEnumStringError] = useState({ value: false, errorMessage: '' })
+    const [calendarIdError, setCalendarIdError] = useState({ value: false, errorMessage: '' })
+    const [instructorUsernameError, setInstructorUsernameError] = useState({ value: false, errorMessage: '' })
+    const [classRunNameError, setClassRunNameError] = useState({ value: false, errorMessage: '' })
+    const [classRunDescriptionError, setClassRunDescriptionError] = useState({ value: false, errorMessage: '' })
+
+    //add
     const [openAddClassRun, setOpenAddClassRun] = React.useState(false);
 
-    const ageGroups = [{ value: 'Adults', }, { value: 'Kids', }];
+    const recurringEnums = [{ value: 'WEEKLY', }, { value: 'ALTERNATE', }, { value: 'CUSTOM', }];
 
-    const handleClickOpenAddClassRun = (event, courseId) => {
-        // setCourseCode1(courseCode);
-        // setCourseTitle1(courseTitle)
-        // setCourseDescription1(courseDescription)
-        // setCourseTimeline1(courseTimeline)
-        // setCourseMaxScore1(courseMaxScore)
-        // setAgeGroup1(ageGroup)
+    const handleChangeRecurringEnumString = (event) => {
+        setRecurringEnumString(event.target.value);
+    };
+
+    const handleClickOpenAddClassRun = () => {
         setOpenAddClassRun(true);
     };
 
@@ -200,26 +176,264 @@ function TeachingClassRuns(props) {
         setOpenAddClassRun(false);
     };
 
-    const handleClickOpen = () => {
-        setOpenAddClassRun(true);
+    //delete
+    const [classRunIdToDelete, setClassRunIdToDelete] = useState("");
+    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+
+    const handleClickDeleteDialogOpen = (event, classRunId) => {
+        setClassRunIdToDelete(classRunId);
+        setDeleteDialogOpen(true);
     };
 
-    const handleClose = () => {
-        setOpenAddClassRun(false);
+    const handleDeleteDialogClose = () => {
+        setDeleteDialogOpen(false);
     };
 
-    // const handleClickEditDialogOpen = (event, forumId, forumTitle) => {
-    //     setEditForumTitle(forumTitle);
-    //     setForumIdToEdit(forumId);
-    //     setEditDialogOpen(true);
-    // };
+    //edit
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+    const [confirmEditDialogOpen, setConfirmEditDialogOpen] = React.useState(false);
+
+    const handleConfirmEditDialogOpen = () => {
+        setEditClassRunStartDateNonStringError({ value: false, errorMessage: '' })
+        setEditClassRunEndDateNonStringError({ value: false, errorMessage: '' })
+        setEditClassRunStartTimeNonStringError({ value: false, errorMessage: '' })
+        setEditClassRunEndTimeNonStringError({ value: false, errorMessage: '' })
+        setEditMinClassSizeError({ value: false, errorMessage: '' })
+        setEditMaximumCapacityError({ value: false, errorMessage: '' })
+        setEditRecurringEnumStringError({ value: false, errorMessage: '' })
+        setEditInstructorUsernameError({ value: false, errorMessage: '' })
+        setEditClassRunNameError({ value: false, errorMessage: '' })
+        setEditClassRunDescriptionError({ value: false, errorMessage: '' })
+        if (editClassRunStartDateNonString == '') {
+            setEditClassRunStartDateNonStringError({ value: true, errorMessage: 'Start Date cannot be empty!' })
+        }
+        if (editClassRunEndDateNonString == '') {
+            setEditClassRunEndDateNonStringError({ value: true, errorMessage: 'End Date cannot be empty!' })
+        }
+        if (editClassRunStartTimeNonString == '') {
+            setEditClassRunStartTimeNonStringError({ value: true, errorMessage: 'Start Time cannot be empty!' })
+        }
+        if (editClassRunEndTimeNonString == '') {
+            setEditClassRunEndTimeNonStringError({ value: true, errorMessage: 'End Time cannot be empty!' })
+        }
+        if (editMinClassSize == '') {
+            setEditMinClassSizeError({ value: true, errorMessage: 'Min Size cannot be empty!' })
+        }
+        if (editMinClassSize < 0) {
+            setEditMinClassSizeError({ value: true, errorMessage: 'Min Size cannot be a negative number!' })
+        }
+        if (editMaximumCapacity == '') {
+            setEditMaximumCapacityError({ value: true, errorMessage: 'Max Capacity cannot be empty!' })
+        }
+        if (editMaximumCapacity < 0) {
+            setEditMaximumCapacityError({ value: true, errorMessage: 'Max Capacity cannot be a negative number!' })
+        }
+        if (editRecurringEnumString == '') {
+            setEditRecurringEnumStringError({ value: true, errorMessage: 'Recurring Frequency cannot be empty!' })
+        }
+        if (editInstructorUsername == '') {
+            setEditInstructorUsernameError({ value: true, errorMessage: 'Instructor Username cannot be empty!' })
+        }
+        if (editClassRunName == '') {
+            setEditClassRunNameError({ value: true, errorMessage: 'Classrun Name cannot be empty!' })
+        }
+        if (editClassRunDescription == '') {
+            setEditClassRunDescriptionError({ value: true, errorMessage: 'Classrun Description cannot be empty!' })
+        }
+
+        if (dayjs(editClassRunStartDateNonString).isValid() === false) {
+            setEditClassRunStartDateNonStringError({ value: true, errorMessage: 'Invalid Start Date!' })
+        }
+        if (dayjs(editClassRunEndDateNonString).isValid() === false) {
+            setEditClassRunEndDateNonStringError({ value: true, errorMessage: 'Invalid End Date!' })
+        }
+        if (dayjs(editClassRunStartTimeNonString).isValid() === false) {
+            setEditClassRunStartTimeNonStringError({ value: true, errorMessage: 'Invalid Start Time!' })
+        }
+        if (dayjs(editClassRunEndTimeNonString).isValid() === false) {
+            setEditClassRunEndTimeNonStringError({ value: true, errorMessage: 'Invalid End Time!' })
+        }
+        if (dayjs(editClassRunStartDateNonString).isAfter(dayjs(editClassRunEndDateNonString))) {
+            setEditClassRunStartDateNonStringError({ value: true, errorMessage: 'End Date cannot be earlier than Start Date!' })
+            setEditClassRunEndDateNonStringError({ value: true, errorMessage: 'End Date cannot be earlier than Start Date!' })
+        }
+        else if (dayjs(editClassRunStartDateNonString).isSame(dayjs(editClassRunEndDateNonString)) && dayjs(editClassRunStartTimeNonString).isAfter(dayjs(editClassRunEndTimeNonString))) {
+            setEditClassRunStartTimeNonStringError({ value: true, errorMessage: 'End Time cannot be earlier than Start Time!' })
+            setEditClassRunEndTimeNonStringError({ value: true, errorMessage: 'End Time cannot be earlier than Start Time!' })
+        }
+        else if (editClassRunStartDateNonString && editClassRunEndDateNonString && editClassRunStartTimeNonString && editClassRunEndTimeNonString
+            && editMinClassSize && editMaximumCapacity && editRecurringEnumString && editInstructorUsername && editClassRunName && editClassRunDescription
+            && editMinClassSize >= 0 && editMaximumCapacity >= 0 && dayjs(editClassRunStartDateNonString).isValid() && dayjs(editClassRunEndDateNonString).isValid()
+            && dayjs(editClassRunStartTimeNonString).isValid() && dayjs(editClassRunEndTimeNonString).isValid()) {
+                setConfirmEditDialogOpen(true);
+        }
+    };
+
+    const handleConfirmEditDialogClose = () => {
+        setConfirmEditDialogOpen(false);
+    };
+
+    const [editClassRunId, setEditClassRunId] = useState("");
+    const [editClassRunStartDateNonString, setEditClassRunStartDateNonString] = useState("");
+    const [editClassRunEndDateNonString, setEditClassRunEndDateNonString] = useState("");
+    const [editClassRunStartTimeNonString, setEditClassRunStartTimeNonString] = useState("");
+    const [editClassRunEndTimeNonString, setEditClassRunEndTimeNonString] = useState("");
+    const [editMinClassSize, setEditMinClassSize] = useState("");
+    const [editMaximumCapacity, setEditMaximumCapacity] = useState("");
+    const [editClassRunDaysOfTheWeek, setEditClassRunDaysOfTheWeek] = useState([]);
+    const [editRecurringEnumString, setEditRecurringEnumString] = useState("");
+    const [editCalendarId, setEditCalendarId] = useState("");
+    const [editInstructorUsername, setEditInstructorUsername] = useState("");
+    const [editClassRunName, setEditClassRunName] = useState("");
+    const [editClassRunDescription, setEditClassRunDescription] = useState("");
+
+    const [editClassRunStartDateNonStringError, setEditClassRunStartDateNonStringError] = useState({ value: false, errorMessage: '' })
+    const [editClassRunEndDateNonStringError, setEditClassRunEndDateNonStringError] = useState({ value: false, errorMessage: '' })
+    const [editClassRunStartTimeNonStringError, setEditClassRunStartTimeNonStringError] = useState({ value: false, errorMessage: '' })
+    const [editClassRunEndTimeNonStringError, setEditClassRunEndTimeNonStringError] = useState({ value: false, errorMessage: '' })
+    const [editMinClassSizeError, setEditMinClassSizeError] = useState({ value: false, errorMessage: '' })
+    const [editMaximumCapacityError, setEditMaximumCapacityError] = useState({ value: false, errorMessage: '' })
+    const [editRecurringEnumStringError, setEditRecurringEnumStringError] = useState({ value: false, errorMessage: '' })
+    const [editCalendarIdError, setEditCalendarIdError] = useState({ value: false, errorMessage: '' })
+    const [editInstructorUsernameError, setEditInstructorUsernameError] = useState({ value: false, errorMessage: '' })
+    const [editClassRunNameError, setEditClassRunNameError] = useState({ value: false, errorMessage: '' })
+    const [editClassRunDescriptionError, setEditClassRunDescriptionError] = useState({ value: false, errorMessage: '' })
+
+    const [editMon, setEditMon] = React.useState(false);
+    const [editTue, setEditTue] = React.useState(false);
+    const [editWed, setEditWed] = React.useState(false);
+    const [editThu, setEditThu] = React.useState(false);
+    const [editFri, setEditFri] = React.useState(false);
+    const [editSat, setEditSat] = React.useState(false);
+    const [editSun, setEditSun] = React.useState(false);
+
+    const handleChangeEditRecurringEnumString = (event) => {
+        setEditRecurringEnumString(event.target.value);
+    };
+
+    const handleChangeEditMon = (event) => {
+        if (editMon === true) { setEditMon(false) } else { setEditMon(true) }
+    };
+
+    const handleChangeEditTue = (event) => {
+        if (editTue === true) { setEditTue(false) } else { setEditTue(true) }
+    };
+
+    const handleChangeEditWed = (event) => {
+        if (editWed === true) { setEditWed(false) } else { setEditWed(true) }
+    };
+
+    const handleChangeEditThu = (event) => {
+        if (editThu === true) { setEditThu(false) } else { setEditThu(true) }
+    };
+
+    const handleChangeEditFri = (event) => {
+        if (editFri === true) { setEditFri(false) } else { setEditFri(true) }
+    };
+
+    const handleChangeEditSat = (event) => {
+        if (editSat === true) { setEditSat(false) } else { setEditSat(true) }
+    };
+
+    const handleChangeEditSun = (event) => {
+        if (editSun === true) { setEditSun(false) } else { setEditSun(true) }
+    };
+
+    const editError = [editMon, editTue, editWed, editThu, editFri, editSat, editSun].filter((v) => v).length < 1;
+
+    const handleClickEditDialogOpen = (event, classRunId, classRunName, classRunDescription, classRunStart, classRunEnd, classRunStartTime,
+        classRunEndTime, minClassSize, maximumCapacity, classRunDaysOfTheWeek, recurringEnumString, instructorUsername) => {
+        setEditClassRunId(classRunId)
+        setEditClassRunStartDateNonString(classRunStart)
+        setEditClassRunEndDateNonString(classRunEnd)
+        var fullStartDateTimeString = classRunStart + " " + classRunStartTime + ":00"
+        setEditClassRunStartTimeNonString(dayjs(fullStartDateTimeString))
+        var fullEndDateTimeString = classRunEnd + " " + classRunEndTime + ":00"
+        setEditClassRunEndTimeNonString(dayjs(fullEndDateTimeString))
+        setEditMinClassSize(minClassSize)
+        setEditMaximumCapacity(maximumCapacity)
+        setEditClassRunDaysOfTheWeek(classRunDaysOfTheWeek)
+        for (var i = 0; i < classRunDaysOfTheWeek.length; i++) {
+            if (classRunDaysOfTheWeek[i] === 0) { setEditSun(true) }
+            if (classRunDaysOfTheWeek[i] === 1) { setEditMon(true) }
+            if (classRunDaysOfTheWeek[i] === 2) { setEditTue(true) }
+            if (classRunDaysOfTheWeek[i] === 3) { setEditWed(true) }
+            if (classRunDaysOfTheWeek[i] === 4) { setEditThu(true) }
+            if (classRunDaysOfTheWeek[i] === 5) { setEditFri(true) }
+            if (classRunDaysOfTheWeek[i] === 6) { setEditSat(true) }
+        }
+        console.log(classRunDaysOfTheWeek)
+        setEditRecurringEnumString(recurringEnumString)
+        setEditInstructorUsername(instructorUsername)
+        setEditClassRunName(classRunName)
+        setEditClassRunDescription(classRunDescription)
+        
+        setEditClassRunStartDateNonStringError({ value: false, errorMessage: '' })
+        setEditClassRunEndDateNonStringError({ value: false, errorMessage: '' })
+        setEditClassRunStartTimeNonStringError({ value: false, errorMessage: '' })
+        setEditClassRunEndTimeNonStringError({ value: false, errorMessage: '' })
+        setEditMinClassSizeError({ value: false, errorMessage: '' })
+        setEditMaximumCapacityError({ value: false, errorMessage: '' })
+        setEditRecurringEnumStringError({ value: false, errorMessage: '' })
+        setEditInstructorUsernameError({ value: false, errorMessage: '' })
+        setEditClassRunNameError({ value: false, errorMessage: '' })
+        setEditClassRunDescriptionError({ value: false, errorMessage: '' })
+
+        setEditDialogOpen(true);
+    };
 
     const handleEditDialogClose = () => {
         setEditDialogOpen(false);
     };
 
-    const createClassRun = (e) => {
+    const createClassRun = async (e) => {
         e.preventDefault()
+        setClassRunStartDateNonStringError({ value: false, errorMessage: '' })
+        setClassRunEndDateNonStringError({ value: false, errorMessage: '' })
+        setClassRunStartTimeNonStringError({ value: false, errorMessage: '' })
+        setClassRunEndTimeNonStringError({ value: false, errorMessage: '' })
+        setMinClassSizeError({ value: false, errorMessage: '' })
+        setMaximumCapacityError({ value: false, errorMessage: '' })
+        setRecurringEnumStringError({ value: false, errorMessage: '' })
+        setInstructorUsernameError({ value: false, errorMessage: '' })
+        setClassRunNameError({ value: false, errorMessage: '' })
+        setClassRunDescriptionError({ value: false, errorMessage: '' })
+        if (classRunStartDateNonString == '') {
+            setClassRunStartDateNonStringError({ value: true, errorMessage: 'Start Date cannot be empty!' })
+        }
+        if (classRunEndDateNonString == '') {
+            setClassRunEndDateNonStringError({ value: true, errorMessage: 'End Date cannot be empty!' })
+        }
+        if (classRunStartTimeNonString == '') {
+            setClassRunStartTimeNonStringError({ value: true, errorMessage: 'Start Time cannot be empty!' })
+        }
+        if (classRunEndTimeNonString == '') {
+            setClassRunEndTimeNonStringError({ value: true, errorMessage: 'End Time cannot be empty!' })
+        }
+        if (minClassSize == '') {
+            setMinClassSizeError({ value: true, errorMessage: 'Min Size cannot be empty!' })
+        }
+        if (minClassSize < 0) {
+            setMinClassSizeError({ value: true, errorMessage: 'Min Size cannot be a negative number!' })
+        }
+        if (maximumCapacity == '') {
+            setMaximumCapacityError({ value: true, errorMessage: 'Max Capacity cannot be empty!' })
+        }
+        if (maximumCapacity < 0) {
+            setMaximumCapacityError({ value: true, errorMessage: 'Max Capacity cannot be a negative number!' })
+        }
+        if (recurringEnumString == '') {
+            setRecurringEnumStringError({ value: true, errorMessage: 'Recurring Frequency cannot be empty!' })
+        }
+        if (instructorUsername == '') {
+            setInstructorUsernameError({ value: true, errorMessage: 'Instructor Username cannot be empty!' })
+        }
+        if (classRunName == '') {
+            setClassRunNameError({ value: true, errorMessage: 'Classrun Name cannot be empty!' })
+        }
+        if (classRunDescription == '') {
+            setClassRunDescriptionError({ value: true, errorMessage: 'Classrun Description cannot be empty!' })
+        }
         var daysArray = new Array()
         if (sun === true) { daysArray.push(0) }
         if (mon === true) { daysArray.push(1) }
@@ -228,51 +442,190 @@ function TeachingClassRuns(props) {
         if (thu === true) { daysArray.push(4) }
         if (fri === true) { daysArray.push(5) }
         if (sat === true) { daysArray.push(6) }
-        console.log(daysArray)
         var classRunDaysOfTheWeek = daysArray
-        var classRunStartTime = classRunStartTimeNonString.format("HH:mm")
-        var classRunEndTime = classRunEndTimeNonString.format("HH:mm")
-        var classRunStart = classRunStartDateNonString.format("YYYY-MM-DD")
-        var classRunEnd = classRunEndDateNonString.format("YYYY-MM-DD")
+        var classRunStartTime = ""
+        var classRunEndTime = ""
+        var classRunStart = ""
+        var classRunEnd = ""
+        if (classRunStartTimeNonString) {
+            classRunStartTime = classRunStartTimeNonString.format("HH:mm")
+        }
+        if (classRunEndTimeNonString) {
+            classRunEndTime = classRunEndTimeNonString.format("HH:mm")
+        }
+        if (classRunStartDateNonString) {
+            classRunStart = classRunStartDateNonString.format("YYYY-MM-DD")
+        }
+        if (classRunEndDateNonString) {
+            classRunEnd = classRunEndDateNonString.format("YYYY-MM-DD")
+        }
         const newClassRun = {
             classRunName, classRunDescription, classRunDaysOfTheWeek,
             classRunStart, classRunEnd, classRunStartTime: classRunStartTime, classRunEndTime,
             calendarId, instructorUsername, recurringEnumString, minClassSize, maximumCapacity
         }
-        fetch("http://localhost:8080/classRun/addToCourseId/" + courseId, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newClassRun)
-        }).then(() => {
-            console.log("Course Updated Successfully!")
+        if (dayjs(classRunStartDateNonString).isValid() === false) {
+            setClassRunStartDateNonStringError({ value: true, errorMessage: 'Invalid Start Date!' })
+        }
+        if (dayjs(classRunEndDateNonString).isValid() === false) {
+            setClassRunEndDateNonStringError({ value: true, errorMessage: 'Invalid End Date!' })
+        }
+        if (dayjs(classRunStartTimeNonString).isValid() === false) {
+            setClassRunStartTimeNonStringError({ value: true, errorMessage: 'Invalid Start Time!' })
+        }
+        if (dayjs(classRunEndTimeNonString).isValid() === false) {
+            setClassRunEndTimeNonStringError({ value: true, errorMessage: 'Invalid End Time!' })
+        }
+        if (classRunStartDateNonString.isAfter(classRunEndDateNonString)) {
+            setClassRunStartDateNonStringError({ value: true, errorMessage: 'End Date cannot be earlier than Start Date!' })
+            setClassRunEndDateNonStringError({ value: true, errorMessage: 'End Date cannot be earlier than Start Date!' })
+        }
+        else if (classRunStartDateNonString.isSame(classRunEndDateNonString) && classRunStartTimeNonString.isAfter(classRunEndTimeNonString)) {
+            setClassRunStartTimeNonStringError({ value: true, errorMessage: 'End Time cannot be earlier than Start Time!' })
+            setClassRunEndTimeNonStringError({ value: true, errorMessage: 'End Time cannot be earlier than Start Time!' })
+        }
+        else if (classRunStartDateNonString && classRunEndDateNonString && classRunStartTimeNonString && classRunEndTimeNonString
+            && minClassSize && maximumCapacity && recurringEnumString && instructorUsername && classRunName && classRunDescription
+            && minClassSize >= 0 && maximumCapacity >= 0 && dayjs(classRunStartDateNonString).isValid() && dayjs(classRunEndDateNonString).isValid()
+            && dayjs(classRunStartTimeNonString).isValid() && dayjs(classRunEndTimeNonString).isValid()) {
+            try {
+                const response = await fetch("http://localhost:8080/classRun/addToCourseId/" + courseId, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newClassRun)
+                });
+                console.log(response);
+                if (response.ok == false) {
+                    console.log("Error");
+                    handleClickErrorSnackbar()
+                } else {
+                    console.log("Classrun Created Successfully!");
+                    handleClickSnackbar()
+                }
+            } catch (err) {
+                console.log(err);
+                handleClickErrorSnackbar()
+            }
             setRefreshPage(true)
-        })
-        handleCloseAddClassRun()
-    }
-
-    const deleteClassRun = (e) => {
-        e.preventDefault();
-        fetch("http://localhost:8080/classRun/delete/" + classRunIdToDelete, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-        }).then(() => {
-            console.log("Class Run Deleted Successfully!");
-            setRefreshPage(true);
-            handleDeleteDialogClose();
-        });
+            handleCloseAddClassRun()
+        }
     };
 
-    const generateClassEventsForClassRun = (e, classRunIdToGenerate) => {
-        console.log("HELLO")
-        console.log(classRunIdToGenerate)
+    const editClassRun = async (e) => {
+        e.preventDefault()
+        var daysArray = new Array()
+        if (editSun === true) { daysArray.push(0) }
+        if (editMon === true) { daysArray.push(1) }
+        if (editTue === true) { daysArray.push(2) }
+        if (editWed === true) { daysArray.push(3) }
+        if (editThu === true) { daysArray.push(4) }
+        if (editFri === true) { daysArray.push(5) }
+        if (editSat === true) { daysArray.push(6) }
+        var classRunDaysOfTheWeek = daysArray
+        var classRunStartTime = ""
+        var classRunEndTime = ""
+        var classRunStart = ""
+        var classRunEnd = ""
+        if (editClassRunStartTimeNonString) {
+            classRunStartTime = dayjs(editClassRunStartTimeNonString).format("HH:mm")
+        }
+        if (editClassRunEndTimeNonString) {
+            classRunEndTime = dayjs(editClassRunEndTimeNonString).format("HH:mm")
+        }
+        if (editClassRunStartDateNonString) {
+            classRunStart = dayjs(editClassRunStartDateNonString).format("YYYY-MM-DD")
+        }
+        if (editClassRunEndDateNonString) {
+            classRunEnd = dayjs(editClassRunEndDateNonString).format("YYYY-MM-DD")
+        }
+        // var classRunStartTime = dayjs(editClassRunStartTimeNonString).format("HH:mm")
+        // var classRunEndTime = dayjs(editClassRunEndTimeNonString).format("HH:mm")
+        // var classRunStart = dayjs(editClassRunStartDateNonString).format("YYYY-MM-DD")
+        // var classRunEnd = dayjs(editClassRunEndDateNonString).format("YYYY-MM-DD")
+        var classRunName = editClassRunName
+        var classRunDescription = editClassRunDescription
+        var instructorUsername = editInstructorUsername
+        var recurringEnumString = editRecurringEnumString
+        var minClassSize = editMinClassSize
+        var maximumCapacity = editMaximumCapacity
+        var classRunId = editClassRunId
+        const editedClassRun = {
+            classRunId, classRunName, classRunDescription, classRunDaysOfTheWeek,
+            classRunStart, classRunEnd, classRunStartTime: classRunStartTime, classRunEndTime,
+            calendarId, instructorUsername, recurringEnumString, minClassSize, maximumCapacity
+        }
+        
+        try {
+            const response = await fetch("http://localhost:8080/classRun/update/" + editClassRunId, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(editedClassRun)
+            });
+            console.log(response)
+            if (response.ok == false) {
+                console.log("Error");
+                handleClickErrorSnackbar()
+            } else {
+                console.log("Classrun Updated Successfully!")
+                handleClickEditSnackbar()
+                setRefreshPage(true)
+            }
+        } catch (err) {
+            console.log(err);
+            handleClickErrorSnackbar()
+        }
+        handleEditDialogClose()
+        handleConfirmEditDialogClose()
+    }
+
+    const deleteClassRun = async (e) => {
         e.preventDefault();
-        fetch("http://localhost:8080/classRun/generateClassEventsFromClassRunId/" + classRunIdToGenerate, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-        }).then(() => {
-            console.log("Class Events Generated Successfully!");
-            setRefreshPage(true);
-        });
+        try {
+            const response = await fetch("http://localhost:8080/classRun/delete/" + classRunIdToDelete, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+            });
+            console.log(response)
+            if (response.ok == false) {
+                console.log("Error");
+                handleClickErrorSnackbar()
+            } else {
+                console.log("Classrun Deleted Successfully!");
+                setRefreshPage(true);
+                handleClickDeleteSnackbar()
+            }
+        } catch (err) {
+            console.log(err);
+            handleClickErrorSnackbar()
+        }
+        handleDeleteDialogClose();
+    };
+
+    // const generateClassEventsForClassRun = (e, classRunIdToGenerate) => {
+    //     console.log("HELLO")
+    //     console.log(classRunIdToGenerate)
+    //     e.preventDefault();
+    //     fetch("http://localhost:8080/classRun/generateClassEventsFromClassRunId/" + classRunIdToGenerate, {
+    //         method: "POST",
+    //         headers: { "Content-Type": "application/json" },
+    //     }).then(() => {
+    //         console.log("Class Events Generated Successfully!");
+    //         setRefreshPage(true);
+    //     });
+    // };
+
+    const convertNumericDaysToString = (classRunDaysOfTheWeek) => {
+        var daysString = new Array()
+        for (var i = 0; i < classRunDaysOfTheWeek.length; i++) {
+            if (classRunDaysOfTheWeek[i] === 0) { daysString.push("Sun") }
+            if (classRunDaysOfTheWeek[i] === 1) { daysString.push("Mon") }
+            if (classRunDaysOfTheWeek[i] === 2) { daysString.push("Tue") }
+            if (classRunDaysOfTheWeek[i] === 3) { daysString.push("Wed") }
+            if (classRunDaysOfTheWeek[i] === 4) { daysString.push("Thu") }
+            if (classRunDaysOfTheWeek[i] === 5) { daysString.push("Fri") }
+            if (classRunDaysOfTheWeek[i] === 6) { daysString.push("Sat") }
+        }
+        return daysString.toString()
     };
 
     const renderEmptyRowMessage = () => {
@@ -364,9 +717,23 @@ function TeachingClassRuns(props) {
                             Classrun Updated Succesfully!
                         </Alert>
                     </Snackbar>
+                    <Snackbar
+                        open={openErrorSnackbar}
+                        autoHideDuration={5000}
+                        onClose={handleCloseErrorSnackbar}
+                    >
+                        <Alert
+                            onClose={handleCloseErrorSnackbar}
+                            severity="error"
+                            sx={{ width: "100%" }}
+                        >
+                            Error!
+                        </Alert>
+                    </Snackbar>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link to={`${classRunsPath}`}
                             style={{ textDecoration: 'none', color: 'grey' }}>
+                            {/* state={{ classRunName: classRunName }} */}
                             <LinkMaterial underline="hover" color="inherit">
                                 Classruns
                             </LinkMaterial>
@@ -381,7 +748,7 @@ function TeachingClassRuns(props) {
                             color="primary"
                             variant="contained"
                             component="span"
-                            onClick={handleClickOpen}
+                            onClick={handleClickOpenAddClassRun}
                             style={{ float: "right", marginLeft: "auto" }}
                         >
                             Create New ClassRun
@@ -440,7 +807,7 @@ function TeachingClassRuns(props) {
                                             <TableCell align="right">{row.classRunEndTime}</TableCell>
                                             <TableCell align="right">{row.minClassSize}</TableCell>
                                             <TableCell align="right">{row.maximumCapacity}</TableCell>
-                                            <TableCell align="right">{row.classRunDaysOfTheWeek.toString()}</TableCell>
+                                            <TableCell align="right">{convertNumericDaysToString(row.classRunDaysOfTheWeek)}</TableCell>
                                             <TableCell align="right">{row.recurringEnumString}</TableCell>
                                             <TableCell align="right">{row.instructorUsername}</TableCell>
                                             <TableCell align="right">
@@ -451,14 +818,26 @@ function TeachingClassRuns(props) {
                                                     >
                                                         <DeleteIcon />
                                                     </IconButton>
-                                                    {/* <IconButton
+                                                    <IconButton
                                                         aria-label="settings"
                                                         onClick={(event) =>
-                                                            handleClickEditDialogOpen(event, forumId, forumTitle)
+                                                            handleClickEditDialogOpen(event,
+                                                                row.classRunId,
+                                                                row.classRunName,
+                                                                row.classRunDescription,
+                                                                row.classRunStart,
+                                                                row.classRunEnd,
+                                                                row.classRunStartTime,
+                                                                row.classRunEndTime,
+                                                                row.minClassSize,
+                                                                row.maximumCapacity,
+                                                                row.classRunDaysOfTheWeek,
+                                                                row.recurringEnumString,
+                                                                row.instructorUsername)
                                                         }
                                                     >
                                                         <EditIcon />
-                                                    </IconButton> */}
+                                                    </IconButton>
                                                     {/* <Button variant='contained' onClick={(event) => generateClassEventsForClassRun(event, row.classRunId)}>
                                                         Generate Events
                                                     </Button> */}
@@ -487,35 +866,32 @@ function TeachingClassRuns(props) {
                     <DialogTitle>Add Class Run</DialogTitle>
                     <DialogContent>
                         <TextField id="outlined-basic" label="ClassRun Name" fullWidth defaultValue=""
+                            required
                             style={{ margin: '6px 0' }}
                             value={classRunName}
                             onChange={(e) => setClassRunName(e.target.value)}
+                            error={classRunNameError.value}
+                            helperText={classRunNameError.errorMessage}
                         />
 
                         <TextField id="outlined-multiline-static" label="ClassRun Description" multiline rows={6} fullWidth defaultValue=""
+                            required
                             style={{ margin: '6px 0' }}
                             value={classRunDescription}
                             onChange={(e) => setClassRunDescription(e.target.value)}
+                            error={classRunDescriptionError.value}
+                            helperText={classRunDescriptionError.errorMessage}
                         />
-
-                        {/* <TextField id="outlined-basic" label="Start Date" variant="outlined" fullWidth
-                            style={{ margin: '6px 0' }}
-                            value={classRunStartDateNonString}
-                            onChange={(e) => setClassRunStartDateNonString(e.target.value)}
-                        />
-
-                        <TextField id="outlined-basic" label="End Date" variant="outlined" fullWidth
-                            style={{ margin: '6px 0' }}
-                            value={classRunEndDateNonString}
-                            onChange={(e) => setClassRunEndDateNonString(e.target.value)}
-                        /> */}
 
                         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
                             <Stack spacing={1} style={{ margin: '8px 0' }}>
                                 <DatePicker
                                     value={classRunStartDateNonString}
                                     onChange={(newValue) => setClassRunStartDateNonString(newValue)}
-                                    renderInput={(params) => <TextField {...params} />}
+                                    renderInput={(params) => <TextField {...params}
+                                        error={classRunStartDateNonStringError.value}
+                                        helperText={classRunStartDateNonStringError.errorMessage}
+                                        required />}
                                     ampm={false}
                                     label="Classrun Start Date"
                                 />
@@ -527,7 +903,10 @@ function TeachingClassRuns(props) {
                                 <DatePicker
                                     value={classRunEndDateNonString}
                                     onChange={(newValue) => setClassRunEndDateNonString(newValue)}
-                                    renderInput={(params) => <TextField {...params} />}
+                                    renderInput={(params) => <TextField {...params}
+                                        error={classRunEndDateNonStringError.value}
+                                        helperText={classRunEndDateNonStringError.errorMessage}
+                                        required />}
                                     ampm={false}
                                     label="Classrun End Date"
                                 />
@@ -540,7 +919,7 @@ function TeachingClassRuns(props) {
                                     <FormLabel component="legend" style={{ paddingBottom: '5px' }}>Class Days of the Week</FormLabel>
                                     <FormControl
                                         required
-                                        error={error}
+                                        // error={error}
                                         component="fieldset"
                                         sx={{ m: 0 }}
                                         variant="standard"
@@ -590,31 +969,23 @@ function TeachingClassRuns(props) {
                                                 label="Sun"
                                             />
                                         </FormGroup>
-                                        <FormHelperText>Pick at least one day*</FormHelperText>
+                                        {/* <FormHelperText>Pick at least one day*</FormHelperText> */}
                                     </FormControl>
                                 </div>
                             </Paper>
                         </div>
-                        {/* <TextField id="outlined-basic" label="Start Time" variant="outlined" fullWidth
-                            style={{ margin: '6px 0' }}
-                            value={classRunStartTime}
-                            onChange={(e) => setClassRunStartTime(e.target.value)}
-                        />
-
-                        <TextField id="outlined-basic" label="End Time" variant="outlined" fullWidth
-                            style={{ margin: '6px 0' }}
-                            value={classRunEndTime}
-                            onChange={(e) => setClassRunEndTime(e.target.value)}
-                        /> */}
 
                         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
                             <Stack spacing={1} style={{ margin: '8px 0' }}>
                                 <TimePicker
                                     value={classRunStartTimeNonString}
                                     onChange={(newValue) => setClassRunStartTimeNonString(newValue)}
-                                    renderInput={(params) => <TextField {...params} />}
+                                    renderInput={(params) => <TextField {...params}
+                                        label="Classrun Start Time"
+                                        error={classRunStartTimeNonStringError.value}
+                                        helperText={classRunStartTimeNonStringError.errorMessage}
+                                        required />}
                                     ampm={false}
-                                    label="Classrun Start Time"
                                 />
                             </Stack>
                         </LocalizationProvider>
@@ -624,9 +995,12 @@ function TeachingClassRuns(props) {
                                 <TimePicker
                                     value={classRunEndTimeNonString}
                                     onChange={(newValue) => setClassRunEndTimeNonString(newValue)}
-                                    renderInput={(params) => <TextField {...params} />}
+                                    renderInput={(params) => <TextField {...params}
+                                        label="Classrun End Time"
+                                        error={classRunEndTimeNonStringError.value}
+                                        helperText={classRunEndTimeNonStringError.errorMessage}
+                                        required />}
                                     ampm={false}
-                                    label="Classrun End Time"
                                 />
                             </Stack>
                         </LocalizationProvider>
@@ -635,37 +1009,43 @@ function TeachingClassRuns(props) {
                             style={{ margin: '6px 0' }}
                             value={minClassSize}
                             onChange={(e) => setMinClassSize(e.target.value)}
+                            error={minClassSizeError.value}
+                            helperText={minClassSizeError.errorMessage}
+                            required
                         />
 
                         <TextField id="outlined-basic" label="Max Size" fullWidth defaultValue=""
                             style={{ margin: '6px 0' }}
                             value={maximumCapacity}
                             onChange={(e) => setMaximumCapacity(e.target.value)}
+                            error={maximumCapacityError.value}
+                            helperText={maximumCapacityError.errorMessage}
+                            required
                         />
 
-                        <TextField id="outlined-basic" label="Recurring Enum" variant="outlined" fullWidth
+                        <TextField id="outlined-select-age" select label="Recurring Frequency" fullWidth
                             style={{ margin: '6px 0' }}
                             value={recurringEnumString}
-                            onChange={(e) => setRecurringEnumString(e.target.value)} />
+                            onChange={handleChangeRecurringEnumString}
+                            error={recurringEnumStringError.value}
+                            helperText={recurringEnumStringError.errorMessage}
+                            required
+                        >
+                            {recurringEnums.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.value}
+                                </MenuItem>
+                            ))}
+                        </TextField>
 
                         <TextField id="outlined-basic" label="Instructor Username" fullWidth defaultValue=""
                             style={{ margin: '6px 0' }}
                             value={instructorUsername}
                             onChange={(e) => setInstructorUsername(e.target.value)}
+                            error={instructorUsernameError.value}
+                            helperText={instructorUsernameError.errorMessage}
+                            required
                         />
-                        {/* 
-                        <TextField id="outlined-select-age" select label="Age Group" fullWidth
-                            style={{ margin: '6px 0' }}
-                            value={ageGroup1}
-                            onChange={handleChange1}
-                            helperText="Please select your age group"
-                        >
-                            {ageGroups.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.value}
-                                </MenuItem>
-                            ))}
-                        </TextField> */}
 
                     </DialogContent>
                     <DialogActions>
@@ -699,38 +1079,219 @@ function TeachingClassRuns(props) {
                     </DialogActions>
                 </Dialog>
             </div>
-            {/* <div>
+            <div>
                 <Dialog
-                    open={editDialogOpen}
-                    onClose={handleEditDialogClose}
+                    open={confirmEditDialogOpen}
+                    onClose={handleConfirmEditDialogClose}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
                     <DialogTitle id="alert-dialog-title">
-                        {"You are editing this forum"}
+                        {"Confirm changes?"}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            Enter the new forum details
+                            These will reset and regenerate all the class events inside the
+                            class run. You will not be able to undo this action.
                         </DialogContentText>
-                        <TextField
-                            id="outlined-basic"
-                            label="Discussion Title"
-                            variant="outlined"
-                            fullWidth
-                            style={{ margin: "6px 0" }}
-                            value={editForumTitle}
-                            onChange={(e) => setEditForumTitle(e.target.value)}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleConfirmEditDialogClose}>Cancel</Button>
+                        <Button onClick={editClassRun} autoFocus>
+                            Confirm
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
+                    <DialogTitle>Edit Class Run</DialogTitle>
+                    <DialogContent>
+                        <TextField id="outlined-basic" label="ClassRun Name" fullWidth defaultValue=""
+                            style={{ margin: '6px 0' }}
+                            value={editClassRunName}
+                            onChange={(e) => setEditClassRunName(e.target.value)}
+                            error={editClassRunNameError.value}
+                            helperText={editClassRunNameError.errorMessage}
+                            required
+                        />
+                        <TextField id="outlined-multiline-static" label="ClassRun Description" multiline rows={6} fullWidth defaultValue=""
+                            style={{ margin: '6px 0' }}
+                            value={editClassRunDescription}
+                            onChange={(e) => setEditClassRunDescription(e.target.value)}
+                            error={editClassRunDescriptionError.value}
+                            helperText={editClassRunDescriptionError.errorMessage}
+                            required
+                        />
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
+                            <Stack spacing={1} style={{ margin: '8px 0' }}>
+                                <DatePicker
+                                    value={editClassRunStartDateNonString}
+                                    onChange={(newValue) => setEditClassRunStartDateNonString(newValue)}
+                                    renderInput={(params) => <TextField {...params} 
+                                        error={editClassRunStartDateNonStringError.value}
+                                        helperText={editClassRunStartDateNonStringError.errorMessage}
+                                        required/>}
+                                    ampm={false}
+                                    label="Classrun Start Date"
+                                />
+                            </Stack>
+                        </LocalizationProvider>
+
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
+                            <Stack spacing={1} style={{ margin: '8px 0' }}>
+                                <DatePicker
+                                    value={editClassRunEndDateNonString}
+                                    onChange={(newValue) => setEditClassRunEndDateNonString(newValue)}
+                                    renderInput={(params) => <TextField {...params} 
+                                        error={editClassRunEndDateNonStringError.value}
+                                        helperText={editClassRunEndDateNonStringError.errorMessage}
+                                        required/>}
+                                    ampm={false}
+                                    label="Classrun End Date"
+                                />
+                            </Stack>
+                        </LocalizationProvider>
+
+                        <div>
+                            <Paper variant="outlined">
+                                <div style={{ padding: '15px' }}>
+                                    <FormLabel component="legend" style={{ paddingBottom: '5px' }}>Class Days of the Week</FormLabel>
+                                    <FormControl
+                                        required
+                                        // error={editError}
+                                        component="fieldset"
+                                        sx={{ m: 0 }}
+                                        variant="standard"
+                                    >
+                                        {/* <FormLabel component="legend">Pick at least one</FormLabel> */}
+                                        <FormGroup>
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={editMon} onChange={handleChangeEditMon} name="editMon" />
+                                                }
+                                                label="Mon"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={editTue} onChange={handleChangeEditTue} name="editTue" />
+                                                }
+                                                label="Tue"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={editWed} onChange={handleChangeEditWed} name="editWed" />
+                                                }
+                                                label="Wed"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={editThu} onChange={handleChangeEditThu} name="editThu" />
+                                                }
+                                                label="Thu"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={editFri} onChange={handleChangeEditFri} name="editFri" />
+                                                }
+                                                label="Fri"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={editSat} onChange={handleChangeEditSat} name="editSat" />
+                                                }
+                                                label="Sat"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox checked={editSun} onChange={handleChangeEditSun} name="editSun" />
+                                                }
+                                                label="Sun"
+                                            />
+                                        </FormGroup>
+                                        {/* <FormHelperText>Pick at least one day*</FormHelperText> */}
+                                    </FormControl>
+                                </div>
+                            </Paper>
+                        </div>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
+                            <Stack spacing={1} style={{ margin: '8px 0' }}>
+                                <TimePicker
+                                    value={editClassRunStartTimeNonString}
+                                    onChange={(newValue) => setEditClassRunStartTimeNonString(newValue)}
+                                    renderInput={(params) => <TextField {...params} 
+                                        error={editClassRunStartTimeNonStringError.value}
+                                        helperText={editClassRunStartTimeNonStringError.errorMessage}
+                                        required/>}
+                                    ampm={false}
+                                    label="Classrun Start Time"
+                                />
+                            </Stack>
+                        </LocalizationProvider>
+
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
+                            <Stack spacing={1} style={{ margin: '8px 0' }}>
+                                <TimePicker
+                                    value={editClassRunEndTimeNonString}
+                                    onChange={(newValue) => setEditClassRunEndTimeNonString(newValue)}
+                                    renderInput={(params) => <TextField {...params} 
+                                        error={editClassRunEndTimeNonStringError.value}
+                                        helperText={editClassRunEndTimeNonStringError.errorMessage}
+                                        required/>}
+                                    ampm={false}
+                                    label="Classrun End Time"
+                                />
+                            </Stack>
+                        </LocalizationProvider>
+
+                        <TextField id="outlined-basic" label="Min Size" fullWidth defaultValue=""
+                            style={{ margin: '6px 0' }}
+                            value={editMinClassSize}
+                            onChange={(e) => setEditMinClassSize(e.target.value)}
+                            error={editMinClassSizeError.value}
+                            helperText={editMinClassSizeError.errorMessage}
+                            required
+                        />
+
+                        <TextField id="outlined-basic" label="Max Size" fullWidth defaultValue=""
+                            style={{ margin: '6px 0' }}
+                            value={editMaximumCapacity}
+                            onChange={(e) => setEditMaximumCapacity(e.target.value)}
+                            error={editMaximumCapacityError.value}
+                            helperText={editMaximumCapacityError.errorMessage}
+                            required
+                        />
+
+                        <TextField id="outlined-select-age" select label="Recurring Frequency" fullWidth
+                            style={{ margin: '6px 0' }}
+                            value={editRecurringEnumString}
+                            onChange={handleChangeEditRecurringEnumString}
+                            error={editRecurringEnumStringError.value}
+                            helperText={editRecurringEnumStringError.errorMessage}
+                            required
+                        >
+                            {recurringEnums.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.value}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+
+                        <TextField id="outlined-basic" label="Instructor Username" fullWidth defaultValue=""
+                            style={{ margin: '6px 0' }}
+                            value={editInstructorUsername}
+                            onChange={(e) => setEditInstructorUsername(e.target.value)}
+                            error={editInstructorUsernameError.value}
+                            helperText={editInstructorUsernameError.errorMessage}
+                            required
                         />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleEditDialogClose}>Cancel</Button>
-                        <Button onClick={editForum} autoFocus>
-                            Edit
-                        </Button>
+                        <Button onClick={handleConfirmEditDialogOpen}>Edit</Button>
                     </DialogActions>
                 </Dialog>
-            </div> */}
+            </div>
         </div>
     );
 }
