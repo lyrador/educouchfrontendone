@@ -14,7 +14,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
 import { Grid, Modal } from "@mui/material";
 
@@ -232,9 +232,6 @@ function TeachingAssessmentList(props) {
     setDeleteDialogOpen(false);
   };
 
-
-
-
   const handleClickEditDialogOpen = (
     event,
     assessmentId,
@@ -445,6 +442,16 @@ function TeachingAssessmentList(props) {
     }
   };
 
+  const navigate = useNavigate();
+
+  function continueAsPartialAssessment() {
+    navigate(`${assessmentsPath}/createAssessment`, {
+      state: {
+        assessmentPathProp: assessmentsPath,
+      },
+    });
+  }
+
   const renderEmptyRowMessage = () => {
     if (assessments.length === 0) {
       return (
@@ -538,22 +545,20 @@ function TeachingAssessmentList(props) {
               }}
             >
               <Button
-                className="btn-upload"
-                color="primary"
                 variant="contained"
-                component="span"
-                onClick={handleClickOpen}
+                type="submit"
+                onClick={continueAsPartialAssessment}
                 style={{ float: "right", marginLeft: "auto" }}
               >
-                Create New Document Submission
+                Create New Assessment
               </Button>
 
-              <Link to={`${assessmentsPath}/createAssessment`}
+              {/* <Link to={`${assessmentsPath}/createAssessment`}
                 state={{assessmentPathProp : assessmentsPath}}>
                 <Button variant="contained" type="submit">
                   Create new Assessment
-                </Button>
-              </Link>
+                </Button> */}
+              {/* </Link> */}
             </Grid>
           </div>
 
@@ -637,7 +642,7 @@ function TeachingAssessmentList(props) {
           </div>
         </Grid>
       </Grid>
-        {/* <div>
+      {/* <div>
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Create New File Submission Assessment</DialogTitle>
             <DialogContent>
@@ -749,9 +754,8 @@ function TeachingAssessmentList(props) {
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              These will delete all the questions and options for quizzes. You
-              will not be able to undo this action. Are you sure you want to
-              delete?
+              These will delete the assessment and cannot be reversed. Are you
+              sure you want to delete?
             </DialogContentText>
           </DialogContent>
           <DialogActions>

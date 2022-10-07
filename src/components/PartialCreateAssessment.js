@@ -53,6 +53,7 @@ export default function PartialCreateAssessment(props) {
   const location = useLocation();
   const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
   const createAssessmentPath = location.pathname;
+
   const [assessments, setAssessments] = useState([]);
   const [assessmentTitle, setAssessmentTitle] = useState("");
   const [assessmentDescription, setAssessmentDescription] = useState("");
@@ -185,9 +186,8 @@ export default function PartialCreateAssessment(props) {
           assessmentsPathProp: assessmentsPath,
           createAssessmentPathProp: createAssessmentPath,
           newDocSubProp: newDocSub,
-        }
-      })
-
+        },
+      });
 
       // fetch(
       //   "http://localhost:8080/assessment/addNewFileSubmission/" +
@@ -236,8 +236,8 @@ export default function PartialCreateAssessment(props) {
           assessmentsPathProp: assessmentsPath,
           createAssessmentPathProp: createAssessmentPath,
           newQuizProp: newQuiz,
-        }
-      })
+        },
+      });
     }
   }
 
@@ -261,6 +261,7 @@ export default function PartialCreateAssessment(props) {
           Assessment Created Succesfully!
         </Alert>
       </Snackbar>
+
       <Paper style={{ width: "70%" }}>
         <TextField
           required
@@ -342,7 +343,7 @@ export default function PartialCreateAssessment(props) {
         style={{ marginTop: 60 }}
       >
         <Button variant="contained" type="submit" onClick={continueAsQuiz}>
-            Continue as New Quiz
+          Continue as New Quiz
         </Button>
         <Button
           variant="contained"
