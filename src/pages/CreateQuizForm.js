@@ -3,7 +3,13 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Container } from "@mui/system";
 import { useAuth } from "../context/AuthProvider";
-import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import LinkMaterial from "@mui/material/Link";
 
 import {
@@ -45,7 +51,9 @@ export default function CreateQuizForm(props) {
   }
 
   //need function to link questions to quiz prop
-
+  function linkQuizQuestions() {
+    currentQuiz.questions = formQuestions;
+  }
   function editQuizSettings(
     title,
     description,
@@ -139,6 +147,7 @@ export default function CreateQuizForm(props) {
 
   const handleSave = (e) => {
     e.preventDefault();
+    linkQuizQuestions();
     // fetch(
     //   "http://localhost:8080/educator/addInstructor?organisationId=" +
     //     user.organisationId,
@@ -149,12 +158,10 @@ export default function CreateQuizForm(props) {
     //   }
     // )
     //   .then((res) => res.json())
-    //   .then(props.closeModalProp())
-    //   .then(props.refreshProp());
   };
   const handleCancel = (e) => {
-   navgiate(`${assessmentsPath}`) 
-  }
+    navgiate(`${assessmentsPath}`);
+  };
   return (
     <Grid container spacing={0}>
       <Grid item xs={2}>
@@ -193,15 +200,24 @@ export default function CreateQuizForm(props) {
         </Breadcrumbs>
 
         <Grid item width={"80%"}>
-          <Grid container direction={"row"} justifyContent={"space-between"}>
-            <h1>Quiz Creation</h1>
-            <IconButton
+          <Grid
+            container
+            direction={"row"}
+            justifyContent={"space-between"}
+            style={{
+              marginTop: 30,
+              backgroundColor: "#1975D2",
+              paddingLeft: 10,
+            }}
+          >
+            <h1 style={{ color: "whitesmoke" }}>Quiz Creation</h1>
+            <Button
               aria-label="settings"
               onClick={() => handleOpenSettingsDialogue()}
             >
+              <SettingsIcon style={{ marginRight: 10 }} />
               Edit Quiz Settings
-              <SettingsIcon />
-            </IconButton>
+            </Button>
             <Modal
               open={open}
               onClose={handleCloseSettingsDialogue}
@@ -216,7 +232,7 @@ export default function CreateQuizForm(props) {
             </Modal>
           </Grid>
           {formQuestions.length == 0 && (
-            <Paper elevation={3} style={{ margin: 50, padding: 30 }}>
+            <Paper elevation={3} style={{ padding: 30, marginTop: 50}}>
               <h3>Currently no questions!</h3>
               <br />
               <p>Start adding questions by clicking on "Add Question" Button</p>
@@ -225,7 +241,7 @@ export default function CreateQuizForm(props) {
 
           {formQuestions.map((question, index) => {
             return (
-              <Paper elevation={3} style={{ margin: 10, padding: 30 }}>
+              <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
                 <QuizQuestionComponent
                   textFieldProp={textField}
                   setTextFieldProp={setTextField}
@@ -242,7 +258,7 @@ export default function CreateQuizForm(props) {
 
           <Grid
             container
-            style={{ marginBottom: 90 }}
+            style={{ marginBottom: 90, marginTop: 20}}
             direction="row"
             justifyContent={"space-between"}
           >
@@ -251,12 +267,17 @@ export default function CreateQuizForm(props) {
               variant="contained"
               onClick={() => addQuestion()}
             >
-              <AddIcon />
+              <AddIcon style={{ marginRight: "10px" }} />
               Add Question
             </Button>
           </Grid>
 
-          <Grid container direction="row" justifyContent={"space-between"}>
+          <Grid
+            container
+            direction="row"
+            justifyContent={"space-between"}
+            style={{marginTop: "80px" }}
+          >
             <Button variant="contained" onClick={handleCancel}>
               Cancel
             </Button>

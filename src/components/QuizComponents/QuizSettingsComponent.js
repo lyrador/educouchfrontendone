@@ -185,6 +185,7 @@ export default function QuizSettingsComponents(props) {
           <h3
             style={{
               backgroundColor: "#1975D2",
+              color: "whitesmoke",
               fontSize: "30px",
               marginBottom: "40px",
               padding: "6px", }}

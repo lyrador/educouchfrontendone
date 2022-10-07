@@ -7,17 +7,15 @@ import QuizTitleComponent from "./QuizTitleComponent";
 import QuizTypeDropdownComponent from "./QuizTypeDropdownComponent";
 import ShortAnswerComponent from "./ShortAnswerComponent";
 import TrueFalseComponent from "./TrueFalseComponent";
-
-export default function QuizQuestionComponent(props) {
+import DeleteIcon from '@mui/icons-material/Delete';export default function QuizQuestionComponent(props) {
   const [question, setQuestion] = useState(props.questionProp);
   const [index, setIndex] = useState(props.indexProp);
   const [onEdit, setOnEdit] = useState(false);
 
   return (
-    
     <Grid
       container
-      style={{ margin: 20 }}
+      style={{ margin: 10 }}
       direction="row"
       justifyContent={"space-between"}
     >
@@ -45,7 +43,7 @@ export default function QuizQuestionComponent(props) {
         <Grid item>
           {props.questionProp.questionType == "shortAnswer" && (
             <ShortAnswerComponent />
-          )}  
+          )}
           {props.questionProp.questionType == "mcq" && (
             <div>
               <McqBodyComponent
@@ -67,10 +65,15 @@ export default function QuizQuestionComponent(props) {
             </div>
           )}
         </Grid>
-        <Grid style={{ marginTop: 15 }}>
+        <Grid item style={{ marginTop: 50, marginLeft: -9 }}>
           <Button
             onClick={() => props.removeQuestionProp(props.questionProp.id)}
-          >Remove Question</Button>
+            color="secondary"
+            variant="contained"
+          >
+            <DeleteIcon style={{ marginRight: "10px" }} />
+            Remove Question
+          </Button>
         </Grid>
       </Grid>
     </Grid>
