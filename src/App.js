@@ -37,6 +37,7 @@ import CourseExplorerPage from "./pages/CourseExplorerPage";
 import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
 import LearnerCourseDetails from "./pages/LearnerCourseDetails";
 import TeachingCourseClassRuns from "./components/TeachingCourseClassRuns";
+import SuccessRefundRequestPage from "./pages/SuccessRefundRequestPage";
 
 function App() {
   return (
@@ -78,7 +79,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerCoursesList/>
+                  <LearnerCoursesList />
                 </RequireAuth>
               }
             />
@@ -154,6 +155,16 @@ function App() {
                 </RequireAuth>
               }
             />
+
+            <Route
+              path="/learnerCourseDetails/:courseId/successRefundRequest"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <SuccessRefundRequestPage />
+                </RequireAuth>
+              }
+            />
             <Route
               path="/learnerCourseDetails/:courseId/"
               element={
@@ -168,7 +179,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <CourseExplorerPage/>
+                  <CourseExplorerPage />
                 </RequireAuth>
               }
             />
