@@ -12,7 +12,7 @@ export default function McqBodyComponent(props) {
   return (
     
     <div>
-      <div>Options</div>
+      <div>MCQ Options</div>
 
       <Select style={{ width: "70%", fontSize: 16 }}>
         {props.mcqOptionsProp.map((item) => (
