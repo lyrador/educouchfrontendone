@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 
 import { Link, useLocation, useParams } from "react-router-dom";
 import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
-import { Grid } from "@mui/material";
+import { Grid, Modal } from "@mui/material";
 
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
@@ -110,7 +110,7 @@ function TeachingAssessmentList(props) {
     setOpenErrorSnackbar(false);
   };
 
-  //paths
+  // paths
   const location = useLocation();
   const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
 
@@ -173,20 +173,26 @@ function TeachingAssessmentList(props) {
     errorMessage: "",
   });
 
-  const [refreshPage, setRefreshPage] = useState("");
+  const [refreshPage, setRefreshPage] = useState(false);
+  const refreshFunction = () => {
+    setRefreshPage(!refreshPage);
+  };
 
   const enumGroup = [{ value: "INDIVIDUAL" }, { value: "GROUP" }];
 
+  // get all assessments here
   React.useEffect(() => {
     setRefreshPage(false);
     fetch(
-      "http://localhost:8080/assessment/getAllFileSubmissionsByCourseId/" +
+      "http://localhost:8080/assessment/getAllAssessmentsByCourseId?courseId=" +
         courseId
     )
       .then((res) => res.json())
       .then((result) => {
         setAssessments(result);
-        console.log(assessments);
+        console.log(
+          "list of assessments: " + assessments + " course id: " + courseId
+        );
       });
   }, [refreshPage]);
 
@@ -226,17 +232,8 @@ function TeachingAssessmentList(props) {
     setDeleteDialogOpen(false);
   };
 
-  // function isValidDate(dateToCheck) {
-  //   var dateArray = dateToCheck.split("-");
-  //   if (dateArray.length != 3) return false;
-  //   if (Number(dateArray[0]) < 2022) {
-  //     if (Number(dateArray[1]) > 0 && (Number(dateArray[1]) < 13)) {
-  //       if (Number(dateArray[2]) > 0 && (Number(dateArray[2]) < 32)) {
-  //         return true;
-  //     }
-  //   }
-  // }
-  // }
+
+
 
   const handleClickEditDialogOpen = (
     event,
@@ -247,8 +244,8 @@ function TeachingAssessmentList(props) {
     assessmentStartDate,
     assessmentEndDate,
     assessmentFileSubmissionEnum
-    // isOpen,
-    // statusEnum
+    //   // isOpen,
+    //   // statusEnum
   ) => {
     setEditAssessmentTitle(assessmentTitle);
     setEditAssessmentDescription(assessmentDescription);
@@ -257,8 +254,8 @@ function TeachingAssessmentList(props) {
     setEditAssessmentEndDate(assessmentEndDate);
     setEditAssessmentFileSubmissionEnum(assessmentFileSubmissionEnum);
     setAssessmentIdToEdit(assessmentId);
-    // setAssessmentIsOpen(isOpen);
-    // setAssessmentStatusEnum(statusEnum);
+    //   // setAssessmentIsOpen(isOpen);
+    //   // setAssessmentStatusEnum(statusEnum);
     setEditDialogOpen(true);
   };
 
@@ -282,8 +279,7 @@ function TeachingAssessmentList(props) {
     setAssessmentStartDateError({ value: false, errorMessage: "" });
     setAssessmentEndDateError({ value: false, errorMessage: "" });
     setAssessmentFileSubmissionEnumError({ value: false, errorMessage: "" });
-    // setAssessmentIsOpenError({ value: false, errorMessage: "" });
-    // setAssessmentStatusEnumError({ value: false, errorMessage: "" });
+
     if (assessmentTitle == "") {
       setAssessmentTitleError({
         value: true,
@@ -478,7 +474,7 @@ function TeachingAssessmentList(props) {
               severity="success"
               sx={{ width: "100%" }}
             >
-              Assessment Created Succesfully!
+              Assessment Created Successfully!
             </Alert>
           </Snackbar>
           <Snackbar
@@ -529,21 +525,39 @@ function TeachingAssessmentList(props) {
               Assessments
             </LinkMaterial>
           </Breadcrumbs>
+
           <div style={{ justifyContent: "center" }}>
             <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
               List of Assessments
             </h1>
-            <Button
-              className="btn-upload"
-              color="primary"
-              variant="contained"
-              component="span"
-              onClick={handleClickOpen}
-              style={{ float: "right", marginLeft: "auto" }}
+            <Grid
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyItems: "flex-end",
+              }}
             >
-              Create New Assessment
-            </Button>
+              <Button
+                className="btn-upload"
+                color="primary"
+                variant="contained"
+                component="span"
+                onClick={handleClickOpen}
+                style={{ float: "right", marginLeft: "auto" }}
+              >
+                Create New Document Submission
+              </Button>
+
+              <Link to={`${assessmentsPath}/createAssessment`}
+                state={{assessmentPathProp : assessmentsPath}}>
+                <Button variant="contained" type="submit">
+                  Create new Assessment
+                </Button>
+              </Link>
+            </Grid>
           </div>
+
+          {/* table is here */}
           <div style={{ padding: "5%" }}>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -569,17 +583,17 @@ function TeachingAssessmentList(props) {
                         <Link
                           to={`${assessmentsPath}/${assessment.assessmentId}`}
                           state={{
-                            assessmentTitle: assessment.assessmentTitle,
+                            assessmentTitle: assessment.title,
                           }}
                           style={{ textDecoration: "none" }}
                         >
-                          {assessment.assessmentTitle}
+                          {assessment.title}
                         </Link>
                       </TableCell>
-                      <TableCell>{assessment.assessmentMaxScore}</TableCell>
-                      <TableCell>{assessment.assessmentStartDate}</TableCell>
-                      <TableCell>{assessment.assessmentEndDate}</TableCell>
-                      <TableCell>{" File Submission "}</TableCell>
+                      <TableCell>{assessment.maxScore}</TableCell>
+                      <TableCell>{assessment.startDate}</TableCell>
+                      <TableCell>{assessment.endDate}</TableCell>
+                      <TableCell>{assessment.assessmentType}</TableCell>
                       {/* <TableCell>{assessment.assessmentIsOpen}</TableCell> */}
                       <TableCell>
                         <div>
@@ -623,106 +637,106 @@ function TeachingAssessmentList(props) {
           </div>
         </Grid>
       </Grid>
-      <div>
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Create New File Submission Assessment</DialogTitle>
-          <DialogContent>
-            <TextField
-              required
-              id="outlined-basic"
-              label="Assessment Title"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={assessmentTitle}
-              onChange={(e) => setAssessmentTitle(e.target.value)}
-              error={assessmentTitleError.value}
-              helperText={assessmentTitleError.errorMessage}
-            />
-            <TextField
-              required
-              id="outlined-basic"
-              label="Assessment Description"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={assessmentDescription}
-              onChange={(e) => setAssessmentDescription(e.target.value)}
-              error={assessmentDescriptionError.value}
-              helperText={assessmentDescriptionError.errorMessage}
-            />
-            <TextField
-              required
-              id="outlined-basic"
-              label="Assessment Max Score"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={assessmentMaxScore}
-              onChange={(e) => setAssessmentMaxScore(e.target.value)}
-              error={assessmentMaxScoreError.value}
-              helperText={assessmentMaxScoreError.errorMessage}
-            />
-            <Stack spacing={1}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DesktopDatePicker
-                  label="Start Date"
-                  inputFormat="MM/DD/YYYY"
-                  value={assessmentStartDate}
-                  onChange={handleStartDateChange}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      sx={{ width: "100%" }}
-                      error={assessmentStartDateError.value}
-                      helperText={assessmentStartDateError.errorMessage}
-                    />
-                  )}
-                />
-              </LocalizationProvider>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DesktopDatePicker
-                  label="End Date"
-                  inputFormat="MM/DD/YYYY"
-                  value={assessmentEndDate}
-                  onChange={handleEndDateChange}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      sx={{ width: "100%" }}
-                      error={assessmentEndDateError.value}
-                      helperText={assessmentEndDateError.errorMessage}
-                    />
-                  )}
-                />
-              </LocalizationProvider>
-            </Stack>
-            <TextField
-              required
-              select
-              id="outlined-basic"
-              label="Assessment File Submission Type"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={assessmentFileSubmissionEnum}
-              onChange={(e) => setAssessmentFileSubmissionEnum(e.target.value)}
-              error={assessmentFileSubmissionEnumError.value}
-              helperText={assessmentFileSubmissionEnumError.errorMessage}
-            >
-              {enumGroup.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.value}
-                </MenuItem>
-              ))}
-            </TextField>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={createNewAssessment}>Create</Button>
-          </DialogActions>
-        </Dialog>
-      </div>
+        {/* <div>
+          <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>Create New File Submission Assessment</DialogTitle>
+            <DialogContent>
+              <TextField
+                required
+                id="outlined-basic"
+                label="Assessment Title"
+                variant="outlined"
+                fullWidth
+                style={{ margin: "6px 0" }}
+                value={assessmentTitle}
+                onChange={(e) => setAssessmentTitle(e.target.value)}
+                error={assessmentTitleError.value}
+                helperText={assessmentTitleError.errorMessage}
+              />
+              <TextField
+                required
+                id="outlined-basic"
+                label="Assessment Description"
+                variant="outlined"
+                fullWidth
+                style={{ margin: "6px 0" }}
+                value={assessmentDescription}
+                onChange={(e) => setAssessmentDescription(e.target.value)}
+                error={assessmentDescriptionError.value}
+                helperText={assessmentDescriptionError.errorMessage}
+              />
+              <TextField
+                required
+                id="outlined-basic"
+                label="Assessment Max Score"
+                variant="outlined"
+                fullWidth
+                style={{ margin: "6px 0" }}
+                value={assessmentMaxScore}
+                onChange={(e) => setAssessmentMaxScore(e.target.value)}
+                error={assessmentMaxScoreError.value}
+                helperText={assessmentMaxScoreError.errorMessage}
+              />
+              <Stack spacing={1}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DesktopDatePicker
+                    label="Start Date"
+                    inputFormat="MM/DD/YYYY"
+                    value={assessmentStartDate}
+                    onChange={handleStartDateChange}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        sx={{ width: "100%" }}
+                        error={assessmentStartDateError.value}
+                        helperText={assessmentStartDateError.errorMessage}
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DesktopDatePicker
+                    label="End Date"
+                    inputFormat="MM/DD/YYYY"
+                    value={assessmentEndDate}
+                    onChange={handleEndDateChange}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        sx={{ width: "100%" }}
+                        error={assessmentEndDateError.value}
+                        helperText={assessmentEndDateError.errorMessage}
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
+              </Stack>
+              <TextField
+                required
+                select
+                id="outlined-basic"
+                label="Assessment File Submission Type"
+                variant="outlined"
+                fullWidth
+                style={{ margin: "6px 0" }}
+                value={assessmentFileSubmissionEnum}
+                onChange={(e) => setAssessmentFileSubmissionEnum(e.target.value)}
+                error={assessmentFileSubmissionEnumError.value}
+                helperText={assessmentFileSubmissionEnumError.errorMessage}
+              >
+                {enumGroup.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.value}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={createNewAssessment}>Create</Button>
+            </DialogActions>
+          </Dialog>
+        </div> */}
       <div>
         <Dialog
           open={deleteDialogOpen}

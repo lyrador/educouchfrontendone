@@ -38,6 +38,10 @@ import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
 import LearnerCourseDetails from "./pages/LearnerCourseDetails";
 import TeachingCourseClassRuns from "./components/TeachingCourseClassRuns";
 import SuccessRefundRequestPage from "./pages/SuccessRefundRequestPage";
+import TeachingClassRuns from "./components/TeachingClassRuns";
+import TeachingClassEvents from "./components/TeachingClassEvents";
+import CreateQuizForm from "./pages/CreateQuizForm";
+import CreateAssessment from "./pages/CreateAssessment";
 
 function App() {
   return (
@@ -124,7 +128,16 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <TeachingCourseClassRuns />
+                  <TeachingClassRuns />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/classRuns/:classRunId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingClassEvents />
                 </RequireAuth>
               }
             />
@@ -143,6 +156,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <FileSubmission />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/assessments/createAssessment"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateAssessment />
                 </RequireAuth>
               }
             />
@@ -306,6 +328,15 @@ function App() {
             <Route
               path="/register/educator"
               element={<RegisterOrganisationAdminPage />}
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/assessments/createQuiz"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateQuizForm />
+                </RequireAuth>
+              }
             />
           </Routes>
         </Router>
