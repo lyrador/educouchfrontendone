@@ -1,274 +1,253 @@
-import * as React from 'react';
 import { useState } from 'react';
+import * as React from "react";
 import { Link, useLocation, useParams } from 'react-router-dom';
-import TeachingCoursesDrawer from '../components/TeachingCoursesDrawer';
-import { Container, Paper, Box, Button, MenuItem, Grid } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
 import { useAuth } from "../context/AuthProvider";
+import  { ViewState } from '@devexpress/dx-react-scheduler';
+import { EditingState } from '@devexpress/dx-react-scheduler';
+import { IntegratedEditing } from '@devexpress/dx-react-scheduler';
+import { Scheduler, WeekView, MonthView, DayView, Appointments, AppointmentTooltip, AppointmentForm, Toolbar, ViewSwitcher, DateNavigator, TodayButton, ConfirmationDialog, DragDropProvider} from '@devexpress/dx-react-scheduler-material-ui';
 
-import PropTypes from 'prop-types';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+const TeachingCourseCalender = (props) => {
 
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+const auth = useAuth();
+const user = auth.user;
 
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormHelperText from '@mui/material/FormHelperText';
-import Checkbox from '@mui/material/Checkbox';
-import DoneIcon from '@mui/icons-material/Done';
-import AddIcon from '@mui/icons-material/Add';
+const [events, setEvents] = useState([])
+const views = ['timelineDay', 'timelineWeek', 'timelineWorkWeek', 'timelineMonth'];
+const currentDate = new Date();
+const [editingAppointment, setEditingAppointment] = useState('');
+const [addedAppointment, setAddedAppointment] = useState({})
+const [appointmentChanges, setAppointmentChanges] = useState({})
+const [currentViewName, setCurrentViewName] = useState('work-week')
+const [classRuns, setClassRuns] = React.useState([]); 
 
-export default function TeachingCourseClassRuns(props) {
+const location = useLocation(props);
+const [refreshPage, setRefreshPage] = useState('')
+const courseId = location.pathname.split('/')[2];
 
-    function Row(props) {
-        const { row } = props;
-        const [open, setOpen] = React.useState(false);
+//to get the classRuns of the instructor
+React.useEffect(() => {
+    fetch("http://localhost:8080/classRun/getClassRunsFromInstructorId/" + user.userId)
+    .then((res) => res.json())
+    .then((result) => {
+    setClassRuns(result)
+    })
+}, []); 
 
-        return (
-            <React.Fragment>
-                <TableRow>
-                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
-                        <Collapse in={open} timeout="auto" unmountOnExit>
-                            <Box sx={{ margin: 1 }}>
-                                <Typography variant="h6" gutterBottom component="div">
-                                    Class Events
-                                </Typography>
-                                <Table size="small" aria-label="purchases">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Event ID</TableCell>
-                                            <TableCell align="right">Title</TableCell>
-                                            <TableCell align="right">Description</TableCell>
-                                            <TableCell align="right">Date</TableCell>
-                                            <TableCell align="right">Start Time</TableCell>
-                                            <TableCell align="right">End Time</TableCell>
-                                            <TableCell align="right" width="700">Actions</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {row.classEvents.map((classEventRow) => (
-                                            <TableRow key={classEventRow.date}>
-                                                <TableCell component="th" scope="row">
-                                                    {classEventRow.eventId}
-                                                </TableCell>
-                                                <TableCell align="right">{classEventRow.title}</TableCell>
-                                                <TableCell align="right">{classEventRow.eventDescription}</TableCell>
-                                                <TableCell align="right">{classEventRow.startDate.substring(0, 10)}</TableCell>
-                                                <TableCell align="right">{classEventRow.startDate.substring(11, 16)}</TableCell>
-                                                <TableCell align="right">{classEventRow.endDate.substring(11, 16)}</TableCell>
-                                                <TableCell align="right">
-                                                    <div>
-                                                        <IconButton
-                                                            aria-label="settings"
-                                                            onClick={(event) => handleClickDeleteEventDialogOpen(event, classEventRow.eventId)}
-                                                        >
-                                                            <DeleteIcon />
-                                                        </IconButton>
-                                                        {/* <IconButton
-                                                            aria-label="settings"
-                                                            onClick={(event) => generateClassEventsForClassRun(event, row.classRunId)}
-                                                        >
-                                                            <DoneIcon />
-                                                        </IconButton> */}
-                                                        <IconButton
-                                                            aria-label="settings"
-                                                            onClick={(event) => deleteClassEvent(event, classEventRow.eventId)}
-                                                        >
-                                                            <EditIcon />
-                                                        </IconButton>
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                        <TableRow>
-                                            <TableCell>New Class Event</TableCell>
-                                            <TableCell align="right">
-                                                <TextField id="outlined-basic" label="Title" variant="outlined" fullWidth
-                                                    style={{ margin: '6px 0' }}
-                                                    value={classRunStartTime}
-                                                    // inputProps={{style: {fontSize: 11}}}
-                                                    // size="small"
-                                                    sx={{ width: 100 }}
-                                                    InputProps={{ sx: { height: '35px' }, style: { fontSize: 15 } }}
-                                                    onChange={(e) => setClassRunStartTime(e.target.value)}
-                                                />
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <TextField id="outlined-basic" label="Description" variant="outlined" fullWidth
-                                                    style={{ margin: '6px 0' }}
-                                                    value={classRunStartTime}
-                                                    // inputProps={{style: {fontSize: 11}}}
-                                                    // size="small"
-                                                    sx={{ width: 140 }}
-                                                    InputProps={{ sx: { height: '35px' }, style: { fontSize: 15 } }}
-                                                    onChange={(e) => setClassRunStartTime(e.target.value)}
-                                                />
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <TextField id="outlined-basic" label="Date" variant="outlined" fullWidth
-                                                    style={{ margin: '6px 0' }}
-                                                    value={classRunStartTime}
-                                                    // inputProps={{style: {fontSize: 11}}}
-                                                    // size="small"
-                                                    sx={{ width: 100 }}
-                                                    InputProps={{ sx: { height: '35px' }, style: { fontSize: 15 } }}
-                                                    onChange={(e) => setClassRunStartTime(e.target.value)}
-                                                />
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <TextField id="outlined-basic" label="Start Time" variant="outlined" fullWidth
-                                                    style={{ margin: '6px 0' }}
-                                                    value={classRunStartTime}
-                                                    // inputProps={{style: {fontSize: 11}}}
-                                                    // size="small"
-                                                    sx={{ width: 80 }}
-                                                    InputProps={{ sx: { height: '35px' }, style: { fontSize: 15 } }}
-                                                    onChange={(e) => setClassRunStartTime(e.target.value)}
-                                                />
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <TextField id="outlined-basic" label="End Time" variant="outlined" fullWidth
-                                                    style={{ margin: '6px 0' }}
-                                                    value={classRunStartTime}
-                                                    sx={{ width: 80 }}
-                                                    InputProps={{ sx: { height: '35px' }, style: { fontSize: 15 } }}
-                                                    onChange={(e) => setClassRunStartTime(e.target.value)}
-                                                />
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <div>
-                                                    <IconButton
-                                                        aria-label="settings"
-                                                        onClick={(event) => handleClickDeleteDialogOpen(event, row.classRunId)}
-                                                    >
-                                                        <DeleteIcon />
-                                                    </IconButton>
-                                                    <IconButton
-                                                        aria-label="settings"
-                                                        onClick={(event) => generateClassEventsForClassRun(event, row.classRunId)}
-                                                    >
-                                                        <DoneIcon />
-                                                    </IconButton>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell colSpan={13} style={{ textAlign: "center" }}>
-                                                <Button variant='contained' onClick={(event) => generateClassEventsForClassRun(event, row.classRunId)}>
-                                                    <AddIcon style={{fontSize: '16px'}}/>
-                                                    Add New Class Event
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                </Table>
-                            </Box>
-                        </Collapse>
-                    </TableCell>
-                </TableRow>
-            </React.Fragment>
-        );
+
+const changeAddedAppointment = (addedAppointment) => {
+    setAddedAppointment(addedAppointment); 
+}
+
+const changeAppointmentChanges = (appointmentChanges) => {
+    setAppointmentChanges(appointmentChanges); 
+}
+
+const changeEditingAppointment = (editingAppointment) => {
+     setEditingAppointment(editingAppointment); 
+}
+
+const currentViewNameChange = (currentViewName) => {
+    setCurrentViewName(currentViewName); 
+}
+
+function Select(props) {
+    return <AppointmentForm.Select {...props} />; 
+}
+
+function BasicLayout({ onFieldChange, appointmentData, ...restProps }) {
+    const onCustomFieldChange = (nextValue) => {
+      onFieldChange({ classRunId: nextValue });
+    };
+  
+    return (
+      <AppointmentForm.BasicLayout
+        appointmentData={appointmentData}
+        onFieldChange={onFieldChange}
+        {...restProps}
+      >
+        <AppointmentForm.Label
+          text="Class Runs"
+          type="title"
+        />
+        <AppointmentForm.Select
+          value={appointmentData.classRunId}
+          onValueChange={onCustomFieldChange}
+          availableOptions= {(classRuns.map(v =>({id: v.classRunId, text: v.classRunId.toString()})))}
+          type='filledSelect'
+          placeholder="Choose Class Run"
+        />
+      </AppointmentForm.BasicLayout>
+    );
+};
+
+
+
+const commitChanges = ({added, changed, deleted}) => {
+    
+    if (changed) {
+
+        var title = (appointmentChanges.title === undefined) ? editingAppointment.title : appointmentChanges.title
+        var startDate = (appointmentChanges.startDate === undefined) ? editingAppointment.startDate : appointmentChanges.startDate
+        var endDate = (appointmentChanges.endDate === undefined) ? editingAppointment.endDate : appointmentChanges.endDate
+        var notes = (appointmentChanges.notes == undefined) ? editingAppointment.notes : appointmentChanges.notes
+        var allDay = (appointmentChanges.allDay == undefined) ? editingAppointment.allDay : appointmentChanges.allDay
+        var classRunId = editingAppointment.classRunId
+        var id = editingAppointment.id
+        const appointment1 = {title, startDate, endDate, notes, allDay, id, classRunId}; 
+        editAppointment(appointment1)
     }
 
-    const [deleteEventDialogOpen, setDeleteEventDialogOpen] = React.useState(false);
-    const [classEventIdToDelete, setClassEventIdToDelete] = useState("");
+    if (added) {
+        saveAppointment(addedAppointment)
+    }
 
-    const handleClickDeleteEventDialogOpen = (event, classEventId) => {
-        setClassEventIdToDelete(classEventId);
-        setDeleteEventDialogOpen(true);
-    };
+    if (deleted !== undefined) {
+        
+        deleteAppointment(editingAppointment); 
+    }
+}
 
-    const handleDeleteEventDialogClose = () => {
-        setDeleteEventDialogOpen(false);
-    };
+//To get all events of the instructor for My Calendar (Instructor)
+React.useEffect(() => {
+    setRefreshPage(false);
+    fetch("http://localhost:8080/event/instructors/" + user.userId + "/events").
+        then(res => res.json()).then((result) => {
+            setEvents(result);
+        }
+        )
+}, [refreshPage])
 
-    // const handleClickEditDialogOpen = (event, forumId, forumTitle) => {
-    //     setEditForumTitle(forumTitle);
-    //     setForumIdToEdit(forumId);
-    //     setEditDialogOpen(true);
-    // };
+// //To get all events of the course for course calendar
+// React.useEffect(() => {
+//     setRefreshPage(false);
+//     fetch("http://localhost:8080/event/courses/" + courseId + "/events").
+//         then(res => res.json()).then((result) => {
+//             setEvents(result);
+//         }
+//         )
+// }, [refreshPage])
 
-    const handleEditDialogClose = () => {
-        setEditDialogOpen(false);
-    };
+// //to just get all events (i just use this for testing the functionality)
+// React.useEffect(() => {
+//     setRefreshPage(false);
+//     fetch("http://localhost:8080/event/events").
+//         then(res => res.json()).then((result) => {
+//             setEvents(result);
+//         }
+//         )
+// }, [refreshPage])
 
+
+
+const saveAppointment = (data) => {
+    console.log(data)
+    fetch("http://localhost:8080/event/classRun/" + data.classRunId + "/events" , {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        }).then(() => {
+            console.log("Event Created Successfully!")
+            setRefreshPage(true)
+        
+        })
+}
+
+const editAppointment = (data) => {
+    console.log(data)
+    fetch("http://localhost:8080/event/events/" + data.id , {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        }).then(() => {
+            console.log("Event Updated Successfully!")
+            setRefreshPage(true)
+        
+        })
+}
+
+const deleteAppointment = (data) => {
+    console.log(data)
+    fetch("http://localhost:8080/event/events/" + data.id , {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        }).then(() => {
+            console.log("Event Deleted Successfully!")
+            setRefreshPage(true)
+        
+        })
+}
+
+console.log(classRuns)
+
+const allowDrag = ({id}) => !(id == 0); 
+
+console.log(events); 
 
     return (
-        <div>
-            {/* <div>
-                <Dialog
-                    open={editDialogOpen}
-                    onClose={handleEditDialogClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
+        <div id="calender">
+            <Scheduler 
+                timeZone="Asia/Singapore"
+                data={events}
+                views={views}
+                defaultCurrentView="timelineDay"
+                defaultCurrentDate={currentDate}
+                firstDayOfWeek={0}
                 >
-                    <DialogTitle id="alert-dialog-title">
-                        {"You are editing this forum"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            Enter the new forum details
-                        </DialogContentText>
-                        <TextField
-                            id="outlined-basic"
-                            label="Discussion Title"
-                            variant="outlined"
-                            fullWidth
-                            style={{ margin: "6px 0" }}
-                            value={editForumTitle}
-                            onChange={(e) => setEditForumTitle(e.target.value)}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleEditDialogClose}>Cancel</Button>
-                        <Button onClick={editForum} autoFocus>
-                            Edit
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </div> */}
-            <div>
-                <Dialog
-                    open={deleteEventDialogOpen}
-                    onClose={handleDeleteEventDialogClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">
-                        {"Delete this class event?"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            You cannot undo this action. Confirm delete?
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleDeleteEventDialogClose}>Cancel</Button>
-                        <Button onClick={deleteClassEvent} autoFocus>
-                            Delete
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-        </div>);
+                <ViewState 
+                defaultCurrentDate={currentDate}
+                currentViewName={currentViewName}
+                onCurrentViewNameChange={currentViewNameChange}
+                />
+                <WeekView 
+                    startDayHour={8}
+                    endDayHour={22}
+                />
+                <WeekView
+                    name="work-week"
+                    displayName="Work Week"
+                    excludedDays={[0, 6]}
+                    startDayHour={9}
+                    endDayHour={19}
+                />
+                <MonthView />
+                <DayView />
+                <div>
+                {((user.userType === "ORG_ADMIN") || (user.userType === "INSTRUCTOR")) && (
+                <EditingState 
+                    onCommitChanges={commitChanges}
+                    addedAppointment = {addedAppointment}
+                    onAddedAppointmentChange={changeAddedAppointment}
+                    appointmentChanges={appointmentChanges}
+                    onAppointmentChangesChange={changeAppointmentChanges}
+                    editingAppointment = {editingAppointment}
+                    onEditingAppointmentChange = {changeEditingAppointment}
+                />
+                )}
 
-
+                </div>
+                <IntegratedEditing />
+                <Toolbar />
+                <DateNavigator />
+                <TodayButton />
+                <ViewSwitcher />
+                <Appointments />
+                <ConfirmationDialog
+                />
+                <AppointmentTooltip
+                    showOpenButton
+                />
+                <DragDropProvider
+                    allowDrag = {allowDrag}
+                />
+                <AppointmentForm 
+                    basicLayoutComponent={BasicLayout}
+                    selectComponent={Select}
+                />
+            </Scheduler>
+        </div>
+    ); 
 }
+
+export default TeachingCourseCalender; 

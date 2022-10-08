@@ -18,6 +18,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CourseFeePayment from '../components/CourseFeePayment';
 import EnrolledStatus from '../components/EnrolledStatus';
+import RefundOnTheWay from '../components/RefundOnTheWay';
+import ClassRunReschedule from '../components/ClassRunReschedule';
 
 
 export default function CourseEnrollmentPage() {
@@ -35,6 +37,7 @@ export default function CourseEnrollmentPage() {
         setCourseLearnerStatus(status);
     };
     const [classRunRegistered, setClassRunRegistered] = useState();
+
 
     React.useEffect(() => {
         setRefreshPage(false);
@@ -180,5 +183,11 @@ export default function CourseEnrollmentPage() {
         return(<CourseFeePayment courseId={courseId} classRunRegistered = {classRunRegistered} ></CourseFeePayment>);
     } else if (courseLearnerStatus === "ENROLLED") {
         return(<EnrolledStatus courseId = {courseId}></EnrolledStatus>);
+    } else if (courseLearnerStatus === "DROPPED") {
+        return(<ClassRunReschedule courseId = {courseId} oldClassRunId = {classRunRegistered.classRunId} ></ClassRunReschedule>);
+    } else if (courseLearnerStatus === "REFUNDREQUEST") {
+        return(<RefundOnTheWay courseId = {courseId}></RefundOnTheWay>);
+    } else if (courseLearnerStatus === "REFUNDED") {
+        
     }
 }

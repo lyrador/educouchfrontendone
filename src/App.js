@@ -36,6 +36,8 @@ import RegisterOrganisationAdminPage from "./pages/RegisterOrganisationAdminPage
 import CourseExplorerPage from "./pages/CourseExplorerPage";
 import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
 import LearnerCourseDetails from "./pages/LearnerCourseDetails";
+import TeachingCourseClassRuns from "./components/TeachingCourseClassRuns";
+import SuccessRefundRequestPage from "./pages/SuccessRefundRequestPage";
 import TeachingClassRuns from "./components/TeachingClassRuns";
 import TeachingClassEvents from "./components/TeachingClassEvents";
 import CreateQuizForm from "./pages/CreateQuizForm";
@@ -172,6 +174,16 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <CourseEnrollmentPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/learnerCourseDetails/:courseId/successRefundRequest"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <SuccessRefundRequestPage />
                 </RequireAuth>
               }
             />
