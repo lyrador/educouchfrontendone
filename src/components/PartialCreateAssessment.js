@@ -8,6 +8,8 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
+import 'dayjs/locale/ru';
+import 'dayjs/locale/ar-sa';
 
 import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import {
@@ -58,8 +60,8 @@ export default function PartialCreateAssessment(props) {
   const [assessmentTitle, setAssessmentTitle] = useState("");
   const [assessmentDescription, setAssessmentDescription] = useState("");
   const [assessmentMaxScore, setAssessmentMaxScore] = useState("");
-  const [assessmentStartDate, setAssessmentStartDate] = useState(dayjs());
-  const [assessmentEndDate, setAssessmentEndDate] = useState(dayjs());
+  const [assessmentStartDate, setAssessmentStartDate] = useState("");
+  const [assessmentEndDate, setAssessmentEndDate] = useState("");
   const [newDocSub, setNewDocSub] = useState();
   const [newQuiz, setNewQuiz] = useState("emptyQuiz");
 
@@ -139,6 +141,19 @@ export default function PartialCreateAssessment(props) {
         errorMessage: "Assessment MaxScore cannot be empty!",
       });
     }
+    if (assessmentStartDate == "") {
+      setAssessmentStartDateError({
+        value: true,
+        errorMessage: "Assessment Start Date cannot be empty!",
+      });
+    }
+
+    if (assessmentEndDate == "") {
+      setAssessmentEndDateError({
+        value: true,
+        errorMessage: "Assessment End Date cannot be empty!",
+      });
+    }
     const newStartDate = assessmentStartDate;
     const newEndDate = assessmentEndDate;
     const dateComparisonBoolean = newEndDate < newStartDate;
@@ -153,7 +168,6 @@ export default function PartialCreateAssessment(props) {
         errorMessage: "Assessment End Date cannot be earlier than Start Date!",
       });
     }
-
     if (
       assessmentTitle &&
       assessmentDescription &&
@@ -230,6 +244,7 @@ export default function PartialCreateAssessment(props) {
         isAutoRelease: "false",
         questions: [],
       };
+      console.log("partialcreateassessment continueasquiz: ", newQuiz.assessmentStartDate)
       setNewQuiz(newQuiz);
       navigate(`${assessmentsPath}/createQuiz`, {
         state: {
@@ -300,10 +315,9 @@ export default function PartialCreateAssessment(props) {
           onChange={(e) => setAssessmentMaxScore(e.target.value)}
         />
         <Stack spacing={1}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
             <DesktopDatePicker
               label="Start Date"
-              inputFormat="DD/MM/YYYY"
               value={assessmentStartDate}
               onChange={handleStartDateChange}
               renderInput={(params) => (
@@ -316,10 +330,9 @@ export default function PartialCreateAssessment(props) {
               )}
             />
           </LocalizationProvider>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
             <DesktopDatePicker
               label="End Date"
-              inputFormat="DD/MM/YYYY"
               value={assessmentEndDate}
               onChange={handleEndDateChange}
               renderInput={(params) => (

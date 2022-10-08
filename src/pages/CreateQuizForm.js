@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Container } from "@mui/system";
 import { useAuth } from "../context/AuthProvider";
+import dayjs from "dayjs";
 import {
   Link,
   Navigate,
@@ -30,6 +31,7 @@ import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsCom
 export default function CreateQuizForm(props) {
   const location = useLocation();
   const navgiate = useNavigate();
+  const courseId = location.pathname.split("/").slice(2, 3).join("/");
   const assessmentsPath = location.state.assessmentsPathProp;
   const createAssessmentPath = location.state.createAssessmentPathProp;
   const createQuizFormPath = location.pathname;
@@ -157,19 +159,39 @@ export default function CreateQuizForm(props) {
     console.log("removed question: " + questionId);
   };
 
+  const handleQuizDateConversions = (quizObject) => {
+    var assessmentStartDate = dayjs(quizObject.assessmentStartDate.d).format("YYYY-MM-DD");
+    var assessmentEndDate = dayjs(quizObject.assessmentEndDate.d).format("YYYY-MM-DD");
+    console.log(assessmentEndDate, assessmentStartDate);
+  };
+
   const handleSave = (e) => {
-    e.preventDefault();
+
+    const tempQuiz = {
+      "assessmentTitle": "tempQuiz",
+      "assessmentDescription": "qwer",
+      "assessmentMaxScore": "1",
+      "assessmentStartDate": "2022-02-10",
+      "assessmentEndDate": "2022-02-10",
+      "assessmentIsOpen": "1",
+      "assessmentStatusEnum": "pending",
+      "hasTimeLimit": "true",
+      "timeLimit": "1",
+      "isAutoRelease": "true"
+  }
+    handleQuizDateConversions(currentQuiz);
     linkQuizQuestions();
-    // fetch(
-    //   "http://localhost:8080/educator/addInstructor?organisationId=" +
-    //     user.organisationId,
-    //   {
-    //     method: "PUT",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(educator),
-    //   }
-    // )
-    //   .then((res) => res.json())
+    console.log(currentQuiz);
+
+    e.preventDefault();
+    // linkQuizQuestions();
+    fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+
+    body: JSON.stringify(tempQuiz)
+      // body: JSON.stringify(currentQuiz),
+    }).then((res) => res.json());
   };
   const handleCancel = (e) => {
     navgiate(`${assessmentsPath}`);
@@ -225,10 +247,12 @@ export default function CreateQuizForm(props) {
             <h1 style={{ color: "whitesmoke" }}>Quiz Creation</h1>
             <Button
               aria-label="settings"
+              variant="contained"
+              style={{ backgroundColor: "#989898" }}
               onClick={() => handleOpenSettingsDialogue()}
             >
               <SettingsIcon style={{ marginRight: 10 }} />
-              Edit Quiz Settings
+              Edit Settings
             </Button>
             <Modal
               open={open}
@@ -243,6 +267,11 @@ export default function CreateQuizForm(props) {
               ></QuizSettingsComponents>
             </Modal>
           </Grid>
+
+          <Button onClick={() => handleQuizDateConversions(currentQuiz)}>
+            testingzzz
+          </Button>
+
           {formQuestions.length == 0 && (
             <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
               <h3>Currently no questions!</h3>
