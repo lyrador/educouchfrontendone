@@ -14,6 +14,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { Padding, SettingsOutlined } from "@mui/icons-material";
+import dayjs from "dayjs";
 
 export default function QuizSettingsComponents(props) {
   const paperStyle = { padding: "50px 20px", width: 1200, margin: "20px auto" };
@@ -26,6 +27,8 @@ export default function QuizSettingsComponents(props) {
   const [hasTimeLimit, setHasTimeLimit] = useState("");
   const [timeLimit, setTimeLimit] = useState();
   const [isAutoRelease, setIsAutoRelease] = useState("");
+  var startDateString = "";
+  var endDateString = "";
 
   const [titleError, setTitleError] = useState({
     value: false,
@@ -61,6 +64,12 @@ export default function QuizSettingsComponents(props) {
     setHasTimeLimit(quizSettings.hasTimeLimit);
     setTimeLimit(quizSettings.timeLimit);
     setIsAutoRelease(quizSettings.isAutoRelease);
+    startDateString = dayjs(startDate.d).format(
+      "YYYY/MM/DD"
+    );
+    endDateString = dayjs(endDate.d).format(
+      "YYYY/MM/DD"
+    );
   }, []);
 
   function handleCancel() {
@@ -172,6 +181,7 @@ export default function QuizSettingsComponents(props) {
 
   const handleStartDateChange = (newDate) => {
     setStartDate(newDate);
+    console.log("new start date: ", startDate)
   };
 
   const handleEndDateChange = (newDate) => {
@@ -188,7 +198,8 @@ export default function QuizSettingsComponents(props) {
               color: "whitesmoke",
               fontSize: "30px",
               marginBottom: "40px",
-              padding: "6px", }}
+              padding: "6px",
+            }}
           >
             Quiz Settings{" "}
           </h3>
@@ -235,8 +246,8 @@ export default function QuizSettingsComponents(props) {
           >
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
-                label="Quiz Start Date"
-                inputFormat="DD/MM/YYYY"
+                label={startDateString}
+                inputFormat="YYYY/MM/DD"
                 value={startDate}
                 onChange={handleStartDateChange}
                 renderInput={(params) => (
@@ -251,8 +262,8 @@ export default function QuizSettingsComponents(props) {
             </LocalizationProvider>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
-                label="End Date"
-                inputFormat="DD/MM/YYYY"
+                label={endDateString}
+                inputFormat="YYYY/MM/DD"
                 value={endDate}
                 onChange={handleEndDateChange}
                 renderInput={(params) => (

@@ -80,7 +80,7 @@ export default function CreateQuizForm(props) {
   function editQuestionTitle(questionId, questionTitle) {
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
-      (f) => f.id == questionId
+      (f) => f.localid == questionId
     );
     if (questionIndex > -1) {
       tempFormQuestions[questionIndex].questionTitle = questionTitle;
@@ -91,7 +91,7 @@ export default function CreateQuizForm(props) {
   function editQuestionType(questionId, questionType) {
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
-      (f) => f.id == questionId
+      (f) => f.localid == questionId
     );
     if (questionIndex > -1) {
       tempFormQuestions[questionIndex].questionType = questionType;
@@ -102,7 +102,7 @@ export default function CreateQuizForm(props) {
   function editQuestionContent(questionId, questionContent) {
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
-      (f) => f.id == questionId
+      (f) => f.localid == questionId
     );
     if (questionIndex > -1) {
       tempFormQuestions[questionIndex].questionContent = questionContent;
@@ -113,7 +113,7 @@ export default function CreateQuizForm(props) {
   function editQuestionMaxPoints(questionId, questionMaxPoints) {
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
-      (f) => f.id == questionId
+      (f) => f.localid == questionId
     );
     if (questionIndex > -1) {
       tempFormQuestions[questionIndex].questionMaxPoints = questionMaxPoints;
@@ -124,7 +124,7 @@ export default function CreateQuizForm(props) {
   function addQuestionOption(questionId, option) {
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
-      (f) => f.id == questionId
+      (f) => f.localid == questionId
     );
     if (option && option != "") {
       tempFormQuestions[questionIndex].options.push(option);
@@ -136,7 +136,7 @@ export default function CreateQuizForm(props) {
   const addQuestion = () => {
     const questionNumber = formQuestions.length + 1;
     const question = {
-      id: "question" + questionNumber,
+      localid: "question" + questionNumber,
       questionTitle: "Question " + questionNumber,
       questionType: "shortAnswer",
       questionContent: "Type Question Body here...",
@@ -144,16 +144,15 @@ export default function CreateQuizForm(props) {
       options: [],
     };
     setFormQuestions([...formQuestions, question]);
-    console.log("added question: " + question.questionType);
   };
 
   const removeQuestion = (questionId) => {
-    const questionIndex = formQuestions.findIndex((f) => f.id == questionId);
+    const questionIndex = formQuestions.findIndex((f) => f.localid == questionId);
     const tempFormQuestions = [...formQuestions];
     if (questionIndex > -1) {
       setFormQuestions(
         tempFormQuestions.filter((question) => {
-          return question.id !== questionId;
+          return question.localid !== questionId;
         })
       );
     }
@@ -172,7 +171,6 @@ export default function CreateQuizForm(props) {
     e.preventDefault();
     const updatedQuiz = handleQuizDateConversions(currentQuiz);
     linkQuizQuestions();
-    console.log(JSON.stringify(updatedQuiz));
 
     fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
       method: "POST",
@@ -182,9 +180,11 @@ export default function CreateQuizForm(props) {
     }).then((res) => res.json())
       .then(handleCancel);
   };
+
   const handleCancel = (e) => {
     navigate(`${assessmentsPath}`);
   };
+
   return (
     <Grid container spacing={0}>
       <Grid item xs={2}>

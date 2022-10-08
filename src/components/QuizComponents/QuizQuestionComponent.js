@@ -22,7 +22,7 @@ export default function QuizQuestionComponent(props) {
       justifyContent={"space-between"}
     >
       <QuizTitleComponent
-        questionIdProp={props.questionProp.id}
+        questionIdProp={props.questionProp.localid}
         questionTitleProp={props.questionProp.questionTitle}
         editQuestionTitleProp={props.editQuestionTitleProp}
       />
@@ -30,13 +30,13 @@ export default function QuizQuestionComponent(props) {
       <QuizTypeDropdownComponent
         questionTypeProp={props.questionProp.questionType}
         editQuestionTypeProp={props.editQuestionTypeProp}
-        questionIdProp={props.questionProp.id}
+        questionIdProp={props.questionProp.localid}
       />
 
       <Grid container direction="column">
         <Grid>
           <QuizContentComponent
-            questionIdProp={props.questionProp.id}
+            questionIdProp={props.questionProp.localid}
             questionContentProp={props.questionProp.questionContent}
             editQuestionContentProp={props.editQuestionContentProp}
           />
@@ -53,14 +53,14 @@ export default function QuizQuestionComponent(props) {
                 textFieldProp={props.textFieldProp}
                 setTextFieldProp={props.setTextFieldProp}
                 addQuestionOptionProp={props.addQuestionOptionProp}
-                questionIdProp={props.questionProp.id}
+                questionIdProp={props.questionProp.localid}
               />
             </div>
           )}
           {props.questionProp.questionType == "trueFalse" && (
             <div>
               <TrueFalseComponent
-                questionIdProp={props.questionProp.id}
+                questionIdProp={props.questionProp.localid}
                 booleanOptionsProp={question.options}
                 addBooleanOptionsProp={props.addQuestionOptionProp}
               />
@@ -69,12 +69,12 @@ export default function QuizQuestionComponent(props) {
         </Grid>
         <Grid item style={{ marginTop: 50,}}>
           <QuestionMaxPoints
-            questionIdProp={props.questionProp.id}
+            questionIdProp={props.questionProp.localid}
             questionMaxPointsProp={props.questionProp.questionMaxPoints}
             editQuestionContentProp={props.editQuestionContentProp}
           />
           <Button
-            onClick={() => props.removeQuestionProp(props.questionProp.id)}
+            onClick={() => props.removeQuestionProp(props.questionProp.localid)}
             color="secondary"
             variant="contained"
           >

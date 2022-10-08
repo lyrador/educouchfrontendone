@@ -60,8 +60,8 @@ export default function PartialCreateAssessment(props) {
   const [assessmentTitle, setAssessmentTitle] = useState("");
   const [assessmentDescription, setAssessmentDescription] = useState("");
   const [assessmentMaxScore, setAssessmentMaxScore] = useState("");
-  const [assessmentStartDate, setAssessmentStartDate] = useState("");
-  const [assessmentEndDate, setAssessmentEndDate] = useState("");
+  const [assessmentStartDate, setAssessmentStartDate] = useState(dayjs());
+  const [assessmentEndDate, setAssessmentEndDate] = useState(dayjs());
   const [newDocSub, setNewDocSub] = useState();
   const [newQuiz, setNewQuiz] = useState("emptyQuiz");
 
@@ -244,7 +244,7 @@ export default function PartialCreateAssessment(props) {
         isAutoRelease: "false",
         questions: [],
       };
-      console.log("partialcreateassessment continueasquiz: ", newQuiz.assessmentStartDate)
+
       setNewQuiz(newQuiz);
       navigate(`${assessmentsPath}/createQuiz`, {
         state: {
