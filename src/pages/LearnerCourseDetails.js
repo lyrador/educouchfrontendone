@@ -39,23 +39,38 @@ export default function LearnerCourseDetails(props) {
     const [course, setCourse] = useState('');
     const [refreshPage, setRefreshPage] = useState('');
 
+    const [learnerStatus, setLearnerStatus] = useState('');
+
     React.useEffect(() => {
         setRefreshPage(false);
         fetch("http://localhost:8080/course/courses/" + courseId)
             .then(res => res.json())
             .then((result) => {
                 setCourse(result);
-                console.log('Course id is '+ course.courseId);
+                var checkStatusUrl = "http://localhost:8080/course/enquiryCourseEnrolment?learnerId=" + user.userId + "&courseId=" + courseId;
+                fetch(checkStatusUrl)
+                    .then(res => res.json())
+                    .then((result) => {
+                        setLearnerStatus(result.enrolled);
+                        console.log('Learner status is '+ learnerStatus);
+                        
+                    }
+                    )
+                    .catch((err) => {
+                        console.log(err);
+                    });
             }
             );
     }, [refreshPage]);
+
+
 
     return (
         <div>
             <Container>
                 <Grid container spacing={0}>
                     <Grid item xs={2}>
-                        <LearnerCourseDrawer courseId={courseId}></LearnerCourseDrawer>
+                        <LearnerCourseDrawer courseId={courseId} learnerStatus = {learnerStatus}></LearnerCourseDrawer>
                     </Grid>
                     <Grid item xs={10}>
                         <Paper elevation={3} style={paperStyle}>
