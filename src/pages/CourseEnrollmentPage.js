@@ -187,5 +187,7 @@ export default function CourseEnrollmentPage() {
         return(<ClassRunReschedule courseId = {courseId} oldClassRunId = {classRunRegistered.classRunId} ></ClassRunReschedule>);
     } else if (courseLearnerStatus === "REFUNDREQUEST") {
         return(<RefundOnTheWay courseId = {courseId}></RefundOnTheWay>);
+    } else if (courseLearnerStatus === "REFUNDED") {
+        
     }
 }

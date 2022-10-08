@@ -187,7 +187,6 @@ export default function ClassRunReschedule({ courseId, oldClassRunId}) {
 
         })
         .then(() => {
-            console.log("Reach here.");
             closeRefundDialogBox();
             navigateRefundSuccessPage();
         }
