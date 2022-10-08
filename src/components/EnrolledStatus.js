@@ -18,7 +18,7 @@ const stripePromise = loadStripe(publicKey);
 
 
 
-export default function EnrolledStatus({ courseId }) {
+export default function EnrolledStatus({ courseId}) {
     // user
     const auth = useAuth();
     const user = auth.user;
@@ -37,7 +37,7 @@ export default function EnrolledStatus({ courseId }) {
         <>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <LearnerCourseDrawer courseId={courseId}></LearnerCourseDrawer>
+                    <LearnerCourseDrawer courseId={courseId} learnerStatus = {false}></LearnerCourseDrawer>
                 </Grid>
                 <Grid item xs={8}>
                     <div id="congratulation-picture-container">

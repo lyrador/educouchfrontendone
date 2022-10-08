@@ -108,10 +108,11 @@ export default function ClassRunReschedule({ courseId, oldClassRunId}) {
     // checkout
     const [amountToBePaid, setAmountToBePaid] = useState(0);
     const [clientSecret, setClientSecret] = useState('');
-    const checkout = () => {
-        setAmountToBePaid(currentCourse.courseFee * 0.90);
-        if (amountToBePaid != 0) {
-            var url = "http://localhost:8080/payment/checkout?amount=" + amountToBePaid;
+    const checkout = (num_to_pay) => {
+        
+        if (num_to_pay != 0) {
+            setAmountToBePaid(num_to_pay);
+            var url = "http://localhost:8080/payment/checkout?amount=" + num_to_pay;
             console.log('Url is ' + url);
             fetch(url).
                 then(res => res.json()).then((result) => {
@@ -219,7 +220,7 @@ export default function ClassRunReschedule({ courseId, oldClassRunId}) {
         <>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <LearnerCourseDrawer courseId={courseId}></LearnerCourseDrawer>
+                    <LearnerCourseDrawer courseId={courseId} learnerStatus = {false}></LearnerCourseDrawer>
                 </Grid>
                 <Grid item xs={8}>
                     <Snackbar
@@ -549,7 +550,7 @@ export default function ClassRunReschedule({ courseId, oldClassRunId}) {
                                 <Button onClick={handleBack} variant="contained">
                                     Back
                                 </Button>
-                                <Button onClick={checkout} variant="contained" startIcon={<ShoppingCartIcon />}>
+                                <Button onClick={() => checkout(currentCourse.courseFee * 0.90)} variant="contained" startIcon={<ShoppingCartIcon />}>
                                     Checkout
                                 </Button>
 

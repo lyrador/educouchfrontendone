@@ -169,7 +169,7 @@ function App() {
               }
             />
             <Route
-              path="/myTeachingCourse/:courseId/courseEnrollment"
+              path="/learnerCourses/:courseId/courseEnrollment"
               element={
                 <RequireAuth>
                   <Appbar />

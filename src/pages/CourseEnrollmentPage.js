@@ -38,7 +38,7 @@ export default function CourseEnrollmentPage() {
     };
     const [classRunRegistered, setClassRunRegistered] = useState();
 
-
+    
     React.useEffect(() => {
         setRefreshPage(false);
         var url = "http://localhost:8080/course/enquiryCourseStatus?learnerId=" + user.userId + "&courseId=" + courseId;
@@ -67,7 +67,7 @@ export default function CourseEnrollmentPage() {
     };
 
     if (courseLearnerStatus === "NOTENROLLED") {
-        return <CourseEnrollment courseId={courseId} ></CourseEnrollment>;
+        return <CourseEnrollment courseId={courseId} learnerStatus  = {false}></CourseEnrollment>;
     } else if (courseLearnerStatus === "DEPOSITPAID") {
         return (
             <>
@@ -186,8 +186,10 @@ export default function CourseEnrollmentPage() {
     } else if (courseLearnerStatus === "DROPPED") {
         return(<ClassRunReschedule courseId = {courseId} oldClassRunId = {classRunRegistered.classRunId} ></ClassRunReschedule>);
     } else if (courseLearnerStatus === "REFUNDREQUEST") {
-        return(<RefundOnTheWay courseId = {courseId}></RefundOnTheWay>);
+        return(<RefundOnTheWay courseId = {courseId} ></RefundOnTheWay>);
     } else if (courseLearnerStatus === "REFUNDED") {
         
+    } else if (courseLearnerStatus === "ENROLLED") {
+
     }
 }

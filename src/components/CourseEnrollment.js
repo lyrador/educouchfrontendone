@@ -104,12 +104,12 @@ export default function CourseEnrollment({ courseId }) {
 
 
     // checkout
-    const [amountToBePaid, setAmountToBePaid] = useState(0);
     const [clientSecret, setClientSecret] = useState('');
-    const checkout = () => {
-        setAmountToBePaid(currentCourse.courseFee * 0.10);
-        if (amountToBePaid != 0) {
-            var url = "http://localhost:8080/payment/checkout?amount=" + amountToBePaid;
+    const [amountToBePaid, setAmountToBePaid] = useState('');
+    const checkout = (num_to_pay) => {
+        if (num_to_pay != 0) {
+            setAmountToBePaid(num_to_pay);
+            var url = "http://localhost:8080/payment/checkout?amount=" + num_to_pay;
             console.log('Url is ' + url);
             fetch(url).
                 then(res => res.json()).then((result) => {
@@ -139,7 +139,7 @@ export default function CourseEnrollment({ courseId }) {
     };
 
     // sending over record payment
-    const requestDepositRecord = () => {
+    const requestDepositRecord = (num_to_pay) => {
         // send request to create payment record
         const depositRecord = { "classRunId": classRunChosen.classRunId, "learnerId": user.userId, "amount": amountToBePaid  };
         console.log('Deposit record is ' + JSON.stringify(depositRecord));
@@ -474,7 +474,7 @@ export default function CourseEnrollment({ courseId }) {
                                 <Button onClick={handleBack} variant="contained">
                                     Back
                                 </Button>
-                                <Button onClick={checkout} variant="contained" startIcon={<ShoppingCartIcon />}>
+                                <Button onClick={() => checkout(currentCourse.courseFee * 0.90)} variant="contained" startIcon={<ShoppingCartIcon />}>
                                     Checkout
                                 </Button>
 

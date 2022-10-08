@@ -14,36 +14,30 @@ import { useAuth } from "../context/AuthProvider";
 
 import '../css/DrawerLeft.css';
 
-function LearnerCoursesDrawer({courseId}) {
+function LearnerCoursesDrawer({ courseId, learnerStatus }) {
 
     const auth = useAuth();
     const user = auth.user;
+    
 
     const location = useLocation();
     const coursePath = location.pathname.split('/').slice(0, 3).join('/');
 
+    
+    console.log('Course path is ' + coursePath);
     const drawer = (
         <div>
             <div className='drawerContainer'>
                 <br /><br />
-                <Divider>
-                    <Link to={`/myTeachingCourse/${courseId}/courseEnrollment`} style={{ textDecoration: 'none', color: 'black' }}>
-                        <ListItemButton>
-                            <ListItemText primary="Enrolment Status" />
-                        </ListItemButton>
-                    </Link>
-                </Divider>
+                <Link to={`/learnerCourses/${courseId}/courseEnrollment`} style={{ textDecoration: 'none', color: 'black' }}>
+                    <ListItemButton>
+                        Enrolment Status
+
+                    </ListItemButton>
+                </Link>
+
                 <Divider />
                 <List>
-                    {user.userType != "LEARNER" && (
-                        <Link to={{
-                            pathname: `${coursePath}/courseSettings`,
-                        }} style={{ textDecoration: 'none', color: 'black' }}>
-                            <ListItemButton>
-                                <ListItemText primary="Course Settings" />
-                            </ListItemButton>
-                        </Link>
-                    )}
                     <Link to={`${coursePath}/courseCalender`} style={{ textDecoration: 'none', color: 'black' }}>
                         <ListItemButton>
                             <ListItemText primary="Course Calender" />
@@ -55,47 +49,55 @@ function LearnerCoursesDrawer({courseId}) {
                         </ListItemButton>
                     </Link>
                 </List>
-                <Divider />
-                <List>
-                    <Link to={`${coursePath}/announcements`} style={{ textDecoration: 'none', color: 'black' }}>
-                        <ListItemButton>
-                            <ListItemText primary="Announcements" />
-                        </ListItemButton>
-                    </Link>
-                    <Link to={`${coursePath}/files`} style={{ textDecoration: 'none', color: 'black' }}>
-                        <ListItemButton>
-                            <ListItemText primary="Files" />
-                        </ListItemButton>
-                    </Link>
-                    <Link to={{
-                        pathname: `${coursePath}/forum`,
-                        // state: {stateParam : true}
-                    }} style={{ textDecoration: 'none', color: 'black' }}>
-                        <ListItemButton>
-                            <ListItemText primary="Forum" />
-                        </ListItemButton>
-                    </Link>
-                    <Link to={`${coursePath}/assessments`} style={{ textDecoration: 'none', color: 'black' }}>
-                        <ListItemButton>
-                            <ListItemText primary="Assessments" />
-                        </ListItemButton>
-                    </Link>
-                    <Link to={`${coursePath}/gradebook`} style={{ textDecoration: 'none', color: 'black' }}>
-                        <ListItemButton>
-                            <ListItemText primary="Gradebook" />
-                        </ListItemButton>
-                    </Link>
-                    <Link to={`${coursePath}/whiteboard`} style={{ textDecoration: 'none', color: 'black' }}>
-                        <ListItemButton>
-                            <ListItemText primary="Whiteboard" />
-                        </ListItemButton>
-                    </Link>
-                    <Link to={`/myTeachingCourse/${courseId}/inClass`} style={{ textDecoration: 'none', color: 'black' }}>
-                        <ListItemButton>
-                            <ListItemText primary="In-Class" />
-                        </ListItemButton>
-                    </Link>
-                </List>
+                {typeof learnerStatus !== "undefined" && learnerStatus === true &&
+                    <div>
+                        <Divider />
+                        <List>
+                            <Link to={`${coursePath}/announcements`} style={{ textDecoration: 'none', color: 'black' }}>
+                                <ListItemButton>
+                                    <ListItemText primary="Announcements" />
+                                </ListItemButton>
+                            </Link>
+                            <Link to={`${coursePath}/files`} style={{ textDecoration: 'none', color: 'black' }}>
+                                <ListItemButton>
+                                    <ListItemText primary="Files" />
+                                </ListItemButton>
+                            </Link>
+                            <Link to={{
+                                pathname: `${coursePath}/forum`,
+                                // state: {stateParam : true}
+                            }} style={{ textDecoration: 'none', color: 'black' }}>
+                                <ListItemButton>
+                                    <ListItemText primary="Forum" />
+                                </ListItemButton>
+                            </Link>
+                            <Link to={`${coursePath}/assessments`} style={{ textDecoration: 'none', color: 'black' }}>
+                                <ListItemButton>
+                                    <ListItemText primary="Assessments" />
+                                </ListItemButton>
+                            </Link>
+                            <Link to={`${coursePath}/gradebook`} style={{ textDecoration: 'none', color: 'black' }}>
+                                <ListItemButton>
+                                    <ListItemText primary="Gradebook" />
+                                </ListItemButton>
+                            </Link>
+                            <Link to={`${coursePath}/whiteboard`} style={{ textDecoration: 'none', color: 'black' }}>
+                                <ListItemButton>
+                                    <ListItemText primary="Whiteboard" />
+                                </ListItemButton>
+                            </Link>
+                            <Link to={`/myTeachingCourse/${courseId}/inClass`} style={{ textDecoration: 'none', color: 'black' }}>
+                                <ListItemButton>
+                                    <ListItemText primary="In-Class" />
+                                </ListItemButton>
+                            </Link>
+                        </List>
+                    </div>
+                }
+
+
+
+
             </div>
         </div>
     );
