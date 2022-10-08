@@ -27,10 +27,11 @@ import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComp
 import SettingsIcon from "@mui/icons-material/Settings";
 import AddIcon from "@mui/icons-material/Add";
 import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsComponent";
+import { Construction } from "@mui/icons-material";
 
 export default function CreateQuizForm(props) {
   const location = useLocation();
-  const navgiate = useNavigate();
+  const navigate = useNavigate();
   const courseId = location.pathname.split("/").slice(2, 3).join("/");
   const assessmentsPath = location.state.assessmentsPathProp;
   const createAssessmentPath = location.state.createAssessmentPathProp;
@@ -160,41 +161,29 @@ export default function CreateQuizForm(props) {
   };
 
   const handleQuizDateConversions = (quizObject) => {
-    var assessmentStartDate = dayjs(quizObject.assessmentStartDate.d).format("YYYY-MM-DD");
-    var assessmentEndDate = dayjs(quizObject.assessmentEndDate.d).format("YYYY-MM-DD");
-    console.log(assessmentEndDate, assessmentStartDate);
+    const formattedStart = dayjs(quizObject.assessmentStartDate.d).format("YYYY-MM-DD");
+    const formattedEnd = dayjs(quizObject.assessmentEndDate.d).format("YYYY-MM-DD");
+    quizObject.assessmentStartDate = formattedStart
+    quizObject.assessmentEndDate = formattedEnd
+    return quizObject;
   };
 
   const handleSave = (e) => {
-
-    const tempQuiz = {
-      "assessmentTitle": "tempQuiz",
-      "assessmentDescription": "qwer",
-      "assessmentMaxScore": "1",
-      "assessmentStartDate": "2022-02-10",
-      "assessmentEndDate": "2022-02-10",
-      "assessmentIsOpen": "1",
-      "assessmentStatusEnum": "pending",
-      "hasTimeLimit": "true",
-      "timeLimit": "1",
-      "isAutoRelease": "true"
-  }
-    handleQuizDateConversions(currentQuiz);
-    linkQuizQuestions();
-    console.log(currentQuiz);
-
     e.preventDefault();
-    // linkQuizQuestions();
+    const updatedQuiz = handleQuizDateConversions(currentQuiz);
+    linkQuizQuestions();
+    console.log(JSON.stringify(updatedQuiz));
+
     fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
 
-    body: JSON.stringify(tempQuiz)
-      // body: JSON.stringify(currentQuiz),
-    }).then((res) => res.json());
+    body: JSON.stringify(updatedQuiz)
+    }).then((res) => res.json())
+      .then(handleCancel);
   };
   const handleCancel = (e) => {
-    navgiate(`${assessmentsPath}`);
+    navigate(`${assessmentsPath}`);
   };
   return (
     <Grid container spacing={0}>
@@ -267,11 +256,6 @@ export default function CreateQuizForm(props) {
               ></QuizSettingsComponents>
             </Modal>
           </Grid>
-
-          <Button onClick={() => handleQuizDateConversions(currentQuiz)}>
-            testingzzz
-          </Button>
-
           {formQuestions.length == 0 && (
             <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
               <h3>Currently no questions!</h3>
