@@ -191,7 +191,7 @@ export default function Appbar() {
                 {user.userType == "LEARNER" &&
                   <li className="nav-item">
                     <Link to="/myLearnerCoursesList" className="nav-links">
-                      My courses
+                      My Courses
                     </Link>
                   </li>
 
@@ -209,6 +209,14 @@ export default function Appbar() {
                   <li className="nav-item">
                     <Link to="/courseExplorer" className="nav-links">
                       Course Explorer
+                    </Link>
+                  </li>
+                }
+
+                {user.userType === "LEARNER" &&
+                  <li className="nav-item">
+                    <Link to="/learnerCalendar" className="nav-links">
+                      My Calendar
                     </Link>
                   </li>
                 }
