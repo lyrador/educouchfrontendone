@@ -37,7 +37,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-
+import PublishIcon from "@mui/icons-material/Publish";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
@@ -84,6 +84,21 @@ function TeachingAssessmentList(props) {
     }
     setOpenDeleteSnackbar(false);
   };
+
+  const [openReleaseSnackbar, setOpenReleaseSnackbar] = React.useState(false);
+
+  const handleClickReleaseSnackbar = () => {
+    setOpenReleaseSnackbar(true);
+  };
+
+  const handleCloseReleaseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenReleaseSnackbar(false);
+  };
+
+
 
   const [openEditSnackbar, setOpenEditSnackbar] = React.useState(false);
 
@@ -200,7 +215,7 @@ function TeachingAssessmentList(props) {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-
+  const [releaseDialogueOpen, setReleaseDialogueOpen] = React.useState(false);
   const [editAssessmentTitle, setEditAssessmentTitle] = useState("");
   const [editAssessmentDescription, setEditAssessmentDescription] =
     useState("");
@@ -214,6 +229,7 @@ function TeachingAssessmentList(props) {
     setEditAssessmentFileSubmissionEnum,
   ] = useState("");
   const [assessmentIdToEdit, setAssessmentIdToEdit] = useState("");
+  const [assessmentIdToRelease, setAssessmentIdToRelease] = useState("");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -232,28 +248,12 @@ function TeachingAssessmentList(props) {
     setDeleteDialogOpen(false);
   };
 
-  const handleClickEditDialogOpen = (
-    event,
-    assessmentId,
-    assessmentTitle,
-    assessmentDescription,
-    assessmentMaxScore,
-    assessmentStartDate,
-    assessmentEndDate,
-    assessmentFileSubmissionEnum
-    //   // isOpen,
-    //   // statusEnum
-  ) => {
-    setEditAssessmentTitle(assessmentTitle);
-    setEditAssessmentDescription(assessmentDescription);
-    setEditAssessmentMaxScore(assessmentMaxScore);
-    setEditAssessmentStartDate(assessmentStartDate);
-    setEditAssessmentEndDate(assessmentEndDate);
-    setEditAssessmentFileSubmissionEnum(assessmentFileSubmissionEnum);
-    setAssessmentIdToEdit(assessmentId);
-    //   // setAssessmentIsOpen(isOpen);
-    //   // setAssessmentStatusEnum(statusEnum);
-    setEditDialogOpen(true);
+  const handleReleaseDialogueOpen = (event, assessmenetId) => {
+    setReleaseDialogueOpen(true);
+  };
+
+  const handleReleaseDialogueClose = () => {
+    setReleaseDialogueOpen(false);
   };
 
   const handleEditDialogClose = () => {
@@ -361,6 +361,27 @@ function TeachingAssessmentList(props) {
     });
   }
 
+  function handleReleaseAssessment(assessmentId) {
+    // call some API to release assessment
+    fetch(
+      "http://localhost:8080/assessment/releaseAssessment/" + assessmentId,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    ).then((res) => res.json());
+    // then close dialogue
+    handleReleaseDialogueClose();
+    // then open snackbar for successful release
+    handleClickReleaseSnackbar();
+
+  }
+
+  function handleClickReleaseAssessment(event, assassessmentessmentId) {
+    setAssessmentIdToRelease(assassessmentessmentId);
+    setReleaseDialogueOpen(true);
+  }
+
   const navigate = useNavigate();
 
   function continueAsPartialAssessment() {
@@ -432,6 +453,20 @@ function TeachingAssessmentList(props) {
             </Alert>
           </Snackbar>
           <Snackbar
+            open={openReleaseSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseReleaseSnackbar}
+          >
+            <Alert
+              onClose={handleCloseReleaseSnackbar}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
+              Assessment Released Succesfully!
+            </Alert>
+          </Snackbar>
+
+          <Snackbar
             open={openEditSnackbar}
             autoHideDuration={5000}
             onClose={handleCloseEditSnackbar}
@@ -477,16 +512,7 @@ function TeachingAssessmentList(props) {
                 flexDirection: "row",
                 justifyItems: "flex-end",
               }}
-            >
-              <Button
-                variant="contained"
-                type="submit"
-                onClick={continueAsPartialAssessment}
-                style={{ float: "right", marginLeft: "auto" }}
-              >
-                Create New Assessment
-              </Button>
-            </Grid>
+            ></Grid>
           </div>
 
           {/* table is here */}
@@ -501,6 +527,7 @@ function TeachingAssessmentList(props) {
                     <TableCell>End Date</TableCell>
                     {/* <TableCell>Assessment Status</TableCell> */}
                     <TableCell>Assessment Type</TableCell>
+                    <TableCell>Assessment Release</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -526,7 +553,7 @@ function TeachingAssessmentList(props) {
                       <TableCell>{assessment.startDate}</TableCell>
                       <TableCell>{assessment.endDate}</TableCell>
                       <TableCell>{assessment.assessmentType}</TableCell>
-                      {/* <TableCell>{assessment.assessmentIsOpen}</TableCell> */}
+                      <TableCell>{assessment.open}</TableCell>
                       <TableCell>
                         <div>
                           <IconButton
@@ -548,6 +575,19 @@ function TeachingAssessmentList(props) {
                           >
                             <EditIcon />
                           </IconButton>
+                          {assessment.open !== "true" && (
+                            <IconButton
+                              aria-label="publish"
+                              onClick={(event) =>
+                                handleClickReleaseAssessment(
+                                  event,
+                                  assessment.assessmentId
+                                )
+                              }
+                            >
+                              <PublishIcon />
+                            </IconButton>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -556,6 +596,15 @@ function TeachingAssessmentList(props) {
               </Table>
             </TableContainer>
           </div>
+          <Grid container direction="row" justifyContent={"center"} align>
+            <Button
+              variant="contained"
+              type="submit"
+              onClick={continueAsPartialAssessment}
+            >
+              Create New Assessment
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
       <div>
@@ -578,6 +627,33 @@ function TeachingAssessmentList(props) {
             <Button onClick={handleDeleteDialogClose}>Cancel</Button>
             <Button onClick={deleteAssessment} autoFocus>
               Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+      <div>
+        <Dialog
+          open={releaseDialogueOpen}
+          onClose={handleReleaseDialogueClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Release this assessment?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              These will release the assesment for Learners to view. Are you
+              sure you want to release?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleReleaseDialogueClose}>Cancel</Button>
+            <Button
+              onClick={() => handleReleaseAssessment(assessmentIdToRelease)}
+              autoFocus
+            >
+              Release
             </Button>
           </DialogActions>
         </Dialog>
