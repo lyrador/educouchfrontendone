@@ -511,17 +511,7 @@ function TeachingAssessmentList(props) {
                       key={assessment.assessmentId}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell component="th" scope="row">
-                        <Link
-                          to={`${assessmentsPath}/${assessment.assessmentId}`}
-                          state={{
-                            assessmentTitle: assessment.title,
-                          }}
-                          style={{ textDecoration: "none" }}
-                        >
-                          {assessment.title}
-                        </Link>
-                      </TableCell>
+                      <TableCell>{assessment.title}</TableCell>
                       <TableCell>{assessment.maxScore}</TableCell>
                       <TableCell>{assessment.startDate}</TableCell>
                       <TableCell>{assessment.endDate}</TableCell>

@@ -17,17 +17,19 @@ import {
   createTheme,
   Typography,
   Button,
+  TextField,
+  Stack,
+  MenuItem,
   Dialog,
+  DialogTitle,
   DialogActions,
   DialogContent,
   DialogContentText,
-  Modal,
   Box,
 } from "@mui/material";
 import { useState } from "react";
 
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
-import FileSubmissionSettings from "../components/FileSubmissionSettings";
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -36,7 +38,6 @@ import LinkMaterial from "@mui/material/Link";
 
 import SettingsIcon from "@mui/icons-material/Settings";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-import SaveIcon from "@mui/icons-material/Save";
 
 import UploadService from "../services/UploadFilesService";
 
@@ -88,8 +89,8 @@ function FileSubmission(props) {
       .then((res) => res.json())
       .then((result) => {
         var fileSub = result;
-        setCurrentFileSubmission(fileSub);
         setAttachmentList(fileSub.attachments);
+        setCurrentFileSubmission(fileSub);
       })
       .catch((err) => {
         console.log(err.message);
@@ -104,98 +105,166 @@ function FileSubmission(props) {
       .then((res) => res.json())
       .then((result) => {
         var fileSub = result;
-        setCurrentFileSubmission(fileSub);
         setAttachmentList(fileSub.attachments);
+        console.log(currentFileSubmission);
       })
       .catch((err) => {
         console.log(err.message);
       });
   };
 
-  const [open, setOpen] = React.useState(false);
+  const [assessmentTitleError, setAssessmentTitleError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [assessmentDescriptionError, setAssessmentDescriptionError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [assessmentMaxScoreError, setAssessmentMaxScoreError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [assessmentStartDateError, setAssessmentStartDateError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [assessmentEndDateError, setAssessmentEndDateError] = useState({
+    value: false,
+    errorMessage: "",
+  });
 
-  function handleOpenSettingsDialogue() {
-    setOpen(true);
-  }
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
 
-  function handleCloseSettingsDialogue(ed) {
-    setOpen(false);
-  }
+  const [editAssessmentTitle, setEditAssessmentTitle] = useState("");
+  const [editAssessmentDescription, setEditAssessmentDescription] =
+    useState("");
+  const [editAssessmentMaxScore, setEditAssessmentMaxScore] = useState("");
+  const [editAssessmentStartDate, setEditAssessmentStartDate] = useState(
+    dayjs()
+  );
+  const [editAssessmentEndDate, setEditAssessmentEndDate] = useState(dayjs());
+  const [
+    editAssessmentFileSubmissionEnum,
+    setEditAssessmentFileSubmissionEnum,
+  ] = useState("");
+  const [assessmentIdToEdit, setAssessmentIdToEdit] = useState("");
+  const enumGroup = [{ value: "INDIVIDUAL" }, { value: "GROUP" }];
 
-  //   function editQuizSettings(
-  //     title,
-  //     description,
-  //     maxScore,
-  //     startDate,
-  //     endDate,
-  //     hasTimeLimit,
-  //     timeLimit,
-  //     isAutoRelease
-  //   ) {
-  //     currentQuiz.assessmentTitle = title;
-  //     currentQuiz.assessmentDescription = description;
-  //     currentQuiz.assessmentMaxScore = maxScore;
-  //     currentQuiz.assessmentStartDate = startDate;
-  //     currentQuiz.assessmentEndDate = endDate;
-  //     currentQuiz.hasTimeLimit = hasTimeLimit;
-  //     currentQuiz.timeLimit = timeLimit;
-  //     currentQuiz.isAutoRelease = isAutoRelease;
-  //   }
+  const handleEditStartDateChange = (newAssessmentStartDate) => {
+    setEditAssessmentStartDate(newAssessmentStartDate);
+  };
 
-  //   const editFileSubmission = () => {
-  //     setAssessmentStartDateError({ value: false, errorMessage: "" });
-  //     setAssessmentEndDateError({ value: false, errorMessage: "" });
+  const handleEditEndDateChange = (newAssessmentEndDate) => {
+    setEditAssessmentEndDate(newAssessmentEndDate);
+  };
 
-  //     const editStartDate = editAssessmentStartDate;
-  //     const editEndDate = editAssessmentEndDate;
+  const handleClickEditDialogOpen = (
+    event,
+    assessmentId,
+    assessmentTitle,
+    assessmentDescription,
+    assessmentMaxScore,
+    assessmentStartDate,
+    assessmentEndDate,
+    assessmentFileSubmissionEnum
+  ) => {
+    setEditAssessmentTitle(assessmentTitle);
+    setEditAssessmentDescription(assessmentDescription);
+    setEditAssessmentMaxScore(assessmentMaxScore);
+    setEditAssessmentStartDate(assessmentStartDate);
+    setEditAssessmentEndDate(assessmentEndDate);
+    setEditAssessmentFileSubmissionEnum(assessmentFileSubmissionEnum);
+    setAssessmentIdToEdit(assessmentId);
+    setEditDialogOpen(true);
+  };
 
-  //     const editDateComparisonBoolean = editEndDate < editStartDate;
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
+  };
 
-  //     if (editDateComparisonBoolean) {
-  //       setAssessmentEndDateError({
-  //         value: true,
-  //         errorMessage: "Assessment End Date cannot be earlier than Start Date!",
-  //       });
-  //       setAssessmentStartDateError({
-  //         value: true,
-  //         errorMessage: "Assessment End Date cannot be earlier than Start Date!",
-  //       });
-  //     }
-  //     if (!editDateComparisonBoolean) {
-  //       var assessmentTitle = editAssessmentTitle;
-  //       var assessmentDescription = editAssessmentDescription;
-  //       var assessmentMaxScore = editAssessmentMaxScore;
-  //       var assessmentStartDate = editAssessmentStartDate;
-  //       var assessmentEndDate = editAssessmentEndDate;
-  //       var assessmentIsOpen = "false";
-  //       var assessmentStatusEnum = "PENDING";
-  //       var assessmentFileSubmissionEnum = editAssessmentFileSubmissionEnum;
-  //       const newEditedAssessment = {
-  //         assessmentTitle,
-  //         assessmentDescription,
-  //         assessmentMaxScore,
-  //         assessmentStartDate,
-  //         assessmentEndDate,
-  //         assessmentFileSubmissionEnum,
-  //         assessmentIsOpen,
-  //         assessmentStatusEnum,
-  //       };
-  //       fetch(
-  //         "http://localhost:8080/assessment/updateFileSubmission/" +
-  //           assessmentIdToEdit,
-  //         {
-  //           method: "PUT",
-  //           headers: { "Content-Type": "application/json" },
-  //           body: JSON.stringify(newEditedAssessment),
-  //         }
-  //       ).then(() => {
-  //         console.log("Assessment Edited Successfully!");
-  //         setRefreshPage(true);
-  //         handleEditDialogClose();
-  //         handleClickEditSnackbar();
-  //       });
-  //     }
-  //   };
+  const editFileSubmission = () => {
+    setAssessmentTitleError({ value: false, errorMessage: "" });
+    setAssessmentDescriptionError({ value: false, errorMessage: "" });
+    setAssessmentMaxScoreError({ value: false, errorMessage: "" });
+    setAssessmentStartDateError({ value: false, errorMessage: "" });
+    setAssessmentEndDateError({ value: false, errorMessage: "" });
+
+    if (editAssessmentTitle == "") {
+      setAssessmentTitleError({
+        value: true,
+        errorMessage: "Title field cannot be left empty!",
+      });
+    }
+    if (editAssessmentDescription == "") {
+      setAssessmentDescriptionError({
+        value: true,
+        errorMessage: "Description field cannot be left empty!",
+      });
+    }
+    if (isNaN(editAssessmentMaxScore) || editAssessmentMaxScore == "") {
+      setAssessmentMaxScoreError({
+        value: true,
+        errorMessage: "Please enter a valid score!",
+      });
+    }
+
+    const editStartDate = editAssessmentStartDate;
+    const editEndDate = editAssessmentEndDate;
+
+    const editDateComparisonBoolean = editEndDate < editStartDate;
+
+    if (editDateComparisonBoolean) {
+      setAssessmentEndDateError({
+        value: true,
+        errorMessage: "Assessment End Date cannot be earlier than Start Date!",
+      });
+      setAssessmentStartDateError({
+        value: true,
+        errorMessage: "Assessment End Date cannot be earlier than Start Date!",
+      });
+    }
+    if (
+      editAssessmentTitle &&
+      editAssessmentDescription &&
+      !isNaN(editAssessmentMaxScore) &&
+      editAssessmentMaxScore &&
+      !editDateComparisonBoolean
+    ) {
+      var assessmentTitle = editAssessmentTitle;
+      var assessmentDescription = editAssessmentDescription;
+      var assessmentMaxScore = editAssessmentMaxScore;
+      var assessmentStartDate = editAssessmentStartDate;
+      var assessmentEndDate = editAssessmentEndDate;
+      var assessmentIsOpen = "false";
+      var assessmentStatusEnum = "PENDING";
+      var assessmentFileSubmissionEnum = editAssessmentFileSubmissionEnum;
+      const newEditedAssessment = {
+        assessmentTitle,
+        assessmentDescription,
+        assessmentMaxScore,
+        assessmentStartDate,
+        assessmentEndDate,
+        assessmentFileSubmissionEnum,
+        assessmentIsOpen,
+        assessmentStatusEnum,
+      };
+      fetch(
+        "http://localhost:8080/assessment/updateFileSubmission/" +
+          assessmentIdToEdit,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newEditedAssessment),
+        }
+      ).then(() => {
+        console.log("Assessment Edited Successfully!");
+        setRefreshPage(true);
+        handleEditDialogClose();
+        // handleClickEditSnackbar();
+      });
+    }
+  };
 
   const handleCancel = (e) => {
     navigate(`${assessmentsPath}`);
@@ -290,23 +359,22 @@ function FileSubmission(props) {
               aria-label="settings"
               variant="contained"
               style={{ float: "right", marginLeft: "auto" }}
-              onClick={() => handleOpenSettingsDialogue()}
+              onClick={(event) =>
+                handleClickEditDialogOpen(
+                  event,
+                  currentFileSubmission.assessmentId,
+                  currentFileSubmission.title,
+                  currentFileSubmission.description,
+                  currentFileSubmission.maxScore,
+                  currentFileSubmission.startDate,
+                  currentFileSubmission.endDate,
+                  currentFileSubmission.fileSubmissionEnum
+                )
+              }
             >
               <SettingsIcon style={{ marginRight: 10 }} />
               Edit Settings
             </Button>
-            {/* <Modal
-              open={open}
-              onClose={handleCloseSettingsDialogue}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <FileSubmissionSettings
-                fileSubmissionSettingsProp={currentFileSubmission}
-                editQuizSettingsProp={editQuizSettings}
-                closeQuizSettingsProp={handleCloseSettingsDialogue}
-              ></FileSubmissionSettings>
-            </Modal> */}
           </div>
           <div style={{ padding: "2%" }}>
             <TableContainer component={Paper}>
@@ -368,18 +436,7 @@ function FileSubmission(props) {
               </Table>
             </TableContainer>
           </div>
-          <div style={{ padding: "2%" }}></div>
           <div style={{ padding: "2%" }}>
-            <Button
-              color="primary"
-              variant="contained"
-              component="span"
-              //   onClick={editFileSubmission}
-              style={{ float: "right", marginLeft: "auto" }}
-            >
-              <SaveIcon style={{ marginRight: 10 }} />
-              Save
-            </Button>
             <Button
               color="primary"
               variant="contained"
@@ -387,7 +444,7 @@ function FileSubmission(props) {
               onClick={handleCancel}
               style={{ float: "left", marginLeft: "auto" }}
             >
-              Cancel
+              Go back to main page
             </Button>
           </div>
         </Grid>
@@ -437,6 +494,113 @@ function FileSubmission(props) {
             Upload
           </Button>
           <Button onClick={closeUploadDialogBox}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={editDialogOpen}
+        onClose={handleEditDialogClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"You are editing this assessment"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Enter the new assessment details
+          </DialogContentText>
+          <TextField
+            id="outlined-basic"
+            label="New Assessment Title"
+            variant="outlined"
+            fullWidth
+            style={{ margin: "6px 0" }}
+            value={editAssessmentTitle}
+            onChange={(e) => setEditAssessmentTitle(e.target.value)}
+            error={assessmentTitleError.value}
+            helperText={assessmentTitleError.errorMessage}
+          />
+          <TextField
+            id="outlined-basic"
+            label="New Assessment Description"
+            variant="outlined"
+            fullWidth
+            style={{ margin: "6px 0" }}
+            value={editAssessmentDescription}
+            onChange={(e) => setEditAssessmentDescription(e.target.value)}
+            error={assessmentDescriptionError.value}
+            helperText={assessmentDescriptionError.errorMessage}
+          />
+          <TextField
+            id="outlined-basic"
+            label="New Assessment Max Score"
+            variant="outlined"
+            fullWidth
+            style={{ margin: "6px 0" }}
+            value={editAssessmentMaxScore}
+            onChange={(e) => setEditAssessmentMaxScore(e.target.value)}
+            error={assessmentMaxScoreError.value}
+            helperText={assessmentMaxScoreError.errorMessage}
+          />
+          <Stack spacing={1}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DesktopDatePicker
+                label="New Assessment Start Date"
+                inputFormat="MM/DD/YYYY"
+                value={editAssessmentStartDate}
+                onChange={handleEditStartDateChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    sx={{ width: "100%" }}
+                    error={assessmentStartDateError.value}
+                    helperText={assessmentStartDateError.errorMessage}
+                  />
+                )}
+              />
+            </LocalizationProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DesktopDatePicker
+                label="New Assessment End Date"
+                inputFormat="MM/DD/YYYY"
+                value={editAssessmentEndDate}
+                onChange={handleEditEndDateChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    sx={{ width: "100%" }}
+                    error={assessmentEndDateError.value}
+                    helperText={assessmentEndDateError.errorMessage}
+                  />
+                )}
+              />
+            </LocalizationProvider>
+          </Stack>
+          <TextField
+            id="outlined-basic"
+            label="New Assessment File Submission Type"
+            variant="outlined"
+            fullWidth
+            select
+            style={{ margin: "6px 0" }}
+            value={editAssessmentFileSubmissionEnum}
+            onChange={(e) =>
+              setEditAssessmentFileSubmissionEnum(e.target.value)
+            }
+          >
+            {enumGroup.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.value}
+              </MenuItem>
+            ))}
+          </TextField>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleEditDialogClose}>Cancel</Button>
+          <Button onClick={editFileSubmission} autoFocus>
+            Edit
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
