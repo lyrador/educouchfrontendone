@@ -2,13 +2,13 @@ import React from 'react';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { useState } from 'react';
 import {
-  Button, Snackbar, Alert
+  Button, Snackbar, Alert, CircularProgress
 } from '@mui/material';
 import CardSection from './CardSection';
 import { useAuth } from "../context/AuthProvider";
 
 
-export default function CheckoutForm({ clientSecret, closePaymentDialogBox, handleNext, requestTransactionRecord }) {
+export default function CheckoutForm({ clientSecret, closePaymentDialogBox, handleNext, requestTransactionRecord, handleChangeIsLoading }) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -50,12 +50,14 @@ export default function CheckoutForm({ clientSecret, closePaymentDialogBox, hand
   // notification message 
   const[message, setMessage] = useState('');
 
-
+  // isLoading
+  const [isLoading, setIsLoading] = useState(false);
   
 
   const handleSubmit = async (event) => {
     // We don't want to let default form submission happen here,
     // which would refresh the page.
+    setIsLoading(true);
     event.preventDefault();
 
     if (!stripe || !elements) {
@@ -75,10 +77,12 @@ export default function CheckoutForm({ clientSecret, closePaymentDialogBox, hand
     if (result.error) {
       // Show error to your customer (for example, insufficient funds)
       setMessage(result.error.message);
+      setIsLoading(false);
       handleClickErrorPaymentSnackbar();
     } else {
       // The payment has been processed!
       if (result.paymentIntent.status === 'succeeded') {
+        setIsLoading(false);
         handleClickSuccessPaymentSnackbar();
         setMessage('Congratulation! You have successfully sent your payment!');
         closePaymentDialogBox();
@@ -103,7 +107,8 @@ export default function CheckoutForm({ clientSecret, closePaymentDialogBox, hand
       <form>
         <CardSection />
         <br />
-        <Button disabled={!stripe} onClick = { (e) => handleSubmit(e)}>Confirm Order</Button>
+        {isLoading === false && <Button disabled={!stripe} onClick = { (e) => handleSubmit(e)}>Confirm Order</Button>}
+        {isLoading === true && <CircularProgress />}
       </form>
     </>
 

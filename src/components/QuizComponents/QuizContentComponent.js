@@ -14,7 +14,7 @@ export default function QuizContentComponent(props) {
       <TextField
         multiline
         type="text"
-        placeholder="Edit Question Content here"
+        placeholder={props.questionContentProp}
         style={{ fontSize: 20, width: "70%" }}
         onChange={(e) =>
           props.editQuestionContentProp(props.questionIdProp, e.target.value)

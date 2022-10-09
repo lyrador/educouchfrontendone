@@ -101,10 +101,10 @@ export default function PartialCreateAssessment(props) {
     setAssessmentFileSubmissionEnumError,
   ] = useState({ value: false, errorMessage: "" });
 
-  const [refreshPage, setRefreshPage] = useState(false);
-  //   const refreshFunction = () => {
-  //     setRefreshPage(!refreshPage);
-  //   };
+  // const [refreshPage, setRefreshPage] = useState(false);
+  // //   const refreshFunction = () => {
+  // //     setRefreshPage(!refreshPage);
+  // //   };
 
   function cleanupFields() {
     setAssessmentTitle("");

@@ -139,9 +139,9 @@ export default function CourseEnrollment({ courseId }) {
     };
 
     // sending over record payment
-    const requestDepositRecord = (num_to_pay) => {
+    const requestDepositRecord = () => {
         // send request to create payment record
-        const depositRecord = { "classRunId": classRunChosen.classRunId, "learnerId": user.userId, "amount": amountToBePaid  };
+        const depositRecord = { "classRunId": classRunChosen.classRunId, "learnerId": user.userId, "amount": amountToBePaid };
         console.log('Deposit record is ' + JSON.stringify(depositRecord));
         var url = "http://localhost:8080/payment/trackDeposit";
         fetch(url, {
@@ -153,6 +153,7 @@ export default function CourseEnrollment({ courseId }) {
             then(res => res.json())
             .then((result) => {
                 setListOfClassRun(result);
+
             }
             )
     }

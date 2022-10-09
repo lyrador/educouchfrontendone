@@ -3,7 +3,8 @@ import '../App.css';
 import '../css/TeachingFileList.css';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import TeachingCoursesDrawer from './TeachingCoursesDrawer';
-import { Grid, Typography, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Grid, Typography, Button, TextField, Dialog, DialogActions, DialogContent, Alert, Snackbar,
+     DialogContentText, DialogTitle } from '@mui/material';
 import TeachingFileComponent from './TeachingFileComponent';
 import { useState } from 'react';
 import InstantErrorMessage from './InstantErrorMessage';
@@ -32,27 +33,52 @@ function TeachingFileList() {
     // create new folder form
     const [folderName, setFolderName] = useState('');
 
-    // notification
-    const [message, setMessage] = useState('');
-    const [isError, setError] = useState(false);
-    const [isSuccess, setSuccess] = useState(false);
+    //  success notification
+    const [openSuccessSnackBar, setOpenSuccessSnackBar] = React.useState(false);
+    const [successMessage, setSuccessMessage] = React.useState("");
+
+    const handleClickSuccessSnackBar = (feedback) => {
+        setSuccessMessage(feedback);
+        setOpenSuccessSnackBar(true)
+    };
+
+    const handleCloseSuccessSnackBar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSuccessSnackBar(false);
+    };
+
+    //  error notification
+    const [openErrorSnackBar, setOpenErrorSnackBar] = React.useState(false);
+    const [errorMessage, setErrorMessage] = React.useState("");
+
+    const handleClickErrorSnackBar = (feedback) => {
+        setErrorMessage(feedback);
+        setOpenErrorSnackBar(true)
+    };
+
+    const handleCloseErrorSnackBar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenErrorSnackBar(false);
+    };
 
     // from child component
     const handleRefreshDelete = () => {
         refresh();
         //notification
-        setMessage("Folder is successfully deleted!");
-        setError(false);
-        setSuccess(true);
+        setSuccessMessage("Folder is successfully deleted.");
+        setOpenSuccessSnackBar(true);
 
     };
 
     const handleRefreshUpdate = () => {
         refresh();
         //notification
-        setMessage("Folder is successfully updated!");
-        setError(false);
-        setSuccess(true);
+        setSuccessMessage("Folder is successfully updated.");
+        setOpenSuccessSnackBar(true);
     }
 
     var courseId = useParams();
@@ -65,7 +91,8 @@ function TeachingFileList() {
                 setFolderList(result);
             }
             ).catch((err) => {
-                console.log(err.message);
+                setErrorMessage("Unable to retrieve folders.");
+                setOpenErrorSnackBar(true);
             });
     }, []);
 
@@ -76,14 +103,16 @@ function TeachingFileList() {
                 setFolderList(result);
             }
             ).catch((err) => {
-                console.log(err.message);
+                setErrorMessage("Unable to retrieve folders.");
+                setOpenErrorSnackBar(true);
             });
     };
 
     const clickSubmitButton = (e) => {
         e.preventDefault();
         if (folderName.length == 0) {
-            setError(true);
+            setErrorMessage("Please choose a valid name.");
+            handleClickErrorSnackBar();
 
         };
         console.log("reach here");
@@ -99,23 +128,19 @@ function TeachingFileList() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(parentFolder)
         }).then(() => {
-            setOpen(false);
 
             //notification
-            setMessage("Folder is successfully created!");
-            setError(false);
-            setSuccess(true);
+            setSuccessMessage("Folder is successfully created.");
+            setOpenSuccessSnackBar(true);
+            closeCreateFolderDialogBox();
             refresh();
 
 
         }).catch((error) => {
-            setOpen(false);
 
             //notification
-            setMessage("Could not create folder.");
-            setError(true);
-            setSuccess(false);
-            console.log(error);
+            setErrorMessage(error.message);
+            handleClickErrorSnackBar();
 
         })
     }
@@ -128,12 +153,16 @@ function TeachingFileList() {
                     <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
-                    {message && isError && (
-                        <InstantErrorMessage message={message}></InstantErrorMessage>
-                    )}
-                    {message && isSuccess && (
-                        <InstantSuccessMessage message={message}></InstantSuccessMessage>
-                    )}
+                    <Snackbar open={openSuccessSnackBar} autoHideDuration={5000} onClose={handleCloseSuccessSnackBar}>
+                        <Alert onClose={handleCloseSuccessSnackBar} severity="success" sx={{ width: '100%' }}>
+                            {successMessage}
+                        </Alert>
+                    </Snackbar>
+                    <Snackbar open={openErrorSnackBar} autoHideDuration={5000} onClose={handleCloseErrorSnackBar}>
+                        <Alert onClose={handleCloseErrorSnackBar} severity="error" sx={{ width: '100%' }}>
+                            {errorMessage}
+                        </Alert>
+                    </Snackbar>
                     <Typography variant="h5">
                         Content Files Uploading
                     </Typography>
@@ -179,7 +208,7 @@ function TeachingFileList() {
                             <p>This course currently doesn't have any teaching folder.</p>
                         }
                     </div>
-                    
+
 
 
 
