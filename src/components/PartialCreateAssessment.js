@@ -56,6 +56,7 @@ export default function PartialCreateAssessment(props) {
   };
 
   const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
+  console.log(assessmentsPath);
   const createAssessmentPath = location.pathname;
 
   const [assessments, setAssessments] = useState([]);
@@ -195,15 +196,25 @@ export default function PartialCreateAssessment(props) {
         assessmentStatusEnum: "PENDING",
         assessmentFileSubmissionEnum: "INDIVIDUAL",
       };
-      setNewFileSub(newFileSub);
 
-      navigate(`${assessmentsPath}/createFileSubmission`, {
-        state: {
-          assessmentsPathProp: assessmentsPath,
-          createAssessmentPathProp: createAssessmentPath,
-          newFileSubProp: newFileSub,
-        },
-      });
+      fetch(
+        "http://localhost:8080/assessment/addNewFileSubmission/" + courseId,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newFileSub),
+        }
+      )
+        .then((res) => res.json())
+        .then((result) => {
+          setNewFileSub(result);
+        })
+        .then((response) => {
+          cleanupFields();
+          handleClickSnackbar();
+        });
+
+      navigate(`${assessmentsPath}`);
     }
   }
 

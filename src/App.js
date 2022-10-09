@@ -152,7 +152,7 @@ function App() {
               }
             />
             <Route
-              path="/myTeachingCourse/:courseId/assessments/createFileSubmission"
+              path="/myTeachingCourse/:courseId/assessments/:assessmentId"
               element={
                 <RequireAuth>
                   <Appbar />
@@ -178,7 +178,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/learnerCourseDetails/:courseId/successRefundRequest"
               element={
@@ -301,7 +300,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerCalendar/>
+                  <LearnerCalendar />
                 </RequireAuth>
               }
             />

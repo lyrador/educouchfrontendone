@@ -113,6 +113,7 @@ function TeachingAssessmentList(props) {
   // paths
   const location = useLocation();
   const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
+  const createAssessmentPath = location.pathname;
 
   const courseId = location.pathname.split("/")[2];
 
@@ -354,6 +355,20 @@ function TeachingAssessmentList(props) {
     });
   }
 
+  function handleClickEdit(event, currAssessment) {
+    if (currAssessment.assessmentType == "FileSubmission") {
+      navigate(`${assessmentsPath}/${currAssessment.assessmentId}`, {
+        state: {
+          assessmentsPathProp: assessmentsPath,
+          createAssessmentPathProp: createAssessmentPath,
+          newFileSubProp: currAssessment,
+        },
+      });
+    } else {
+      console.log("this is quiz");
+    }
+  }
+
   const renderEmptyRowMessage = () => {
     if (assessments.length === 0) {
       return (
@@ -511,18 +526,7 @@ function TeachingAssessmentList(props) {
                           <IconButton
                             aria-label="settings"
                             onClick={(event) =>
-                              handleClickEditDialogOpen(
-                                event,
-                                assessment.assessmentId,
-                                assessment.assessmentTitle,
-                                assessment.assessmentDescription,
-                                assessment.assessmentMaxScore,
-                                assessment.assessmentStartDate,
-                                assessment.assessmentEndDate,
-                                assessment.assessmentFileSubmissionEnum
-                                // assessment.assessmentIsOpen,
-                                // assessment.assessmentStatusEnum
-                              )
+                              handleClickEdit(event, assessment)
                             }
                           >
                             <EditIcon />
