@@ -9,9 +9,11 @@ import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AddIcon from "@mui/icons-material/Add";
+import SaveIcon from "@mui/icons-material/Save";
 import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsComponent";
 import EditSettingsComponent from "../components/QuizComponents/EditQuizSettingsComponent";
 import EditQuizSettingsComponent from "../components/QuizComponents/EditQuizSettingsComponent";
+import { CatchingPokemonSharp } from "@mui/icons-material";
 
 export default function EditQuizPage() {
   const location = useLocation();
@@ -39,13 +41,14 @@ export default function EditQuizPage() {
       .then((result) => {
         setCurrentQuiz(result);
         setFormQuestions(result.questions);
-        console.log("here is the quiz: ", currentQuiz);
+        console.log("here is the quizId: ", currentQuiz);
+        console.log("here is the questions: ", formQuestions)
       });
   }, [editSettings]);
 
   const [open, setOpen] = React.useState(false);
   function handleProceedQuestions() {
-      setFormQuestions(currentQuiz.questions);
+    setFormQuestions(currentQuiz.questions);
     setEditSettings("false");
   }
   function handleBackToSettings() {
@@ -67,10 +70,6 @@ export default function EditQuizPage() {
       }
     }
     return true;
-  }
-
-  function handleCloseSettingsDialogue(ed) {
-    setOpen(false);
   }
 
   function linkQuizQuestions() {
@@ -218,19 +217,20 @@ export default function EditQuizPage() {
 
   //need to call update function here
   const handleSave = (e) => {
-    //   e.preventDefault();
-    //   const updatedQuiz = handleQuizDateConversions(currentQuiz);
-    //   linkQuizQuestions();
-    //   fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(updatedQuiz),
-    //   }).then((res) => res.json());
-    //   handleCancel();
+      e.preventDefault();
+    linkQuizQuestions();
+    const updatedQuiz = handleQuizDateConversions(currentQuiz);
+    console.log("trying to update quiz: ",updatedQuiz)
+      fetch("http://localhost:8080/quiz/updateQuizById/" + currentQuiz.assessmentId, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedQuiz),
+      }).then((res) => res.json());
+      handleCancel();
   };
 
   const handleCancel = (e) => {
-    //   navigate(`${assessmentsPath}`);
+      navigate(`${assessmentsPath}`);
   };
 
   return (
@@ -330,10 +330,11 @@ export default function EditQuizPage() {
             <Grid
               container
               direction="row"
-              justifyContent={"space-between"}
+              justifyContent={"center"}
               style={{ marginTop: "80px" }}
             >
               <Button variant="contained" onClick={handleSave}>
+                <SaveIcon style={{ marginRight: "10" }} />
                 Save Quiz
               </Button>
             </Grid>
@@ -360,10 +361,10 @@ export default function EditQuizPage() {
                 Proceed to Questions
               </Button>
             </Grid>
-            {/* <EditQuizSettingsComponent
+            <EditQuizSettingsComponent
               quizProp={currentQuiz}
               editSettingsProp={editQuizSettings}
-            ></EditQuizSettingsComponent> */}
+            ></EditQuizSettingsComponent>
           </Grid>
         )}
       </Grid>
