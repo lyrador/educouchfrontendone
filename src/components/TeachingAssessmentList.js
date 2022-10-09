@@ -190,9 +190,7 @@ function TeachingAssessmentList(props) {
       .then((res) => res.json())
       .then((result) => {
         setAssessments(result);
-        console.log(
-          "list of assessments: " + assessments + " course id: " + courseId
-        );
+        console.log(result);
       });
   }, [refreshPage]);
 
@@ -344,9 +342,7 @@ function TeachingAssessmentList(props) {
   };
   const handleEditAssessment = (e) => {
     e.preventDefault();
-    
   };
-
 
   const navigate = useNavigate();
 

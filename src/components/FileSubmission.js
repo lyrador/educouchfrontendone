@@ -34,7 +34,7 @@ import { useState } from "react";
 
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
@@ -56,13 +56,13 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 function FileSubmission(props) {
-  const auth = useAuth();
-
   //paths
   const location = useLocation();
   const createFileSubmissionPath = location.pathname;
 
   const courseId = location.pathname.split("/")[2];
+
+  const navigate = useNavigate();
 
   const currentFileSubmission = location.state.newFileSubProp;
   const assessmentsPath = location.state.assessmentsPathProp;
@@ -70,9 +70,9 @@ function FileSubmission(props) {
   const fileSubmissionId = location.pathname.split("/")[4];
 
   console.log(currentFileSubmission);
+
   const [attachmentList, setAttachmentList] = useState([]);
   const [uploadDialogBox, setUploadDialogBox] = useState(false);
-  const [createDialogBox, setCreateDialogBox] = useState(false);
 
   const openUploadDialogBox = () => {
     setUploadDialogBox(true);
@@ -80,14 +80,6 @@ function FileSubmission(props) {
 
   const closeUploadDialogBox = () => {
     setUploadDialogBox(false);
-  };
-
-  const openCreateDialogBox = () => {
-    setCreateDialogBox(true);
-  };
-
-  const closeCreateDialogBox = () => {
-    setCreateDialogBox(false);
   };
 
   const [refreshPage, setRefreshPage] = useState("");
@@ -104,56 +96,41 @@ function FileSubmission(props) {
   //     });
   // }, [refreshPage]);
 
-  const refresh = () => {
-    setEditAssessmentSubmission(currentFileSubmission.assessmentSubmission);
+  const refresh = () => {};
+
+  const handleDateConversions = (fileSubObj) => {
+    const formattedStart = dayjs(fileSubObj.assessmentStartDate.d).format(
+      "YYYY-MM-DD"
+    );
+    const formattedEnd = dayjs(fileSubObj.assessmentEndDate.d).format(
+      "YYYY-MM-DD"
+    );
+    fileSubObj.assessmentStartDate = formattedStart;
+    fileSubObj.assessmentEndDate = formattedEnd;
+    return fileSubObj;
   };
 
-  //   const createNewFileSubmission = (e) => {
-  //     e.preventDefault();
-  //     const newAssessment = {
-  //         assessmentTitle: assessmentTitle,
-  //         assessmentDescription: assessmentDescription,
-  //         assessmentMaxScore: assessmentMaxScore,
-  //         assessmentStartDate: assessmentStartDate,
-  //         assessmentEndDate: assessmentEndDate,
-  //         assessmentIsOpen: "false",
-  //         assessmentStatusEnum: "PENDING",
-  //         assessmentFileSubmissionEnum: assessmentFileSubmissionEnum,
-  //       };
-  //       console.log(newAssessment);
-  //       fetch(
-  //         "http://localhost:8080/assessment/addNewFileSubmission/" + courseId,
-  //         {
-  //           method: "POST",
-  //           headers: { "Content-Type": "application/json" },
-  //           body: JSON.stringify(newAssessment),
-  //         }
-  //       )
-  //         .then((response) => {
-  //           console.log("New File Submission Assessment Created Successfully!");
-  //           setRefreshPage(true);
-  //           setAssessmentTitle("");
-  //           handleClose();
-  //           handleClickSnackbar();
-  //         })
-  //         .catch((err) => {
-  //           handleClickErrorSnackbar();
-  //         });
-  //     }
-  //   };
+  const handleSave = (e) => {
+    e.preventDefault();
+    const updatedFileSubmission = handleDateConversions(currentFileSubmission);
 
-  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+    fetch("http://localhost:8080/assessment/addNewFileSubmission/" + courseId, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
 
-  const handleClickSnackbar = () => {
-    setOpenSnackbar(true);
+      body: JSON.stringify(updatedFileSubmission),
+    })
+      .then((response) => {
+        console.log("New File Submission Assessment Created Successfully!");
+      })
+      .then(handleCancel);
   };
 
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackbar(false);
+  const handleCancel = (e) => {
+    navigate(`${assessmentsPath}`);
   };
+
+  //adding attachments to a file submission
 
   const [currentFile, setCurrentFile] = useState(undefined);
   const [progress, setProgress] = useState(0);
@@ -212,134 +189,6 @@ function FileSubmission(props) {
     },
   });
 
-  const [assessmentAllowedAttempts, setAssessmentAllowedAttempts] = useState(0);
-  const incrementAllowedAttempts = () => {
-    setAssessmentAllowedAttempts(assessmentAllowedAttempts + 1);
-  };
-
-  const decrementAllowedAttempts = () => {
-    setAssessmentAllowedAttempts(assessmentAllowedAttempts - 1);
-  };
-
-  const [assessmentTitle, setAssessmentTitle] = useState("");
-  const [assessmentDescription, setAssessmentDescription] = useState("");
-  const [assessmentMaxScore, setAssessmentMaxScore] = useState("");
-  const [assessmentStartDate, setAssessmentStartDate] = useState("");
-  const [assessmentEndDate, setAssessmentEndDate] = useState("");
-  const [assessmentFileSubmissionEnum, setAssessmentFileSubmissionEnum] =
-    useState("");
-  const [assessmentIsOpen, setAssessmentIsOpen] = useState("");
-  const [assessmentStatusEnum, setAssessmentStatusEnum] = useState("");
-  const enumGroup = [{ value: "INDIVIDUAL" }, { value: "GROUP" }];
-
-  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-
-  const [editAssessmentTitle, setEditAssessmentTitle] = useState("");
-  const [editAssessmentDescription, setEditAssessmentDescription] =
-    useState("");
-  const [editAssessmentMaxScore, setEditAssessmentMaxScore] = useState("");
-  const [editAssessmentStartDate, setEditAssessmentStartDate] = useState(
-    dayjs()
-  );
-  const [editAssessmentEndDate, setEditAssessmentEndDate] = useState(dayjs());
-  const [
-    editAssessmentFileSubmissionEnum,
-    setEditAssessmentFileSubmissionEnum,
-  ] = useState("");
-  const [editAssessmentSubmission, setEditAssessmentSubmission] = useState("");
-  const [assessmentIdToEdit, setAssessmentIdToEdit] = useState("");
-
-  const [assessmentStartDateError, setAssessmentStartDateError] = useState({
-    value: false,
-    errorMessage: "",
-  });
-  const [assessmentEndDateError, setAssessmentEndDateError] = useState({
-    value: false,
-    errorMessage: "",
-  });
-
-  const handleClickEditDialogOpen = (
-    event,
-    assessmentTitle,
-    assessmentDescription,
-    assessmentMaxScore,
-    assessmentStartDate,
-    assessmentEndDate,
-    assessmentFileSubmissionEnum,
-    assessmentSubmission
-  ) => {
-    setEditAssessmentTitle(assessmentTitle);
-    setEditAssessmentDescription(assessmentDescription);
-    setEditAssessmentMaxScore(assessmentMaxScore);
-    setEditAssessmentStartDate(assessmentStartDate);
-    setEditAssessmentEndDate(assessmentEndDate);
-    setEditAssessmentFileSubmissionEnum(assessmentFileSubmissionEnum);
-    setEditAssessmentSubmission(assessmentSubmission);
-    setEditDialogOpen(true);
-  };
-
-  const handleEditDialogClose = () => {
-    setEditDialogOpen(false);
-  };
-
-  function editFileSubSettings(
-    title,
-    description,
-    maxScore,
-    startDate,
-    endDate,
-    fileSub,
-    fileSubEnum
-  ) {
-    currentFileSubmission.assessmentTitle = title;
-    currentFileSubmission.assessmentDescription = description;
-    currentFileSubmission.assessmentMaxScore = maxScore;
-    currentFileSubmission.assessmentStartDate = startDate;
-    currentFileSubmission.assessmentEndDate = endDate;
-    currentFileSubmission.assessmentSubmission = fileSub;
-    currentFileSubmission.assessmentFileSubmissionEnum = fileSubEnum;
-  }
-
-  const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
-
-  const handleClickErrorSnackbar = () => {
-    setOpenErrorSnackbar(true);
-  };
-
-  const handleCloseErrorSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenErrorSnackbar(false);
-  };
-
-  const createNewAssessment = (e) => {
-    e.preventDefault();
-    const newAssessment = {
-      assessmentTitle: assessmentTitle,
-      assessmentDescription: assessmentDescription,
-      assessmentMaxScore: assessmentMaxScore,
-      assessmentStartDate: assessmentStartDate,
-      assessmentEndDate: assessmentEndDate,
-      assessmentIsOpen: "false",
-      assessmentStatusEnum: "PENDING",
-      assessmentFileSubmissionEnum: assessmentFileSubmissionEnum,
-    };
-    fetch("http://localhost:8080/assessment/addNewFileSubmission/" + courseId, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newAssessment),
-    })
-      .then((response) => {
-        console.log("New File Submission Assessment Created Successfully!");
-        setRefreshPage(true);
-        handleClickSnackbar();
-      })
-      .catch((err) => {
-        handleClickErrorSnackbar();
-      });
-  };
-
   return (
     <div>
       <Grid container spacing={0}>
@@ -347,32 +196,6 @@ function FileSubmission(props) {
           <TeachingCoursesDrawer></TeachingCoursesDrawer>
         </Grid>
         <Grid item xs={10}>
-          <Snackbar
-            open={openSnackbar}
-            autoHideDuration={5000}
-            onClose={handleCloseSnackbar}
-          >
-            <Alert
-              onClose={handleCloseSnackbar}
-              severity="success"
-              sx={{ width: "100%" }}
-            >
-              File Submission Details Updated Succesfully!
-            </Alert>
-          </Snackbar>
-          <Snackbar
-            open={openErrorSnackbar}
-            autoHideDuration={5000}
-            onClose={handleCloseErrorSnackbar}
-          >
-            <Alert
-              onClose={handleCloseErrorSnackbar}
-              severity="warning"
-              sx={{ width: "100%" }}
-            >
-              Error! Invalid Details!
-            </Alert>
-          </Snackbar>
           <Breadcrumbs aria-label="breadcrumb">
             <Link
               to={`${assessmentsPath}`}
@@ -399,36 +222,10 @@ function FileSubmission(props) {
               style={{ textDecoration: "none", color: "grey" }}
             >
               <LinkMaterial underline="hover" color="inherit">
-                {currentFileSubmission.assessmentTitle}
+                Create File Submission
               </LinkMaterial>
             </Link>
           </Breadcrumbs>
-          <div style={{ padding: "5%", justifyContent: "center" }}>
-            <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
-              {currentFileSubmission.assessmentTitle}
-            </h1>
-            <Button
-              className="btn-upload"
-              color="primary"
-              variant="contained"
-              component="span"
-              onClick={(event) =>
-                handleClickEditDialogOpen(
-                  event,
-                  currentFileSubmission.assessmentTitle,
-                  currentFileSubmission.assessmentDescription,
-                  currentFileSubmission.assessmentMaxScore,
-                  currentFileSubmission.assessmentStartDate,
-                  currentFileSubmission.assessmentEndDate,
-                  currentFileSubmission.assessmentFileSubmissionEnum,
-                  currentFileSubmission.assessmentSubmission
-                )
-              }
-              style={{ float: "right", marginLeft: "auto" }}
-            >
-              Edit Details
-            </Button>
-          </div>
           <div style={{ padding: "5%" }}>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -440,17 +237,6 @@ function FileSubmission(props) {
                     <TableCell>
                       <b>File Submission Type: </b>
                       {currentFileSubmission.assessmentFileSubmissionEnum}
-                    </TableCell>
-                    <TableCell>
-                      <b>Submitting: </b>{" "}
-                      {currentFileSubmission.assessmentSubmission}
-                    </TableCell>
-                    <TableCell>
-                      <b>Allowed Attempts: </b>
-                      <Button onClick={decrementAllowedAttempts}>-</Button>
-                      {assessmentAllowedAttempts}
-
-                      <Button onClick={incrementAllowedAttempts}>+</Button>
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -495,120 +281,24 @@ function FileSubmission(props) {
               color="primary"
               variant="contained"
               component="span"
-              onClick={openCreateDialogBox}
+              onClick={handleSave}
               style={{ float: "right", marginLeft: "auto" }}
             >
-              Create Assessment
+              Create File Submission
+            </Button>
+            <Button
+              color="primary"
+              variant="contained"
+              component="span"
+              onClick={handleCancel}
+              style={{ float: "left", marginLeft: "auto" }}
+            >
+              Cancel
             </Button>
           </div>
         </Grid>
       </Grid>
-      <Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
-        <DialogTitle id="alert-dialog-title">
-          {"You are editing this assessment"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Edit File Submission details
-          </DialogContentText>
-          <TextField
-            id="outlined-basic"
-            label="Assessment Title"
-            variant="outlined"
-            fullWidth
-            style={{ margin: "6px 0" }}
-            value={editAssessmentTitle}
-            onChange={(e) => setEditAssessmentTitle(e.target.value)}
-          />
-          <TextField
-            id="outlined-basic"
-            label="Assessment Description (Add detailed description)"
-            variant="outlined"
-            multiline
-            maxRows={4}
-            fullWidth
-            style={{ margin: "6px 0" }}
-            value={editAssessmentDescription}
-            onChange={(e) => setEditAssessmentDescription(e.target.value)}
-          />
-          <TextField
-            id="outlined-basic"
-            label="New Assessment Max Score"
-            variant="outlined"
-            fullWidth
-            style={{ margin: "6px 0" }}
-            value={editAssessmentMaxScore}
-            onChange={(e) => setEditAssessmentMaxScore(e.target.value)}
-          />
-          <TextField
-            id="outlined-basic"
-            label="Assessment Submission Files"
-            variant="outlined"
-            fullWidth
-            style={{ margin: "6px 0" }}
-            value={editAssessmentSubmission}
-            onChange={(e) => setEditAssessmentSubmission(e.target.value)}
-          />
-          <Stack spacing={1}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DesktopDatePicker
-                label="New Assessment Start Date"
-                inputFormat="MM/DD/YYYY"
-                value={editAssessmentStartDate}
-                onChange={(date) => setEditAssessmentStartDate(date)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    sx={{ width: "100%" }}
-                    error={assessmentStartDateError.value}
-                    helperText={assessmentStartDateError.errorMessage}
-                  />
-                )}
-              />
-            </LocalizationProvider>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DesktopDatePicker
-                label="New Assessment End Date"
-                inputFormat="MM/DD/YYYY"
-                value={editAssessmentEndDate}
-                onChange={(date) => setEditAssessmentEndDate(date)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    sx={{ width: "100%" }}
-                    error={assessmentEndDateError.value}
-                    helperText={assessmentEndDateError.errorMessage}
-                  />
-                )}
-              />
-            </LocalizationProvider>
-          </Stack>
-          <TextField
-            id="outlined-basic"
-            label="New Assessment File Submission Type"
-            variant="outlined"
-            fullWidth
-            select
-            style={{ margin: "6px 0" }}
-            value={editAssessmentFileSubmissionEnum}
-            onChange={(e) =>
-              setEditAssessmentFileSubmissionEnum(e.target.value)
-            }
-          >
-            {enumGroup.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.value}
-              </MenuItem>
-            ))}
-          </TextField>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleEditDialogClose}>Cancel</Button>
-          <Button onClick={editFileSubSettings} autoFocus>
-            Edit
-          </Button>
-        </DialogActions>
-      </Dialog>
+
       <Dialog
         open={uploadDialogBox}
         onClose={closeUploadDialogBox}
@@ -653,29 +343,6 @@ function FileSubmission(props) {
             Upload
           </Button>
           <Button onClick={closeUploadDialogBox}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
-        open={createDialogBox}
-        onClose={closeCreateDialogBox}
-        fullWidth="lg"
-      >
-        <DialogContent>
-          <DialogContentText>Confirm File Submission Details</DialogContentText>
-          <TextField
-            required
-            id="outlined-basic"
-            label="Assessment Title"
-            variant="outlined"
-            fullWidth
-            style={{ margin: "6px 0" }}
-            value={currentFileSubmission.assessmentTitle}
-          />
-        </DialogContent>
-
-        <DialogActions>
-          <Button onClick={createNewAssessment}>Confirm and Create</Button>
-          <Button onClick={closeCreateDialogBox}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </div>

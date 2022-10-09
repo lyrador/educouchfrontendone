@@ -149,7 +149,7 @@ function App() {
               }
             />
             <Route
-              path="/myTeachingCourse/:courseId/assessments/:assessmentId"
+              path="/myTeachingCourse/:courseId/assessments/createFileSubmission"
               element={
                 <RequireAuth>
                   <Appbar />

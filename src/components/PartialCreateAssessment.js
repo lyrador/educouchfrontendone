@@ -8,8 +8,8 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
-import 'dayjs/locale/ru';
-import 'dayjs/locale/ar-sa';
+import "dayjs/locale/ru";
+import "dayjs/locale/ar-sa";
 
 import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import {
@@ -27,8 +27,11 @@ import LinkMaterial from "@mui/material/Link";
 
 export default function PartialCreateAssessment(props) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
+
+  const courseId = location.pathname.split("/")[2];
 
   const handleClickSnackbar = () => {
     setOpenSnackbar(true);
@@ -52,7 +55,6 @@ export default function PartialCreateAssessment(props) {
     setOpenErrorSnackbar(false);
   };
 
-  const location = useLocation();
   const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
   const createAssessmentPath = location.pathname;
 
@@ -62,7 +64,7 @@ export default function PartialCreateAssessment(props) {
   const [assessmentMaxScore, setAssessmentMaxScore] = useState("");
   const [assessmentStartDate, setAssessmentStartDate] = useState(dayjs());
   const [assessmentEndDate, setAssessmentEndDate] = useState(dayjs());
-  const [newDocSub, setNewDocSub] = useState();
+  const [newFileSub, setNewFileSub] = useState();
   const [newQuiz, setNewQuiz] = useState("emptyQuiz");
 
   const handleStartDateChange = (newAssessmentStartDate) => {
@@ -181,9 +183,9 @@ export default function PartialCreateAssessment(props) {
     }
   }
 
-  function continueAsDocumentSubmission() {
+  function continueAsFileSubmission() {
     if (validateNewAssessment()) {
-      const newDocSub = {
+      const newFileSub = {
         assessmentTitle: assessmentTitle,
         assessmentDescription: assessmentDescription,
         assessmentMaxScore: assessmentMaxScore,
@@ -193,39 +195,15 @@ export default function PartialCreateAssessment(props) {
         assessmentStatusEnum: "PENDING",
         assessmentFileSubmissionEnum: "INDIVIDUAL",
       };
-      setNewDocSub(newDocSub);
+      setNewFileSub(newFileSub);
 
       navigate(`${assessmentsPath}/createFileSubmission`, {
         state: {
           assessmentsPathProp: assessmentsPath,
           createAssessmentPathProp: createAssessmentPath,
-          newDocSubProp: newDocSub,
+          newFileSubProp: newFileSub,
         },
       });
-
-      // fetch(
-      //   "http://localhost:8080/assessment/addNewFileSubmission/" +
-      //     props.courseIdProp,
-      //   {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify(newDocSub),
-      //   }
-      // )
-      //   ///stopped here, cannot get the id of document got controller does not return documentsub with id
-      //   .then((res) => res.json())
-      //   .then((result) => {
-      //     const docSubId = result.assessmentStatus;
-      //     console.log(
-      //       "New File Submission Assessment: " +
-      //         docSubId +
-      //         " Created Successfully!"
-      //     );
-      //   })
-      //   .then((response) => {
-      //     cleanupFields();
-      //     handleClickSnackbar();
-      //   });
     }
   }
 
@@ -361,9 +339,9 @@ export default function PartialCreateAssessment(props) {
         <Button
           variant="contained"
           type="submit"
-          onClick={continueAsDocumentSubmission}
+          onClick={continueAsFileSubmission}
         >
-          Continue as Document Submission
+          Continue as File Submission
         </Button>
       </Grid>
     </Grid>
