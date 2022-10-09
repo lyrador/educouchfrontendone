@@ -49,6 +49,7 @@ import { MenuItem } from "@mui/material";
 
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import { Quiz } from "@mui/icons-material";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -176,7 +177,7 @@ function TeachingAssessmentList(props) {
   const [refreshPage, setRefreshPage] = useState(false);
   const refreshFunction = () => {
     setRefreshPage(!refreshPage);
-    console.log("refreshed teaching assessmentlist page")
+    console.log("refreshed teaching assessmentlist page");
   };
 
   const enumGroup = [{ value: "INDIVIDUAL" }, { value: "GROUP" }];
@@ -191,9 +192,6 @@ function TeachingAssessmentList(props) {
       .then((res) => res.json())
       .then((result) => {
         setAssessments(result);
-        console.log(
-          "list of assessments: " + assessments + " course id: " + courseId
-        );
       });
   }, [refreshFunction]);
 
@@ -343,11 +341,34 @@ function TeachingAssessmentList(props) {
       });
     }
   };
-  const handleEditAssessment = (e) => {
-    e.preventDefault();
-    
-  };
 
+  function handleEditAssessment(e, assessment) {
+    if (assessment.assessmentType == "Quiz") {
+      handleEditQuiz(assessment);
+    } else {
+      //open file sub edit dialogue
+      handleClickEditDialogOpen(
+        e,
+        assessment.assessmentId,
+        assessment.assessmentTitle,
+        assessment.assessmentDescription,
+        assessment.assessmentMaxScore,
+        assessment.assessmentStartDate,
+        assessment.assessmentEndDate,
+        assessment.assessmentFileSubmissionEnum
+      );
+    }
+  }
+
+  function handleEditQuiz(assessment) {
+    const assessmentId = assessment.assessmentId;
+    navigate(`${assessmentsPath}/editQuiz/${assessmentId}`, {
+      state: {
+        assessmentPathProp: assessmentsPath,
+        assessmentIdProp: assessmentId,
+      },
+    });
+  }
 
   const navigate = useNavigate();
 
@@ -517,18 +538,7 @@ function TeachingAssessmentList(props) {
                           <IconButton
                             aria-label="settings"
                             onClick={(event) =>
-                              handleClickEditDialogOpen(
-                                event,
-                                assessment.assessmentId,
-                                assessment.assessmentTitle,
-                                assessment.assessmentDescription,
-                                assessment.assessmentMaxScore,
-                                assessment.assessmentStartDate,
-                                assessment.assessmentEndDate,
-                                assessment.assessmentFileSubmissionEnum
-                                // assessment.assessmentIsOpen,
-                                // assessment.assessmentStatusEnum
-                              )
+                              handleEditAssessment(event, assessment)
                             }
                           >
                             <EditIcon />
