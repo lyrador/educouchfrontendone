@@ -8,6 +8,8 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
+import 'dayjs/locale/ru';
+import 'dayjs/locale/ar-sa';
 
 import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import {
@@ -53,6 +55,7 @@ export default function PartialCreateAssessment(props) {
   const location = useLocation();
   const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
   const createAssessmentPath = location.pathname;
+
   const [assessments, setAssessments] = useState([]);
   const [assessmentTitle, setAssessmentTitle] = useState("");
   const [assessmentDescription, setAssessmentDescription] = useState("");
@@ -138,6 +141,19 @@ export default function PartialCreateAssessment(props) {
         errorMessage: "Assessment MaxScore cannot be empty!",
       });
     }
+    if (assessmentStartDate == "") {
+      setAssessmentStartDateError({
+        value: true,
+        errorMessage: "Assessment Start Date cannot be empty!",
+      });
+    }
+
+    if (assessmentEndDate == "") {
+      setAssessmentEndDateError({
+        value: true,
+        errorMessage: "Assessment End Date cannot be empty!",
+      });
+    }
     const newStartDate = assessmentStartDate;
     const newEndDate = assessmentEndDate;
     const dateComparisonBoolean = newEndDate < newStartDate;
@@ -152,7 +168,6 @@ export default function PartialCreateAssessment(props) {
         errorMessage: "Assessment End Date cannot be earlier than Start Date!",
       });
     }
-
     if (
       assessmentTitle &&
       assessmentDescription &&
@@ -179,29 +194,38 @@ export default function PartialCreateAssessment(props) {
         assessmentFileSubmissionEnum: "INDIVIDUAL",
       };
       setNewDocSub(newDocSub);
-      fetch(
-        "http://localhost:8080/assessment/addNewFileSubmission/" +
-          props.courseIdProp,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newDocSub),
-        }
-      )
-        ///stopped here, cannot get the id of document got controller does not return documentsub with id
-        .then((res) => res.json())
-        .then((result) => {
-          const docSubId = result.assessmentStatus;
-          console.log(
-            "New File Submission Assessment: " +
-              docSubId +
-              " Created Successfully!"
-          );
-        })
-        .then((response) => {
-          cleanupFields();
-          handleClickSnackbar();
-        });
+
+      navigate(`${assessmentsPath}/createFileSubmission`, {
+        state: {
+          assessmentsPathProp: assessmentsPath,
+          createAssessmentPathProp: createAssessmentPath,
+          newDocSubProp: newDocSub,
+        },
+      });
+
+      // fetch(
+      //   "http://localhost:8080/assessment/addNewFileSubmission/" +
+      //     props.courseIdProp,
+      //   {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify(newDocSub),
+      //   }
+      // )
+      //   ///stopped here, cannot get the id of document got controller does not return documentsub with id
+      //   .then((res) => res.json())
+      //   .then((result) => {
+      //     const docSubId = result.assessmentStatus;
+      //     console.log(
+      //       "New File Submission Assessment: " +
+      //         docSubId +
+      //         " Created Successfully!"
+      //     );
+      //   })
+      //   .then((response) => {
+      //     cleanupFields();
+      //     handleClickSnackbar();
+      //   });
     }
   }
 
@@ -220,14 +244,15 @@ export default function PartialCreateAssessment(props) {
         isAutoRelease: "false",
         questions: [],
       };
+
       setNewQuiz(newQuiz);
       navigate(`${assessmentsPath}/createQuiz`, {
         state: {
           assessmentsPathProp: assessmentsPath,
           createAssessmentPathProp: createAssessmentPath,
           newQuizProp: newQuiz,
-        }
-      })
+        },
+      });
     }
   }
 
@@ -251,6 +276,7 @@ export default function PartialCreateAssessment(props) {
           Assessment Created Succesfully!
         </Alert>
       </Snackbar>
+
       <Paper style={{ width: "70%" }}>
         <TextField
           required
@@ -289,10 +315,9 @@ export default function PartialCreateAssessment(props) {
           onChange={(e) => setAssessmentMaxScore(e.target.value)}
         />
         <Stack spacing={1}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
             <DesktopDatePicker
               label="Start Date"
-              inputFormat="DD/MM/YYYY"
               value={assessmentStartDate}
               onChange={handleStartDateChange}
               renderInput={(params) => (
@@ -305,10 +330,9 @@ export default function PartialCreateAssessment(props) {
               )}
             />
           </LocalizationProvider>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
             <DesktopDatePicker
               label="End Date"
-              inputFormat="DD/MM/YYYY"
               value={assessmentEndDate}
               onChange={handleEndDateChange}
               renderInput={(params) => (
@@ -332,7 +356,7 @@ export default function PartialCreateAssessment(props) {
         style={{ marginTop: 60 }}
       >
         <Button variant="contained" type="submit" onClick={continueAsQuiz}>
-            Continue as New Quiz
+          Continue as New Quiz
         </Button>
         <Button
           variant="contained"

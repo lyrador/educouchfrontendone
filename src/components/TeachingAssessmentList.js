@@ -14,7 +14,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
 import { Grid, Modal } from "@mui/material";
 
@@ -232,9 +232,6 @@ function TeachingAssessmentList(props) {
     setDeleteDialogOpen(false);
   };
 
-
-
-
   const handleClickEditDialogOpen = (
     event,
     assessmentId,
@@ -271,104 +268,6 @@ function TeachingAssessmentList(props) {
     setEditAssessmentEndDate(newAssessmentEndDate);
   };
 
-  const createNewAssessment = (e) => {
-    e.preventDefault();
-    setAssessmentTitleError({ value: false, errorMessage: "" });
-    setAssessmentDescriptionError({ value: false, errorMessage: "" });
-    setAssessmentMaxScoreError({ value: false, errorMessage: "" });
-    setAssessmentStartDateError({ value: false, errorMessage: "" });
-    setAssessmentEndDateError({ value: false, errorMessage: "" });
-    setAssessmentFileSubmissionEnumError({ value: false, errorMessage: "" });
-
-    if (assessmentTitle == "") {
-      setAssessmentTitleError({
-        value: true,
-        errorMessage: "Assessment Title cannot be empty!",
-      });
-    }
-    if (assessmentDescription == "") {
-      setAssessmentDescriptionError({
-        value: true,
-        errorMessage: "Assessment Description cannot be empty!",
-      });
-    }
-    if (isNaN(assessmentMaxScore)) {
-      setAssessmentMaxScoreError({
-        value: true,
-        errorMessage: "Assessment max score is not a valid number!",
-      });
-    }
-    if (assessmentMaxScore == "") {
-      setAssessmentMaxScoreError({
-        value: true,
-        errorMessage: "Assessment MaxScore cannot be empty!",
-      });
-    }
-    if (assessmentFileSubmissionEnum == "") {
-      setAssessmentFileSubmissionEnumError({
-        value: true,
-        errorMessage: "Assessment File Submission Enum cannot be empty!",
-      });
-    }
-
-    const newStartDate = assessmentStartDate;
-    const newEndDate = assessmentEndDate;
-
-    const dateComparisonBoolean = newEndDate < newStartDate;
-
-    if (dateComparisonBoolean) {
-      setAssessmentEndDateError({
-        value: true,
-        errorMessage: "Assessment End Date cannot be earlier than Start Date!",
-      });
-      setAssessmentStartDateError({
-        value: true,
-        errorMessage: "Assessment End Date cannot be earlier than Start Date!",
-      });
-    }
-
-    if (
-      assessmentTitle &&
-      assessmentDescription &&
-      assessmentMaxScore &&
-      assessmentStartDate &&
-      assessmentEndDate &&
-      assessmentFileSubmissionEnum &&
-      !isNaN(assessmentMaxScore) &&
-      !dateComparisonBoolean
-    ) {
-      const newAssessment = {
-        assessmentTitle: assessmentTitle,
-        assessmentDescription: assessmentDescription,
-        assessmentMaxScore: assessmentMaxScore,
-        assessmentStartDate: assessmentStartDate,
-        assessmentEndDate: assessmentEndDate,
-        assessmentIsOpen: "false",
-        assessmentStatusEnum: "PENDING",
-        assessmentFileSubmissionEnum: assessmentFileSubmissionEnum,
-      };
-      console.log(newAssessment);
-      fetch(
-        "http://localhost:8080/assessment/addNewFileSubmission/" + courseId,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newAssessment),
-        }
-      )
-        .then((response) => {
-          console.log("New File Submission Assessment Created Successfully!");
-          setRefreshPage(true);
-          setAssessmentTitle("");
-          handleClose();
-          handleClickSnackbar();
-        })
-        .catch((err) => {
-          handleClickErrorSnackbar();
-        });
-    }
-  };
-
   const deleteAssessment = (e) => {
     e.preventDefault();
     fetch(
@@ -389,8 +288,7 @@ function TeachingAssessmentList(props) {
     });
   };
 
-  const editAssessment = (e) => {
-    e.preventDefault();
+  const editFileSubmission = () => {
     setAssessmentStartDateError({ value: false, errorMessage: "" });
     setAssessmentEndDateError({ value: false, errorMessage: "" });
 
@@ -444,6 +342,21 @@ function TeachingAssessmentList(props) {
       });
     }
   };
+  const handleEditAssessment = (e) => {
+    e.preventDefault();
+    
+  };
+
+
+  const navigate = useNavigate();
+
+  function continueAsPartialAssessment() {
+    navigate(`${assessmentsPath}/createAssessment`, {
+      state: {
+        assessmentPathProp: assessmentsPath,
+      },
+    });
+  }
 
   const renderEmptyRowMessage = () => {
     if (assessments.length === 0) {
@@ -538,22 +451,13 @@ function TeachingAssessmentList(props) {
               }}
             >
               <Button
-                className="btn-upload"
-                color="primary"
                 variant="contained"
-                component="span"
-                onClick={handleClickOpen}
+                type="submit"
+                onClick={continueAsPartialAssessment}
                 style={{ float: "right", marginLeft: "auto" }}
               >
-                Create New Document Submission
+                Create New Assessment
               </Button>
-
-              <Link to={`${assessmentsPath}/createAssessment`}
-                state={{assessmentPathProp : assessmentsPath}}>
-                <Button variant="contained" type="submit">
-                  Create new Assessment
-                </Button>
-              </Link>
             </Grid>
           </div>
 
@@ -637,106 +541,6 @@ function TeachingAssessmentList(props) {
           </div>
         </Grid>
       </Grid>
-        {/* <div>
-          <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>Create New File Submission Assessment</DialogTitle>
-            <DialogContent>
-              <TextField
-                required
-                id="outlined-basic"
-                label="Assessment Title"
-                variant="outlined"
-                fullWidth
-                style={{ margin: "6px 0" }}
-                value={assessmentTitle}
-                onChange={(e) => setAssessmentTitle(e.target.value)}
-                error={assessmentTitleError.value}
-                helperText={assessmentTitleError.errorMessage}
-              />
-              <TextField
-                required
-                id="outlined-basic"
-                label="Assessment Description"
-                variant="outlined"
-                fullWidth
-                style={{ margin: "6px 0" }}
-                value={assessmentDescription}
-                onChange={(e) => setAssessmentDescription(e.target.value)}
-                error={assessmentDescriptionError.value}
-                helperText={assessmentDescriptionError.errorMessage}
-              />
-              <TextField
-                required
-                id="outlined-basic"
-                label="Assessment Max Score"
-                variant="outlined"
-                fullWidth
-                style={{ margin: "6px 0" }}
-                value={assessmentMaxScore}
-                onChange={(e) => setAssessmentMaxScore(e.target.value)}
-                error={assessmentMaxScoreError.value}
-                helperText={assessmentMaxScoreError.errorMessage}
-              />
-              <Stack spacing={1}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DesktopDatePicker
-                    label="Start Date"
-                    inputFormat="MM/DD/YYYY"
-                    value={assessmentStartDate}
-                    onChange={handleStartDateChange}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        sx={{ width: "100%" }}
-                        error={assessmentStartDateError.value}
-                        helperText={assessmentStartDateError.errorMessage}
-                      />
-                    )}
-                  />
-                </LocalizationProvider>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DesktopDatePicker
-                    label="End Date"
-                    inputFormat="MM/DD/YYYY"
-                    value={assessmentEndDate}
-                    onChange={handleEndDateChange}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        sx={{ width: "100%" }}
-                        error={assessmentEndDateError.value}
-                        helperText={assessmentEndDateError.errorMessage}
-                      />
-                    )}
-                  />
-                </LocalizationProvider>
-              </Stack>
-              <TextField
-                required
-                select
-                id="outlined-basic"
-                label="Assessment File Submission Type"
-                variant="outlined"
-                fullWidth
-                style={{ margin: "6px 0" }}
-                value={assessmentFileSubmissionEnum}
-                onChange={(e) => setAssessmentFileSubmissionEnum(e.target.value)}
-                error={assessmentFileSubmissionEnumError.value}
-                helperText={assessmentFileSubmissionEnumError.errorMessage}
-              >
-                {enumGroup.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.value}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose}>Cancel</Button>
-              <Button onClick={createNewAssessment}>Create</Button>
-            </DialogActions>
-          </Dialog>
-        </div> */}
       <div>
         <Dialog
           open={deleteDialogOpen}
@@ -749,9 +553,8 @@ function TeachingAssessmentList(props) {
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              These will delete all the questions and options for quizzes. You
-              will not be able to undo this action. Are you sure you want to
-              delete?
+              These will delete the assessment and cannot be reversed. Are you
+              sure you want to delete?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -858,7 +661,7 @@ function TeachingAssessmentList(props) {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleEditDialogClose}>Cancel</Button>
-            <Button onClick={editAssessment} autoFocus>
+            <Button onClick={editFileSubmission} autoFocus>
               Edit
             </Button>
           </DialogActions>

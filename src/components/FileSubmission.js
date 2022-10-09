@@ -53,15 +53,18 @@ function FileSubmission(props) {
 
   //paths
   const location = useLocation();
-  const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
+  // const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
   const fileSubmissionPath = location.pathname;
+  
+  const documentSubmissionProp = props.newDocSubProp;
+  const assessmentsPath = props.assessmentsPathProp;
+  const createAssessmentPath = props.createAssessmentPathProp
 
   const fileSubmissionId = location.pathname.split("/")[4];
   const assessmentTitle = location.state.assessmentTitle;
 
   const [fileSubmission, setFileSubmission] = useState("");
   const [attachmentList, setAttachmentList] = useState([]);
-
   const [uploadDialogBox, setUploadDialogBox] = useState(false);
 
   const openUploadDialogBox = () => {
@@ -74,21 +77,17 @@ function FileSubmission(props) {
 
   const [refreshPage, setRefreshPage] = useState("");
 
-  React.useEffect(() => {
-    setRefreshPage(false);
-    fetch(
-      "http://localhost:8080/assessment/getFileSubmissionById/" +
-        fileSubmissionId
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        setFileSubmission(result);
-        setAttachmentList(result.attachments);
-        console.log(JSON.stringify(result));
-        console.log("assessment Id: " + fileSubmissionId);
-        console.log("Length of attachment is " + attachmentList.length);
-      });
-  }, [refreshPage]);
+  // React.useEffect(() => {
+  //   setRefreshPage(false);
+  //   fetch(
+  //     "http://localhost:8080/assessment/getFileSubmissionById/" + assessmentId
+  //   )
+  //     .then((res) => res.json())
+  //     .then((result) => {
+  //       setFileSubmission(result);
+  //       console.log(result);
+  //     });
+  // }, [refreshPage]);
 
   const refresh = () => {
     fetch(
