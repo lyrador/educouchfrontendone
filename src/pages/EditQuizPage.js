@@ -360,10 +360,10 @@ export default function EditQuizPage() {
                 Proceed to Questions
               </Button>
             </Grid>
-            <EditQuizSettingsComponent
+            {/* <EditQuizSettingsComponent
               quizProp={currentQuiz}
               editSettingsProp={editQuizSettings}
-            ></EditQuizSettingsComponent>
+            ></EditQuizSettingsComponent> */}
           </Grid>
         )}
       </Grid>

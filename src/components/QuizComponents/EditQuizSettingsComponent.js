@@ -18,7 +18,7 @@ import dayjs from "dayjs";
 
 export default function EditQuizSettingsComponent(props) {
   const paperStyle = { padding: "50px 20px", width: 1200, margin: "20px auto" };
-  const quiz = props.quizProp;
+  const [currentQuiz, setCurrentQuiz] = useState();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [maxScore, setMaxScore] = useState("");
@@ -56,14 +56,15 @@ export default function EditQuizSettingsComponent(props) {
   });
 
   React.useEffect(() => {
-    setTitle(props.quizProp.assessmentTitle);
-    setDescription(props.quizProp.assessmentDescription);
-    setMaxScore(props.quizProp.assessmentMaxScore);
-    setStartDate(props.quizProp.assessmentStartDate);
-    setEndDate(props.quizProp.assessmentEndDate);
-    setHasTimeLimit(props.quizProp.hasTimeLimit);
-    setTimeLimit(props.quizProp.timeLimit);
-    setIsAutoRelease(props.quizProp.isAutoRelease);
+    setCurrentQuiz(props.quizProp)
+    setTitle(currentQuiz.assessmentTitle);
+    setDescription(currentQuiz.assessmentDescription);
+    setMaxScore(currentQuiz.assessmentMaxScore);
+    setStartDate(currentQuiz.assessmentStartDate);
+    setEndDate(currentQuiz.assessmentEndDate);
+    setHasTimeLimit(currentQuiz.hasTimeLimit);
+    setTimeLimit(currentQuiz.timeLimit);
+    setIsAutoRelease(currentQuiz.isAutoRelease);
     startDateString = dayjs(startDate.d).format("YYYY/MM/DD");
     endDateString = dayjs(endDate.d).format("YYYY/MM/DD");
   }, []);
