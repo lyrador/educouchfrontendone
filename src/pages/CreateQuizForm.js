@@ -39,6 +39,7 @@ export default function CreateQuizForm(props) {
   const currentQuiz = location.state.newQuizProp;
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
+  const [questionCounter, setQuestionCounter] = useState(0);
 
   const [maxPointsError, setMaxPointsError] = useState({
     value: false,
@@ -181,10 +182,11 @@ export default function CreateQuizForm(props) {
   }
 
   const addQuestion = () => {
-    const questionNumber = formQuestions.length + 1;
+    setQuestionCounter(questionCounter+1)
+    currentQuiz.questionCounter = questionCounter;
     const question = {
-      localid: "question" + questionNumber,
-      questionTitle: "Question " + questionNumber,
+      localid: "question" + questionCounter,
+      questionTitle: "Untitled Question",
       questionType: "shortAnswer",
       questionContent: "Type Question Body here...",
       questionMaxPoints: "0.0 points",

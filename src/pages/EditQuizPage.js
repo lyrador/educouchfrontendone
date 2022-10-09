@@ -26,6 +26,7 @@ export default function EditQuizPage() {
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
   const [editSettings, setEditSettings] = useState("");
+  const [questionCounter, setQuestionCounter] = useState(0);
 
   const [maxPointsError, setMaxPointsError] = useState({
     value: false,
@@ -41,8 +42,11 @@ export default function EditQuizPage() {
       .then((result) => {
         setCurrentQuiz(result);
         setFormQuestions(result.questions);
+        setQuestionCounter(result.questionCounter);
         console.log("here is the quizId: ", currentQuiz);
         console.log("here is the questions: ", formQuestions)
+        console.log("here is the questionCounter: ", questionCounter)
+
       });
   }, [editSettings]);
 
@@ -175,13 +179,14 @@ export default function EditQuizPage() {
   }
 
   const addQuestion = () => {
-    const questionNumber = formQuestions.length + 1;
+    setQuestionCounter(questionCounter+1)
+    currentQuiz.questionCounter = questionCounter;
     const question = {
-      localid: "question" + questionNumber,
-      questionTitle: "Question " + questionNumber,
+      localid: "question" + questionCounter,
+      questionTitle: "Untitled Question",
       questionType: "shortAnswer",
       questionContent: "Type Question Body here...",
-      questionMaxPoints: "",
+      questionMaxPoints: "0.0 points",
       options: [],
       correctOption: "",
     };
