@@ -182,6 +182,7 @@ const TeachingCourseCalender = (props) => {
 
     const editAppointment = (data) => {
         console.log(data)
+        console.log(JSON.stringify(data.classRun))
         if (data.startDate && data.endDate && data.notes && data.title && data.classRun) {
             fetch("http://localhost:8080/event/events/" + data.id, {
                 method: "PUT",
