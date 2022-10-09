@@ -773,7 +773,7 @@ function TeachingClassRuns(props) {
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>Class ID</TableCell>
+                                        {/* <TableCell>Class ID</TableCell> */}
                                         <TableCell align="right">ClassRun Name</TableCell>
                                         <TableCell align="right">Description</TableCell>
                                         <TableCell align="right">Start Date</TableCell>
@@ -795,7 +795,7 @@ function TeachingClassRuns(props) {
                                             key={row.id}
                                             sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                                         >
-                                            <TableCell component="th" scope="row">
+                                            {/* <TableCell component="th" scope="row">
                                                 <Link
                                                     to={`${classRunsPath}/${row.id}`}
                                                     state={{ classRunName: row.classRunName }}
@@ -804,7 +804,16 @@ function TeachingClassRuns(props) {
                                                     {row.id}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell align="right">{row.classRunName}</TableCell>
+                                            <TableCell align="right">{row.classRunName}</TableCell> */}
+                                            <TableCell component="th" scope="row">
+                                                <Link
+                                                    to={`${classRunsPath}/${row.id}`}
+                                                    state={{ classRunName: row.classRunName }}
+                                                    style={{ textDecoration: "none" }}
+                                                >
+                                                    {row.classRunName}
+                                                </Link>
+                                            </TableCell>
                                             <TableCell align="right">{row.classRunDescription}</TableCell>
                                             <TableCell align="right">{row.classRunStart}</TableCell>
                                             <TableCell align="right">{row.classRunEnd}</TableCell>

@@ -223,7 +223,7 @@ export default function Appbar() {
 
                 {user.userType === "ORG_ADMIN" && (
                   <li className="nav-item">
-                    <Link to="/home" className="nav-links">
+                    <Link to="/pointsConfig" className="nav-links">
                       Points Config
                     </Link>
                   </li>

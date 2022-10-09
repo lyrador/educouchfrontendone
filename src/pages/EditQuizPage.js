@@ -1,44 +1,29 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import { Container } from "@mui/system";
-import { useAuth } from "../context/AuthProvider";
 import dayjs from "dayjs";
-import {
-  Link,
-  Navigate,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import LinkMaterial from "@mui/material/Link";
 
-import {
-  Breadcrumbs,
-  Grid,
-  IconButton,
-  Modal,
-  Paper,
-  Button,
-} from "@mui/material";
+import { Breadcrumbs, Grid, Modal, Paper, Button } from "@mui/material";
 import { useState } from "react";
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AddIcon from "@mui/icons-material/Add";
 import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsComponent";
-import { Construction } from "@mui/icons-material";
+import EditSettingsComponent from "../components/QuizComponents/EditQuizSettingsComponent";
+import EditQuizSettingsComponent from "../components/QuizComponents/EditQuizSettingsComponent";
 
-export default function CreateQuizForm(props) {
+export default function EditQuizPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const courseId = location.pathname.split("/").slice(2, 3).join("/");
-  const assessmentsPath = location.state.assessmentsPathProp;
-  const createAssessmentPath = location.state.createAssessmentPathProp;
-  const createQuizFormPath = location.pathname;
-  const currentQuiz = location.state.newQuizProp;
+  const assessmentsPath = location.state.assessmentPathProp;
+  const editQuizPath = location.pathname;
+  const assessmentId = location.state.assessmentIdProp;
+  const [currentQuiz, setCurrentQuiz] = useState();
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
+  const [editSettings, setEditSettings] = useState("");
 
   const [maxPointsError, setMaxPointsError] = useState({
     value: false,
@@ -46,12 +31,25 @@ export default function CreateQuizForm(props) {
   });
 
   React.useEffect(() => {
-    currentQuiz.questions = formQuestions;
-  }, []);
+    fetch(
+      "http://localhost:8080/quiz/getQuizById/" +
+        location.state.assessmentIdProp
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        setCurrentQuiz(result);
+        setFormQuestions(result.questions);
+        console.log("here is the quiz: ", currentQuiz);
+      });
+  }, [editSettings]);
 
   const [open, setOpen] = React.useState(false);
-  function handleOpenSettingsDialogue() {
-    setOpen(true);
+  function handleProceedQuestions() {
+      setFormQuestions(currentQuiz.questions);
+    setEditSettings("false");
+  }
+  function handleBackToSettings() {
+    setEditSettings("true");
   }
 
   function validateQuiz() {
@@ -75,7 +73,6 @@ export default function CreateQuizForm(props) {
     setOpen(false);
   }
 
-  //need function to link questions to quiz prop
   function linkQuizQuestions() {
     currentQuiz.questions = formQuestions;
   }
@@ -156,14 +153,13 @@ export default function CreateQuizForm(props) {
   }
 
   function removeQuestionOption(questionId, updatedOptions) {
-    console.log("remove option called")
+    console.log("remove option called");
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
       (f) => f.localid == questionId
     );
     if (updatedOptions && updatedOptions != "") {
       tempFormQuestions[questionIndex].options = updatedOptions;
-
     }
   }
 
@@ -186,7 +182,7 @@ export default function CreateQuizForm(props) {
       questionTitle: "Question " + questionNumber,
       questionType: "shortAnswer",
       questionContent: "Type Question Body here...",
-      questionMaxPoints: "0.0 points",
+      questionMaxPoints: "",
       options: [],
       correctOption: "",
     };
@@ -220,22 +216,21 @@ export default function CreateQuizForm(props) {
     return quizObject;
   };
 
+  //need to call update function here
   const handleSave = (e) => {
-    e.preventDefault();
-    const updatedQuiz = handleQuizDateConversions(currentQuiz);
-    linkQuizQuestions();
-
-    fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-
-      body: JSON.stringify(updatedQuiz),
-    }).then((res) => res.json());
-    handleCancel();
+    //   e.preventDefault();
+    //   const updatedQuiz = handleQuizDateConversions(currentQuiz);
+    //   linkQuizQuestions();
+    //   fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(updatedQuiz),
+    //   }).then((res) => res.json());
+    //   handleCancel();
   };
 
   const handleCancel = (e) => {
-    navigate(`${assessmentsPath}`);
+    //   navigate(`${assessmentsPath}`);
   };
 
   return (
@@ -254,118 +249,123 @@ export default function CreateQuizForm(props) {
             </LinkMaterial>
           </Link>
           <Link
-            to={`${createAssessmentPath}`}
-            style={{ textDecoration: "none", color: "grey" }}
-            state={{
-              createAssessmentPathProp: { createAssessmentPath },
-              assessmentsPathProp: { assessmentsPath },
-            }}
-          >
-            <LinkMaterial underline="hover" color="inherit">
-              Create Assessment
-            </LinkMaterial>
-          </Link>
-          <Link
-            to={`${createQuizFormPath}`}
+            to={`${editQuizPath}`}
+            state={{ assessmentPathProp: assessmentsPath }}
             style={{ textDecoration: "none", color: "grey" }}
           >
             <LinkMaterial underline="hover" color="inherit">
-              Create Quiz
+              Edit Quiz
             </LinkMaterial>
           </Link>
         </Breadcrumbs>
 
-        <Grid item width={"80%"}>
-          <Grid
-            container
-            direction={"row"}
-            justifyContent={"space-between"}
-            style={{
-              marginTop: 30,
-              backgroundColor: "#1975D2",
-              paddingLeft: 10,
-            }}
-          >
-            <h1 style={{ color: "whitesmoke" }}>Quiz Creation</h1>
-            <Button
-              aria-label="settings"
-              variant="contained"
-              style={{ backgroundColor: "#989898" }}
-              onClick={() => handleOpenSettingsDialogue()}
+        {editSettings == "false" ? (
+          <Grid item width={"80%"}>
+            <Grid
+              container
+              direction={"row"}
+              justifyContent={"space-between"}
+              style={{
+                marginTop: 30,
+                backgroundColor: "#1975D2",
+                paddingLeft: 10,
+              }}
             >
-              <SettingsIcon style={{ marginRight: 10 }} />
-              Edit Settings
-            </Button>
-            <Modal
-              open={open}
-              onClose={handleCloseSettingsDialogue}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <QuizSettingsComponents
-                quizSettingsProp={currentQuiz}
-                editQuizSettingsProp={editQuizSettings}
-                closeQuizSettingsProp={handleCloseSettingsDialogue}
-              ></QuizSettingsComponents>
-            </Modal>
-          </Grid>
-          {formQuestions.length == 0 && (
-            <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
-              <h3>Currently no questions!</h3>
-              <br />
-              <p>Start adding questions by clicking on "Add Question" Button</p>
-            </Paper>
-          )}
-
-          {formQuestions.map((question, index) => {
-            return (
+              <h1 style={{ color: "whitesmoke" }}>Edit Quiz Questions</h1>
+              <Button
+                aria-label="settings"
+                variant="contained"
+                style={{ backgroundColor: "#989898" }}
+                onClick={() => handleBackToSettings()}
+              >
+                <SettingsIcon style={{ marginRight: 10 }} />
+                Back To Settings
+              </Button>
+            </Grid>
+            {formQuestions.length == 0 && (
               <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
-                <QuizQuestionComponent
-                  textFieldProp={textField}
-                  setTextFieldProp={setTextField}
-                  questionProp={question}
-                  editQuestionTitleProp={editQuestionTitle}
-                  editQuestionTypeProp={editQuestionType}
-                  addQuestionOptionProp={addQuestionOption}
-                  removeQuestionOptionProp={removeQuestionOption}
-                  selectCorrectOptionProp={selectCorrectQuestionOption}
-                  editQuestionContentProp={editQuestionContent}
-                  removeQuestionProp={removeQuestion}
-                />
+                <h3>Currently no questions!</h3>
+                <br />
+                <p>
+                  Start adding questions by clicking on "Add Question" Button
+                </p>
               </Paper>
-            );
-          })}
+            )}
 
-          <Grid
-            container
-            style={{ marginBottom: 90, marginTop: 20 }}
-            direction="row"
-            justifyContent={"space-between"}
-          >
-            <Button
-              color="secondary"
-              variant="contained"
-              onClick={() => addQuestion()}
+            {formQuestions.map((question, index) => {
+              return (
+                <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
+                  <QuizQuestionComponent
+                    textFieldProp={textField}
+                    setTextFieldProp={setTextField}
+                    questionProp={question}
+                    editQuestionTitleProp={editQuestionTitle}
+                    editQuestionTypeProp={editQuestionType}
+                    addQuestionOptionProp={addQuestionOption}
+                    removeQuestionOptionProp={removeQuestionOption}
+                    selectCorrectOptionProp={selectCorrectQuestionOption}
+                    editQuestionContentProp={editQuestionContent}
+                    removeQuestionProp={removeQuestion}
+                  />
+                </Paper>
+              );
+            })}
+
+            <Grid
+              container
+              style={{ marginBottom: 90, marginTop: 20 }}
+              direction="row"
+              justifyContent={"space-between"}
             >
-              <AddIcon style={{ marginRight: "10px" }} />
-              Add Question
-            </Button>
-          </Grid>
+              <Button
+                color="secondary"
+                variant="contained"
+                onClick={() => addQuestion()}
+              >
+                <AddIcon style={{ marginRight: "10px" }} />
+                Add Question
+              </Button>
+            </Grid>
 
-          <Grid
-            container
-            direction="row"
-            justifyContent={"space-between"}
-            style={{ marginTop: "80px" }}
-          >
-            <Button variant="contained" onClick={handleCancel}>
-              Cancel
-            </Button>
-            <Button variant="contained" onClick={handleSave}>
-              Submit
-            </Button>
+            <Grid
+              container
+              direction="row"
+              justifyContent={"space-between"}
+              style={{ marginTop: "80px" }}
+            >
+              <Button variant="contained" onClick={handleSave}>
+                Save Quiz
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
+        ) : (
+          <Grid item width={"80%"}>
+            <Grid
+              container
+              direction={"row"}
+              justifyContent={"space-between"}
+              style={{
+                marginTop: 30,
+                backgroundColor: "#1975D2",
+                paddingLeft: 10,
+              }}
+            >
+              <h1 style={{ color: "whitesmoke" }}>Edit Quiz Settings</h1>
+              <Button
+                aria-label="settings"
+                variant="contained"
+                style={{ backgroundColor: "#989898" }}
+                onClick={() => handleProceedQuestions()}
+              >
+                Proceed to Questions
+              </Button>
+            </Grid>
+            {/* <EditQuizSettingsComponent
+              quizProp={currentQuiz}
+              editSettingsProp={editQuizSettings}
+            ></EditQuizSettingsComponent> */}
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );

@@ -43,6 +43,8 @@ import TeachingClassEvents from "./components/TeachingClassEvents";
 import CreateQuizForm from "./pages/CreateQuizForm";
 import CreateAssessment from "./pages/CreateAssessment";
 import LearnerCalendar from "./components/LearnerCalendar";
+import OrganisationPointsConfig from "./components/OrganisationPointsConfig";
+import EditQuizPage from "./pages/EditQuizPage";
 import ClassRunListPage from "./pages/ClassRunListPage";
 import CourseApprovalPage from "./pages/CourseApprovalPage";
 import LearnerCourseFolder from "./pages/LearnerCourseFolder";
@@ -200,7 +202,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/learnerCourseDetails/:courseId/successRefundRequest"
               element={
@@ -313,6 +314,33 @@ function App() {
               }
             />
             <Route
+              path="/learnerCourseDetails/:courseId/forum"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingForumList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/forum/:forumId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingForum />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/forum/:forumId/:discussionId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingDiscussion />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/myTeachingCourse/:courseId/files"
               element={
                 <RequireAuth>
@@ -371,7 +399,16 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerCalendar/>
+                  <LearnerCalendar />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/pointsConfig"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <OrganisationPointsConfig />
                 </RequireAuth>
               }
             />
@@ -415,6 +452,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <CreateQuizForm />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/assessments/editQuiz/:assessmentId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <EditQuizPage />
                 </RequireAuth>
               }
             />

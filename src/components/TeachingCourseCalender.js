@@ -40,6 +40,7 @@ const TeachingCourseCalender = (props) => {
             .then((res) => res.json())
             .then((result) => {
                 setClassRuns(result)
+                console.log(result)
             })
     }, []);
 
@@ -132,24 +133,24 @@ const TeachingCourseCalender = (props) => {
     }
 
     //To get all events of the instructor for My Calendar (Instructor)
-    React.useEffect(() => {
-        setRefreshPage(false);
-        fetch("http://localhost:8080/event/instructors/" + user.userId + "/events").
-            then(res => res.json()).then((result) => {
-                setEvents(result);
-            }
-            )
-    }, [refreshPage])
-
-    // //To get all events of the course for course calendar
     // React.useEffect(() => {
     //     setRefreshPage(false);
-    //     fetch("http://localhost:8080/event/courses/" + courseId + "/events").
+    //     fetch("http://localhost:8080/event/instructors/" + user.userId + "/events").
     //         then(res => res.json()).then((result) => {
     //             setEvents(result);
     //         }
     //         )
     // }, [refreshPage])
+
+    //To get all events of the course for course calendar
+    React.useEffect(() => {
+        setRefreshPage(false);
+        fetch("http://localhost:8080/event/courses/" + courseId + "/events").
+            then(res => res.json()).then((result) => {
+                setEvents(result);
+            }
+            )
+    }, [refreshPage])
 
     // //to just get all events (i just use this for testing the functionality)
     // React.useEffect(() => {
@@ -163,26 +164,35 @@ const TeachingCourseCalender = (props) => {
 
 
 
-    const saveAppointment = (data) => {
-        console.log(data)
-        if (data.startDate && data.endDate && data.notes && data.title && data.classRun) {
-            fetch("http://localhost:8080/event/classRun/" + data.classRunMainId + "/events", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            }).then(() => {
-                console.log("Event Created Successfully!")
-                setRefreshPage(true)
-
-            })
+    const saveAppointment = async (data) => {
+        console.log(JSON.stringify(data))
+        //if (data.startDate && data.endDate && data.notes && data.title && data.classRunId) {
+        if (data.startDate && data.endDate && data.notes && data.title) {
+            try {
+                const response = await fetch("http://localhost:8080/event/classRun/" + data.classRunMainId + "/events", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+                console.log(response)
+                if (response.ok == false) {
+                    console.log("Error");
+                    handleClickOpenError()
+                } else {
+                    console.log("Event Created Successfully!")
+                    setRefreshPage(true)
+                }
+            } catch (err) {
+                console.log(err);
+                handleClickOpenError()
+            }
         } else {
             handleClickOpenError()
         }
     }
 
     const editAppointment = (data) => {
-        console.log(data)
-        if (data.startDate && data.endDate && data.notes && data.title && data.classRun) {
+        if (data.startDate && data.endDate && data.notes && data.title) {
             fetch("http://localhost:8080/event/events/" + data.id, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -306,7 +316,7 @@ const TeachingCourseCalender = (props) => {
                     <DialogTitle>Incomplete Fields/ Invalid Date</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Please fill all the fields and include a valid start and end date.
+                            Please fill in all the fields and include a valid start and end date.
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
