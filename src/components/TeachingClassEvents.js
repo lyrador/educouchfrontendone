@@ -452,8 +452,8 @@ function TeachingClassRuns(props) {
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>Event ID</TableCell>
-                                        <TableCell align="right">Title</TableCell>
+                                        {/* <TableCell>Event ID</TableCell> */}
+                                        <TableCell>Title</TableCell>
                                         <TableCell align="right">Description</TableCell>
                                         <TableCell align="right">Start Date</TableCell>
                                         <TableCell align="right">Start Time</TableCell>
@@ -469,10 +469,13 @@ function TeachingClassRuns(props) {
                                             key={row.classRunId}
                                             sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                                         >
-                                            <TableCell component="th" scope="row">
+                                            {/* <TableCell component="th" scope="row">
                                                 {row.id}
                                             </TableCell>
-                                            <TableCell align="right">{row.title}</TableCell>
+                                            <TableCell align="right">{row.title}</TableCell> */}
+                                            <TableCell component="th" scope="row">
+                                                {row.title}
+                                            </TableCell>
                                             <TableCell align="right">{row.notes}</TableCell>
                                             <TableCell align="right">{dayjs(row.startDate).local().format().substring(0, 10)}</TableCell>
                                             <TableCell align="right">{dayjs(row.startDate).local().format().substring(11, 16)}</TableCell>

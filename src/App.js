@@ -43,6 +43,7 @@ import TeachingClassEvents from "./components/TeachingClassEvents";
 import CreateQuizForm from "./pages/CreateQuizForm";
 import CreateAssessment from "./pages/CreateAssessment";
 import LearnerCalendar from "./components/LearnerCalendar";
+import OrganisationPointsConfig from "./components/OrganisationPointsConfig";
 
 function App() {
   return (
@@ -301,7 +302,16 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerCalendar/>
+                  <LearnerCalendar />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/pointsConfig"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <OrganisationPointsConfig />
                 </RequireAuth>
               }
             />
