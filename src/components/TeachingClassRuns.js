@@ -56,6 +56,8 @@ import InputLabel from '@mui/material/InputLabel';
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
+import { HexColorPicker, HexColorInput } from "react-colorful";
+
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -96,7 +98,6 @@ function TeachingClassRuns(props) {
         if (reason === "clickaway") { return }
         setOpenErrorSnackbar(false);
     };
-
 
     const auth = useAuth();
     const user = auth.user;
@@ -146,6 +147,7 @@ function TeachingClassRuns(props) {
     const [instructorUsername, setInstructorUsername] = useState("");
     const [classRunName, setClassRunName] = useState("");
     const [classRunDescription, setClassRunDescription] = useState("");
+    // const [classRunColor, setClassRunColor] = useState("#aabbcc");
 
     const [classRunStartDateNonStringError, setClassRunStartDateNonStringError] = useState({ value: false, errorMessage: '' })
     const [classRunEndDateNonStringError, setClassRunEndDateNonStringError] = useState({ value: false, errorMessage: '' })
@@ -181,6 +183,7 @@ function TeachingClassRuns(props) {
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
     const handleClickDeleteDialogOpen = (event, classRunId) => {
+        console.log(classRunId)
         setClassRunIdToDelete(classRunId);
         setDeleteDialogOpen(true);
     };
@@ -459,10 +462,11 @@ function TeachingClassRuns(props) {
         if (classRunEndDateNonString) {
             classRunEnd = classRunEndDateNonString.format("YYYY-MM-DD")
         }
+        // var color = classRunColor
         const newClassRun = {
             classRunName, classRunDescription, classRunDaysOfTheWeek,
             classRunStart, classRunEnd, classRunStartTime: classRunStartTime, classRunEndTime,
-            calendarId, instructorUsername, recurringEnumString, minClassSize, maximumCapacity
+            calendarId, instructorUsername, recurringEnumString, minClassSize, maximumCapacity 
         }
         if (dayjs(classRunStartDateNonString).isValid() === false) {
             setClassRunStartDateNonStringError({ value: true, errorMessage: 'Invalid Start Date!' })
@@ -549,6 +553,7 @@ function TeachingClassRuns(props) {
         var minClassSize = editMinClassSize
         var maximumCapacity = editMaximumCapacity
         var classRunId = editClassRunId
+        // var color = classRunColor
         const editedClassRun = {
             classRunId, classRunName, classRunDescription, classRunDaysOfTheWeek,
             classRunStart, classRunEnd, classRunStartTime: classRunStartTime, classRunEndTime,
@@ -787,16 +792,16 @@ function TeachingClassRuns(props) {
                                     {renderEmptyRowMessage()}
                                     {classRuns.map((row) => (
                                         <TableRow
-                                            key={row.classRunId}
+                                            key={row.id}
                                             sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                                         >
                                             <TableCell component="th" scope="row">
                                                 <Link
-                                                    to={`${classRunsPath}/${row.classRunId}`}
+                                                    to={`${classRunsPath}/${row.id}`}
                                                     state={{ classRunName: row.classRunName }}
                                                     style={{ textDecoration: "none" }}
                                                 >
-                                                    {row.classRunId}
+                                                    {row.id}
                                                 </Link>
                                             </TableCell>
                                             <TableCell align="right">{row.classRunName}</TableCell>
@@ -814,7 +819,7 @@ function TeachingClassRuns(props) {
                                                 <div>
                                                     <IconButton
                                                         aria-label="settings"
-                                                        onClick={(event) => handleClickDeleteDialogOpen(event, row.classRunId)}
+                                                        onClick={(event) => handleClickDeleteDialogOpen(event, row.id)}
                                                     >
                                                         <DeleteIcon />
                                                     </IconButton>
@@ -822,7 +827,7 @@ function TeachingClassRuns(props) {
                                                         aria-label="settings"
                                                         onClick={(event) =>
                                                             handleClickEditDialogOpen(event,
-                                                                row.classRunId,
+                                                                row.id,
                                                                 row.classRunName,
                                                                 row.classRunDescription,
                                                                 row.classRunStart,
@@ -1046,6 +1051,9 @@ function TeachingClassRuns(props) {
                             helperText={instructorUsernameError.errorMessage}
                             required
                         />
+
+                        {/* <HexColorPicker color={classRunColor} onChange={setClassRunColor} />
+                        <HexColorInput color={classRunColor} onChange={setClassRunColor} /> */}
 
                     </DialogContent>
                     <DialogActions>

@@ -40,6 +40,7 @@ import TeachingClassRuns from "./components/TeachingClassRuns";
 import TeachingClassEvents from "./components/TeachingClassEvents";
 import CreateQuizForm from "./pages/CreateQuizForm";
 import CreateAssessment from "./pages/CreateAssessment";
+import LearnerCalendar from "./components/LearnerCalendar";
 
 function App() {
   return (
@@ -280,6 +281,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <Settings />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCalendar"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerCalendar/>
                 </RequireAuth>
               }
             />
