@@ -155,6 +155,24 @@ export default function CreateQuizForm(props) {
     }
   }
 
+  function removeQuestionOption(questionId, optionToRemove) {
+    console.log("remove option called")
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.localid == questionId
+    );
+    if (optionToRemove && optionToRemove != "") {
+      const question = tempFormQuestions[questionIndex];
+      const oldOptions = question.options;
+      const optionIndex = oldOptions.findIndex(
+        (option) => option == optionToRemove
+      );
+      const newOptions = oldOptions.splice(optionIndex, 1);
+      question.options = newOptions;
+      console.log("removed question: " + optionToRemove);
+    }
+  }
+
   function selectCorrectQuestionOption(questionId, option) {
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
@@ -219,7 +237,7 @@ export default function CreateQuizForm(props) {
 
       body: JSON.stringify(updatedQuiz),
     }).then((res) => res.json());
-     handleCancel()
+    handleCancel();
   };
 
   const handleCancel = (e) => {
@@ -315,6 +333,7 @@ export default function CreateQuizForm(props) {
                   editQuestionTitleProp={editQuestionTitle}
                   editQuestionTypeProp={editQuestionType}
                   addQuestionOptionProp={addQuestionOption}
+                  removeQuestionOptionProp={removeQuestionOption}
                   selectCorrectOptionProp={selectCorrectQuestionOption}
                   editQuestionContentProp={editQuestionContent}
                   removeQuestionProp={removeQuestion}

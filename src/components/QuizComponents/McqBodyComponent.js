@@ -8,6 +8,11 @@ export default function McqBodyComponent(props) {
     props.addQuestionOptionProp(props.questionIdProp, addOptionText);
     setAddOptionText("");
   }
+
+  function handleRemoveOption(optionToRemove) {
+    props.removeQuestionOptionProp(props.questionIdProp, optionToRemove)
+  }
+
   return (
     <div>
       <div>MCQ Options</div>
@@ -19,6 +24,7 @@ export default function McqBodyComponent(props) {
         {props.mcqOptionsProp.map((item) => (
           <MenuItem key={item} value={item}>
             {item}
+            <Button onClick={() =>handleRemoveOption(item)}> remove option </Button>
           </MenuItem>
         ))}
       </Select>
