@@ -55,29 +55,30 @@ export default function EditQuizSettingsComponent(props) {
     errorMessage: "",
   });
 
-  React.useEffect(() => {
-    // setCurrentQuiz(props.quizProp)
-    // setTitle(props.quizProp.assessmentTitle);
-    // setDescription(props.quizProp.assessmentDescription);
-    // setMaxScore(props.quizProp.assessmentMaxScore);
-    // setStartDate(props.quizProp.assessmentStartDate);
-    // setEndDate(props.quizProp.assessmentEndDate);
-    // setHasTimeLimit(props.quizProp.hasTimeLimit);
-    // setTimeLimit(props.quizProp.timeLimit);
-    // setIsAutoRelease(props.quizProp.isAutoRelease);
-    // startDateString = dayjs(startDate.d).format("YYYY/MM/DD");
-    // endDateString = dayjs(endDate.d).format("YYYY/MM/DD");
+  React.useEffect(() => {    
+    setCurrentQuiz(props.quizProp)
+    setTitle(props.titleProp);
+    setDescription(props.descriptionProp);
+    setMaxScore(props.maxScoreProp);
+    setStartDate(props.startDateProp);
+    setEndDate(props.endDateProp);
+    setHasTimeLimit(props.hasTimeLimitProp);
+    setTimeLimit(props.timeLimitProp);
+    setIsAutoRelease(props.isAutoReleaseProp);
+    startDateString = dayjs(startDate.$d).format("YYYY/MM/DD");
+    endDateString = dayjs(endDate.$d).format("YYYY/MM/DD");
+    console.log("heres title prop: ", props.titleProp )
   }, []);
 
   function handleCancel() {
-    setTitle(props.quizProp.assessmentTitle);
-    setDescription(props.quizProp.assessmentDescription);
-    setMaxScore(props.quizProp.assessmentMaxScore);
-    setStartDate(props.quizProp.assessmentStartDate);
-    setEndDate(props.quizProp.assessmentEndDate);
-    setHasTimeLimit(props.quizProp.hasTimeLimit);
-    setTimeLimit(props.quizProp.timeLimit);
-    setIsAutoRelease(props.quizProp.isAutoRelease);
+    setTitle(props.titleProp);
+    setDescription(props.descriptionProp);
+    setMaxScore(props.maxScoreProp);
+    setStartDate(props.startDateProp);
+    setEndDate(props.endDateProp);
+    setHasTimeLimit(props.hasTimeLimitProp);
+    setTimeLimit(props.timeLimitProp);
+    setIsAutoRelease(props.isAutoReleaseProp);
     startDateString = dayjs(startDate.d).format("YYYY/MM/DD");
     endDateString = dayjs(endDate.d).format("YYYY/MM/DD");
   }

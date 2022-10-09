@@ -27,7 +27,15 @@ export default function EditQuizPage() {
   const [textField, setTextField] = useState("");
   const [editSettings, setEditSettings] = useState("");
   const [questionCounter, setQuestionCounter] = useState(0);
-
+  const [title, setTitle] = useState(); 
+  const [description, setDescription] = useState();
+  const [maxScore, setMaxScore] = useState();
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  const [hasTimeLimit, setHasTimeLimit] = useState();
+  const [timeLimit, setTimeLimit] = useState();
+  const [isAutoRelease, setIsAutoRelease] = useState();
+  
   const [maxPointsError, setMaxPointsError] = useState({
     value: false,
     errorMessage: "",
@@ -43,10 +51,14 @@ export default function EditQuizPage() {
         setCurrentQuiz(result);
         setFormQuestions(result.questions);
         setQuestionCounter(result.questionCounter);
-        console.log("here is the quizId: ", currentQuiz);
-        console.log("here is the questions: ", formQuestions)
-        console.log("here is the questionCounter: ", questionCounter)
-
+        setTitle(result.assessmentTitle);
+        setDescription(result.assessmentDescription);
+        setMaxScore(result.assessmentMaxScore);
+        setStartDate(result.assessmentStartDate);
+        setEndDate(result.assessmentEndDate);
+        setHasTimeLimit(result.hasTimeLimit);
+        setTimeLimit(result.timeLimit);
+        setIsAutoRelease(result.isAutoRelease);
       });
   }, [editSettings]);
 
@@ -179,7 +191,7 @@ export default function EditQuizPage() {
   }
 
   const addQuestion = () => {
-    setQuestionCounter(questionCounter+1)
+    setQuestionCounter(questionCounter + 1);
     currentQuiz.questionCounter = questionCounter;
     const question = {
       localid: "question" + questionCounter,
@@ -222,20 +234,23 @@ export default function EditQuizPage() {
 
   //need to call update function here
   const handleSave = (e) => {
-      e.preventDefault();
+    e.preventDefault();
     linkQuizQuestions();
     const updatedQuiz = handleQuizDateConversions(currentQuiz);
-    console.log("trying to update quiz: ",updatedQuiz)
-      fetch("http://localhost:8080/quiz/updateQuizById/" + currentQuiz.assessmentId, {
+    console.log("trying to update quiz: ", updatedQuiz);
+    fetch(
+      "http://localhost:8080/quiz/updateQuizById/" + currentQuiz.assessmentId,
+      {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedQuiz),
-      }).then((res) => res.json());
-      handleCancel();
+      }
+    ).then((res) => res.json());
+    handleCancel();
   };
 
   const handleCancel = (e) => {
-      navigate(`${assessmentsPath}`);
+    navigate(`${assessmentsPath}`);
   };
 
   return (
@@ -368,6 +383,14 @@ export default function EditQuizPage() {
             </Grid>
             <EditQuizSettingsComponent
               quizProp={currentQuiz}
+              titleProp={title}
+              descriptionProp={description}
+              maxScoreProp={maxScore}
+              startDateProp={startDate}
+              endDateProp={endDate}
+              hasTimeLimitProp={hasTimeLimit}
+              timeLimitProp={timeLimit}
+              isAutoReleaseProp={isAutoRelease}
               editSettingsProp={editQuizSettings}
             ></EditQuizSettingsComponent>
           </Grid>
