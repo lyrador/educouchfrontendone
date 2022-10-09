@@ -40,6 +40,7 @@ const TeachingCourseCalender = (props) => {
             .then((res) => res.json())
             .then((result) => {
                 setClassRuns(result)
+                console.log(result)
             })
     }, []);
 
@@ -163,27 +164,35 @@ const TeachingCourseCalender = (props) => {
 
 
 
-    const saveAppointment = (data) => {
-        console.log(data)
-        if (data.startDate && data.endDate && data.notes && data.title && data.classRun) {
-            fetch("http://localhost:8080/event/classRun/" + data.classRunMainId + "/events", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            }).then(() => {
-                console.log("Event Created Successfully!")
-                setRefreshPage(true)
-
-            })
+    const saveAppointment = async (data) => {
+        console.log(JSON.stringify(data))
+        //if (data.startDate && data.endDate && data.notes && data.title && data.classRunId) {
+        if (data.startDate && data.endDate && data.notes && data.title) {
+            try {
+                const response = await fetch("http://localhost:8080/event/classRun/" + data.classRunMainId + "/events", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+                console.log(response)
+                if (response.ok == false) {
+                    console.log("Error");
+                    handleClickOpenError()
+                } else {
+                    console.log("Event Created Successfully!")
+                    setRefreshPage(true)
+                }
+            } catch (err) {
+                console.log(err);
+                handleClickOpenError()
+            }
         } else {
             handleClickOpenError()
         }
     }
 
     const editAppointment = (data) => {
-        console.log(data)
-        console.log(JSON.stringify(data.classRun))
-        if (data.startDate && data.endDate && data.notes && data.title && data.classRun) {
+        if (data.startDate && data.endDate && data.notes && data.title) {
             fetch("http://localhost:8080/event/events/" + data.id, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
