@@ -176,6 +176,7 @@ function TeachingAssessmentList(props) {
   const [refreshPage, setRefreshPage] = useState(false);
   const refreshFunction = () => {
     setRefreshPage(!refreshPage);
+    console.log("refreshed teaching assessmentlist page")
   };
 
   const enumGroup = [{ value: "INDIVIDUAL" }, { value: "GROUP" }];
@@ -194,7 +195,7 @@ function TeachingAssessmentList(props) {
           "list of assessments: " + assessments + " course id: " + courseId
         );
       });
-  }, [refreshPage]);
+  }, [refreshFunction]);
 
   const [open, setOpen] = React.useState(false);
 
@@ -354,6 +355,7 @@ function TeachingAssessmentList(props) {
     navigate(`${assessmentsPath}/createAssessment`, {
       state: {
         assessmentPathProp: assessmentsPath,
+        // refreshFunctionProp: { refreshFunction },
       },
     });
   }

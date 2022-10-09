@@ -155,21 +155,15 @@ export default function CreateQuizForm(props) {
     }
   }
 
-  function removeQuestionOption(questionId, optionToRemove) {
+  function removeQuestionOption(questionId, updatedOptions) {
     console.log("remove option called")
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
       (f) => f.localid == questionId
     );
-    if (optionToRemove && optionToRemove != "") {
-      const question = tempFormQuestions[questionIndex];
-      const oldOptions = question.options;
-      const optionIndex = oldOptions.findIndex(
-        (option) => option == optionToRemove
-      );
-      const newOptions = oldOptions.splice(optionIndex, 1);
-      question.options = newOptions;
-      console.log("removed question: " + optionToRemove);
+    if (updatedOptions && updatedOptions != "") {
+      tempFormQuestions[questionIndex].options = updatedOptions;
+
     }
   }
 

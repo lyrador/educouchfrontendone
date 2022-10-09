@@ -1,16 +1,60 @@
 import { Button, Grid, MenuItem, Select, TextField } from "@mui/material";
-import { useState } from "react";
+import { isValid } from "date-fns";
+import React, { useState } from "react";
 
 export default function McqBodyComponent(props) {
   const [addOptionText, setAddOptionText] = useState("");
+  const [mcqOptions, setMcqOptions] = useState([]);
+  const [mcqOptionError, setMcqOptionError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+
+  React.useEffect(() => {
+    setMcqOptions(props.mcqOptionsProp);
+    console.log(mcqOptions);
+  }, []);
+
+  function validateOption(addOptionText) {
+    const booleanFlag = "";
+    setMcqOptionError({ value: false, errorMessage: "" });
+
+    for (var i = 0; i < mcqOptions.length; i++) {
+      if (mcqOptions[i] == addOptionText) {
+        setMcqOptionError({
+          value: true,
+          errorMessage: "Option already exists!",
+        });
+        return false;
+      }
+    }
+
+    if (addOptionText === "") {
+      setMcqOptionError({
+        value: true,
+        errorMessage: "Add Option field cannot be empty!",
+      });
+      return false;
+    }
+    return true;
+  }
 
   function handleClick() {
-    props.addQuestionOptionProp(props.questionIdProp, addOptionText);
-    setAddOptionText("");
+    console.log(addOptionText);
+    if (validateOption(addOptionText)) {
+      props.addQuestionOptionProp(props.questionIdProp, addOptionText);
+      setAddOptionText("");
+    }
   }
 
   function handleRemoveOption(optionToRemove) {
-    props.removeQuestionOptionProp(props.questionIdProp, optionToRemove)
+    const oldOptions = mcqOptions;
+    setMcqOptions(
+      oldOptions.filter((o) => {
+        return o !== optionToRemove;
+      })
+    );
+    props.removeQuestionOptionProp(props.questionIdProp, mcqOptions);
   }
 
   return (
@@ -21,11 +65,16 @@ export default function McqBodyComponent(props) {
         style={{ width: "70%", fontSize: 16 }}
         renderValue={(selected) => selected}
       >
-        {props.mcqOptionsProp.map((item) => (
-          <MenuItem key={item} value={item}>
-            {item}
-            <Button onClick={() =>handleRemoveOption(item)}> remove option </Button>
-          </MenuItem>
+        {mcqOptions.map((item) => (
+          <Grid container direction={"row"}>
+            <MenuItem key={item} value={item}>
+              {item}
+            </MenuItem>
+            <Button onClick={() => handleRemoveOption(item)}>
+              {" "}
+              remove option{" "}
+            </Button>
+          </Grid>
         ))}
       </Select>
       <Grid container flexDirection={"row"} justifyItems={"center"}>
@@ -39,6 +88,8 @@ export default function McqBodyComponent(props) {
             fontSize: 14,
             marginTop: 10,
           }}
+          error={mcqOptionError.value}
+          helperText={mcqOptionError.errorMessage}
         />
         <Button onClick={() => handleClick()}>Add</Button>
       </Grid>
