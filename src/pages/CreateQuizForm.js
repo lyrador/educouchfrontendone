@@ -176,7 +176,7 @@ export default function CreateQuizForm(props) {
     if (option && option != "") {
       tempFormQuestions[questionIndex].correctOption = option;
       setFormQuestions(tempFormQuestions);
-      setTextField("");
+      console.log("correct option selected: ", option)
     }
   }
 
@@ -364,7 +364,7 @@ export default function CreateQuizForm(props) {
               Cancel
             </Button>
             <Button variant="contained" onClick={handleSave}>
-              Submit
+              Create Quiz
             </Button>
           </Grid>
         </Grid>
