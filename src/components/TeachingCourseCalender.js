@@ -306,7 +306,7 @@ const TeachingCourseCalender = (props) => {
                     <DialogTitle>Incomplete Fields/ Invalid Date</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Please fill all the fields and include a valid start and end date.
+                            Please fill in all the fields and include a valid start and end date.
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
