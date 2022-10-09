@@ -20,7 +20,7 @@ const paperStyle = {
     flex: '1'
 };
 
-export default function CourseTags({ courseId }) {
+export default function CourseTags({ courseId, isLearner }) {
     const auth = useAuth();
     const user = auth.user;
     // current course tags

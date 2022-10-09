@@ -223,10 +223,8 @@ const LearnerCalendar = (props) => {
     return (
         <div>
             <Grid container spacing={0}>
-                <Grid item xs={2}>
-                    <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
-                </Grid>
-                <Grid item xs={10}>
+
+                <Grid item >
                     <div id="calender">
                         <Scheduler
                             timeZone="Asia/Singapore"

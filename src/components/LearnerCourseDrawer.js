@@ -43,7 +43,7 @@ function LearnerCoursesDrawer({ courseId, learnerStatus }) {
                             <ListItemText primary="Course Calender" />
                         </ListItemButton>
                     </Link>
-                    <Link to={`${coursePath}/classRuns`} style={{ textDecoration: 'none', color: 'black' }}>
+                    <Link to={`${coursePath}/classRunList`} style={{ textDecoration: 'none', color: 'black' }}>
                         <ListItemButton>
                             <ListItemText primary="Class Runs" />
                         </ListItemButton>

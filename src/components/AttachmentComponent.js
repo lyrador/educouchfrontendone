@@ -24,7 +24,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 
 
 
-function AttachmentComponent({ attachment, courseId, handleRefreshDelete, handleRefreshUpdate, refresh }) {
+function AttachmentComponent({ attachment, courseId, handleRefreshDelete, handleRefreshUpdate, refresh, isLearner }) {
 
     var folderId = useParams();
     folderId = folderId.folderId;
@@ -65,7 +65,7 @@ function AttachmentComponent({ attachment, courseId, handleRefreshDelete, handle
             setError(true);
         };
         var apiUrl = "http://localhost:8080/renameAttachment?attachmentId=" + attachment.attachmentId
-         + "&fileName=" + attachmentName;
+            + "&fileName=" + attachmentName;
 
         fetch(apiUrl)
             .then(() => {
@@ -93,7 +93,7 @@ function AttachmentComponent({ attachment, courseId, handleRefreshDelete, handle
     // delete
     const processDeletion = () => {
         fetch("http://localhost:8080/deleteFolderAttachment?attachmentId=" + attachment.attachmentId +
-        "&folderId=" + folderId, {
+            "&folderId=" + folderId, {
             method: "DELETE"
         }).then(() => {
             //notification
@@ -161,18 +161,23 @@ function AttachmentComponent({ attachment, courseId, handleRefreshDelete, handle
                         </ListItemIcon>
                         Download
                     </MenuItem>
-                    <MenuItem onClick={processDeletion}>
-                        <ListItemIcon>
-                            <DeleteIcon fontSize="small" />
-                        </ListItemIcon>
-                        Delete
-                    </MenuItem>
-                    <MenuItem onClick = { openRenameDialogBox }>
-                        <ListItemIcon>
-                            <DriveFileRenameOutlineIcon fontSize="small" />
-                        </ListItemIcon>
-                        Rename
-                    </MenuItem>
+                    {!isLearner &&
+                        <div>
+                            <MenuItem onClick={processDeletion}>
+                                <ListItemIcon>
+                                    <DeleteIcon fontSize="small" />
+                                </ListItemIcon>
+                                Delete
+                            </MenuItem>
+                            <MenuItem onClick={openRenameDialogBox}>
+                                <ListItemIcon>
+                                    <DriveFileRenameOutlineIcon fontSize="small" />
+                                </ListItemIcon>
+                                Rename
+                            </MenuItem>
+                        </div>
+                    }
+
                 </Menu>
                 <Dialog open={renameDialogBox} onClose={closeRenameDialogBox} fullWidth="lg">
                     <DialogContent>
