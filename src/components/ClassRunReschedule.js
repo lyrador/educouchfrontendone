@@ -2,7 +2,8 @@ import * as React from 'react';
 import { useState } from 'react';
 import {
     Grid, Box, Stepper, Step, StepLabel, Button, Divider, Card, CardContent, CardActions,
-    Chip, Stack, Paper, Dialog, DialogContent, DialogContentText, DialogTitle
+    Chip, Stack, Paper, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions,
+    Snackbar, Alert
 } from '@mui/material';
 import Timeline from '@mui/lab/Timeline';
 import TimelineItem from '@mui/lab/TimelineItem';
@@ -28,8 +29,9 @@ import TableRow from '@mui/material/TableRow';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import CheckoutForm from './CheckoutForm';
-import SuccessReservation from './SuccessReservation';
+import SuccessEnrolment from './SuccessEnrolment';
 import { useAuth } from '../context/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 
 const steps = ['Select class run schedule', 'Enrollment guidelines', 'Payment', 'Completed'];
@@ -47,7 +49,7 @@ weekday[4] = "Friday";
 weekday[5] = "Saturday";
 weekday[6] = "Sunday";
 
-export default function CourseEnrollment({ courseId }) {
+export default function ClassRunReschedule({ courseId, oldClassRunId}) {
     // user
     const auth = useAuth();
     const user = auth.user;
@@ -78,7 +80,7 @@ export default function CourseEnrollment({ courseId }) {
     const [classRunChosen, setClassRunChosen] = useState('');
 
     React.useEffect(() => {
-        var url = "http://localhost:8080/course/getClassRunByCourseId/" + courseId;
+        var url = "http://localhost:8080/classRun/getAvailableClassRuns/" + courseId;
         fetch(url).
             then(res => res.json())
             .then((result) => {
@@ -104,9 +106,10 @@ export default function CourseEnrollment({ courseId }) {
 
 
     // checkout
+    const [amountToBePaid, setAmountToBePaid] = useState(0);
     const [clientSecret, setClientSecret] = useState('');
-    const [amountToBePaid, setAmountToBePaid] = useState('');
     const checkout = (num_to_pay) => {
+        
         if (num_to_pay != 0) {
             setAmountToBePaid(num_to_pay);
             var url = "http://localhost:8080/payment/checkout?amount=" + num_to_pay;
@@ -127,7 +130,6 @@ export default function CourseEnrollment({ courseId }) {
 
 
     // opening up dialog box
-    // rename dialog box
     const [paymentDialogBox, setPaymentDialogBox] = useState(false);
 
     const openPaymentDialogBox = () => {
@@ -139,15 +141,15 @@ export default function CourseEnrollment({ courseId }) {
     };
 
     // sending over record payment
-    const requestDepositRecord = (num_to_pay) => {
+    const rescheduleAndPayRemainingCourseFee = () => {
         // send request to create payment record
-        const depositRecord = { "classRunId": classRunChosen.classRunId, "learnerId": user.userId, "amount": amountToBePaid  };
-        console.log('Deposit record is ' + JSON.stringify(depositRecord));
-        var url = "http://localhost:8080/payment/trackDeposit";
+        const paymentRecord = { "currClassRunId": oldClassRunId, "newClassRunId": classRunChosen.classRunId, "learnerId": user.userId, "amount": amountToBePaid };
+        console.log('Deposit record is ' + JSON.stringify(paymentRecord));
+        var url = "http://localhost:8080/payment/changeClassRunAndPayCourseFee";
         fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(depositRecord)
+            body: JSON.stringify(paymentRecord)
 
         }).
             then(res => res.json())
@@ -157,15 +159,97 @@ export default function CourseEnrollment({ courseId }) {
             )
     }
 
+    // opening refund dialog box
+    const [refundDialogBox, setRefundDialogBox] = useState(false);
+
+    const openRefundDialogBox = () => {
+        setRefundDialogBox(true);
+    };
+
+    const closeRefundDialogBox = () => {
+        setRefundDialogBox(false);
+    };
+
+    // navigate to course refund success page
+    const navigate = useNavigate();
+    const navigateRefundSuccessPage = () => {
+        navigate(`/learnerCourseDetails/${courseId}/successRefundRequest`);
+
+    };
+
+    const filingRefund = () => {
+        // send request to create payment record
+        const paymentRecord = { "learnerId": user.userId, "classRunId": oldClassRunId, "amount": amountToBePaid };
+        var url = "http://localhost:8080/payment/refundDepositRequest";
+        fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(paymentRecord)
+
+        })
+        .then(() => {
+            closeRefundDialogBox();
+            navigateRefundSuccessPage();
+        }
+            )
+            // .catch((err) => {
+            //     setIsError(true);
+            //     setMessage(err);
+            //     handleOpenNotification();
+            //     setIsError(true);
+            // });
+        
+        
+    };
+
+    // notification
+    const [message, setMessage] = useState('');
+    const [openNotification, setOpenNotification] = useState(false);
+    const [isError, setIsError] = useState(false);
+
+    const handleOpenNotification = () => {
+        setOpenNotification(true);
+    };
+
+    const handleCloseNotification = () => {
+        setOpenNotification(false);
+    }
+
 
     return (
         <>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <LearnerCourseDrawer courseId={courseId}></LearnerCourseDrawer>
+                    <LearnerCourseDrawer courseId={courseId} learnerStatus = {false}></LearnerCourseDrawer>
                 </Grid>
                 <Grid item xs={8}>
-                    <Typography variant="h4">Course Enrollment</Typography>
+                    <Snackbar
+                        open={openNotification && (!isError)}
+                        autoHideDuration={5000}
+                        onClose={handleCloseNotification}
+                    >
+                        <Alert
+                            onClose={handleCloseNotification}
+                            severity="success"
+                            sx={{ width: "100%" }}
+                        >
+                            {message}
+                        </Alert>
+                    </Snackbar>
+                    <Snackbar
+                        open={openNotification && isError}
+                        autoHideDuration={5000}
+                        onClose={handleCloseNotification}
+                    >
+                        <Alert
+                            onClose={handleCloseNotification}
+                            severity="error"
+                            sx={{ width: "100%" }}
+                        >
+                            {message}
+                        </Alert>
+                    </Snackbar>
+                    <Typography variant="h4">Class Run Reschedule</Typography>
                     <Divider></Divider>
                     <br />
                     <br />
@@ -185,7 +269,7 @@ export default function CourseEnrollment({ courseId }) {
                             <br />
                             <br />
                             <Typography>
-                                Select a class run that fits your schedule!
+                                We are sorry to inform you that the class run you have chosen previously is unavailable. Please choose a new class run.
                             </Typography>
                             <br />
                             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
@@ -243,8 +327,8 @@ export default function CourseEnrollment({ courseId }) {
                                 direction="row"
                                 spacing={2}
                             >
-                                <Button onClick={handleBack} variant="contained">
-                                    Back
+                                <Button onClick={openRefundDialogBox} variant="contained">
+                                    Refund my deposit
                                 </Button>
                                 <Button onClick={handleNext} variant="contained">
                                     Next
@@ -267,17 +351,9 @@ export default function CourseEnrollment({ courseId }) {
                             <div class="enrollment-guideline">
                                 <Timeline position="alternate">
                                     <TimelineItem>
-                                        <TimelineOppositeContent
-                                            sx={{ m: 'auto 0' }}
-                                            align="right"
-                                            variant="body2"
-                                            color="text.secondary"
-                                        >
-                                            Today
-                                        </TimelineOppositeContent>
                                         <TimelineSeparator>
                                             <TimelineConnector />
-                                            <TimelineDot color="secondary">
+                                            <TimelineDot color="grey">
                                                 <BookIcon />
                                             </TimelineDot>
                                             <TimelineConnector />
@@ -295,7 +371,7 @@ export default function CourseEnrollment({ courseId }) {
                                             variant="body2"
                                             color="text.secondary"
                                         >
-                                            7 days before the start start of course start date
+                                            The step you just took
                                         </TimelineOppositeContent>
                                         <TimelineSeparator>
                                             <TimelineConnector />
@@ -306,9 +382,9 @@ export default function CourseEnrollment({ courseId }) {
                                         </TimelineSeparator>
                                         <TimelineContent sx={{ py: '12px', px: 2 }}>
                                             <Typography variant="h6" component="span">
-                                                Class run availability.
+                                                Your class run is unavailable.
                                             </Typography>
-                                            <Typography>If the class run you have chosen is unavailable, we will prompt you to choose another class run. If you can't make it for other class run, we will return the deposit you have paid.</Typography>
+                                            <Typography>You need to choose another class run in order to be enrolled in the course. Otherwise, you can file for a refund.</Typography>
                                         </TimelineContent>
                                     </TimelineItem>
                                     <TimelineItem>
@@ -317,7 +393,7 @@ export default function CourseEnrollment({ courseId }) {
                                             variant="body2"
                                             color="text.secondary"
                                         >
-                                            Within 7 Days before the start of the course
+                                            Now
                                         </TimelineOppositeContent>
                                         <TimelineSeparator>
                                             <TimelineConnector />
@@ -330,13 +406,13 @@ export default function CourseEnrollment({ courseId }) {
                                             <Typography variant="h6" component="span">
                                                 Confirm your enrolment.
                                             </Typography>
-                                            <Typography>Make the full payment to confirm your enrolment. Otherwise, your spot will be forfeited and you are not entitled to any refund.</Typography>
+                                            <Typography>Make the full payment to confirm your enrolment now.</Typography>
                                         </TimelineContent>
                                     </TimelineItem>
                                     <TimelineItem>
                                         <TimelineSeparator>
                                             <TimelineConnector />
-                                            <TimelineDot color="secondary">
+                                            <TimelineDot color="grey">
                                                 <TaskAltIcon />
                                             </TimelineDot>
                                             <TimelineConnector />
@@ -452,13 +528,13 @@ export default function CourseEnrollment({ courseId }) {
                                     <TableBody>
                                         <TableRow>
                                             <TableCell component="th" scope="row">
-                                                Course Fee
+                                                Remaining Course Fee
                                             </TableCell>
-                                            <TableCell align="right">SGD {currentCourse.courseFee}</TableCell>
+                                            <TableCell align="right">SGD {currentCourse.courseFee * 0.90}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell component="th" scope="row">
-                                                Deposit Required
+                                                Deposit Paid
                                             </TableCell>
                                             <TableCell align="right">SGD {currentCourse.courseFee * 0.10}</TableCell>
                                         </TableRow>
@@ -488,8 +564,7 @@ export default function CourseEnrollment({ courseId }) {
                     )}
                     {activeStep === 3 && (
                         <React.Fragment>
-
-                            <SuccessReservation courseName={currentCourse.courseName}></SuccessReservation>
+                            <SuccessEnrolment courseName={currentCourse.courseName}></SuccessEnrolment>
 
                         </React.Fragment>
                     )}
@@ -504,9 +579,25 @@ export default function CourseEnrollment({ courseId }) {
                     </DialogTitle>
 
                     <Elements stripe={stripePromise}>
-                        <CheckoutForm clientSecret={clientSecret} closePaymentDialogBox={closePaymentDialogBox} handleNext={handleNext} requestTransactionRecord={requestDepositRecord} />
+                        <CheckoutForm clientSecret={clientSecret} closePaymentDialogBox={closePaymentDialogBox} handleNext={handleNext} requestTransactionRecord={rescheduleAndPayRemainingCourseFee} />
                     </Elements>
                 </DialogContent>
+            </Dialog>
+            <Dialog open={refundDialogBox} onClose={closeRefundDialogBox} fullWidth="lg">
+                <DialogContent>
+                    <DialogContentText>
+                        Requesting for Deposit Refund
+                    </DialogContentText>
+                    <br />
+                    <Divider></Divider>
+                    <br />
+                    <Typography>Are you sure you would like to do a refund? Once you do a refund, you can no longer enroll in this course.</Typography>
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={filingRefund}>Refund</Button>
+                    <Button onClick={closeRefundDialogBox}>Cancel</Button>
+                </DialogActions>
             </Dialog>
         </>
 

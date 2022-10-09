@@ -72,23 +72,30 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
     // course details
     const [currentCourse, setCurrentCourse] = useState('');
 
+    const [refreshPage, setRefreshPage] = useState('');
     React.useEffect(() => {
+        setRefreshPage(false);
         fetch("http://localhost:8080/course/courses/" + courseId).
             then(res => res.json()).then((result) => {
                 setCurrentCourse(result);
+
+
             }
-            )
-    }, {});
+            );
+
+
+    }, [refreshPage]);
 
 
     // checkout
-    const [amountToBePaid, setAmountToBePaid] = useState(0);
     const [clientSecret, setClientSecret] = useState('');
-    const checkout = () => {
-        setAmountToBePaid(currentCourse.courseFee * 0.90);
-        if (amountToBePaid != 0) {
-            var url = "http://localhost:8080/payment/checkout?amount=" + amountToBePaid;
-            console.log('Url is ' + url);
+    const [amountToPay, setAmountToPay] = useState('');
+    const checkout = (num_to_pay) => {
+        console.log('num to pay is ' + num_to_pay);
+        if (num_to_pay!= 0) {
+            setAmountToPay(num_to_pay);
+            var url = "http://localhost:8080/payment/checkout?amount=" + num_to_pay;
+            console.log('url is ' + url);
             fetch(url).
                 then(res => res.json()).then((result) => {
                     setClientSecret(result.clientSecret);
@@ -119,8 +126,7 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
     // sending over record payment
     const requestFullCourseFeeTransactionRecord = () => {
         // send request to create payment record
-        const courseFeeRecord = { "classRunId": classRunRegistered.classRunId, "learnerId": user.userId, "amount": amountToBePaid  };
-        console.log('courseFeeRecord ' + JSON.stringify(courseFeeRecord));
+        const courseFeeRecord = { "classRunId": classRunRegistered.classRunId, "learnerId": user.userId, "amount": amountToPay};
         var url = "http://localhost:8080/payment/trackRemainingCourseFee";
         fetch(url, {
             method: "POST",
@@ -135,7 +141,7 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
         <>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <LearnerCoursesDrawer courseId={courseId}></LearnerCoursesDrawer>
+                    <LearnerCoursesDrawer courseId={courseId} learnerStatus = {false}></LearnerCoursesDrawer>
                 </Grid>
                 <Grid item xs={8}>
                     <Typography variant="h4">Course Fee Payment</Typography>
@@ -364,7 +370,7 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
                                 <Button onClick={handleBack} variant="contained">
                                     Back
                                 </Button>
-                                <Button onClick={checkout} variant="contained" startIcon={<ShoppingCartIcon />}>
+                                <Button onClick={() => checkout(currentCourse.courseFee * 0.90)} variant="contained" startIcon={<ShoppingCartIcon />}>
                                     Checkout
                                 </Button>
 
@@ -394,7 +400,7 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
                     </DialogTitle>
 
                     <Elements stripe={stripePromise}>
-                        <CheckoutForm clientSecret={clientSecret} closePaymentDialogBox={closePaymentDialogBox} handleNext={handleNext} requestTransactionRecord = {requestFullCourseFeeTransactionRecord}/>
+                        <CheckoutForm clientSecret={clientSecret} closePaymentDialogBox={closePaymentDialogBox} handleNext={handleNext} requestTransactionRecord={requestFullCourseFeeTransactionRecord} />
                     </Elements>
                 </DialogContent>
             </Dialog>

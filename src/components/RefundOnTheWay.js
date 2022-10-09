@@ -7,7 +7,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import LearnerCourseDrawer from './LearnerCourseDrawer';
 import { useAuth } from '../context/AuthProvider';
 import { useNavigate } from 'react-router-dom';
-import successEnrolment from '../assets/successEnrolment.png';
+import refundOnTheWay from '../assets/refundOnTheWay.jpg';
 import '../css/congratulationPicture.css';
 
 
@@ -18,7 +18,7 @@ const stripePromise = loadStripe(publicKey);
 
 
 
-export default function EnrolledStatus({ courseId}) {
+export default function RefundOnTheWay({ courseId }) {
     // user
     const auth = useAuth();
     const user = auth.user;
@@ -37,16 +37,16 @@ export default function EnrolledStatus({ courseId}) {
         <>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <LearnerCourseDrawer courseId={courseId} learnerStatus = {false}></LearnerCourseDrawer>
+                    <LearnerCourseDrawer courseId={courseId}></LearnerCourseDrawer>
                 </Grid>
                 <Grid item xs={8}>
                     <div id="congratulation-picture-container">
                         <br />
                         <br />
-                        <img id="study-picture" src={successEnrolment} />
-                        <Typography variant="h6"> Congratulation! 🎉 You have successfully enrolled in the course!</Typography>
-                        <br/>
-                        <Button variant="outlined" onClick = {navigateCourseDetails}>Go back to course details</Button>
+                        <img id="study-picture" src={refundOnTheWay} />
+                        <Typography variant="h6"> Your refund is one the way!</Typography>
+                        <br />
+                        <Button variant="outlined" onClick={navigateCourseDetails}>Go back to course main page.</Button>
                     </div>
                 </Grid>
             </Grid>

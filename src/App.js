@@ -36,10 +36,13 @@ import RegisterOrganisationAdminPage from "./pages/RegisterOrganisationAdminPage
 import CourseExplorerPage from "./pages/CourseExplorerPage";
 import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
 import LearnerCourseDetails from "./pages/LearnerCourseDetails";
+import TeachingCourseClassRuns from "./components/TeachingCourseClassRuns";
+import SuccessRefundRequestPage from "./pages/SuccessRefundRequestPage";
 import TeachingClassRuns from "./components/TeachingClassRuns";
 import TeachingClassEvents from "./components/TeachingClassEvents";
 import CreateQuizForm from "./pages/CreateQuizForm";
 import CreateAssessment from "./pages/CreateAssessment";
+import LearnerCalendar from "./components/LearnerCalendar";
 
 function App() {
   return (
@@ -167,11 +170,21 @@ function App() {
               }
             />
             <Route
-              path="/myTeachingCourse/:courseId/courseEnrollment"
+              path="/learnerCourses/:courseId/courseEnrollment"
               element={
                 <RequireAuth>
                   <Appbar />
                   <CourseEnrollmentPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/learnerCourseDetails/:courseId/successRefundRequest"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <SuccessRefundRequestPage />
                 </RequireAuth>
               }
             />
@@ -280,6 +293,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <Settings />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCalendar"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerCalendar/>
                 </RequireAuth>
               }
             />

@@ -40,6 +40,11 @@ export default function CreateQuizForm(props) {
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
 
+  const [maxPointsError, setMaxPointsError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+
   React.useEffect(() => {
     currentQuiz.questions = formQuestions;
   }, []);
@@ -47,6 +52,23 @@ export default function CreateQuizForm(props) {
   const [open, setOpen] = React.useState(false);
   function handleOpenSettingsDialogue() {
     setOpen(true);
+  }
+
+  function validateQuiz() {
+    setMaxPointsError({ value: false, errorMessage: "" });
+    for (const question of formQuestions) {
+      if (question.questionMaxPoints == "") {
+        setMaxPointsError({
+          value: true,
+          errorMessage:
+            "Max Points of question: " +
+            question.questionTitle +
+            " cannot be empty!",
+        });
+        return false;
+      }
+    }
+    return true;
   }
 
   function handleCloseSettingsDialogue(ed) {
@@ -133,6 +155,36 @@ export default function CreateQuizForm(props) {
     }
   }
 
+  function removeQuestionOption(questionId, optionToRemove) {
+    console.log("remove option called")
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.localid == questionId
+    );
+    if (optionToRemove && optionToRemove != "") {
+      const question = tempFormQuestions[questionIndex];
+      const oldOptions = question.options;
+      const optionIndex = oldOptions.findIndex(
+        (option) => option == optionToRemove
+      );
+      const newOptions = oldOptions.splice(optionIndex, 1);
+      question.options = newOptions;
+      console.log("removed question: " + optionToRemove);
+    }
+  }
+
+  function selectCorrectQuestionOption(questionId, option) {
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.localid == questionId
+    );
+    if (option && option != "") {
+      tempFormQuestions[questionIndex].correctOption = option;
+      setFormQuestions(tempFormQuestions);
+      setTextField("");
+    }
+  }
+
   const addQuestion = () => {
     const questionNumber = formQuestions.length + 1;
     const question = {
@@ -142,12 +194,15 @@ export default function CreateQuizForm(props) {
       questionContent: "Type Question Body here...",
       questionMaxPoints: "",
       options: [],
+      correctOption: "",
     };
     setFormQuestions([...formQuestions, question]);
   };
 
   const removeQuestion = (questionId) => {
-    const questionIndex = formQuestions.findIndex((f) => f.localid == questionId);
+    const questionIndex = formQuestions.findIndex(
+      (f) => f.localid == questionId
+    );
     const tempFormQuestions = [...formQuestions];
     if (questionIndex > -1) {
       setFormQuestions(
@@ -160,10 +215,14 @@ export default function CreateQuizForm(props) {
   };
 
   const handleQuizDateConversions = (quizObject) => {
-    const formattedStart = dayjs(quizObject.assessmentStartDate.d).format("YYYY-MM-DD");
-    const formattedEnd = dayjs(quizObject.assessmentEndDate.d).format("YYYY-MM-DD");
-    quizObject.assessmentStartDate = formattedStart
-    quizObject.assessmentEndDate = formattedEnd
+    const formattedStart = dayjs(quizObject.assessmentStartDate.d).format(
+      "YYYY-MM-DD"
+    );
+    const formattedEnd = dayjs(quizObject.assessmentEndDate.d).format(
+      "YYYY-MM-DD"
+    );
+    quizObject.assessmentStartDate = formattedStart;
+    quizObject.assessmentEndDate = formattedEnd;
     return quizObject;
   };
 
@@ -176,9 +235,9 @@ export default function CreateQuizForm(props) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
 
-    body: JSON.stringify(updatedQuiz)
-    }).then((res) => res.json())
-      .then(handleCancel);
+      body: JSON.stringify(updatedQuiz),
+    }).then((res) => res.json());
+    handleCancel();
   };
 
   const handleCancel = (e) => {
@@ -274,6 +333,8 @@ export default function CreateQuizForm(props) {
                   editQuestionTitleProp={editQuestionTitle}
                   editQuestionTypeProp={editQuestionType}
                   addQuestionOptionProp={addQuestionOption}
+                  removeQuestionOptionProp={removeQuestionOption}
+                  selectCorrectOptionProp={selectCorrectQuestionOption}
                   editQuestionContentProp={editQuestionContent}
                   removeQuestionProp={removeQuestion}
                 />

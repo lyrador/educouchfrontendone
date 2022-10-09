@@ -13,7 +13,7 @@ export default function QuestionMaxPoints(props) {
       <div>Question Max Points</div>
       <TextField
         type="text"
-        placeholder="Maximum Points"
+        placeholder="0.0 points"
         style={{ fontSize: 20, width: "15%" }}
         onChange={(e) =>
           props.editQuestionContentProp(props.questionIdProp, e.target.value)

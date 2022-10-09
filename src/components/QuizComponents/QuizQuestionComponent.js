@@ -53,6 +53,7 @@ export default function QuizQuestionComponent(props) {
                 textFieldProp={props.textFieldProp}
                 setTextFieldProp={props.setTextFieldProp}
                 addQuestionOptionProp={props.addQuestionOptionProp}
+                removeQuestionOptionProp={props.removeQuestionOptionProp}
                 questionIdProp={props.questionProp.localid}
               />
             </div>

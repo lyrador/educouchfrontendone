@@ -38,6 +38,7 @@ import { DataGrid } from '@mui/x-data-grid';
 function CourseExplorerPage(props) {
 
     const auth = useAuth();
+    console.log(JSON.stringify(auth));
     const user = auth.user;
 
     //paths
@@ -91,6 +92,7 @@ function CourseExplorerPage(props) {
         fetch("http://localhost:8080/course/coursesByCourseDTOValues/" + courseApprovalStatus)
             .then((res) => res.json())
             .then((result) => {
+                result = result.filter(courseItem => courseItem.ageGroup == user.userEnum.concat("S"));
                 setCourses(result);
                 console.log(result);
             });

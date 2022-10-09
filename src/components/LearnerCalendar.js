@@ -16,7 +16,7 @@ import { IntegratedEditing } from '@devexpress/dx-react-scheduler';
 import { Scheduler, WeekView, MonthView, DayView, Appointments, AppointmentTooltip, AppointmentForm, Toolbar, ViewSwitcher, DateNavigator, TodayButton, ConfirmationDialog, DragDropProvider, Resources } from '@devexpress/dx-react-scheduler-material-ui';
 
 
-const TeachingCourseCalender = (props) => {
+const LearnerCalendar = (props) => {
 
     const auth = useAuth();
     const user = auth.user;
@@ -34,9 +34,9 @@ const TeachingCourseCalender = (props) => {
     const [refreshPage, setRefreshPage] = useState('')
     const courseId = location.pathname.split('/')[2];
 
-    //to get the classRuns of the instructor
+    //to get the enrolled classRuns of the learner
     React.useEffect(() => {
-        fetch("http://localhost:8080/classRun/getClassRunsFromInstructorId/" + user.userId)
+        fetch("http://localhost:8080/classRun/getEnrolledClassRun/" + user.userId)
             .then((res) => res.json())
             .then((result) => {
                 setClassRuns(result)
@@ -69,72 +69,72 @@ const TeachingCourseCalender = (props) => {
         setCurrentViewName(currentViewName);
     }
 
-    function Select(props) {
-        return <AppointmentForm.Select {...props} />;
-    }
+    // function Select(props) {
+    //     return <AppointmentForm.Select {...props} />;
+    // }
 
-    function BasicLayout({ onFieldChange, appointmentData, ...restProps }) {
-        const onCustomFieldChange = (nextValue) => {
-            onFieldChange({ classRunId: nextValue });
-        };
+    // function BasicLayout({ onFieldChange, appointmentData, ...restProps }) {
+    //     const onCustomFieldChange = (nextValue) => {
+    //         onFieldChange({ classRunId: nextValue });
+    //     };
 
-        console.log(appointmentData)
+    //     console.log(appointmentData)
 
-        return (
-            <AppointmentForm.BasicLayout
-                appointmentData={appointmentData}
-                onFieldChange={onFieldChange}
-                {...restProps}
-            >
-                <AppointmentForm.Label
-                    text="Class Runs"
-                    type="title"
-                />
-                <AppointmentForm.Select
-                    value={appointmentData.classRunId}
-                    onValueChange={onCustomFieldChange}
-                    availableOptions={(classRuns.map(v => ({ id: v.classRunId, text: v.classRunId.toString() })))}
-                    type='filledSelect'
-                    placeholder="Choose Class Run"
-                />
-            </AppointmentForm.BasicLayout>
-        );
-    };
+    //     return (
+    //         <AppointmentForm.BasicLayout
+    //             appointmentData={appointmentData}
+    //             onFieldChange={onFieldChange}
+    //             {...restProps}
+    //         >
+    //             <AppointmentForm.Label
+    //                 text="Class Runs"
+    //                 type="title"
+    //             />
+    //             <AppointmentForm.Select
+    //                 value={appointmentData.classRunId}
+    //                 onValueChange={onCustomFieldChange}
+    //                 availableOptions={(classRuns.map(v => ({ id: v.classRunId, text: v.classRunId.toString() })))}
+    //                 type='filledSelect'
+    //                 placeholder="Choose Class Run"
+    //             />
+    //         </AppointmentForm.BasicLayout>
+    //     );
+    // };
 
 
 
-    const commitChanges = ({ added, changed, deleted }) => {
-        console.log(added)
-        console.log(changed)
-        console.log(deleted)
+    // const commitChanges = ({ added, changed, deleted }) => {
+    //     console.log(added)
+    //     console.log(changed)
+    //     console.log(deleted)
 
-        if (changed) {
+    //     if (changed) {
 
-            var title = (appointmentChanges.title === undefined) ? editingAppointment.title : appointmentChanges.title
-            var startDate = (appointmentChanges.startDate === undefined) ? editingAppointment.startDate : appointmentChanges.startDate
-            var endDate = (appointmentChanges.endDate === undefined) ? editingAppointment.endDate : appointmentChanges.endDate
-            var notes = (appointmentChanges.notes == undefined) ? editingAppointment.notes : appointmentChanges.notes
-            var allDay = (appointmentChanges.allDay == undefined) ? editingAppointment.allDay : appointmentChanges.allDay
-            var classRunId = editingAppointment.classRunId
-            var id = editingAppointment.id
-            const appointment1 = { title, startDate, endDate, notes, allDay, id, classRunId };
-            editAppointment(appointment1)
-        }
+    //         var title = (appointmentChanges.title === undefined) ? editingAppointment.title : appointmentChanges.title
+    //         var startDate = (appointmentChanges.startDate === undefined) ? editingAppointment.startDate : appointmentChanges.startDate
+    //         var endDate = (appointmentChanges.endDate === undefined) ? editingAppointment.endDate : appointmentChanges.endDate
+    //         var notes = (appointmentChanges.notes == undefined) ? editingAppointment.notes : appointmentChanges.notes
+    //         var allDay = (appointmentChanges.allDay == undefined) ? editingAppointment.allDay : appointmentChanges.allDay
+    //         var classRunId = editingAppointment.classRunId
+    //         var id = editingAppointment.id
+    //         const appointment1 = { title, startDate, endDate, notes, allDay, id, classRunId };
+    //         editAppointment(appointment1)
+    //     }
 
-        if (added) {
-            saveAppointment(addedAppointment)
-        }
+    //     if (added) {
+    //         saveAppointment(addedAppointment)
+    //     }
 
-        if (deleted !== undefined) {
+    //     if (deleted !== undefined) {
 
-            deleteAppointment(editingAppointment);
-        }
-    }
+    //         deleteAppointment(editingAppointment);
+    //     }
+    // }
 
-    //To get all events of the instructor for My Calendar (Instructor)
+    //To get all events of the instructor for My Calendar (Learner)
     React.useEffect(() => {
         setRefreshPage(false);
-        fetch("http://localhost:8080/event/instructors/" + user.userId + "/events").
+        fetch("http://localhost:8080/event/learner/" + user.userId + "/events").
             then(res => res.json()).then((result) => {
                 setEvents(result);
             }
@@ -163,62 +163,62 @@ const TeachingCourseCalender = (props) => {
 
 
 
-    const saveAppointment = (data) => {
-        console.log(data)
-        if (data.startDate && data.endDate && data.notes && data.title && data.classRun) {
-            fetch("http://localhost:8080/event/classRun/" + data.classRunMainId + "/events", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            }).then(() => {
-                console.log("Event Created Successfully!")
-                setRefreshPage(true)
+    // const saveAppointment = (data) => {
+    //     console.log(data)
+    //     if (data.startDate && data.endDate && data.notes && data.title && data.classRun) {
+    //         fetch("http://localhost:8080/event/classRun/" + data.classRunMainId + "/events", {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify(data)
+    //         }).then(() => {
+    //             console.log("Event Created Successfully!")
+    //             setRefreshPage(true)
 
-            })
-        } else {
-            handleClickOpenError()
-        }
-    }
+    //         })
+    //     } else {
+    //         handleClickOpenError()
+    //     }
+    // }
 
-    const editAppointment = (data) => {
-        console.log(data)
-        if (data.startDate && data.endDate && data.notes && data.title && data.classRun) {
-            fetch("http://localhost:8080/event/events/" + data.id, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            }).then(() => {
-                console.log("Event Updated Successfully!")
-                setRefreshPage(true)
+    // const editAppointment = (data) => {
+    //     console.log(data)
+    //     if (data.startDate && data.endDate && data.notes && data.title && data.classRun) {
+    //         fetch("http://localhost:8080/event/events/" + data.id, {
+    //             method: "PUT",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify(data)
+    //         }).then(() => {
+    //             console.log("Event Updated Successfully!")
+    //             setRefreshPage(true)
 
-            })
-        } else {
-            handleClickOpenError()
-        }
-    }
+    //         })
+    //     } else {
+    //         handleClickOpenError()
+    //     }
+    // }
 
-    const deleteAppointment = (data) => {
-        console.log(data)
-        fetch("http://localhost:8080/event/events/" + data.id, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        }).then(() => {
-            console.log("Event Deleted Successfully!")
-            setRefreshPage(true)
+    // const deleteAppointment = (data) => {
+    //     console.log(data)
+    //     fetch("http://localhost:8080/event/events/" + data.id, {
+    //         method: "DELETE",
+    //         headers: { "Content-Type": "application/json" },
+    //         body: JSON.stringify(data)
+    //     }).then(() => {
+    //         console.log("Event Deleted Successfully!")
+    //         setRefreshPage(true)
 
-        })
-    }
+    //     })
+    // }
 
     // console.log(classRuns)
 
-    const allowDrag = ({ id }) => !(id == 0);
+    // const allowDrag = ({ id }) => !(id == 0);
 
-    console.log(events);
+    // console.log(events);
 
-    const BooleanEditor = (props) => {
-        return <AppointmentForm.BooleanEditor {...props} readOnly />;
-    };
+    // const BooleanEditor = (props) => {
+    //     return <AppointmentForm.BooleanEditor {...props} readOnly />;
+    // };
 
     return (
         <div>
@@ -254,7 +254,7 @@ const TeachingCourseCalender = (props) => {
                             />
                             <MonthView />
                             <DayView />
-                            <div>
+                            {/* <div>
                                 {((user.userType === "ORG_ADMIN") || (user.userType === "INSTRUCTOR")) && (
                                     <EditingState
                                         onCommitChanges={commitChanges}
@@ -267,8 +267,8 @@ const TeachingCourseCalender = (props) => {
                                     />
                                 )}
 
-                            </div>
-                            <IntegratedEditing />
+                            </div> */}
+                            {/* <IntegratedEditing /> */}
 
                             <Appointments />
 
@@ -286,22 +286,24 @@ const TeachingCourseCalender = (props) => {
                             <Toolbar />
                             <ViewSwitcher />
                             <DateNavigator />
-                            <ConfirmationDialog />
+                            {/* <ConfirmationDialog /> */}
 
                             <TodayButton />
 
-                            <AppointmentTooltip showOpenButton />
-                            <DragDropProvider allowDrag={allowDrag} />
+                            {/* <AppointmentTooltip showOpenButton /> */}
+                            {/* <DragDropProvider 
+                            allowDrag={allowDrag} 
+                            />
                             <AppointmentForm
                                 booleanEditorComponent={BooleanEditor}
-                            // basicLayoutComponent={BasicLayout}
-                            // selectComponent={Select}
-                            />
+                            basicLayoutComponent={BasicLayout}
+                            selectComponent={Select}
+                            /> */}
                         </Scheduler>
                     </div>
                 </Grid>
             </Grid>
-            <div>
+            {/* <div>
                 <Dialog open={openError} onClose={handleCloseError}>
                     <DialogTitle>Incomplete Fields/ Invalid Date</DialogTitle>
                     <DialogContent>
@@ -313,12 +315,12 @@ const TeachingCourseCalender = (props) => {
                         <Button onClick={handleCloseError}>Close</Button>
                     </DialogActions>
                 </Dialog>
-            </div>
+            </div> */}
         </div>
     );
 }
 
-export default TeachingCourseCalender;
+export default LearnerCalendar;
 
 
 
