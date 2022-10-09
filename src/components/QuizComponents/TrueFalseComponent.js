@@ -1,24 +1,36 @@
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import React from "react";
+import {
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Switch,
+} from "@mui/material";
+import React, { useState } from "react";
 
 export default function TrueFalseComponent(props) {
+  React.useEffect(() => {
+    props.addBooleanOptionsProp(["true", "false"]);
+  }, []);
 
-    React.useEffect(() => {
-        props.addBooleanOptionsProp(["true", "false"])
-     }, [])
+  const [trueFalseValue, setTrueFalseValue] = useState("");
+  function handleChange(e) {
+    setTrueFalseValue(e.target.checked);
+  }
 
   return (
-    <div>
-      <FormControl fullWidth>
-        <InputLabel id="select-label-trueFalse">Select True/False</InputLabel>
-        <Select
-          id="select-trueFalse"
-        >
-          <MenuItem value={true}>True</MenuItem>
-          <MenuItem value={false}>False</MenuItem>
-        </Select>
-      </FormControl>
+    <Grid container direction={"row"} alignItems={ "center"}>
+      <p>False</p>
+      <Switch
+        checked={trueFalseValue}
+        onChange={handleChange}
+        inputProps={{ "aria-label": "controlled" }}
+      />
+      <p>True</p>
+
       <div></div>
-    </div>
+    </Grid>
   );
 }

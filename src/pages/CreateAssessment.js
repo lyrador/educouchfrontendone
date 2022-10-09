@@ -71,6 +71,7 @@ export default function CreateAssessment(props) {
 
         <PartialCreateAssessment
           assessmentPathProp={assessmentPath}
+          createAssessmentPathProp={createAssessmentPath}
           courseIdProp={courseId}
         />
       </Grid>
