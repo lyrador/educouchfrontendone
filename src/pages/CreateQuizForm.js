@@ -140,6 +140,7 @@ export default function CreateQuizForm(props) {
     if (questionIndex > -1) {
       tempFormQuestions[questionIndex].questionMaxPoints = questionMaxPoints;
       setFormQuestions(tempFormQuestions);
+      console.log("updated questionMaxPoints")
     }
   }
 
@@ -331,6 +332,7 @@ export default function CreateQuizForm(props) {
                   selectCorrectOptionProp={selectCorrectQuestionOption}
                   editQuestionContentProp={editQuestionContent}
                   removeQuestionProp={removeQuestion}
+                  editQuestionMaxPointsProp={ editQuestionMaxPoints}
                 />
               </Paper>
             );
