@@ -133,24 +133,24 @@ const TeachingCourseCalender = (props) => {
     }
 
     //To get all events of the instructor for My Calendar (Instructor)
-    React.useEffect(() => {
-        setRefreshPage(false);
-        fetch("http://localhost:8080/event/instructors/" + user.userId + "/events").
-            then(res => res.json()).then((result) => {
-                setEvents(result);
-            }
-            )
-    }, [refreshPage])
-
-    // //To get all events of the course for course calendar
     // React.useEffect(() => {
     //     setRefreshPage(false);
-    //     fetch("http://localhost:8080/event/courses/" + courseId + "/events").
+    //     fetch("http://localhost:8080/event/instructors/" + user.userId + "/events").
     //         then(res => res.json()).then((result) => {
     //             setEvents(result);
     //         }
     //         )
     // }, [refreshPage])
+
+    //To get all events of the course for course calendar
+    React.useEffect(() => {
+        setRefreshPage(false);
+        fetch("http://localhost:8080/event/courses/" + courseId + "/events").
+            then(res => res.json()).then((result) => {
+                setEvents(result);
+            }
+            )
+    }, [refreshPage])
 
     // //to just get all events (i just use this for testing the functionality)
     // React.useEffect(() => {
