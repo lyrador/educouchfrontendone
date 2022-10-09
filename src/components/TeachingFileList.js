@@ -202,7 +202,7 @@ function TeachingFileList() {
                     <div>
                         {folderList.length > 0 &&
                             folderList
-                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate}></TeachingFileComponent>))
+                                .map((folder) => (<TeachingFileComponent folder={folder} courseId={courseId} handleRefreshDelete={handleRefreshDelete} handleRefreshUpdate={handleRefreshUpdate} isLearner = {false}></TeachingFileComponent>))
                         }
                         {folderList.length <= 0 &&
                             <p>This course currently doesn't have any teaching folder.</p>

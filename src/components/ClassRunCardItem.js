@@ -28,7 +28,7 @@ function ClassRunCardItem({ courseId, src, courseCode, courseTitle, classRunDays
                     </figure>
                     <div className='cards-item-info'>
                         <Typography variant="h6" component="div" color="text.secondary">
-                            <Stack direction="row" spacing={1}>{classRunDaysOfWeek.map(x => { return (<Typography variant="h6">{weekday[x]} </Typography>) })}
+                            <Stack spacing={1}>{classRunDaysOfWeek.map(x => { return (<Typography variant="h6">{weekday[x]} </Typography>) })}
                             </Stack>
                         </Typography>
                         <Divider></Divider>

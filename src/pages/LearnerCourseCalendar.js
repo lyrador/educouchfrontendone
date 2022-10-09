@@ -108,8 +108,6 @@ const LearnerCourseCalender = (props) => {
                             <Toolbar />
                             <ViewSwitcher />
                             <DateNavigator />
-
-                            <TodayButton />
                         </Scheduler>
                     </div>
                 </Grid>

@@ -2,9 +2,10 @@ import * as React from 'react';
 import { useState } from 'react';
 import { Link, useLocation, useParams, useNavigate } from 'react-router-dom';
 import LearnerCourseDrawer from '../components/LearnerCourseDrawer';
-import { Container, Paper, Box, Button, MenuItem, Grid, CircularProgress } from '@mui/material';
+import { Container, Paper, Box, Typography, Button, MenuItem, Grid, CircularProgress } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { useAuth } from "../context/AuthProvider";
+import CourseTags from '../components/CourseTags';
 
 
 const headingStyle = {
@@ -18,7 +19,7 @@ const headingStyle = {
 
 const paperStyle = {
     padding: '50px 20px',
-    width: 1000,
+    width: '100%',
     margin: "20px auto",
     justifyContent: 'center',
     alignItems: 'center',
@@ -52,8 +53,8 @@ export default function LearnerCourseDetails(props) {
                     .then(res => res.json())
                     .then((result) => {
                         setLearnerStatus(result.enrolled);
-                        console.log('Learner status is '+ learnerStatus);
-                        
+                        console.log('Learner status is ' + learnerStatus);
+
                     }
                     )
                     .catch((err) => {
@@ -70,11 +71,27 @@ export default function LearnerCourseDetails(props) {
             <Container>
                 <Grid container spacing={0}>
                     <Grid item xs={2}>
-                        <LearnerCourseDrawer courseId={courseId} learnerStatus = {learnerStatus}></LearnerCourseDrawer>
+                        <LearnerCourseDrawer courseId={courseId} learnerStatus={learnerStatus}></LearnerCourseDrawer>
                     </Grid>
                     <Grid item xs={10}>
+                        <CourseTags courseId={courseId} isLearner={true}></CourseTags>
                         <Paper elevation={3} style={paperStyle}>
-                            <h1 style={headingStyle}> {course.courseCode} - {course.courseTitle} </h1>
+                            <Typography color="grey">
+                                {course.courseCode}
+                            </Typography>
+                            <Typography variant="h4">
+                                {course.courseTitle}
+                            </Typography>
+                            <br />
+                            <Typography>
+                                Start date: {course.startDate}
+                            </Typography>
+                            <Typography>
+                                End date: {course.endDate}
+                            </Typography>
+                            <Typography>
+                                Course fee: SGD {course.courseFee}
+                            </Typography>
                             <Box
                                 component="form"
                                 sx={{
@@ -87,7 +104,9 @@ export default function LearnerCourseDetails(props) {
                         </Paper>
 
                         <Paper elevation={3} style={paperStyle}>
-                            <h1 style={headingStyle}> Course Description</h1>
+                            <Typography variant="h4">
+                                Course Description
+                            </Typography>
                             <Box
                                 component="form"
                                 sx={{
@@ -95,15 +114,19 @@ export default function LearnerCourseDetails(props) {
                                 }}
                                 noValidate
                                 autoComplete="off"
-                            >
-                                <p>{course.courseDescription}</p>
-                                <p>This course is catered for {course.ageGroup} learners!</p>
+                            >   <br/>
+                                <Typography>{course.courseDescription}</Typography>
+                                <Typography>This course is catered for {course.ageGroup} learners!</Typography>
+
                             </Box>
                         </Paper>
 
                         <Paper elevation={3} style={paperStyle}>
-                            <h1 style={headingStyle}> Course Timeline</h1>
-                            <p>{course.courseTimeline}</p>
+                        <Typography variant="h4">
+                                Course Timeline
+                            </Typography>
+                            <br/>
+                            <Typography>{course.courseTimeline}</Typography>
                         </Paper>
                     </Grid>
                 </Grid>

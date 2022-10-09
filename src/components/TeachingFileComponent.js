@@ -24,8 +24,8 @@ import InstantSuccessMessage from './InstantSuccessMessage';
 
 
 
-function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate, changeFolderIdWrapper}) {
-    
+function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate, changeFolderIdWrapper, isLearner }) {
+
     // opening mini menu
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -104,10 +104,16 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
     // navigate to child folder
     const navigate = useNavigate();
     const navigateChildFolder = () => {
-        navigate(`/myTeachingCourse/${courseId}/files/${folder.folderId}`);
-        changeFolderIdWrapper(folder.folderId);
+        if (!isLearner) {
+            navigate(`/myTeachingCourse/${courseId}/files/${folder.folderId}`);
+            changeFolderIdWrapper(folder.folderId);
+        } else {
+            navigate(`/learnerCourseDetails/${courseId}/files/${folder.folderId}`);
+            changeFolderIdWrapper(folder.folderId);
+        }
+
         console.log("Running " + folder.folderId);
-        
+
     };
 
 
@@ -151,24 +157,29 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
                 >
 
 
-                    <MenuItem onClick = {navigateChildFolder}>
+                    <MenuItem onClick={navigateChildFolder}>
                         <ListItemIcon>
                             <FolderOpenIcon fontSize="small" />
                         </ListItemIcon>
                         Open
                     </MenuItem>
-                    <MenuItem onClick={processDeletion}>
-                        <ListItemIcon>
-                            <DeleteIcon fontSize="small" />
-                        </ListItemIcon>
-                        Delete
-                    </MenuItem>
-                    <MenuItem onClick={openRenameDialogBox}>
-                        <ListItemIcon>
-                            <DriveFileRenameOutlineIcon fontSize="small" />
-                        </ListItemIcon>
-                        Rename
-                    </MenuItem>
+                    {!isLearner &&
+                        <div>
+                            <MenuItem onClick={processDeletion}>
+                                <ListItemIcon>
+                                    <DeleteIcon fontSize="small" />
+                                </ListItemIcon>
+                                Delete
+                            </MenuItem>
+                            <MenuItem onClick={openRenameDialogBox}>
+                                <ListItemIcon>
+                                    <DriveFileRenameOutlineIcon fontSize="small" />
+                                </ListItemIcon>
+                                Rename
+                            </MenuItem>
+                        </div>
+
+                    }
                 </Menu>
                 <Dialog open={renameDialogBox} onClose={closeRenameDialogBox} fullWidth="lg">
                     <DialogContent>
@@ -192,7 +203,7 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
                         <Button onClick={closeRenameDialogBox}>Cancel</Button>
                     </DialogActions>
                 </Dialog>
-                
+
 
 
             </ListItem>
