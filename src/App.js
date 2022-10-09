@@ -253,6 +253,33 @@ function App() {
               }
             />
             <Route
+              path="/learnerCourseDetails/:courseId/forum"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingForumList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/forum/:forumId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingForum />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/forum/:forumId/:discussionId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingDiscussion />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/myTeachingCourse/:courseId/files"
               element={
                 <RequireAuth>
