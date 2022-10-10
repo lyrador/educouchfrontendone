@@ -23,8 +23,8 @@ export default function QuizSettingsComponents(props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [maxScore, setMaxScore] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(dayjs());
+  const [endDate, setEndDate] = useState(dayjs());
   const [hasTimeLimit, setHasTimeLimit] = useState("");
   const [timeLimit, setTimeLimit] = useState();
   const [isAutoRelease, setIsAutoRelease] = useState("");
@@ -60,7 +60,7 @@ export default function QuizSettingsComponents(props) {
     setQuestions(quizSettings.questions);
     setTitle(quizSettings.assessmentTitle);
     setDescription(quizSettings.assessmentDescription);
-    setMaxScore(props.calculateMaxQuizScoreProp);
+    setMaxScore(quizSettings.assessmentMaxScore);
     // var score = calculateMaxQuizScore()
     // setMaxScore(score)
     setStartDate(quizSettings.assessmentStartDate);
@@ -247,8 +247,8 @@ export default function QuizSettingsComponents(props) {
             <p style={{ color: "grey" }}>Quiz Start Date</p>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
-                label={startDateString}
-                inputFormat="YYYY/MM/DD"
+                label="Start Date"
+                inputFormat="MM/DD/YYYY"
                 value={startDate}
                 onChange={handleStartDateChange}
                 renderInput={(params) => (
@@ -264,8 +264,8 @@ export default function QuizSettingsComponents(props) {
             </LocalizationProvider>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
-                label={endDateString}
-                inputFormat="YYYY/MM/DD"
+                label="End Date"
+                inputFormat="MM/DD/YYYY"
                 value={endDate}
                 onChange={handleEndDateChange}
                 renderInput={(params) => (
