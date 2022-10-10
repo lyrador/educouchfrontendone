@@ -184,8 +184,7 @@ export default function EditQuizSettingsComponent(props) {
       });
     }
     if (validateQuizSettings()) {
-      console.log("passedValidations");
-      editQuizSettings(
+      props.editSettingsProp(
         title,
         description,
         maxScore,
@@ -195,7 +194,7 @@ export default function EditQuizSettingsComponent(props) {
         timeLimit,
         isAutoRelease
       );
-      handleCancel();
+      console.log("passedValidations");
       handleClickReleaseSnackbar();
     } else {
       console.log("did not pass the vibe check");
