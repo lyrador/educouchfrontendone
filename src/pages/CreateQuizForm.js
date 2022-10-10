@@ -198,6 +198,8 @@ export default function CreateQuizForm(props) {
     if (updatedOptions && updatedOptions != "") {
       tempFormQuestions[questionIndex].options = updatedOptions;
     }
+    console.log("options after removal: ", tempFormQuestions[questionIndex].options)
+    console.log("supposed to assign this: ", updatedOptions)
   }
 
   function selectCorrectQuestionOption(questionId, option) {

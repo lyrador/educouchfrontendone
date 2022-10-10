@@ -198,6 +198,7 @@ export default function EditQuizPage() {
   }
   function handleBackToSettings() {
     setEditSettings("true");
+    console.log("printing form questions: ", formQuestions)
   }
 
   function validateQuiz() {
@@ -306,6 +307,9 @@ export default function EditQuizPage() {
     if (updatedOptions && updatedOptions != "") {
       tempFormQuestions[questionIndex].options = updatedOptions;
     }
+    setFormQuestions(tempFormQuestions);
+    console.log("options after removal: ", tempFormQuestions[questionIndex].options)
+    console.log("supposed to assign this: ", updatedOptions)
   }
 
   function selectCorrectQuestionOption(questionId, option) {
@@ -374,14 +378,14 @@ export default function EditQuizPage() {
     currentQuiz.hasTimeLimit = hasTimeLimit;
     currentQuiz.timeLimit = timeLimit;
     currentQuiz.isAutoRelease = isAutoRelease;
-    setCurrentQuiz( handleQuizDateConversions(currentQuiz));
-    console.log("trying to update quiz: ", currentQuiz);
+    const updatedQuiz = handleQuizDateConversions(currentQuiz);
+    console.log("trying to update quiz: ", updatedQuiz);
     fetch(
       "http://localhost:8080/quiz/updateQuizById/" + currentQuiz.assessmentId,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(currentQuiz),
+        body: JSON.stringify(updatedQuiz),
       }
     ).then((res) => res.json());
     handleCancel();

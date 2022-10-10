@@ -57,11 +57,13 @@ export default function McqBodyComponent(props) {
 
   function handleRemoveOption(optionToRemove) {
     const oldOptions = mcqOptions;
+    console.log("option to remove: ", optionToRemove)
     setMcqOptions(
       oldOptions.filter((o) => {
         return o !== optionToRemove;
       })
     );
+    console.log("mcqbody, updatedOptions: ", mcqOptions);
     props.removeQuestionOptionProp(props.questionIdProp, mcqOptions);
   }
 
