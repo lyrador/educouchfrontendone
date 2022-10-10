@@ -56,15 +56,16 @@ export default function McqBodyComponent(props) {
   }
 
   function handleRemoveOption(optionToRemove) {
-    const oldOptions = mcqOptions;
+    const oldOptions = [...mcqOptions];
     console.log("option to remove: ", optionToRemove)
-    setMcqOptions(
-      oldOptions.filter((o) => {
-        return o !== optionToRemove;
-      })
+    const result =       oldOptions.filter((o) => {
+      return o !== optionToRemove;
+    })
+    setMcqOptions(result
+
     );
-    console.log("mcqbody, updatedOptions: ", mcqOptions);
-    props.removeQuestionOptionProp(props.questionIdProp, mcqOptions);
+    console.log("mcqbody, updatedOptions: ", result);
+    props.removeQuestionOptionProp(props.questionIdProp, result);
   }
 
   const handleChange = (e) => {
