@@ -150,23 +150,23 @@ export default function TeachingCourseCreate() {
             setCourseFeeError({ value: true, errorMessage: 'Course fee must be more than 0' });
         }
 
-        const newStartDate = startDate;
-        const newEndDate = endDate;
-        const dateComparisonBoolean = newEndDate < newStartDate;
+        // const newStartDate = startDate;
+        // const newEndDate = endDate;
+        // const dateComparisonBoolean = newEndDate < newStartDate;
 
-        if (dateComparisonBoolean) {
+        if (startDate > endDate) {
             setEndDateError({
                 value: true,
-                errorMessage: "Assessment End Date cannot be earlier than Start Date!",
+                errorMessage: "End Date cannot be earlier than Start Date!",
             });
             setStartDateError({
                 value: true,
-                errorMessage: "Assessment End Date cannot be earlier than Start Date!",
+                errorMessage: "End Date cannot be earlier than Start Date!",
             });
         }
 
         if (courseCode && courseTitle && courseDescription && courseTimeline && courseMaxScore &&
-            ageGroup && startDate && endDate && courseFee) {
+            ageGroup && startDate && endDate && courseFee && (startDate < endDate)) {
             fetch("http://localhost:8080/course/" + instructor.instructorId + "/courses", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
