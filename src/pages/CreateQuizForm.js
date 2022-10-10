@@ -20,6 +20,8 @@ import {
   Modal,
   Paper,
   Button,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useState } from "react";
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
@@ -40,11 +42,28 @@ export default function CreateQuizForm(props) {
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
   const [questionCounter, setQuestionCounter] = useState(0);
+  const [openOptionErrorSnackbar, setOpenOptionErrorSnackbar] = React.useState(false);
+  const [openMaxPointsErrorSnackbar, setopenMaxPointsErrorSnackbar] = React.useState(false);
 
   const [maxPointsError, setMaxPointsError] = useState({
     value: false,
     errorMessage: "",
   });
+  const [correctOptionError, setCorrectOptionError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+
+  const handleClickSnackbar = () => {
+    setOpenOptionErrorSnackbar(true);
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenOptionErrorSnackbar(false);
+  };
 
   React.useEffect(() => {
     currentQuiz.questions = formQuestions;
@@ -59,14 +78,25 @@ export default function CreateQuizForm(props) {
     setMaxPointsError({ value: false, errorMessage: "" });
     for (const question of formQuestions) {
       if (question.questionMaxPoints == "") {
-        setMaxPointsError({
-          value: true,
-          errorMessage:
-            "Max Points of question: " +
-            question.questionTitle +
-            " cannot be empty!",
-        });
+        // setMaxPointsError({
+        //   value: true,
+        //   errorMessage:
+        //     "Max Points of question: " +
+        //     question.questionTitle +
+        //     " cannot be empty!",
+        // });
         return false;
+      }
+      if (question.questionType == "mcq" && question.correctOption == "") {
+        // setCorrectOptionError({
+        //   value: true,
+        //   errorMessage:
+        //     "Correct Option for question: " +
+        //     question.questionTitle +
+        //     " cannot be empty!",
+        // });
+        handleClickSnackbar()
+        return false; 
       }
     }
     return true;
@@ -225,16 +255,18 @@ export default function CreateQuizForm(props) {
 
   const handleSave = (e) => {
     e.preventDefault();
-    const updatedQuiz = handleQuizDateConversions(currentQuiz);
-    linkQuizQuestions();
+    if (validateQuiz()) {
+      const updatedQuiz = handleQuizDateConversions(currentQuiz);
+      linkQuizQuestions();
 
-    fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
 
-      body: JSON.stringify(updatedQuiz),
-    }).then((res) => res.json());
-    handleCancel();
+        body: JSON.stringify(updatedQuiz),
+      }).then((res) => res.json());
+      handleCancel();
+    }
   };
 
   const handleCancel = (e) => {
@@ -243,6 +275,20 @@ export default function CreateQuizForm(props) {
 
   return (
     <Grid container spacing={0}>
+      <Snackbar
+            open={openOptionErrorSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseSnackbar}
+          >
+            <Alert
+              onClose={handleCloseSnackbar}
+              severity="error"
+              sx={{ width: "100%" }}
+            >
+              Select Correct MCQ Option Field cannot be empty!
+            </Alert>
+      </Snackbar>
+      
       <Grid item xs={2}>
         <TeachingCoursesDrawer></TeachingCoursesDrawer>
       </Grid>
