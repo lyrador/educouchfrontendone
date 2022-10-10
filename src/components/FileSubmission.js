@@ -528,6 +528,8 @@ function FileSubmission(props) {
             label="New Assessment Description"
             variant="outlined"
             fullWidth
+            multiline
+            maxRows={10}
             style={{ margin: "6px 0" }}
             value={editAssessmentDescription}
             onChange={(e) => setEditAssessmentDescription(e.target.value)}
