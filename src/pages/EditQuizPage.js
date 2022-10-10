@@ -26,8 +26,8 @@ export default function EditQuizPage() {
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
   const [editSettings, setEditSettings] = useState("");
-  const [questionCounter, setQuestionCounter] = useState(0);
-  const [title, setTitle] = useState(); 
+  const [questionCounter, setQuestionCounter] = useState();
+  const [title, setTitle] = useState();
   const [description, setDescription] = useState();
   const [maxScore, setMaxScore] = useState();
   const [startDate, setStartDate] = useState();
@@ -35,7 +35,7 @@ export default function EditQuizPage() {
   const [hasTimeLimit, setHasTimeLimit] = useState();
   const [timeLimit, setTimeLimit] = useState();
   const [isAutoRelease, setIsAutoRelease] = useState();
-  
+
   const [maxPointsError, setMaxPointsError] = useState({
     value: false,
     errorMessage: "",
@@ -50,7 +50,7 @@ export default function EditQuizPage() {
       .then((result) => {
         setCurrentQuiz(result);
         setFormQuestions(result.questions);
-        setQuestionCounter(result.questionCounter);
+        setQuestionCounter(result.questionCounter + 1);
         setTitle(result.assessmentTitle);
         setDescription(result.assessmentDescription);
         setMaxScore(result.assessmentMaxScore);
@@ -191,6 +191,7 @@ export default function EditQuizPage() {
   }
 
   const addQuestion = () => {
+    console.log("editQuiz questioncounter: ", questionCounter);
     setQuestionCounter(questionCounter + 1);
     currentQuiz.questionCounter = questionCounter;
     const question = {
