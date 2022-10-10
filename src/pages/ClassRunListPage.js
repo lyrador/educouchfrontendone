@@ -9,13 +9,13 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 //days of week
 var weekday = new Array(7);
-weekday[0] = "Monday";
-weekday[1] = "Tuesday";
-weekday[2] = "Wednesday";
-weekday[3] = "Thursday";
-weekday[4] = "Friday";
-weekday[5] = "Saturday";
-weekday[6] = "Sunday";
+weekday[0] = "Sunday";
+weekday[1] = "Monday";
+weekday[2] = "Tuesday";
+weekday[3] = "Wednesday";
+weekday[4] = "Thursday";
+weekday[5] = "Friday";
+weekday[6] = "Saturday";
 
 const ClassRunListPage = () => {
 
