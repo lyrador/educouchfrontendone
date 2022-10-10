@@ -493,7 +493,7 @@ function TeachingAssessmentList(props) {
             <LinkMaterial
               underline="hover"
               color="inherit"
-              href={`${assessmentsPath}`}
+              to={`${assessmentsPath}`}
             >
               Assessments
             </LinkMaterial>

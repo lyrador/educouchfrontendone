@@ -42,8 +42,10 @@ export default function CreateQuizForm(props) {
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
   const [questionCounter, setQuestionCounter] = useState(0);
-  const [openOptionErrorSnackbar, setOpenOptionErrorSnackbar] = React.useState(false);
-  const [openMaxPointsErrorSnackbar, setopenMaxPointsErrorSnackbar] = React.useState(false);
+  const [openOptionErrorSnackbar, setOpenOptionErrorSnackbar] =
+    React.useState(false);
+  const [openMaxPointsErrorSnackbar, setopenMaxPointsErrorSnackbar] =
+    React.useState(false);
 
   const [maxPointsError, setMaxPointsError] = useState({
     value: false,
@@ -95,8 +97,8 @@ export default function CreateQuizForm(props) {
         //     question.questionTitle +
         //     " cannot be empty!",
         // });
-        handleClickSnackbar()
-        return false; 
+        handleClickSnackbar();
+        return false;
       }
     }
     return true;
@@ -171,7 +173,7 @@ export default function CreateQuizForm(props) {
     if (questionIndex > -1) {
       tempFormQuestions[questionIndex].questionMaxPoints = questionMaxPoints;
       setFormQuestions(tempFormQuestions);
-      console.log("updated questionMaxPoints")
+      console.log("updated questionMaxPoints");
     }
   }
 
@@ -188,14 +190,13 @@ export default function CreateQuizForm(props) {
   }
 
   function removeQuestionOption(questionId, updatedOptions) {
-    console.log("remove option called")
+    console.log("remove option called");
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
       (f) => f.localid == questionId
     );
     if (updatedOptions && updatedOptions != "") {
       tempFormQuestions[questionIndex].options = updatedOptions;
-
     }
   }
 
@@ -207,19 +208,19 @@ export default function CreateQuizForm(props) {
     if (option && option != "") {
       tempFormQuestions[questionIndex].correctOption = option;
       setFormQuestions(tempFormQuestions);
-      console.log("correct option selected: ", option)
+      console.log("correct option selected: ", option);
     }
   }
 
   const addQuestion = () => {
-    setQuestionCounter(questionCounter+1)
+    setQuestionCounter(questionCounter + 1);
     currentQuiz.questionCounter = questionCounter;
     const question = {
       localid: "question" + questionCounter,
       questionTitle: "Untitled Question",
       questionType: "shortAnswer",
       questionContent: "Type Question Body here...",
-      questionMaxPoints: "0.0 points",
+      questionMaxPoints: 0.0,
       options: [],
       correctOption: "",
     };
@@ -253,6 +254,14 @@ export default function CreateQuizForm(props) {
     return quizObject;
   };
 
+  function calculateMaxQuizScore() {
+    var maxScore = 0;
+    for (const question of formQuestions) {
+      maxScore += question.questionMaxPoints;
+    }
+    console.log("quiz max score: ", maxScore);
+  }
+
   const handleSave = (e) => {
     e.preventDefault();
     if (validateQuiz()) {
@@ -276,19 +285,19 @@ export default function CreateQuizForm(props) {
   return (
     <Grid container spacing={0}>
       <Snackbar
-            open={openOptionErrorSnackbar}
-            autoHideDuration={5000}
-            onClose={handleCloseSnackbar}
-          >
-            <Alert
-              onClose={handleCloseSnackbar}
-              severity="error"
-              sx={{ width: "100%" }}
-            >
-              Select Correct MCQ Option Field cannot be empty!
-            </Alert>
+        open={openOptionErrorSnackbar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          Select Correct MCQ Option Field cannot be empty!
+        </Alert>
       </Snackbar>
-      
+
       <Grid item xs={2}>
         <TeachingCoursesDrawer></TeachingCoursesDrawer>
       </Grid>
@@ -296,6 +305,9 @@ export default function CreateQuizForm(props) {
         <Breadcrumbs aria-label="breadcrumb">
           <Link
             to={`${assessmentsPath}`}
+            state={{
+              assessmentsPathProp: { assessmentsPath },
+            }}
             style={{ textDecoration: "none", color: "grey" }}
           >
             <LinkMaterial underline="hover" color="inherit">
@@ -317,6 +329,10 @@ export default function CreateQuizForm(props) {
           <Link
             to={`${createQuizFormPath}`}
             style={{ textDecoration: "none", color: "grey" }}
+            state={{
+              createAssessmentPathProp: { createAssessmentPath },
+              assessmentsPathProp: { assessmentsPath },
+            }}
           >
             <LinkMaterial underline="hover" color="inherit">
               Create Quiz
@@ -355,6 +371,7 @@ export default function CreateQuizForm(props) {
                 quizSettingsProp={currentQuiz}
                 editQuizSettingsProp={editQuizSettings}
                 closeQuizSettingsProp={handleCloseSettingsDialogue}
+                calculateMaxQuizScoreProp={calculateMaxQuizScore}
               ></QuizSettingsComponents>
             </Modal>
           </Grid>
@@ -380,7 +397,7 @@ export default function CreateQuizForm(props) {
                   selectCorrectOptionProp={selectCorrectQuestionOption}
                   editQuestionContentProp={editQuestionContent}
                   removeQuestionProp={removeQuestion}
-                  editQuestionMaxPointsProp={ editQuestionMaxPoints}
+                  editQuestionMaxPointsProp={editQuestionMaxPoints}
                 />
               </Paper>
             );
