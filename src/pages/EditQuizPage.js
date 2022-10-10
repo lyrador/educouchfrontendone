@@ -35,6 +35,7 @@ export default function EditQuizPage() {
   const [hasTimeLimit, setHasTimeLimit] = useState();
   const [timeLimit, setTimeLimit] = useState();
   const [isAutoRelease, setIsAutoRelease] = useState();
+  const [open, setOpen] = React.useState(false);
 
   const [maxPointsError, setMaxPointsError] = useState({
     value: false,
@@ -62,7 +63,7 @@ export default function EditQuizPage() {
       });
   }, [editSettings]);
 
-  const [open, setOpen] = React.useState(false);
+  
   function handleProceedQuestions() {
     setFormQuestions(currentQuiz.questions);
     setEditSettings("false");

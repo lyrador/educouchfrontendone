@@ -79,16 +79,16 @@ export default function CreateQuizForm(props) {
   function validateQuiz() {
     setMaxPointsError({ value: false, errorMessage: "" });
     for (const question of formQuestions) {
-      if (question.questionMaxPoints == "") {
-        // setMaxPointsError({
-        //   value: true,
-        //   errorMessage:
-        //     "Max Points of question: " +
-        //     question.questionTitle +
-        //     " cannot be empty!",
-        // });
-        return false;
-      }
+      // if (question.questionMaxPoints == "") {
+      //   // setMaxPointsError({
+      //   //   value: true,
+      //   //   errorMessage:
+      //   //     "Max Points of question: " +
+      //   //     question.questionTitle +
+      //   //     " cannot be empty!",
+      //   // });
+      //   return false;
+      // }
       if (question.questionType == "mcq" && question.correctOption == "") {
         // setCorrectOptionError({
         //   value: true,
