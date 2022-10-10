@@ -22,8 +22,8 @@ export default function EditQuizSettingsComponent(props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [maxScore, setMaxScore] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(dayjs());
+  const [endDate, setEndDate] = useState(dayjs());
   const [hasTimeLimit, setHasTimeLimit] = useState("");
   const [timeLimit, setTimeLimit] = useState();
   const [isAutoRelease, setIsAutoRelease] = useState("");
