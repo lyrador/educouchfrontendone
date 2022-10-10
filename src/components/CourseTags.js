@@ -110,8 +110,6 @@ export default function CourseTags({ courseId, isLearner }) {
             {user.userEnum == "HEAD_INSTRUCTOR" &&(
             <Button variant="outlined" startIcon={<DeleteIcon />} onClick={openRemoveTagDialogBox} >Remove tag</Button>
             )}
-            <br />
-            <br />
             <Stack spacing={1} direction="row">
                 {listOfCourseTags && listOfCourseTags.map((tag) => (<Chip label={tag.tagName} />))}
             </Stack>
