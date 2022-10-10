@@ -82,11 +82,13 @@ export default function TeachingCourseCreate() {
     const [courseFeeError, setCourseFeeError] = useState({ value: false, errorMessage: '' });
 
     const handleStartDateChange = (newStartDate) => {
-        setStartDate(newStartDate);
+        var result = newStartDate.add(8, 'hours');
+        setStartDate(result);
     };
 
     const handleEndDateChange = (newEndDate) => {
-        setEndDate(newEndDate);
+        var result = newEndDate.add(8, 'hours');
+        setEndDate(result);
     };
 
     const [instructor, setInstructor] = React.useState('');
