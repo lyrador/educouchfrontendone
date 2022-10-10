@@ -1,10 +1,12 @@
 import {
+  Alert,
   Button,
   Grid,
   InputLabel,
   MenuItem,
   Paper,
   Select,
+  Snackbar,
   Stack,
   TextField,
 } from "@mui/material";
@@ -22,13 +24,26 @@ export default function EditQuizSettingsComponent(props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [maxScore, setMaxScore] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(dayjs());
+  const [endDate, setEndDate] = useState(dayjs());
   const [hasTimeLimit, setHasTimeLimit] = useState("");
   const [timeLimit, setTimeLimit] = useState();
   const [isAutoRelease, setIsAutoRelease] = useState("");
   var startDateString = "";
   var endDateString = "";
+
+  const [openReleaseSnackbar, setOpenReleaseSnackbar] = React.useState(false);
+
+  const handleClickReleaseSnackbar = () => {
+    setOpenReleaseSnackbar(true);
+  };
+
+  const handleCloseReleaseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenReleaseSnackbar(false);
+  };
 
   const [titleError, setTitleError] = useState({
     value: false,
@@ -56,28 +71,29 @@ export default function EditQuizSettingsComponent(props) {
   });
 
   React.useEffect(() => {
-    setCurrentQuiz(props.quizProp)
-    setTitle(currentQuiz.assessmentTitle);
-    setDescription(currentQuiz.assessmentDescription);
-    setMaxScore(currentQuiz.assessmentMaxScore);
-    setStartDate(currentQuiz.assessmentStartDate);
-    setEndDate(currentQuiz.assessmentEndDate);
-    setHasTimeLimit(currentQuiz.hasTimeLimit);
-    setTimeLimit(currentQuiz.timeLimit);
-    setIsAutoRelease(currentQuiz.isAutoRelease);
-    startDateString = dayjs(startDate.d).format("YYYY/MM/DD");
-    endDateString = dayjs(endDate.d).format("YYYY/MM/DD");
+    setCurrentQuiz(props.quizProp);
+    setTitle(props.titleProp);
+    setDescription(props.descriptionProp);
+    setMaxScore(props.maxScoreProp);
+    setStartDate(props.startDateProp);
+    setEndDate(props.endDateProp);
+    setHasTimeLimit(props.hasTimeLimitProp);
+    setTimeLimit(props.timeLimitProp);
+    setIsAutoRelease(props.isAutoReleaseProp);
+    startDateString = dayjs(startDate.$d).format("YYYY/MM/DD");
+    endDateString = dayjs(endDate.$d).format("YYYY/MM/DD");
+    console.log("heres title prop: ", props.titleProp);
   }, []);
 
   function handleCancel() {
-    setTitle(props.quizProp.assessmentTitle);
-    setDescription(props.quizProp.assessmentDescription);
-    setMaxScore(props.quizProp.assessmentMaxScore);
-    setStartDate(props.quizProp.assessmentStartDate);
-    setEndDate(props.quizProp.assessmentEndDate);
-    setHasTimeLimit(props.quizProp.hasTimeLimit);
-    setTimeLimit(props.quizProp.timeLimit);
-    setIsAutoRelease(props.quizProp.isAutoRelease);
+    setTitle(props.titleProp);
+    setDescription(props.descriptionProp);
+    setMaxScore(props.maxScoreProp);
+    setStartDate(props.startDateProp);
+    setEndDate(props.endDateProp);
+    setHasTimeLimit(props.hasTimeLimitProp);
+    setTimeLimit(props.timeLimitProp);
+    setIsAutoRelease(props.isAutoReleaseProp);
     startDateString = dayjs(startDate.d).format("YYYY/MM/DD");
     endDateString = dayjs(endDate.d).format("YYYY/MM/DD");
   }
@@ -92,7 +108,7 @@ export default function EditQuizSettingsComponent(props) {
     timeLimit,
     isAutoRelease
   ) {
-    props.editQuizSettingsProp(
+    props.editSettingsProp(
       title,
       description,
       maxScore,
@@ -168,8 +184,7 @@ export default function EditQuizSettingsComponent(props) {
       });
     }
     if (validateQuizSettings()) {
-      console.log("passedValidations");
-      editQuizSettings(
+      props.editSettingsProp(
         title,
         description,
         maxScore,
@@ -179,7 +194,8 @@ export default function EditQuizSettingsComponent(props) {
         timeLimit,
         isAutoRelease
       );
-      handleCancel();
+      console.log("passedValidations");
+      handleClickReleaseSnackbar();
     } else {
       console.log("did not pass the vibe check");
     }
@@ -197,18 +213,21 @@ export default function EditQuizSettingsComponent(props) {
   return (
     <Box component="form">
       <Container>
-        <Paper elevation={3} style={paperStyle}>
-          <h3
-            style={{
-              backgroundColor: "#1975D2",
-              color: "whitesmoke",
-              fontSize: "30px",
-              marginBottom: "40px",
-              padding: "6px",
-            }}
+        <Snackbar
+          open={openReleaseSnackbar}
+          autoHideDuration={5000}
+          onClose={handleCloseReleaseSnackbar}
+        >
+          <Alert
+            onClose={handleCloseReleaseSnackbar}
+            severity="success"
+            sx={{ width: "100%" }}
           >
-            Quiz Settings{" "}
-          </h3>
+            Quiz Settings Changes Applied!
+          </Alert>
+        </Snackbar>
+
+        <Paper elevation={3} style={paperStyle}>
           <p style={{ color: "grey" }}>Quiz Title</p>
           <TextField
             required
@@ -250,6 +269,7 @@ export default function EditQuizSettingsComponent(props) {
             spacing={1}
             style={{ paddingBottom: "10px", marginBottom: "20px" }}
           >
+            <p style={{ color: "grey" }}>Quiz Start Date</p>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
                 label={startDateString}
@@ -265,6 +285,7 @@ export default function EditQuizSettingsComponent(props) {
                   />
                 )}
               />
+              <p style={{ color: "grey" }}>Quiz End Date</p>
             </LocalizationProvider>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
@@ -283,7 +304,6 @@ export default function EditQuizSettingsComponent(props) {
               />
             </LocalizationProvider>
           </Stack>
-
           <Stack
             spacing={1}
             style={{ paddingBottom: "10px", marginTop: "20px" }}
@@ -338,7 +358,7 @@ export default function EditQuizSettingsComponent(props) {
               style={{ marginTop: "40px" }}
               onClick={handleCancel}
             >
-              Cancel Changes
+              Discard Changes
             </Button>
             <Button
               variant="contained"

@@ -67,6 +67,7 @@ export default function RegisterLearnerPage() {
     const [profilePictureURL, setProfilePictureURL] = useState("");
     const [username, setUsername] = useState("");
     const [ageGroup, setAgeGroup] = useState('')
+    const [paymentAcc, setPaymentAcc] = useState("")
 
     const [nameError, setNameError] = useState({ value: false, errorMessage: '' })
     const [emailError, setEmailError] = useState({ value: false, errorMessage: '' })
@@ -74,6 +75,7 @@ export default function RegisterLearnerPage() {
     const [confirmPasswordError, setConfirmPasswordError] = useState({ value: false, errorMessage: '' })
     const [usernameError, setUsernameError] = useState({ value: false, errorMessage: '' })
     const [ageGroupError, setAgeGroupError] = useState({ value: false, errorMessage: '' })
+    const [paymentAccError, setPaymentAccError] = useState({ value: false, errorMessage: '' })
 
     const ageGroups = [{ value: 'Adult' }, { value: 'Kid' }];
 
@@ -110,6 +112,7 @@ export default function RegisterLearnerPage() {
         setUsernameError({ value: false, errorMessage: '' })
         setAgeGroupError({ value: false, errorMessage: '' })
         setConfirmPasswordError({ value: false, errorMessage: '' })
+        setPaymentAccError({ value: false, errorMessage: '' })
 
         if (name === '') {
             setNameError({ value: true, errorMessage: 'You must enter a name' })
@@ -136,8 +139,11 @@ export default function RegisterLearnerPage() {
             setPasswordError({ value: true, errorMessage: 'Password does not match confirm password' })
             setConfirmPasswordError({ value: true, errorMessage: 'Password does not match confirm password' })
         }
+        if (paymentAcc === '') {
+            setPaymentAccError({ value: true, errorMessage: 'You must enter a payment account' })
+        }
         else if (name && email && password && username && ageGroup && confirmPassword
-            && email.includes("@") && email.includes(".com")) {
+            && email.includes("@") && email.includes(".com") && paymentAcc) {
             var isKid = ""
             console.log(ageGroup)
             if (ageGroup === 'Kid') {
@@ -153,7 +159,8 @@ export default function RegisterLearnerPage() {
                 password,
                 username,
                 profilePictureURL,
-                isKid
+                isKid,
+                paymentAcc
             };
             console.log(learner);
             return fetch("http://localhost:8080/learner/add", {
@@ -277,6 +284,14 @@ export default function RegisterLearnerPage() {
                             onChange={(e) => setUsername(e.target.value)}
                             error={usernameError.value}
                             helperText={usernameError.errorMessage}
+                            style={{ paddingBottom: "10px" }}
+                        />
+                        <TextField id="outlined-basic" label="Payment Account" variant="outlined" fullWidth
+                            required
+                            value={paymentAcc}
+                            onChange={(e) => setPaymentAcc(e.target.value)}
+                            error={paymentAccError.value}
+                            helperText={paymentAccError.errorMessage}
                             style={{ paddingBottom: "10px" }}
                         />
                         <TextField id="outlined-select-age" select label="Age Group" fullWidth

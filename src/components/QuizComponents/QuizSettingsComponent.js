@@ -19,11 +19,12 @@ import dayjs from "dayjs";
 export default function QuizSettingsComponents(props) {
   const paperStyle = { padding: "50px 20px", width: 1200, margin: "20px auto" };
   const quizSettings = props.quizSettingsProp;
+  const [questions, setQuestions] = useState();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [maxScore, setMaxScore] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(dayjs());
+  const [endDate, setEndDate] = useState(dayjs());
   const [hasTimeLimit, setHasTimeLimit] = useState("");
   const [timeLimit, setTimeLimit] = useState();
   const [isAutoRelease, setIsAutoRelease] = useState("");
@@ -56,20 +57,19 @@ export default function QuizSettingsComponents(props) {
   });
 
   React.useEffect(() => {
+    setQuestions(quizSettings.questions);
     setTitle(quizSettings.assessmentTitle);
     setDescription(quizSettings.assessmentDescription);
     setMaxScore(quizSettings.assessmentMaxScore);
+    // var score = calculateMaxQuizScore()
+    // setMaxScore(score)
     setStartDate(quizSettings.assessmentStartDate);
     setEndDate(quizSettings.assessmentEndDate);
     setHasTimeLimit(quizSettings.hasTimeLimit);
     setTimeLimit(quizSettings.timeLimit);
     setIsAutoRelease(quizSettings.isAutoRelease);
-    startDateString = dayjs(startDate.d).format(
-      "YYYY/MM/DD"
-    );
-    endDateString = dayjs(endDate.d).format(
-      "YYYY/MM/DD"
-    );
+    startDateString = dayjs(startDate.d).format("YYYY/MM/DD");
+    endDateString = dayjs(endDate.d).format("YYYY/MM/DD");
   }, []);
 
   function handleCancel() {
@@ -181,7 +181,7 @@ export default function QuizSettingsComponents(props) {
 
   const handleStartDateChange = (newDate) => {
     setStartDate(newDate);
-    console.log("new start date: ", startDate)
+    console.log("new start date: ", startDate);
   };
 
   const handleEndDateChange = (newDate) => {
@@ -244,10 +244,11 @@ export default function QuizSettingsComponents(props) {
             spacing={1}
             style={{ paddingBottom: "10px", marginBottom: "20px" }}
           >
+            <p style={{ color: "grey" }}>Quiz Start Date</p>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
-                label={startDateString}
-                inputFormat="YYYY/MM/DD"
+                label="Start Date"
+                inputFormat="MM/DD/YYYY"
                 value={startDate}
                 onChange={handleStartDateChange}
                 renderInput={(params) => (
@@ -259,11 +260,12 @@ export default function QuizSettingsComponents(props) {
                   />
                 )}
               />
+              <p style={{ color: "grey" }}>Quiz End Date</p>
             </LocalizationProvider>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
-                label={endDateString}
-                inputFormat="YYYY/MM/DD"
+                label="End Date"
+                inputFormat="MM/DD/YYYY"
                 value={endDate}
                 onChange={handleEndDateChange}
                 renderInput={(params) => (
