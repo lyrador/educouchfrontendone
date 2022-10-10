@@ -42,6 +42,7 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import UploadService from "../services/UploadFilesService";
 
 import MuiAlert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -96,6 +97,19 @@ function FileSubmission(props) {
         console.log(err.message);
       });
   }, [refreshPage]);
+
+  const [openEditSnackbar, setOpenEditSnackbar] = React.useState(false);
+
+  const handleClickEditSnackbar = () => {
+    setOpenEditSnackbar(true);
+  };
+
+  const handleCloseEditSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenEditSnackbar(false);
+  };
 
   const refresh = () => {
     fetch(
@@ -263,7 +277,7 @@ function FileSubmission(props) {
         console.log("Assessment Edited Successfully!");
         setRefreshPage(true);
         handleEditDialogClose();
-        // handleClickEditSnackbar();
+        handleClickEditSnackbar();
       });
     }
   };
@@ -338,6 +352,19 @@ function FileSubmission(props) {
           <TeachingCoursesDrawer></TeachingCoursesDrawer>
         </Grid>
         <Grid item xs={10}>
+          <Snackbar
+            open={openEditSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseEditSnackbar}
+          >
+            <Alert
+              onClose={handleCloseEditSnackbar}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
+              Assessment Updated Succesfully!
+            </Alert>
+          </Snackbar>
           <Breadcrumbs aria-label="breadcrumb">
             <Link
               to={`${assessmentsPath}`}
@@ -388,6 +415,10 @@ function FileSubmission(props) {
                       {Moment(currentFileSubmission.endDate).format(
                         "YYYY-MM-DD"
                       )}
+                    </TableCell>
+                    <TableCell>
+                      <b>File Submission Max Score: </b>
+                      {currentFileSubmission.maxScore}
                     </TableCell>
                     <TableCell>
                       <b>File Submission Type: </b>
