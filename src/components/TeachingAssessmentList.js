@@ -41,8 +41,6 @@ import PublishIcon from "@mui/icons-material/Publish";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
 import { useAuth } from "../context/AuthProvider";
 import { render } from "@testing-library/react";
@@ -288,39 +286,6 @@ function TeachingAssessmentList(props) {
     });
   };
 
-  const publishAssessment = () => {
-    var assessmentTitle = editAssessmentTitle;
-    var assessmentDescription = editAssessmentDescription;
-    var assessmentMaxScore = editAssessmentMaxScore;
-    var assessmentStartDate = editAssessmentStartDate;
-    var assessmentEndDate = editAssessmentEndDate;
-    var assessmentIsOpen = "true";
-    var assessmentStatusEnum = "PENDING";
-    const newEditedAssessment = {
-      assessmentTitle,
-      assessmentDescription,
-      assessmentMaxScore,
-      assessmentStartDate,
-      assessmentEndDate,
-      assessmentIsOpen,
-      assessmentStatusEnum,
-    };
-    console.log(newEditedAssessment);
-    fetch(
-      "http://localhost:8080/assessment/updateAssessment/" + assessmentIdToEdit,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newEditedAssessment),
-      }
-    ).then(() => {
-      console.log("Assessment Edited Successfully!");
-      setRefreshPage(true);
-      handleEditDialogClose();
-      handleClickEditSnackbar();
-    });
-  };
-
   const editFileSubmission = () => {
     setAssessmentStartDateError({ value: false, errorMessage: "" });
     setAssessmentEndDateError({ value: false, errorMessage: "" });
@@ -551,7 +516,7 @@ function TeachingAssessmentList(props) {
           <div style={{ padding: "5%" }}>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead style={{ backgroundColor: "#B0C4DE" }}>
+                <TableHead>
                   <TableRow>
                     <TableCell>Title</TableCell>
                     <TableCell>Max Score</TableCell>
@@ -561,7 +526,6 @@ function TeachingAssessmentList(props) {
                     <TableCell>Assessment Type</TableCell>
                     <TableCell>Assessment Release</TableCell>
                     <TableCell>Actions</TableCell>
-                    <TableCell>Assessment Status</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -632,29 +596,6 @@ function TeachingAssessmentList(props) {
           </Grid>
         </Grid>
       </Grid>
-      {/* <div>
-        <Dialog
-          open={editPublishDialogOpen}
-          onClose={handleClickPublishDialogClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {"Publish this assessment?"}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              This will publish the assessment. This action is reversible.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClickPublishDialogClose}>Cancel</Button>
-            <Button onClick={publishAssessment} autoFocus>
-              Publish
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div> */}
       <div>
         <Dialog
           open={deleteDialogOpen}
