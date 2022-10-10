@@ -151,12 +151,14 @@ function FileSubmission(props) {
   const [assessmentIdToEdit, setAssessmentIdToEdit] = useState("");
   const enumGroup = [{ value: "INDIVIDUAL" }, { value: "GROUP" }];
 
-  const handleEditStartDateChange = (newAssessmentStartDate) => {
-    setEditAssessmentStartDate(newAssessmentStartDate);
+  const handleEditStartDateChange = (e) => {
+    var result = e.add(8, "hours");
+    setEditAssessmentStartDate(result);
   };
 
-  const handleEditEndDateChange = (newAssessmentEndDate) => {
-    setEditAssessmentEndDate(newAssessmentEndDate);
+  const handleEditEndDateChange = (e) => {
+    var result = e.add(8, "hours");
+    setEditAssessmentEndDate(result);
   };
 
   const handleClickEditDialogOpen = (
