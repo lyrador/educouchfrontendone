@@ -2,7 +2,10 @@ import * as React from 'react';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { Container, Paper, Button, MenuItem, Stack } from '@mui/material';
+import {
+    Container, Paper, Button, MenuItem, Stack,
+    InputLabel, OutlinedInput, InputAdornment
+} from '@mui/material';
 import { useAuth } from "../context/AuthProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -65,8 +68,9 @@ export default function TeachingCourseCreate() {
     const [courseTimeline, setCourseTimeline] = useState('')
     const [courseMaxScore, setCourseMaxScore] = useState('')
     const [ageGroup, setAgeGroup] = useState('')
-    const [startDate, setStartDate] = useState(dayjs())
-    const [endDate, setEndDate] = useState(dayjs())
+    const [startDate, setStartDate] = useState(dayjs());
+    const [endDate, setEndDate] = useState(dayjs());
+    const [courseFee, setCourseFee] = useState(0);
     const [courseCodeError, setCourseCodeError] = useState({ value: false, errorMessage: '' })
     const [courseTitleError, setCourseTitleError] = useState({ value: false, errorMessage: '' })
     const [courseDescriptionError, setCourseDescriptionError] = useState({ value: false, errorMessage: '' })
@@ -75,13 +79,16 @@ export default function TeachingCourseCreate() {
     const [ageGroupError, setAgeGroupError] = useState({ value: false, errorMessage: '' })
     const [startDateError, setStartDateError] = useState({ value: false, errorMessage: '' });
     const [endDateError, setEndDateError] = useState({ value: false, errorMessage: '' });
+    const [courseFeeError, setCourseFeeError] = useState({ value: false, errorMessage: '' });
 
     const handleStartDateChange = (newStartDate) => {
-        setStartDate(newStartDate);
+        var result = newStartDate.add(8, 'hours');
+        setStartDate(result);
     };
 
     const handleEndDateChange = (newEndDate) => {
-        setEndDate(newEndDate);
+        var result = newEndDate.add(8, 'hours');
+        setEndDate(result);
     };
 
     const [instructor, setInstructor] = React.useState('');
@@ -104,7 +111,7 @@ export default function TeachingCourseCreate() {
 
     const handleClick = (e) => {
         e.preventDefault()
-        const course = { courseCode, courseTitle, courseDescription, courseTimeline, courseMaxScore, ageGroup, startDate, endDate }
+        const course = { courseCode, courseTitle, courseDescription, courseTimeline, courseMaxScore, ageGroup, startDate, endDate, courseFee }
         setCourseCodeError({ value: false, errorMessage: '' })
         setCourseTitleError({ value: false, errorMessage: '' })
         setCourseDescriptionError({ value: false, errorMessage: '' })
@@ -113,6 +120,7 @@ export default function TeachingCourseCreate() {
         setAgeGroupError({ value: false, errorMessage: '' });
         setStartDateError({ value: false, errorMessage: '' });
         setEndDateError({ value: false, errorMessage: '' });
+        setCourseFeeError({ value: false, errorMessage: '' })
 
         if (courseCode == '') {
             setCourseCodeError({ value: true, errorMessage: 'You must enter a course code' })
@@ -138,6 +146,9 @@ export default function TeachingCourseCreate() {
         if (endDate == '') {
             setEndDateError({ value: true, errorMessage: 'You must choose an end date.' });
         }
+        if (courseFee === 0) {
+            setCourseFeeError({ value: true, errorMessage: 'Course fee must be more than 0' });
+        }
 
         const newStartDate = startDate;
         const newEndDate = endDate;
@@ -155,7 +166,7 @@ export default function TeachingCourseCreate() {
         }
 
         if (courseCode && courseTitle && courseDescription && courseTimeline && courseMaxScore &&
-            ageGroup && startDate && endDate) {
+            ageGroup && startDate && endDate && courseFee) {
             fetch("http://localhost:8080/course/" + instructor.instructorId + "/courses", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -172,6 +183,7 @@ export default function TeachingCourseCreate() {
                 setStartDate("");
                 setEndDate("");
                 handleClickSnackbar()
+                setCourseFee(0);
             })
         }
     }
@@ -249,6 +261,16 @@ export default function TeachingCourseCreate() {
                                 </MenuItem>
                             ))}
                         </TextField>
+
+                        <InputLabel htmlFor="outlined-adornment-amount">Course fee</InputLabel>
+                        <OutlinedInput
+                            label="Course fee"
+                            id="outlined-adornment-amount"
+                            value={courseFee}
+                            onChange={(e) => setCourseFee(e.target.value)}
+                            startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                            fullWidth
+                        />
 
                         <Stack spacing={1}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>

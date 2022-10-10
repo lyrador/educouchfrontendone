@@ -16,9 +16,8 @@ export default function QuestionMaxPoints(props) {
         placeholder={props.questionMaxPointsProp}
         style={{ fontSize: 20, width: "15%" }}
         onChange={(e) =>
-          props.questionMaxPointsProp(props.questionIdProp, e.target.value)
+          props.editQuestionMaxPointsProp(props.questionIdProp, e.target.value)
         }
-        onBlur={() => setOnEdit(false)}
       />
     </Grid>
   );

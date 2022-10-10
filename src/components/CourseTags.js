@@ -20,7 +20,7 @@ const paperStyle = {
     flex: '1'
 };
 
-export default function CourseTags({ courseId }) {
+export default function CourseTags({ courseId, isLearner }) {
     const auth = useAuth();
     const user = auth.user;
     // current course tags
@@ -110,8 +110,6 @@ export default function CourseTags({ courseId }) {
             {user.userEnum == "HEAD_INSTRUCTOR" &&(
             <Button variant="outlined" startIcon={<DeleteIcon />} onClick={openRemoveTagDialogBox} >Remove tag</Button>
             )}
-            <br />
-            <br />
             <Stack spacing={1} direction="row">
                 {listOfCourseTags && listOfCourseTags.map((tag) => (<Chip label={tag.tagName} />))}
             </Stack>

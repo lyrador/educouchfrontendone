@@ -40,15 +40,13 @@ import { useAuth } from '../context/AuthProvider';
 
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import ChildCommentCard from './ChildCommentCard';
-import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 
-export default function CommentCard(props) {
+export default function ChildCommentCard(props) {
 
   const [openEditSnackbar, setOpenEditSnackbar] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -126,8 +124,6 @@ export default function CommentCard(props) {
   const [replyDialogOpen, setReplyDialogOpen] = React.useState(false);
 
   const handleClickReplyDialogOpen = () => {
-    setCommentTitle("")
-    setContent("")
     setReplyDialogOpen(true);
   };
 
@@ -135,13 +131,13 @@ export default function CommentCard(props) {
     setReplyDialogOpen(false);
   };
 
+  const [commentTitleError, setCommentTitleError] = useState({ value: false, errorMessage: '' })
+  const [contentError, setContentError] = useState({ value: false, errorMessage: '' })
+
   // const [newComment, setNewComment]=useState([])
   const [commentTitle, setCommentTitle] = useState(props.commentTitle)
   const [content, setContent] = useState(props.content)
   const [childComments, setChildComments] = useState(props.childComments)
-
-  const [commentTitleError, setCommentTitleError] = useState({ value: false, errorMessage: '' })
-  const [contentError, setContentError] = useState({ value: false, errorMessage: '' })
 
   const deleteComment = (e) => {
     e.preventDefault()
@@ -168,58 +164,40 @@ export default function CommentCard(props) {
       setContentError({ value: true, errorMessage: 'Event title cannot be empty!' })
     }
     if (commentTitle && content) {
-      const newComment = { commentTitle, content }
-      fetch("http://localhost:8080/comment/comments/" + props.commentId, {
+        const newComment = { commentTitle, content }
+        fetch("http://localhost:8080/comment/comments/" + props.commentId, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newComment)
-      }).then(() => {
+        }).then(() => {
         console.log("Comment Edited Successfully!")
         props.setRefreshPage(true)
         handleEditDialogClose();
         handleClickEditSnackbar("Comment Edited Successfully!")
-      })
+        })
     }
   }
 
   const replyComment = (e) => {
     e.preventDefault()
-    setCommentTitleError({ value: false, errorMessage: '' })
-    setContentError({ value: false, errorMessage: '' })
-    if (commentTitle == '') {
-      setCommentTitleError({ value: true, errorMessage: 'Comment title cannot be empty!' })
-    }
-    if (content == '') {
-      setContentError({ value: true, errorMessage: 'Event title cannot be empty!' })
-    }
-    if (commentTitle && content) {
-      var commentId = props.commentId
-      var createdByUserId = user.userId
-      var createdByUserName = user.username
-      var createdByUserType = user.userType
-      const newComment = { commentTitle, content, commentId, createdByUserId, createdByUserName, createdByUserType }
-      fetch("http://localhost:8080/comment/reply/" + props.discussionId, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newComment)
-      }).then(() => {
-        console.log("Comment Replied Successfully!")
-        props.setRefreshPage(true)
-        handleReplyDialogClose();
-        handleClickEditSnackbar("Comment Replied Successfully!")
-      })
-    }
-  }
-
-  const printStatement = () => {
-    console.log("HELLO")
-    console.log(props.childComments)
-    return <></>
+    var commentId = props.commentId
+    var createdByUserId = user.userId
+    var createdByUserName = user.username
+    var createdByUserType = user.userType
+    const newComment = { commentTitle, content, commentId, createdByUserId, createdByUserName, createdByUserType }
+    fetch("http://localhost:8080/comment/reply/" + props.discussionId, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newComment)
+    }).then(() => {
+      console.log("Comment Replied Successfully!")
+      props.setRefreshPage(true)
+      handleEditDialogClose();
+      handleClickEditSnackbar("Comment Replied Successfully!")
+    })
   }
 
   const renderExtraActions = () => {
-    // console.log(props.createdByUserType)
-    // console.log(user.userType)
     if (props.createdByUserId === user.userId && props.createdByUserType === user.userType) {
       return <div>
         <IconButton
@@ -266,107 +244,12 @@ export default function CommentCard(props) {
                       &nbsp;
                       Edit
                     </MenuItem>
-                    <MenuItem onClick={handleClickReplyDialogOpen}>
-                      <ReplyIcon style={{ color: 'grey' }} />
-                      &nbsp;
-                      Reply
-                    </MenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
             </Grow>
           )}
         </Popper>
-      </div>
-        ;
-    }
-  }
-
-  const renderReplyActions = () => {
-    // console.log(props.createdByUserType)
-    // console.log(user.userType)
-    if (props.createdByUserId != user.userId && props.createdByUserType != user.userType) {
-      return <div>
-        <IconButton
-        // ref={anchorRef}
-        // id="composition-button"
-        // aria-controls={openMenu ? 'composition-menu' : undefined}
-        // aria-expanded={openMenu ? 'true' : undefined}
-        // aria-haspopup="true"
-        // onClick={handleToggle}
-        >
-          <MenuItem onClick={handleClickReplyDialogOpen}>
-            <ReplyIcon style={{ color: 'grey' }} />
-            &nbsp;
-            Reply
-          </MenuItem>
-        </IconButton>
-        {/* <Popper
-          open={openMenu}
-          anchorEl={anchorRef.current}
-          role={undefined}
-          placement="bottom-start"
-          transition
-          disablePortal
-        >
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin:
-                  placement === 'bottom-start' ? 'left top' : 'left bottom',
-              }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={handleCloseMenu}>
-                  <MenuList
-                    autoFocusItem={openMenu}
-                    id="composition-menu"
-                    aria-labelledby="composition-button"
-                    onKeyDown={handleListKeyDown}
-                  >
-                    <MenuItem onClick={handleClickReplyDialogOpen}>
-                      <ReplyIcon style={{ color: 'grey' }} />
-                      &nbsp;
-                      Reply
-                    </MenuItem>
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper> */}
-      </div>
-        ;
-    }
-  }
-
-  const renderChildComments = () => {
-    if (props.childComments) {
-      return <div>
-        {(props.childComments).map(comment => (
-          <div style={{ paddingLeft: "50px", justifyContent: 'center', display: 'flex' }}>
-            <div style={{ width: "3%" }}>
-              <SubdirectoryArrowRightIcon />
-            </div>
-            <div style={{ width: "97%" }}>
-              <ChildCommentCard
-                commentId={comment.commentId}
-                commentTitle={comment.commentTitle}
-                timestamp={comment.createdDateTime}
-                content={comment.content}
-                createdByUserName={comment.createdByUserName}
-                createdByUserType={comment.createdByUserType}
-                createdByUserId={comment.createdByUserId}
-                profilePictureURL={comment.createdByUserProfilePictureURL}
-                discussionId={props.discussionId}
-                refreshPage={props.refreshPage}
-                setRefreshPage={props.setRefreshPage}
-              />
-            </div>
-          </div>
-        ))
-        }
       </div>
         ;
     }
@@ -389,7 +272,6 @@ export default function CommentCard(props) {
           action={
             <div>
               {renderExtraActions()}
-              {renderReplyActions()}
             </div>
           }
           title={props.createdByUserName}
@@ -404,12 +286,6 @@ export default function CommentCard(props) {
           </Typography>
         </CardContent>
       </Card>
-      <div>
-        {printStatement()}
-      </div>
-      <div>
-        {renderChildComments()}
-      </div>
       <div>
         <Dialog
           open={deleteDialogOpen}

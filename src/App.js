@@ -24,6 +24,7 @@ import ViewInstructor from "./pages/ViewInstructor";
 import TeachingChildFileCover from "./components/TeachingChildFileCover";
 import TeachingCourseSettings from "./components/TeachingCourseSettings";
 import TeachingCourseCalender from "./components/TeachingCourseCalender";
+import LearnerCourseCalender from "./pages/LearnerCourseCalendar";
 
 import { AuthProvider } from "./context/AuthProvider";
 import { RequireAuth } from "./components/RequireAuth";
@@ -36,7 +37,6 @@ import RegisterOrganisationAdminPage from "./pages/RegisterOrganisationAdminPage
 import CourseExplorerPage from "./pages/CourseExplorerPage";
 import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
 import LearnerCourseDetails from "./pages/LearnerCourseDetails";
-import TeachingCourseClassRuns from "./components/TeachingCourseClassRuns";
 import SuccessRefundRequestPage from "./pages/SuccessRefundRequestPage";
 import TeachingClassRuns from "./components/TeachingClassRuns";
 import TeachingClassEvents from "./components/TeachingClassEvents";
@@ -45,6 +45,10 @@ import CreateAssessment from "./pages/CreateAssessment";
 import LearnerCalendar from "./components/LearnerCalendar";
 import OrganisationPointsConfig from "./components/OrganisationPointsConfig";
 import EditQuizPage from "./pages/EditQuizPage";
+import ClassRunListPage from "./pages/ClassRunListPage";
+import CourseApprovalPage from "./pages/CourseApprovalPage";
+import LearnerCourseFolder from "./pages/LearnerCourseFolder";
+import LearnerChildFileCover from "./components/LearnerChildFileCover";
 
 function App() {
   return (
@@ -127,6 +131,24 @@ function App() {
               }
             />
             <Route
+              path="/learnerCourses/:courseId/courseCalender"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerCourseCalender />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/courseCalender"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerCourseCalender />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/myTeachingCourse/:courseId/classRuns"
               element={
                 <RequireAuth>
@@ -199,6 +221,36 @@ function App() {
               }
             />
             <Route
+              path="/learnerCourses/:courseId/classRunList"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <ClassRunListPage/>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/classRunList"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <ClassRunListPage/>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/files"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerCourseFolder/>
+                </RequireAuth>
+              }
+            />
+            
+
+
+            <Route
               path="/courseExplorer/"
               element={
                 <RequireAuth>
@@ -235,6 +287,15 @@ function App() {
               }
             />
             <Route
+              path="/myTeachingCourse/:courseId/courseApproval"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CourseApprovalPage/>
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/myTeachingCourse/:courseId/forum/:forumId"
               element={
                 <RequireAuth>
@@ -245,6 +306,33 @@ function App() {
             />
             <Route
               path="/myTeachingCourse/:courseId/forum/:forumId/:discussionId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingDiscussion />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/forum"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingForumList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/forum/:forumId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingForum />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/forum/:forumId/:discussionId"
               element={
                 <RequireAuth>
                   <Appbar />
@@ -267,6 +355,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingChildFileCover />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/files/:folderId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerChildFileCover/>
                 </RequireAuth>
               }
             />

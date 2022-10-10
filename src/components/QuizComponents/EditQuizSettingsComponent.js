@@ -55,29 +55,30 @@ export default function EditQuizSettingsComponent(props) {
     errorMessage: "",
   });
 
-  React.useEffect(() => {
+  React.useEffect(() => {    
     setCurrentQuiz(props.quizProp)
-    setTitle(currentQuiz.assessmentTitle);
-    setDescription(currentQuiz.assessmentDescription);
-    setMaxScore(currentQuiz.assessmentMaxScore);
-    setStartDate(currentQuiz.assessmentStartDate);
-    setEndDate(currentQuiz.assessmentEndDate);
-    setHasTimeLimit(currentQuiz.hasTimeLimit);
-    setTimeLimit(currentQuiz.timeLimit);
-    setIsAutoRelease(currentQuiz.isAutoRelease);
-    startDateString = dayjs(startDate.d).format("YYYY/MM/DD");
-    endDateString = dayjs(endDate.d).format("YYYY/MM/DD");
+    setTitle(props.titleProp);
+    setDescription(props.descriptionProp);
+    setMaxScore(props.maxScoreProp);
+    setStartDate(props.startDateProp);
+    setEndDate(props.endDateProp);
+    setHasTimeLimit(props.hasTimeLimitProp);
+    setTimeLimit(props.timeLimitProp);
+    setIsAutoRelease(props.isAutoReleaseProp);
+    startDateString = dayjs(startDate.$d).format("YYYY/MM/DD");
+    endDateString = dayjs(endDate.$d).format("YYYY/MM/DD");
+    console.log("heres title prop: ", props.titleProp )
   }, []);
 
   function handleCancel() {
-    setTitle(props.quizProp.assessmentTitle);
-    setDescription(props.quizProp.assessmentDescription);
-    setMaxScore(props.quizProp.assessmentMaxScore);
-    setStartDate(props.quizProp.assessmentStartDate);
-    setEndDate(props.quizProp.assessmentEndDate);
-    setHasTimeLimit(props.quizProp.hasTimeLimit);
-    setTimeLimit(props.quizProp.timeLimit);
-    setIsAutoRelease(props.quizProp.isAutoRelease);
+    setTitle(props.titleProp);
+    setDescription(props.descriptionProp);
+    setMaxScore(props.maxScoreProp);
+    setStartDate(props.startDateProp);
+    setEndDate(props.endDateProp);
+    setHasTimeLimit(props.hasTimeLimitProp);
+    setTimeLimit(props.timeLimitProp);
+    setIsAutoRelease(props.isAutoReleaseProp);
     startDateString = dayjs(startDate.d).format("YYYY/MM/DD");
     endDateString = dayjs(endDate.d).format("YYYY/MM/DD");
   }
@@ -198,17 +199,6 @@ export default function EditQuizSettingsComponent(props) {
     <Box component="form">
       <Container>
         <Paper elevation={3} style={paperStyle}>
-          <h3
-            style={{
-              backgroundColor: "#1975D2",
-              color: "whitesmoke",
-              fontSize: "30px",
-              marginBottom: "40px",
-              padding: "6px",
-            }}
-          >
-            Quiz Settings{" "}
-          </h3>
           <p style={{ color: "grey" }}>Quiz Title</p>
           <TextField
             required
@@ -246,10 +236,11 @@ export default function EditQuizSettingsComponent(props) {
             value={maxScore}
             onChange={(e) => setMaxScore(e.target.value)}
           />
-          <Stack
+         <Stack
             spacing={1}
             style={{ paddingBottom: "10px", marginBottom: "20px" }}
           >
+            <p style={{ color: "grey" }}>Quiz Start Date</p>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
                 label={startDateString}
@@ -265,6 +256,7 @@ export default function EditQuizSettingsComponent(props) {
                   />
                 )}
               />
+              <p style={{ color: "grey" }}>Quiz End Date</p>
             </LocalizationProvider>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
@@ -283,7 +275,6 @@ export default function EditQuizSettingsComponent(props) {
               />
             </LocalizationProvider>
           </Stack>
-
           <Stack
             spacing={1}
             style={{ paddingBottom: "10px", marginTop: "20px" }}
@@ -338,7 +329,7 @@ export default function EditQuizSettingsComponent(props) {
               style={{ marginTop: "40px" }}
               onClick={handleCancel}
             >
-              Cancel Changes
+              Discard Changes
             </Button>
             <Button
               variant="contained"
