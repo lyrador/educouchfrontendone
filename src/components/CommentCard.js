@@ -285,7 +285,7 @@ export default function CommentCard(props) {
   const renderReplyActions = () => {
     // console.log(props.createdByUserType)
     // console.log(user.userType)
-    if (props.createdByUserId != user.userId && props.createdByUserType != user.userType) {
+    if (props.createdByUserId != user.userId || props.createdByUserType != user.userType) {
       return <div>
         <IconButton
         // ref={anchorRef}
