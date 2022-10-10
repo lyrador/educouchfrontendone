@@ -1,10 +1,12 @@
 import {
+  Alert,
   Button,
   Grid,
   InputLabel,
   MenuItem,
   Paper,
   Select,
+  Snackbar,
   Stack,
   TextField,
 } from "@mui/material";
@@ -29,6 +31,19 @@ export default function EditQuizSettingsComponent(props) {
   const [isAutoRelease, setIsAutoRelease] = useState("");
   var startDateString = "";
   var endDateString = "";
+
+  const [openReleaseSnackbar, setOpenReleaseSnackbar] = React.useState(false);
+
+  const handleClickReleaseSnackbar = () => {
+    setOpenReleaseSnackbar(true);
+  };
+
+  const handleCloseReleaseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenReleaseSnackbar(false);
+  };
 
   const [titleError, setTitleError] = useState({
     value: false,
@@ -55,8 +70,8 @@ export default function EditQuizSettingsComponent(props) {
     errorMessage: "",
   });
 
-  React.useEffect(() => {    
-    setCurrentQuiz(props.quizProp)
+  React.useEffect(() => {
+    setCurrentQuiz(props.quizProp);
     setTitle(props.titleProp);
     setDescription(props.descriptionProp);
     setMaxScore(props.maxScoreProp);
@@ -67,7 +82,7 @@ export default function EditQuizSettingsComponent(props) {
     setIsAutoRelease(props.isAutoReleaseProp);
     startDateString = dayjs(startDate.$d).format("YYYY/MM/DD");
     endDateString = dayjs(endDate.$d).format("YYYY/MM/DD");
-    console.log("heres title prop: ", props.titleProp )
+    console.log("heres title prop: ", props.titleProp);
   }, []);
 
   function handleCancel() {
@@ -93,7 +108,7 @@ export default function EditQuizSettingsComponent(props) {
     timeLimit,
     isAutoRelease
   ) {
-    props.editQuizSettingsProp(
+    props.editSettingsProp(
       title,
       description,
       maxScore,
@@ -181,6 +196,7 @@ export default function EditQuizSettingsComponent(props) {
         isAutoRelease
       );
       handleCancel();
+      handleClickReleaseSnackbar();
     } else {
       console.log("did not pass the vibe check");
     }
@@ -198,6 +214,20 @@ export default function EditQuizSettingsComponent(props) {
   return (
     <Box component="form">
       <Container>
+        <Snackbar
+          open={openReleaseSnackbar}
+          autoHideDuration={5000}
+          onClose={handleCloseReleaseSnackbar}
+        >
+          <Alert
+            onClose={handleCloseReleaseSnackbar}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Quiz Settings Changes Applied!
+          </Alert>
+        </Snackbar>
+
         <Paper elevation={3} style={paperStyle}>
           <p style={{ color: "grey" }}>Quiz Title</p>
           <TextField
@@ -236,7 +266,7 @@ export default function EditQuizSettingsComponent(props) {
             value={maxScore}
             onChange={(e) => setMaxScore(e.target.value)}
           />
-         <Stack
+          <Stack
             spacing={1}
             style={{ paddingBottom: "10px", marginBottom: "20px" }}
           >
