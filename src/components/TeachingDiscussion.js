@@ -78,6 +78,7 @@ function TeachingDiscussion(props) {
         then(res=>res.json()).
         then((result)=>{
           setComments(result);
+          console.log(result)
         }
       )
       }, [refreshPage])
@@ -212,6 +213,8 @@ function TeachingDiscussion(props) {
                                     createdByUserType={comment.createdByUserType}
                                     createdByUserId={comment.createdByUserId}
                                     profilePictureURL={comment.createdByUserProfilePictureURL}
+                                    childComments={comment.childCommentDTOs}
+                                    discussionId={discussionId}
                                     refreshPage={refreshPage}
                                     setRefreshPage={setRefreshPage}
                                     />
