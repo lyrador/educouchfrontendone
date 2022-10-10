@@ -232,6 +232,7 @@ export default function PartialCreateAssessment(props) {
         timeLimit: 60,
         isAutoRelease: "false",
         questions: [],
+        questionCounter: 0,
       };
 
       setNewQuiz(newQuiz);

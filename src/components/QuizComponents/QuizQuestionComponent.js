@@ -36,7 +36,7 @@ export default function QuizQuestionComponent(props) {
       <Grid container direction="column">
         <Grid>
           <QuizContentComponent
-           questionIdProp={props.questionProp.localid}
+            questionIdProp={props.questionProp.localid}
             questionContentProp={props.questionProp.questionContent}
             editQuestionContentProp={props.editQuestionContentProp}
           />
@@ -55,6 +55,8 @@ export default function QuizQuestionComponent(props) {
                 addQuestionOptionProp={props.addQuestionOptionProp}
                 removeQuestionOptionProp={props.removeQuestionOptionProp}
                 questionIdProp={props.questionProp.localid}
+                correctOptionProp={question.correctOption}
+                selectCorrectOptionProp={props.selectCorrectOptionProp}
               />
             </div>
           )}
@@ -64,15 +66,17 @@ export default function QuizQuestionComponent(props) {
                 questionIdProp={props.questionProp.localid}
                 booleanOptionsProp={question.options}
                 addBooleanOptionsProp={props.addQuestionOptionProp}
+                correctOptionProp={question.correctOption}
+                selectCorrectOptionProp={props.selectCorrectOptionProp}
               />
             </div>
           )}
         </Grid>
-        <Grid item style={{ marginTop: 50,}}>
+        <Grid item style={{ marginTop: 50 }}>
           <QuestionMaxPoints
             questionIdProp={props.questionProp.localid}
             questionMaxPointsProp={props.questionProp.questionMaxPoints}
-
+            editQuestionMaxPointsProp={ props.editQuestionMaxPointsProp}
           />
           <Button
             onClick={() => props.removeQuestionProp(props.questionProp.localid)}

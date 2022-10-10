@@ -60,6 +60,9 @@ export default function CreateAssessment(props) {
           </Link>
           <Link
             to={`${createAssessmentPath}`}
+            state={{
+              assessmentsPathProp: { assessmentPath },
+            }}
             style={{ textDecoration: "none", color: "grey" }}
           >
             <LinkMaterial underline="hover" color="inherit">
