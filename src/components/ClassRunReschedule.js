@@ -179,7 +179,9 @@ export default function ClassRunReschedule({ courseId, oldClassRunId}) {
 
     const filingRefund = () => {
         // send request to create payment record
-        const paymentRecord = { "learnerId": user.userId, "classRunId": oldClassRunId, "amount": amountToBePaid };
+        var refundAmount = currentCourse.courseFee * 0.90;
+        console.log('Amount is ' + refundAmount);
+        const paymentRecord = { "learnerId": user.userId, "classRunId": oldClassRunId, "amount": currentCourse.courseFee * 0.90 };
         var url = "http://localhost:8080/payment/refundDepositRequest";
         fetch(url, {
             method: "POST",
