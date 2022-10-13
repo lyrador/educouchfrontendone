@@ -275,6 +275,17 @@ export default function EditQuizPage() {
     }
   }
 
+  function editQuestionHint(questionId, questionHint) {
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.localid == questionId
+    );
+    if (questionIndex > -1) {
+      tempFormQuestions[questionIndex].questionHint = questionHint;
+      setFormQuestions(tempFormQuestions);
+    }
+  }
+
   function editQuestionMaxPoints(questionId, questionMaxPoints) {
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
@@ -467,6 +478,7 @@ export default function EditQuizPage() {
                     removeQuestionOptionProp={removeQuestionOption}
                     selectCorrectOptionProp={selectCorrectQuestionOption}
                     editQuestionContentProp={editQuestionContent}
+                    editQuestionHintProp={ editQuestionHint}
                     removeQuestionProp={removeQuestion}
                   />
                 </Paper>

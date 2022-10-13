@@ -48,7 +48,7 @@ export default function TrueFalseComponent(props) {
       <div>
         <b>Select Correct Option</b>
       </div>
-      <Grid container direction={"row"} alignItems={"center"}>
+      <Grid container direction={"row"} alignItems={"center"} marginBottom={"35px"}>
         <p>False</p>
         <Switch
           checked={correctOption}

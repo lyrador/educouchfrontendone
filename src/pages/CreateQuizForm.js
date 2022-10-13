@@ -165,6 +165,17 @@ export default function CreateQuizForm(props) {
     }
   }
 
+  function editQuestionHint(questionId, questionHint) {
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.localid == questionId
+    );
+    if (questionIndex > -1) {
+      tempFormQuestions[questionIndex].questionHint = questionHint;
+      setFormQuestions(tempFormQuestions);
+    }
+  }
+
   function editQuestionMaxPoints(questionId, questionMaxPoints) {
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
@@ -222,6 +233,7 @@ export default function CreateQuizForm(props) {
       questionTitle: "Untitled Question",
       questionType: "shortAnswer",
       questionContent: "Type Question Body here...",
+      questionHint: "Type Question Guide here...",
       questionMaxPoints: 0.0,
       options: [],
       correctOption: "",
@@ -398,6 +410,7 @@ export default function CreateQuizForm(props) {
                   removeQuestionOptionProp={removeQuestionOption}
                   selectCorrectOptionProp={selectCorrectQuestionOption}
                   editQuestionContentProp={editQuestionContent}
+                  editQuestionHintProp={ editQuestionHint}
                   removeQuestionProp={removeQuestion}
                   editQuestionMaxPointsProp={editQuestionMaxPoints}
                 />

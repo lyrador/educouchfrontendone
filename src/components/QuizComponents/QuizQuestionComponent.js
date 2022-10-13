@@ -9,6 +9,8 @@ import ShortAnswerComponent from "./ShortAnswerComponent";
 import TrueFalseComponent from "./TrueFalseComponent";
 import DeleteIcon from "@mui/icons-material/Delete";
 import QuestionMaxPoints from "./QuestionMaxPoints";
+import QuestionHintComponent from "./QuestionGuideComponent";
+import QuestionGuideComponent from "./QuestionGuideComponent";
 export default function QuizQuestionComponent(props) {
   const [question, setQuestion] = useState(props.questionProp);
   const [index, setIndex] = useState(props.indexProp);
@@ -58,6 +60,11 @@ export default function QuizQuestionComponent(props) {
                 correctOptionProp={question.correctOption}
                 selectCorrectOptionProp={props.selectCorrectOptionProp}
               />
+              <QuestionGuideComponent
+                questionIdProp={props.questionProp.localid}
+                questionHintProp={props.questionProp.questionHint}
+                editQuestionHintProp={props.editQuestionHintProp}
+              />
             </div>
           )}
           {props.questionProp.questionType == "trueFalse" && (
@@ -69,6 +76,11 @@ export default function QuizQuestionComponent(props) {
                 correctOptionProp={question.correctOption}
                 selectCorrectOptionProp={props.selectCorrectOptionProp}
               />
+              <QuestionGuideComponent
+                questionIdProp={props.questionProp.localid}
+                questionHintProp={props.questionProp.questionHint}
+                editQuestionHintProp={props.editQuestionHintProp}
+              />
             </div>
           )}
         </Grid>
@@ -76,7 +88,7 @@ export default function QuizQuestionComponent(props) {
           <QuestionMaxPoints
             questionIdProp={props.questionProp.localid}
             questionMaxPointsProp={props.questionProp.questionMaxPoints}
-            editQuestionMaxPointsProp={ props.editQuestionMaxPointsProp}
+            editQuestionMaxPointsProp={props.editQuestionMaxPointsProp}
           />
           <Button
             onClick={() => props.removeQuestionProp(props.questionProp.localid)}

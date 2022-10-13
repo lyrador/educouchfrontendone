@@ -83,6 +83,7 @@ export default function McqBodyComponent(props) {
         direction="column"
         justifyContent={"space-between"}
         width="60%"
+        marginBottom={"10px"}
       >
         <FormControl>
           <Select
