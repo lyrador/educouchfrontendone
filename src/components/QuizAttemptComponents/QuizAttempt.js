@@ -73,7 +73,9 @@ export default function QuizAttempt() {
             <h1>this is quiz attempt</h1>
             <QuizAttemptDisplay
               currentQuizProp={currentQuiz}
-              questionsProp={ quizQuestions}
+              questionsProp={quizQuestions}
+              hasTimeLimitProp={hasTimeLimit}
+              timeLimitProp={ timeLimit}
             />
         </Grid>
       )}
