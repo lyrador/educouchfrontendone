@@ -384,7 +384,7 @@ function TeachingAssessmentList(props) {
   function continueAsPartialAssessment() {
     navigate(`${assessmentsPath}/createAssessment`, {
       state: {
-        assessmentPathProp: assessmentsPath,
+        assessmentsPathProp: assessmentsPath,
         // refreshFunctionProp: { refreshFunction },
       },
     });

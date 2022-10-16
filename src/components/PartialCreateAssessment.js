@@ -230,6 +230,8 @@ export default function PartialCreateAssessment(props) {
         assessmentStatusEnum: "PENDING",
         hasTimeLimit: "false",
         timeLimit: 60,
+        hasMaxAttempts: "false",
+        maxAttempts: 0,
         isAutoRelease: "false",
         questions: [],
         questionCounter: 0,

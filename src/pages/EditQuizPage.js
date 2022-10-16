@@ -3,7 +3,18 @@ import dayjs from "dayjs";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import LinkMaterial from "@mui/material/Link";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Breadcrumbs, Grid, Modal, Paper, Button, TextField, Stack, Select, MenuItem, InputLabel } from "@mui/material";
+import {
+  Breadcrumbs,
+  Grid,
+  Modal,
+  Paper,
+  Button,
+  TextField,
+  Stack,
+  Select,
+  MenuItem,
+  InputLabel,
+} from "@mui/material";
 import { useState } from "react";
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
@@ -37,6 +48,8 @@ export default function EditQuizPage() {
   const [timeLimit, setTimeLimit] = useState();
   const [isAutoRelease, setIsAutoRelease] = useState("false");
   const [open, setOpen] = React.useState(false);
+  const [hasMaxAttempts, setHasMaxAttempts] = useState("");
+  const [maxAttempts, setMaxAttempts] = useState();
   const paperStyle = { padding: "50px 20px", width: 1200, margin: "20px auto" };
   var startDateString = "";
   var endDateString = "";
@@ -58,10 +71,11 @@ export default function EditQuizPage() {
         setEndDate(result.assessmentEndDate);
         setHasTimeLimit(result.hasTimeLimit);
         setTimeLimit(result.timeLimit);
+        setHasMaxAttempts(result.hasMaxAttempts);
+        setMaxAttempts(result.maxAttempts);
         setIsAutoRelease(result.isAutoRelease);
       });
   }, []);
-
 
   const [openReleaseSnackbar, setOpenReleaseSnackbar] = React.useState(false);
 
@@ -100,19 +114,46 @@ export default function EditQuizPage() {
     value: false,
     errorMessage: "",
   });
+  const [maxAttemptsError, setMaxAttemptsError] = useState({
+    value: false,
+    errorMessage: "",
+  });
 
   function validateQuizSettings() {
     const tempStartDate = startDate;
     const tempEndDate = endDate;
     const dateComparisonBoolean = tempEndDate >= tempStartDate;
-    if (hasTimeLimit == "true") {
-      return (
-        title &&
-        description &&
-        maxScore &&
-        dateComparisonBoolean &&
-        timeLimit > 4
-      );
+    if (hasTimeLimit == "true" || hasMaxAttempts == "true") {
+      if (hasTimeLimit == "true" && hasMaxAttempts == "true") {
+        console.log("fail dis");
+        return (
+          title &&
+          description &&
+          maxScore &&
+          dateComparisonBoolean &&
+          timeLimit > 4 &&
+          maxAttempts > 0
+        );
+      } else if (hasTimeLimit == "true") {
+        console.log("fail dat");
+        return (
+          title &&
+          description &&
+          maxScore &&
+          dateComparisonBoolean &&
+          timeLimit > 4
+        );
+      } else {
+        console.log("fail dat other one");
+
+        return (
+          title &&
+          description &&
+          maxScore &&
+          dateComparisonBoolean &&
+          maxAttempts > 0
+        );
+      }
     } else {
       return title && description && maxScore && dateComparisonBoolean;
     }
@@ -128,6 +169,7 @@ export default function EditQuizPage() {
     setStartDateError({ value: false, errorMessage: "" });
     setEndDateError({ value: false, errorMessage: "" });
     setTimeLimitError({ value: false, errorMessage: "" });
+    setMaxAttemptsError({ value: false, errorMessage: "" });
 
     if (title == "") {
       setTitleError({
@@ -145,6 +187,12 @@ export default function EditQuizPage() {
       setMaxScoreError({
         value: true,
         errorMessage: "Max Score Field cannot be left empty!",
+      });
+    }
+    if (maxAttempts < 1) {
+      setMaxAttemptsError({
+        value: true,
+        errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
       });
     }
 
@@ -174,7 +222,9 @@ export default function EditQuizPage() {
         endDate,
         hasTimeLimit,
         timeLimit,
-        isAutoRelease
+        hasMaxAttempts,
+        maxAttempts,
+        isAutoRelease,
       );
       console.log("passedValidations");
       handleClickReleaseSnackbar();
@@ -198,7 +248,7 @@ export default function EditQuizPage() {
   }
   function handleBackToSettings() {
     setEditSettings("true");
-    console.log("printing form questions: ", formQuestions)
+    console.log("printing form questions: ", formQuestions);
   }
 
   function validateQuiz() {
@@ -230,6 +280,8 @@ export default function EditQuizPage() {
     endDate1,
     hasTimeLimit1,
     timeLimit1,
+    hasMaxAttempts1,
+    maxAttempts1,
     isAutoRelease1
   ) {
     setTitle(title1);
@@ -239,8 +291,10 @@ export default function EditQuizPage() {
     setEndDate(endDate1);
     setHasTimeLimit(hasTimeLimit1);
     setTimeLimit(timeLimit1);
+    setHasMaxAttempts(hasMaxAttempts1);
+    setMaxAttempts(maxAttempts1);
     setIsAutoRelease(isAutoRelease1);
-   }
+  }
 
   function editQuestionTitle(questionId, questionTitle) {
     const tempFormQuestions = [...formQuestions];
@@ -319,8 +373,11 @@ export default function EditQuizPage() {
       tempFormQuestions[questionIndex].options = updatedOptions;
     }
     setFormQuestions(tempFormQuestions);
-    console.log("options after removal: ", tempFormQuestions[questionIndex].options)
-    console.log("supposed to assign this: ", updatedOptions)
+    console.log(
+      "options after removal: ",
+      tempFormQuestions[questionIndex].options
+    );
+    console.log("supposed to assign this: ", updatedOptions);
   }
 
   function selectCorrectQuestionOption(questionId, option) {
@@ -478,7 +535,7 @@ export default function EditQuizPage() {
                     removeQuestionOptionProp={removeQuestionOption}
                     selectCorrectOptionProp={selectCorrectQuestionOption}
                     editQuestionContentProp={editQuestionContent}
-                    editQuestionHintProp={ editQuestionHint}
+                    editQuestionHintProp={editQuestionHint}
                     removeQuestionProp={removeQuestion}
                   />
                 </Paper>
@@ -535,19 +592,6 @@ export default function EditQuizPage() {
                 Proceed to Questions
               </Button>
             </Grid>
-            {/* <EditQuizSettingsComponent
-              quizProp={currentQuiz}
-              titleProp={title}
-              descriptionProp={description}
-              maxScoreProp={maxScore}
-              startDateProp={startDate}
-              endDateProp={endDate}
-              hasTimeLimitProp={hasTimeLimit}
-              timeLimitProp={timeLimit}
-              isAutoReleaseProp={isAutoRelease}
-              editSettingsProp={editQuizSettings}
-            ></EditQuizSettingsComponent> */}
-
             <Paper elevation={3} style={paperStyle}>
               <p style={{ color: "grey" }}>Quiz Title</p>
               <TextField
@@ -659,6 +703,41 @@ export default function EditQuizPage() {
                 />
               )}
 
+              <Stack
+                spacing={1}
+                style={{ paddingBottom: "10px", marginTop: "20px" }}
+              >
+                <p style={{ color: "grey" }}>Quiz Has Max Attempts</p>
+                <Select
+                  id="select-trueFalse"
+                  value={hasMaxAttempts}
+                  onChange={(e) => setHasMaxAttempts(e.target.value)}
+                  defaultValue={hasMaxAttempts}
+                >
+                  <MenuItem value="true">True</MenuItem>
+                  <MenuItem value="false">False</MenuItem>
+                </Select>
+
+                {hasMaxAttempts == "true" && (
+                  <TextField
+                    error={maxAttemptsError.value}
+                    helperText={maxAttemptsError.errorMessage}
+                    id="outlined-basic"
+                    label="Maximum Attempts Allowed"
+                    variant="outlined"
+                    fullWidth
+                    style={{
+                      paddingBottom: "10px",
+                      marginTop: "20px",
+                      marginBottom: "20px",
+                    }}
+                    value={maxAttempts}
+                    defaultValue={maxAttempts}
+                    onChange={(e) => setMaxAttempts(e.target.value)}
+                  />
+                )}
+              </Stack>
+
               <Stack spacing={1}>
                 <InputLabel id="select-autoReleaseResults-trueFalse">
                   Auto Release Quiz Results
@@ -672,9 +751,7 @@ export default function EditQuizPage() {
                   <MenuItem value="false">False</MenuItem>
                 </Select>
               </Stack>
-              <Grid
-               container justifyContent={"space-between"}>
-    
+              <Grid container justifyContent={"space-between"}>
                 {/* <Button
                   variant="contained"
                   style={{ marginTop: "40px" }}

@@ -27,6 +27,9 @@ export default function QuizSettingsComponents(props) {
   const [endDate, setEndDate] = useState(dayjs());
   const [hasTimeLimit, setHasTimeLimit] = useState("");
   const [timeLimit, setTimeLimit] = useState();
+  const [hasMaxAttempts, setHasMaxAttempts] = useState("");
+  const [maxAttempts, setMaxAttempts] = useState();
+
   const [isAutoRelease, setIsAutoRelease] = useState("");
   var startDateString = "";
   var endDateString = "";
@@ -55,6 +58,10 @@ export default function QuizSettingsComponents(props) {
     value: false,
     errorMessage: "",
   });
+  const [maxAttemptsError, setMaxAttemptsError] = useState({
+    value: false,
+    errorMessage: "",
+  });
 
   React.useEffect(() => {
     setQuestions(quizSettings.questions);
@@ -67,6 +74,8 @@ export default function QuizSettingsComponents(props) {
     setEndDate(quizSettings.assessmentEndDate);
     setHasTimeLimit(quizSettings.hasTimeLimit);
     setTimeLimit(quizSettings.timeLimit);
+    setHasMaxAttempts(quizSettings.hasMaxAttempts);
+    setMaxAttempts(quizSettings.maxAttempts);
     setIsAutoRelease(quizSettings.isAutoRelease);
     startDateString = dayjs(startDate.d).format("YYYY/MM/DD");
     endDateString = dayjs(endDate.d).format("YYYY/MM/DD");
@@ -84,7 +93,9 @@ export default function QuizSettingsComponents(props) {
     endDate,
     hasTimeLimit,
     timeLimit,
-    isAutoRelease
+    hasMaxAttempts,
+    maxAttempts,
+    isAutoRelease,
   ) {
     props.editQuizSettingsProp(
       title,
@@ -94,6 +105,8 @@ export default function QuizSettingsComponents(props) {
       endDate,
       hasTimeLimit,
       timeLimit,
+      hasMaxAttempts,
+      maxAttempts,
       isAutoRelease
     );
   }
@@ -102,14 +115,37 @@ export default function QuizSettingsComponents(props) {
     const tempStartDate = startDate;
     const tempEndDate = endDate;
     const dateComparisonBoolean = tempEndDate >= tempStartDate;
-    if (hasTimeLimit == "true") {
-      return (
-        title &&
-        description &&
-        maxScore &&
-        dateComparisonBoolean &&
-        timeLimit > 4
-      );
+    if (hasTimeLimit == "true" || hasMaxAttempts == "true") {
+      if (hasTimeLimit=="true" && hasMaxAttempts=="true") {
+        console.log("fail dis")
+        return (
+          title &&
+          description &&
+          maxScore &&
+          dateComparisonBoolean &&
+          timeLimit > 4 &&
+          maxAttempts > 0
+        );
+      } else if (hasTimeLimit=="true") {
+        console.log("fail dat")
+        return (
+          title &&
+          description &&
+          maxScore &&
+          dateComparisonBoolean &&
+          timeLimit > 4
+        );
+      } else {
+        console.log("fail dat other one")
+
+        return (
+          title &&
+          description &&
+          maxScore &&
+          dateComparisonBoolean &&
+          maxAttempts > 0
+        );
+      }
     } else {
       return title && description && maxScore && dateComparisonBoolean;
     }
@@ -125,7 +161,7 @@ export default function QuizSettingsComponents(props) {
     setStartDateError({ value: false, errorMessage: "" });
     setEndDateError({ value: false, errorMessage: "" });
     setTimeLimitError({ value: false, errorMessage: "" });
-
+    setMaxAttemptsError({ value: false, errorMessage: "" });
     if (title == "") {
       setTitleError({
         value: true,
@@ -161,6 +197,12 @@ export default function QuizSettingsComponents(props) {
         errorMessage: "Quiz Time Limit cannot be less than 5 minutes!",
       });
     }
+    if (maxAttempts <1) {
+      setMaxAttemptsError({
+        value: true,
+        errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
+      }); 
+    }
     if (validateQuizSettings()) {
       console.log("passedValidations");
       editQuizSettings(
@@ -171,7 +213,9 @@ export default function QuizSettingsComponents(props) {
         endDate,
         hasTimeLimit,
         timeLimit,
-        isAutoRelease
+        isAutoRelease,
+        hasMaxAttempts,
+        maxAttempts
       );
       handleCancel();
     } else {
@@ -314,6 +358,40 @@ export default function QuizSettingsComponents(props) {
               onChange={(e) => setTimeLimit(e.target.value)}
             />
           )}
+          <Stack
+            spacing={1}
+            style={{ paddingBottom: "10px", marginTop: "20px" }}
+          >
+            <p style={{ color: "grey" }}>Quiz Has Max Attempts</p>
+            <Select
+              id="select-trueFalse"
+              value={hasMaxAttempts}
+              onChange={(e) => setHasMaxAttempts(e.target.value)}
+              defaultValue={hasMaxAttempts}
+            >
+              <MenuItem value="true">True</MenuItem>
+              <MenuItem value="false">False</MenuItem>
+            </Select>
+
+            {hasMaxAttempts == "true" && (
+              <TextField
+                error={maxAttemptsError.value}
+                helperText={maxAttemptsError.errorMessage}
+                id="outlined-basic"
+                label="Maximum Attempts Allowed"
+                variant="outlined"
+                fullWidth
+                style={{
+                  paddingBottom: "10px",
+                  marginTop: "20px",
+                  marginBottom: "20px",
+                }}
+                value={maxAttempts}
+                defaultValue={maxAttempts}
+                onChange={(e) => setMaxAttempts(e.target.value)}
+              />
+            )}
+          </Stack>
 
           <Stack spacing={1}>
             <InputLabel id="select-autoReleaseResults-trueFalse">

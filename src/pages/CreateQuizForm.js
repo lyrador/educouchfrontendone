@@ -120,7 +120,9 @@ export default function CreateQuizForm(props) {
     endDate,
     hasTimeLimit,
     timeLimit,
-    isAutoRelease
+    isAutoRelease,
+    hasMaxAttempts,
+    maxAttempts
   ) {
     currentQuiz.assessmentTitle = title;
     currentQuiz.assessmentDescription = description;
@@ -130,6 +132,8 @@ export default function CreateQuizForm(props) {
     currentQuiz.hasTimeLimit = hasTimeLimit;
     currentQuiz.timeLimit = timeLimit;
     currentQuiz.isAutoRelease = isAutoRelease;
+    currentQuiz.hasMaxAttempts = hasMaxAttempts;
+    currentQuiz.maxAttempts = maxAttempts;
   }
 
   function editQuestionTitle(questionId, questionTitle) {
