@@ -51,44 +51,46 @@ export default function Room() {
 
     useEffect(() => {
 		if(!rid || !username) {
+			console.log('Happened here.');
 			setRid(roomId)
 			setUsername(searchParams.username)
 			localStorage.setItem('rid', roomId);
 			localStorage.setItem('username',searchParams.username);		
-		} else {
-			if(loading) {
-				ws.current = new SockJS(SOCKET_URL);
-				ws.current.onopen = () => alert("ws opened");
-				ws.current.onclose = () => alert(1000);
+		}
+		if(loading) {
+			console.log('Nicely done. ');
+			ws.current = new SockJS(SOCKET_URL);
+			ws.current.onopen = () => alert("ws opened");
+			ws.current.onclose = () => alert(1000);
 
-				stomp.current = Stomp.over(ws.current);
-				stomp.current.reconnect_delay = 5000;
-				stomp.current.connect({}, frame => {
-					const userJoinedRoom = {
-						username: username,
-						payload: CONNECT_USER,
-						roomId: rid
-					} ;
-					console.log('Stomp current is ' + JSON.stringify(stomp.current))
-					stomp.current.send(`/app/send/${rid}/user`, {}, JSON.stringify(userJoinedRoom));
+			stomp.current = Stomp.over(ws.current);
+			stomp.current.reconnect_delay = 5000;
+			stomp.current.connect({}, frame => {
+				const userJoinedRoom = {
+					username: username,
+					payload: CONNECT_USER,
+					roomId: rid
+				} ;
+				stomp.current.send(`/app/send/${rid}/user`, {}, JSON.stringify(userJoinedRoom));
 
-					messagesSubscription = stomp.current.subscribe(`/topic/${rid}/user`, roomActions => {
-						const response = JSON.parse(roomActions.body);
-						setSnackbarMsg(response.message);
-						setUsersList(response.users);
-						setSnackbarOpen(true);
-					});
-
-					canvasSubscription = stomp.current.subscribe(`/topic/${rid}`, coordinates => {
-						setIncomingDrawings(JSON.parse(coordinates.body)) 
-					});
+				messagesSubscription = stomp.current.subscribe(`/topic/${rid}/user`, roomActions => {
+					const response = JSON.parse(roomActions.body);
+					setSnackbarMsg(response.message);
+					setUsersList(response.users);
+					setSnackbarOpen(true);
 				});
 
-				return () => {
-					ws.current.close();
-				};
-			}
-		}
+				canvasSubscription = stomp.current.subscribe(`/topic/${rid}`, coordinates => {
+					setIncomingDrawings(JSON.parse(coordinates.body)) 
+				});
+			});
+
+			return () => {
+				ws.current.close();
+				console.log('Initialization done.');
+			};
+			
+		};
 	}, [rid, username]);
 	
 	// handle route change | When user clicks back button, disconnect from room
