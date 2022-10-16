@@ -416,6 +416,10 @@ function TeachingAssessmentList(props) {
     }
   };
 
+  function dummyRouteToQuizAttempt() {
+    navigate(`/quizAttempt`);
+  }
+
   return (
     <div>
       <Grid container spacing={0}>
@@ -592,6 +596,13 @@ function TeachingAssessmentList(props) {
               onClick={continueAsPartialAssessment}
             >
               Create New Assessment
+            </Button>
+            <Button
+              variant="contained"
+              type="submit"
+              onClick={dummyRouteToQuizAttempt}
+            >
+              Dummy Buttom Quiz Attempt
             </Button>
           </Grid>
         </Grid>

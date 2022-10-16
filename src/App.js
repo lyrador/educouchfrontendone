@@ -49,6 +49,7 @@ import ClassRunListPage from "./pages/ClassRunListPage";
 import CourseApprovalPage from "./pages/CourseApprovalPage";
 import LearnerCourseFolder from "./pages/LearnerCourseFolder";
 import LearnerChildFileCover from "./components/LearnerChildFileCover";
+import QuizAttempt from "./components/QuizAttemptComponents/QuizAttempt";
 
 function App() {
   return (
@@ -225,7 +226,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <ClassRunListPage/>
+                  <ClassRunListPage />
                 </RequireAuth>
               }
             />
@@ -234,7 +235,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <ClassRunListPage/>
+                  <ClassRunListPage />
                 </RequireAuth>
               }
             />
@@ -243,13 +244,10 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerCourseFolder/>
+                  <LearnerCourseFolder />
                 </RequireAuth>
               }
             />
-            
-
-
             <Route
               path="/courseExplorer/"
               element={
@@ -291,7 +289,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <CourseApprovalPage/>
+                  <CourseApprovalPage />
                 </RequireAuth>
               }
             />
@@ -363,7 +361,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerChildFileCover/>
+                  <LearnerChildFileCover />
                 </RequireAuth>
               }
             />
@@ -461,6 +459,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <EditQuizPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/quizAttempt"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <QuizAttempt />
                 </RequireAuth>
               }
             />
