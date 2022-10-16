@@ -361,7 +361,7 @@ function App() {
               }
             />
             <Route
-              path="/myTeachingCourse/:courseId/whiteboard"
+              path="/whiteboardHomepage"
               element={
                 <RequireAuth>
                   <WhiteboardHomepage/>

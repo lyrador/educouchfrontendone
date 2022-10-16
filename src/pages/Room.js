@@ -69,6 +69,7 @@ export default function Room() {
 						payload: CONNECT_USER,
 						roomId: rid
 					} ;
+					console.log('Stomp current is ' + JSON.stringify(stomp.current))
 					stomp.current.send(`/app/send/${rid}/user`, {}, JSON.stringify(userJoinedRoom));
 
 					messagesSubscription = stomp.current.subscribe(`/topic/${rid}/user`, roomActions => {
