@@ -1,5 +1,6 @@
 import { Button, Grid } from "@mui/material";
 import React, { useState } from "react";
+import QuizAttemptDisplay from "./QuizAttemptDisplay";
 import QuizInformation from "./QuizInformation";
 
 export default function QuizAttempt() {
@@ -13,6 +14,8 @@ export default function QuizAttempt() {
   const [endDate, setEndDate] = useState();
   const [hasTimeLimit, setHasTimeLimit] = useState("true");
   const [timeLimit, setTimeLimit] = useState();
+  const [hasMaxAttempts, setHasMaxAttempts] = useState();
+  const [maxAttempts, setMaxAttempts] = useState(0);
 
   React.useEffect(() => {
     fetch("http://localhost:8080/quiz/getQuizById/1")
@@ -20,6 +23,7 @@ export default function QuizAttempt() {
       .then((result) => {
         setStartQuiz("false");
         setCurrentQuiz(result);
+        setQuizQuestions(result.questions)
         setTitle(result.assessmentTitle);
         setDescription(result.assessmentDescription);
         setMaxScore(result.assessmentMaxScore);
@@ -27,6 +31,8 @@ export default function QuizAttempt() {
         setEndDate(result.assessmentEndDate);
         setHasTimeLimit(result.hasTimeLimit);
         setTimeLimit(result.timeLimit);
+        setHasMaxAttempts(result.hasMaxAttempts);
+        setMaxAttempts(result.maxAttempts);
       });
   }, []);
 
@@ -55,11 +61,20 @@ export default function QuizAttempt() {
           ) : (
             <Grid item>No Time Limit</Grid>
           )}
+          {hasMaxAttempts == "true" ? (
+            <Grid item>Maximum Attempts: {maxAttempts}</Grid>
+          ) : (
+            <Grid item>Maximum Attempts: Unlimited Attempts </Grid>
+          )}
+          <Button onClick={handleStartQuiz}>Start Quiz</Button>
         </Grid>
       ) : (
         <Grid>
-          <p>this is quiz attempt</p>
-          <Button onClick={handleStartQuiz}>Start Quiz</Button>
+            <h1>this is quiz attempt</h1>
+            <QuizAttemptDisplay
+              currentQuizProp={currentQuiz}
+              questionsProp={ quizQuestions}
+            />
         </Grid>
       )}
     </Grid>

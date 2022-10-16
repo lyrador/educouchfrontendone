@@ -49,7 +49,7 @@ export default function EditQuizPage() {
   const [isAutoRelease, setIsAutoRelease] = useState("false");
   const [open, setOpen] = React.useState(false);
   const [hasMaxAttempts, setHasMaxAttempts] = useState("");
-  const [maxAttempts, setMaxAttempts] = useState();
+  const [maxAttempts, setMaxAttempts] = useState(0);
   const paperStyle = { padding: "50px 20px", width: 1200, margin: "20px auto" };
   var startDateString = "";
   var endDateString = "";
@@ -224,7 +224,7 @@ export default function EditQuizPage() {
         timeLimit,
         hasMaxAttempts,
         maxAttempts,
-        isAutoRelease,
+        isAutoRelease
       );
       console.log("passedValidations");
       handleClickReleaseSnackbar();
@@ -244,11 +244,117 @@ export default function EditQuizPage() {
 
   function handleProceedQuestions() {
     setFormQuestions(currentQuiz.questions);
-    setEditSettings("false");
+    const tempStartDate = startDate;
+    const tempEndDate = endDate;
+    setTitleError({ value: false, errorMessage: "" });
+    setDescriptionError({ value: false, errorMessage: "" });
+    setMaxScoreError({ value: false, errorMessage: "" });
+    setStartDateError({ value: false, errorMessage: "" });
+    setEndDateError({ value: false, errorMessage: "" });
+    setTimeLimitError({ value: false, errorMessage: "" });
+    setMaxAttemptsError({ value: false, errorMessage: "" });
+    if (title == "") {
+      setTitleError({
+        value: true,
+        errorMessage: "Title field cannot be left empty!",
+      });
+    }
+    if (description == "") {
+      setDescriptionError({
+        value: true,
+        errorMessage: "Description Field cannot be left empty!",
+      });
+    }
+    if (maxScore == "") {
+      setMaxScoreError({
+        value: true,
+        errorMessage: "Max Score Field cannot be left empty!",
+      });
+    }
+    const dateComparisonBoolean = tempEndDate < tempStartDate;
+    if (dateComparisonBoolean) {
+      setStartDateError({
+        value: true,
+        errorMessage: "Quiz End Date cannot be earlier than Start Date!",
+      });
+      setEndDateError({
+        value: true,
+        errorMessage: "Quiz End Date cannot be earlier than Start Date!",
+      });
+    }
+    if (timeLimit < 5) {
+      setTimeLimitError({
+        value: true,
+        errorMessage: "Quiz Time Limit cannot be less than 5 minutes!",
+      });
+    }
+    if (maxAttempts < 1) {
+      setMaxAttemptsError({
+        value: true,
+        errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
+      });
+    }
+    if (validateQuizSettings()) {
+      console.log("passedValidations");
+      editQuizSettings(
+        title,
+        description,
+        maxScore,
+        startDate,
+        endDate,
+        hasTimeLimit,
+        timeLimit,
+        hasMaxAttempts,
+        maxAttempts,
+        isAutoRelease
+      );
+      setEditSettings("false");
+    } else {
+      console.log("did not pass the vibe check");
+    }
   }
   function handleBackToSettings() {
     setEditSettings("true");
     console.log("printing form questions: ", formQuestions);
+  }
+
+  function validateQuizSettings() {
+    const tempStartDate = startDate;
+    const tempEndDate = endDate;
+    const dateComparisonBoolean = tempEndDate >= tempStartDate;
+    if (hasTimeLimit == "true" || hasMaxAttempts == "true") {
+      if (hasTimeLimit == "true" && hasMaxAttempts == "true") {
+        // console.log("fail dis")
+        return (
+          title &&
+          description &&
+          maxScore &&
+          dateComparisonBoolean &&
+          timeLimit > 4 &&
+          maxAttempts > 0
+        );
+      } else if (hasTimeLimit == "true") {
+        // console.log("fail dat")
+        return (
+          title &&
+          description &&
+          maxScore &&
+          dateComparisonBoolean &&
+          timeLimit > 4
+        );
+      } else {
+        // console.log("fail dat other one")
+        return (
+          title &&
+          description &&
+          maxScore &&
+          dateComparisonBoolean &&
+          maxAttempts > 0
+        );
+      }
+    } else {
+      return title && description && maxScore && dateComparisonBoolean;
+    }
   }
 
   function validateQuiz() {
@@ -446,6 +552,8 @@ export default function EditQuizPage() {
     currentQuiz.hasTimeLimit = hasTimeLimit;
     currentQuiz.timeLimit = timeLimit;
     currentQuiz.isAutoRelease = isAutoRelease;
+    currentQuiz.hasMaxAttempts = hasMaxAttempts;
+    currentQuiz.maxAttempts = maxAttempts;
     const updatedQuiz = handleQuizDateConversions(currentQuiz);
     console.log("trying to update quiz: ", updatedQuiz);
     fetch(
@@ -455,7 +563,7 @@ export default function EditQuizPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedQuiz),
       }
-    ).then((res) => res.json());
+    ).then((res) => res.json()).then(console.log("saved: ", updatedQuiz));
     handleCancel();
   };
 
@@ -751,15 +859,7 @@ export default function EditQuizPage() {
                   <MenuItem value="false">False</MenuItem>
                 </Select>
               </Stack>
-              <Grid container justifyContent={"space-between"}>
-                {/* <Button
-                  variant="contained"
-                  style={{ marginTop: "40px" }}
-                  onClick={handleClick}
-                >
-                  Apply Changes
-                </Button> */}
-              </Grid>
+              <Grid container justifyContent={"space-between"}></Grid>
             </Paper>
           </Grid>
         )}
