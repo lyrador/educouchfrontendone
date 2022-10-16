@@ -49,6 +49,8 @@ import ClassRunListPage from "./pages/ClassRunListPage";
 import CourseApprovalPage from "./pages/CourseApprovalPage";
 import LearnerCourseFolder from "./pages/LearnerCourseFolder";
 import LearnerChildFileCover from "./components/LearnerChildFileCover";
+import WhiteboardHomepage from "./pages/WhiteboardHomepage";
+import Room from "./pages/Room";
 
 function App() {
   return (
@@ -355,6 +357,22 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingChildFileCover />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/whiteboard"
+              element={
+                <RequireAuth>
+                  <WhiteboardHomepage/>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/room/:roomId"
+              element={
+                <RequireAuth>
+                  <Room/>
                 </RequireAuth>
               }
             />
