@@ -314,8 +314,8 @@ export default function EditQuizPage() {
     }
   }
   function handleBackToSettings() {
+    calculateMaxQuizScore();
     setEditSettings("true");
-    console.log("printing form questions: ", formQuestions);
   }
 
   function validateQuizSettings() {
@@ -541,6 +541,15 @@ export default function EditQuizPage() {
     return quizObject;
   };
 
+  function calculateMaxQuizScore() {
+    var tempMaxScore = maxScore;
+    for (const question of formQuestions) {
+      tempMaxScore = parseFloat(tempMaxScore) + parseFloat(question.questionMaxPoints);
+    }
+    setMaxScore(tempMaxScore);
+    console.log("quiz max score: ", tempMaxScore);
+  }
+
   const handleSave = (e) => {
     e.preventDefault();
     linkQuizQuestions();
@@ -563,7 +572,9 @@ export default function EditQuizPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedQuiz),
       }
-    ).then((res) => res.json()).then(console.log("saved: ", updatedQuiz));
+    )
+      .then((res) => res.json())
+      .then(console.log("saved: ", updatedQuiz));
     handleCancel();
   };
 
@@ -726,18 +737,14 @@ export default function EditQuizPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
-              <p style={{ color: "grey" }}>Quiz Max Score</p>
-              <TextField
-                required
-                error={maxScoreError.value}
-                helperText={maxScoreError.errorMessage}
-                id="outlined-basic"
-                variant="outlined"
-                fullWidth
-                style={{ paddingBottom: "10px", marginBottom: "20px" }}
-                value={maxScore}
-                onChange={(e) => setMaxScore(e.target.value)}
-              />
+              <Paper
+                elevation={1}
+                style={{ padding: "10px", marginBottom: "20px" }}
+              >
+                <p style={{ color: "grey" }}>Quiz Max Score (Auto-Generated)</p>
+                <br />
+                <p style={{ color: "grey" }}>{maxScore}</p>
+              </Paper>
               <Stack
                 spacing={1}
                 style={{ paddingBottom: "10px", marginBottom: "20px" }}

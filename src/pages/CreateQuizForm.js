@@ -115,7 +115,6 @@ export default function CreateQuizForm(props) {
   function editQuizSettings(
     title,
     description,
-    maxScore,
     startDate,
     endDate,
     hasTimeLimit,
@@ -126,7 +125,6 @@ export default function CreateQuizForm(props) {
   ) {
     currentQuiz.assessmentTitle = title;
     currentQuiz.assessmentDescription = description;
-    currentQuiz.assessmentMaxScore = maxScore;
     currentQuiz.assessmentStartDate = startDate;
     currentQuiz.assessmentEndDate = endDate;
     currentQuiz.hasTimeLimit = hasTimeLimit;
@@ -273,11 +271,12 @@ export default function CreateQuizForm(props) {
   };
 
   function calculateMaxQuizScore() {
-    var maxScore = 0;
+    var maxScore = 0.0;
     for (const question of formQuestions) {
-      maxScore += question.questionMaxPoints;
+      maxScore = parseFloat(maxScore) + parseFloat(question.questionMaxPoints);
     }
-    console.log("quiz max score: ", maxScore);
+    currentQuiz.assessmentMaxScore = maxScore;
+    console.log("quiz max score: ", currentQuiz.assessmentMaxScore);
   }
 
   const handleSave = (e) => {
@@ -292,6 +291,7 @@ export default function CreateQuizForm(props) {
 
         body: JSON.stringify(updatedQuiz),
       }).then((res) => res.json());
+      console.log("created Quiz: ",updatedQuiz)
       handleCancel();
     }
   };

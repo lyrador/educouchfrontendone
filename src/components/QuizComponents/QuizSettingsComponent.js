@@ -67,9 +67,9 @@ export default function QuizSettingsComponents(props) {
     setQuestions(quizSettings.questions);
     setTitle(quizSettings.assessmentTitle);
     setDescription(quizSettings.assessmentDescription);
+    // setMaxScore(quizSettings.assessmentMaxScore);
+    props.calculateMaxQuizScoreProp();
     setMaxScore(quizSettings.assessmentMaxScore);
-    // var score = calculateMaxQuizScore()
-    // setMaxScore(score)
     setStartDate(quizSettings.assessmentStartDate);
     setEndDate(quizSettings.assessmentEndDate);
     setHasTimeLimit(quizSettings.hasTimeLimit);
@@ -88,19 +88,17 @@ export default function QuizSettingsComponents(props) {
   function editQuizSettings(
     title,
     description,
-    maxScore,
     startDate,
     endDate,
     hasTimeLimit,
     timeLimit,
     hasMaxAttempts,
     maxAttempts,
-    isAutoRelease,
+    isAutoRelease
   ) {
     props.editQuizSettingsProp(
       title,
       description,
-      maxScore,
       startDate,
       endDate,
       hasTimeLimit,
@@ -116,8 +114,8 @@ export default function QuizSettingsComponents(props) {
     const tempEndDate = endDate;
     const dateComparisonBoolean = tempEndDate >= tempStartDate;
     if (hasTimeLimit == "true" || hasMaxAttempts == "true") {
-      if (hasTimeLimit=="true" && hasMaxAttempts=="true") {
-        console.log("fail dis")
+      if (hasTimeLimit == "true" && hasMaxAttempts == "true") {
+        console.log("fail dis");
         return (
           title &&
           description &&
@@ -126,8 +124,8 @@ export default function QuizSettingsComponents(props) {
           timeLimit > 4 &&
           maxAttempts > 0
         );
-      } else if (hasTimeLimit=="true") {
-        console.log("fail dat")
+      } else if (hasTimeLimit == "true") {
+        console.log("fail dat");
         return (
           title &&
           description &&
@@ -136,7 +134,7 @@ export default function QuizSettingsComponents(props) {
           timeLimit > 4
         );
       } else {
-        console.log("fail dat other one")
+        console.log("fail dat other one");
 
         return (
           title &&
@@ -197,11 +195,11 @@ export default function QuizSettingsComponents(props) {
         errorMessage: "Quiz Time Limit cannot be less than 5 minutes!",
       });
     }
-    if (maxAttempts <1) {
+    if (maxAttempts < 1) {
       setMaxAttemptsError({
         value: true,
         errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
-      }); 
+      });
     }
     if (validateQuizSettings()) {
       console.log("passedValidations");
@@ -272,18 +270,11 @@ export default function QuizSettingsComponents(props) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <p style={{ color: "grey" }}>Quiz Max Score</p>
-          <TextField
-            required
-            error={maxScoreError.value}
-            helperText={maxScoreError.errorMessage}
-            id="outlined-basic"
-            variant="outlined"
-            fullWidth
-            style={{ paddingBottom: "10px", marginBottom: "20px" }}
-            value={maxScore}
-            onChange={(e) => setMaxScore(e.target.value)}
-          />
+          <Paper elevation={1} style={{ padding: "10px", marginBottom: "20px"}}>
+            <p style={{ color: "grey" }}>Quiz Max Score (Auto-Generated)</p>
+            <br/>
+            <p style={{ color: "grey" }}>{maxScore}</p>
+          </Paper>
           <Stack
             spacing={1}
             style={{ paddingBottom: "10px", marginBottom: "20px" }}
