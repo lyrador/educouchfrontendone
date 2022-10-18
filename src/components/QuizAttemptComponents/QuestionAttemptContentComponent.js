@@ -9,8 +9,7 @@ export default function QuestionAttemptContentComponent(props) {
       key={props.questionIdProp}
       style={{ marginBottom: 30, width: "Auto" }}
     >
-      <div>Question: </div>
-      <p>{props.questionContentProp}</p>
+      <p style={{fontSize:"20px"}}>{props.questionContentProp}</p>
     </Grid>
   );
 }

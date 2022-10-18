@@ -47,9 +47,6 @@ export default function QuizAttempt() {
   }
 
   return (
-    //have an intermediate page for between quizInfo & quizAttemptWindow
-    //button to "start quiz" changes state to render out quizAttemptWindow
-    //timer starts
     <Grid container direction={"column"}>
       <h1>{title}</h1>
       {startQuiz == "false" ? (
@@ -72,7 +69,6 @@ export default function QuizAttempt() {
         </Grid>
       ) : (
         <Grid>
-            <h1>this is quiz attempt</h1>
             <QuizAttemptDisplay
               currentQuizProp={currentQuiz}
               questionsProp={quizQuestions}

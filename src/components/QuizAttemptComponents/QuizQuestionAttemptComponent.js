@@ -22,22 +22,28 @@ export default function QuizQuestionAttemptComponent(props) {
       container
       style={{ margin: 10 }}
       direction="row"
-      justifyContent={"flex-start"}
+      justifyContent={"space-between"}
     >
-      <Paper elevation={1} style={{width:40, height:40, backgroundColor:"#9D26B0",paddingLeft:"13px", paddingTop:"4px"}}>
-        <p style={{color: "white", fontFamily:"sans-serif", fontSize:"20px"}}>{props.indexProp}</p>
-      </Paper>
       <QuizTitleComponent
         questionIdProp={props.questionProp.localid}
         questionTitleProp={props.questionProp.questionTitle}
       />
-
-      {/* <QuizTypeDropdownComponent
-        questionTypeProp={props.questionProp.questionType}
-        editQuestionTypeProp={props.editQuestionTypeProp}
-        questionIdProp={props.questionProp.localid}
-      /> */}
-
+      <Paper
+        elevation={1}
+        style={{
+          width: 40,
+          height: 40,
+          backgroundColor: "#9D26B0",
+          paddingLeft: "13px",
+          paddingTop: "4px",
+        }}
+      >
+        <p
+          style={{ color: "white", fontFamily: "sans-serif", fontSize: "20px" }}
+        >
+          {props.indexProp}
+        </p>
+      </Paper>
       <Grid container direction="column">
         <Grid>
           <QuestionAttemptContentComponent
@@ -91,11 +97,27 @@ export default function QuizQuestionAttemptComponent(props) {
           )}
         </Grid>
         <Grid item style={{ marginTop: 50 }}>
-          <QuestionMaxPoints
-            isQuestionAttemptProp={"true"}
-            questionIdProp={props.questionProp.localid}
-            questionMaxPointsProp={props.questionProp.questionMaxPoints}
-          />
+          <Paper
+            elevation={1}
+            style={{
+              backgroundColor: "#808080",
+              paddingLeft: "13px",
+              paddingRight: "13px",
+              paddingTop: "4px",
+              paddingBottom: "4px",
+              width: 110,
+            }}
+          >
+            <p
+              style={{
+                color: "white",
+                fontFamily: "sans-serif",
+              }}
+            >
+              {props.questionProp.questionMaxPoints} Marks
+            </p>
+          </Paper>
+
           {/* <Button
             onClick={() => props.removeQuestionProp(props.questionProp.localid)}
             color="secondary"
