@@ -560,14 +560,16 @@ function TeachingAssessmentList(props) {
                           >
                             <DeleteIcon />
                           </IconButton>
-                          <IconButton
-                            aria-label="settings"
-                            onClick={(event) =>
-                              handleEditAssessment(event, assessment)
-                            }
-                          >
-                            <EditIcon />
-                          </IconButton>
+                          {assessment.open !== "true" && (
+                            <IconButton
+                              aria-label="settings"
+                              onClick={(event) =>
+                                handleEditAssessment(event, assessment)
+                              }
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          )}
                           {assessment.open !== "true" && (
                             <IconButton
                               aria-label="publish"
@@ -643,8 +645,8 @@ function TeachingAssessmentList(props) {
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              These will release the assesment for Learners to view. Are you
-              sure you want to release?
+              Are you sure you want to release? <br></br>
+              You will not be able to Edit Assessment once Published.
             </DialogContentText>
           </DialogContent>
           <DialogActions>

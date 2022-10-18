@@ -15,7 +15,7 @@ export default function QuestionGuideComponent(props) {
         multiline
         type="text"
         placeholder={props.questionHintProp}
-        style={{ fontSize: 20, width: "42%" }}
+        style={{ fontSize: 20, }}
         onChange={(e) =>
           props.editQuestionHintProp(props.questionIdProp, e.target.value)
         }

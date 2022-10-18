@@ -16,6 +16,7 @@ export default function QuizAttempt() {
   const [timeLimit, setTimeLimit] = useState();
   const [hasMaxAttempts, setHasMaxAttempts] = useState();
   const [maxAttempts, setMaxAttempts] = useState(0);
+  const [quizStatusEnum, setQuizStatusEnum] = useState();
 
   React.useEffect(() => {
     fetch("http://localhost:8080/quiz/getQuizById/1")
@@ -33,6 +34,7 @@ export default function QuizAttempt() {
         setTimeLimit(result.timeLimit);
         setHasMaxAttempts(result.hasMaxAttempts);
         setMaxAttempts(result.maxAttempts);
+        setQuizStatusEnum(result.assessmentStatusEnum)
       });
   }, []);
 
@@ -75,7 +77,8 @@ export default function QuizAttempt() {
               currentQuizProp={currentQuiz}
               questionsProp={quizQuestions}
               hasTimeLimitProp={hasTimeLimit}
-              timeLimitProp={ timeLimit}
+              timeLimitProp={timeLimit}
+              quizStatusEnumProp={quizStatusEnum}
             />
         </Grid>
       )}

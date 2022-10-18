@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import { Button } from "@mui/material";
 import React, { useState } from "react";
 import McqBodyComponent from "../QuizComponents/McqBodyComponent";
@@ -22,8 +22,11 @@ export default function QuizQuestionAttemptComponent(props) {
       container
       style={{ margin: 10 }}
       direction="row"
-      justifyContent={"space-between"}
+      justifyContent={"flex-start"}
     >
+      <Paper elevation={1} style={{width:40, height:40, backgroundColor:"#9D26B0",paddingLeft:"13px", paddingTop:"4px"}}>
+        <p style={{color: "white", fontFamily:"sans-serif", fontSize:"20px"}}>{props.indexProp}</p>
+      </Paper>
       <QuizTitleComponent
         questionIdProp={props.questionProp.localid}
         questionTitleProp={props.questionProp.questionTitle}
@@ -46,7 +49,9 @@ export default function QuizQuestionAttemptComponent(props) {
 
         <Grid item>
           {props.questionProp.questionType == "shortAnswer" && (
-            <QuestionAttemptShortAnswerComponent isQuestionAttemptProp={"true"} />
+            <QuestionAttemptShortAnswerComponent
+              isQuestionAttemptProp={"true"}
+            />
           )}
           {props.questionProp.questionType == "mcq" && (
             <div>
@@ -57,11 +62,13 @@ export default function QuizQuestionAttemptComponent(props) {
                 correctOptionProp={question.correctOption}
                 selectCorrectOptionProp={props.selectCorrectOptionProp}
               />
-              <QuestionGuideComponent
-                isQuestionAttemptProp={"true"}
-                questionIdProp={props.questionProp.localid}
-                questionHintProp={props.questionProp.questionHint}
-              />
+              {props.quizStatusEnumProp == "GRADED" && (
+                <QuestionGuideComponent
+                  isQuestionAttemptProp={"true"}
+                  questionIdProp={props.questionProp.localid}
+                  questionHintProp={props.questionProp.questionHint}
+                />
+              )}
             </div>
           )}
           {props.questionProp.questionType == "trueFalse" && (
@@ -73,11 +80,13 @@ export default function QuizQuestionAttemptComponent(props) {
                 correctOptionProp={question.correctOption}
                 selectCorrectOptionProp={props.selectCorrectOptionProp}
               />
-              <QuestionGuideComponent
-                isQuestionAttemptProp={"true"}
-                questionIdProp={props.questionProp.localid}
-                questionHintProp={props.questionProp.questionHint}
-              />
+              {props.quizStatusEnumProp == "GRADED" && (
+                <QuestionGuideComponent
+                  isQuestionAttemptProp={"true"}
+                  questionIdProp={props.questionProp.localid}
+                  questionHintProp={props.questionProp.questionHint}
+                />
+              )}
             </div>
           )}
         </Grid>
