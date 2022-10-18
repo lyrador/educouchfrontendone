@@ -14,10 +14,9 @@ import { useAuth } from "../context/AuthProvider";
 
 import ControlledAccordions from './CourseStatusAccordion';
 
-
 import '../css/DrawerLeft.css';
 
-function TeachingCoursesDrawer(props) {
+function InteractiveBookDrawer(props) {
 
   const auth = useAuth();
   const user = auth.user;
@@ -46,7 +45,7 @@ function TeachingCoursesDrawer(props) {
     setName(''); 
   } */
 
-  const drawer = (
+  const drawer1 = (
     <div>
       <div className='drawerContainer'>
         {/* <List>
@@ -136,20 +135,78 @@ function TeachingCoursesDrawer(props) {
     </div>
   );
 
+  const drawer = (
+    <div>
+      <div className='drawerContainer'>
+        {/* <List>
+            {['COURSE NAME'].map((text, index) => (
+            <ListItem key={text} style={{textDecoration: 'none', color: 'black', fontFamily:"Helvetica"}} disablePadding>
+                <ListItemButton>
+                <ListItemText   primary={text} />
+                </ListItemButton>
+            </ListItem>
+            ))}
+        </List> */}
+        <Link to={{
+          pathname: `${coursePath}/courseApproval`,
+        }} style={{ textDecoration: 'none', color: 'black' }}>
+          <ListItemButton>
+            <ListItemText primary="Approval Process" />
+          </ListItemButton>
+        </Link>
+        <Divider />
+        <List>
+
+          <Link to={{
+            pathname: `${coursePath}/courseSettings`,
+          }} style={{ textDecoration: 'none', color: 'black' }}>
+            <ListItemButton>
+              <ListItemText primary="Course Settings" />
+            </ListItemButton>
+          </Link>
+          <Link to={`${coursePath}/courseCalender`} style={{ textDecoration: 'none', color: 'black' }}>
+            <ListItemButton>
+              <ListItemText primary="Course Calender" />
+            </ListItemButton>
+          </Link>
+          <Link to={`${coursePath}/classRuns`} style={{ textDecoration: 'none', color: 'black' }}>
+            <ListItemButton>
+              <ListItemText primary="Class Runs" />
+            </ListItemButton>
+          </Link>
+        </List>
+      </div>
+    </div>
+  );
+
   return (
-    <Box sx={{ display: 'flex' }}>
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: '15%', top: '123px', minWidth: '200px' },
-        }}
-        open
-      >
-        {drawer}
-      </Drawer>
-    </Box>
+    <div>
+      <Box sx={{ display: 'flex' }}>
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: '15%', top: '123px', minWidth: '200px' },
+          }}
+          open
+        >
+          {drawer1}
+        </Drawer>
+      </Box>
+      <Box sx={{ display: 'flex' }}>
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: '15%', top: '123px', minWidth: '200px' },
+          }}
+          open
+        >
+          {drawer}
+        </Drawer>
+      </Box>
+    </div>
   );
 }
 
-export default TeachingCoursesDrawer;
+export default InteractiveBookDrawer;
