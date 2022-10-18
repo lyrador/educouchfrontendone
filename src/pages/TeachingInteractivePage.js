@@ -9,7 +9,6 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 import { Link, useLocation, useParams } from "react-router-dom";
-import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
 import { Grid } from "@mui/material";
 
 import Breadcrumbs from "@mui/material/Breadcrumbs";
@@ -39,17 +38,14 @@ import MuiAlert from "@mui/material/Alert";
 import Divider from '@mui/material/Divider';
 
 import "../css/TeachingInteractiveBook.css";
-import InteractiveBookDrawer from "./InteractiveBookDrawer";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AddIcon from '@mui/icons-material/Add';
-import TeachingInteractiveChaptersBar from "./TeachingInteractiveChaptersBar";
-import TeachingInteractivePage from "../pages/TeachingInteractivePage";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-function TeachingInteractiveBook(props) {
+function TeachingInteractivePage(props) {
 
     //snackbar
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
@@ -94,38 +90,34 @@ function TeachingInteractiveBook(props) {
     //         });
     // }, [refreshPage]);
 
-    function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
-        return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
+    function createData(interactivePageId, interactivePageNumber, interactivePageDescription) {
+        return { interactivePageId, interactivePageNumber, interactivePageDescription };
     }
 
-    const books = [
-        createData(1, 1, 'Plant Systems', "15/10/2022"),
-        createData(2, 2, 'Human Systems', "15/10/2022"),
+    const pages = [
+        createData(1, 1, 'Plant Systems'),
+        createData(2, 2, 'Human Systems'),
     ]
 
     //create
-    const [newChapterTitle, setNewChapterTitle] = useState("");
-    const [newChapterDescription, setNewChapterDescription] = useState("");
+    const [newPageNumber, setNewPageNumber] = useState("");
+    const [newPageDescription, setNewPageDescription] = useState("");
 
-    const [chapterTitleError, setChapterTitleError] = useState({ value: false, errorMessage: "" });
-    const [chapterDescriptionError, setChapterDescriptionError] = useState({ value: false, errorMessage: "" });
+    const [pageNumberError, setPageNumberError] = useState({ value: false, errorMessage: "" });
+    const [pageDescriptionError, setPageDescriptionError] = useState({ value: false, errorMessage: "" });
 
     const [open, setOpen] = React.useState(false);
     const [openSettings, setOpenSettings] = React.useState(false);
 
     //delete
-    const [chapterIdToDelete, setChapterIdToDelete] = useState("");
+    const [pageIdToDelete, setPageIdToDelete] = useState("");
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
     //edit
-    const [editedChapterTitle, setEditedChapterTitle] = useState("");
-    const [editedChapterDescription, setEditedChapterDescription] = useState("");
-    const [chapterIdToEdit, setChapterIdToEdit] = useState("");
+    const [editedPageNumber, setEditedPageNumber] = useState("");
+    const [editedPageDescription, setEditedPageDescription] = useState("");
+    const [pageIdToEdit, setPageIdToEdit] = useState("");
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-
-    //browsing
-    const [chapterIdToBrowse, setChapterIdToBrowse] = useState("");
-    const [pageIdToBrowse, setPageIdToBrowse] = useState("");
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -135,8 +127,8 @@ function TeachingInteractiveBook(props) {
         setOpen(false);
     };
 
-    const handleClickDeleteDialogOpen = (event, chapterId) => {
-        setChapterIdToDelete(chapterId);
+    const handleClickDeleteDialogOpen = (event, pageId) => {
+        setPageIdToDelete(pageId);
         setDeleteDialogOpen(true);
     };
 
@@ -144,9 +136,9 @@ function TeachingInteractiveBook(props) {
         setDeleteDialogOpen(false);
     };
 
-    const handleClickEditDialogOpen = (event, chapterId, chapterTitle) => {
-        setEditedChapterTitle(chapterTitle);
-        setChapterIdToEdit(chapterId);
+    const handleClickEditDialogOpen = (event, pageId, pageTitle) => {
+        setEditedPageNumber(pageTitle);
+        setPageIdToEdit(pageId);
         setEditDialogOpen(true);
     };
 
@@ -162,33 +154,33 @@ function TeachingInteractiveBook(props) {
         setOpenSettings(false);
     };
 
-    const createNewChapter = async (e) => {
+    const createNewPage = async (e) => {
         e.preventDefault();
-        setChapterTitleError({ value: false, errorMessage: "" });
-        setChapterDescriptionError({ value: false, errorMessage: "" });
-        if (newChapterTitle == "") {
-            setChapterTitleError({ value: true, errorMessage: "Interactive Chapter title cannot be empty!" });
+        setPageNumberError({ value: false, errorMessage: "" });
+        setPageDescriptionError({ value: false, errorMessage: "" });
+        if (newPageNumber == "") {
+            setPageNumberError({ value: true, errorMessage: "Interactive Page Number cannot be empty!" });
         }
-        if (newChapterDescription == "") {
-            setChapterDescriptionError({ value: true, errorMessage: "Interactive Chapter description cannot be empty!" });
+        if (newPageDescription == "") {
+            setPageDescriptionError({ value: true, errorMessage: "Interactive Page description cannot be empty!" });
         }
-        if (newChapterTitle && newChapterDescription) {
-            var chapterTitle = newChapterTitle
-            var chapterDescription = newChapterDescription
-            const newChapter = { chapterTitle, chapterDescription }
-            console.log(newChapter);
+        if (newPageNumber && newPageDescription) {
+            var pageNumber = newPageNumber
+            var pageDescription = newPageDescription
+            const newPage = { pageNumber, pageDescription }
+            console.log(newPage);
             try {
                 const response = await fetch("http://localhost:8080/interactiveChapter/interactiveChapters/" + bookId + "/interactiveChapters", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newChapter),
+                    body: JSON.stringify(newPage),
                 })
                 console.log(response);
                 if (response.ok == false) {
                     console.log("Error");
                     handleClickErrorSnackbar()
                 } else {
-                    console.log("New Chapter Created Successfully!");
+                    console.log("New Page Created Successfully!");
                     handleClickSnackbar()
                 }
             } catch (err) {
@@ -198,15 +190,15 @@ function TeachingInteractiveBook(props) {
             setRefreshPage(true)
             handleClose();
             handleClickSnackbar();
-            setNewChapterTitle("");
+            setNewPageNumber("");
         };
     }
 
-    const deleteChapter = async (e) => {
+    const deletePage = async (e) => {
         e.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:8080/interactiveChapter/interactiveChapters/" + chapterIdToDelete, {
+            const response = await fetch("http://localhost:8080/interactivePage/interactivePages/" + pageIdToDelete, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
             })
@@ -215,7 +207,7 @@ function TeachingInteractiveBook(props) {
                 console.log("Error");
                 handleClickErrorSnackbar()
             } else {
-                console.log("Interactive Chapter Deleted Successfully!");
+                console.log("Interactive Page Deleted Successfully!");
                 handleClickDeleteSnackbar()
             }
         } catch (err) {
@@ -227,33 +219,33 @@ function TeachingInteractiveBook(props) {
         handleClickDeleteSnackbar();
     };
 
-    const editChapter = async (e) => {
+    const editPage = async (e) => {
         e.preventDefault();
-        setChapterTitleError({ value: false, errorMessage: "" });
-        setChapterDescriptionError({ value: false, errorMessage: "" });
-        if (newChapterTitle == "") {
-            setChapterTitleError({ value: true, errorMessage: "Interactive Chapter title cannot be empty!" });
+        setPageNumberError({ value: false, errorMessage: "" });
+        setPageDescriptionError({ value: false, errorMessage: "" });
+        if (newPageNumber == "") {
+            setPageNumberError({ value: true, errorMessage: "Interactive Page title cannot be empty!" });
         }
-        if (newChapterDescription == "") {
-            setChapterDescriptionError({ value: true, errorMessage: "Interactive Chapter description cannot be empty!" });
+        if (newPageDescription == "") {
+            setPageDescriptionError({ value: true, errorMessage: "Interactive Page description cannot be empty!" });
         }
-        if (newChapterTitle && newChapterDescription) {
-            var interactiveChapterTitle = newChapterTitle
-            var interactiveChapterDescription = newChapterDescription
-            const editedChapter = { interactiveChapterTitle, interactiveChapterDescription }
-            console.log(editedChapter);
+        if (newPageNumber && newPageDescription) {
+            var interactivePageTitle = newPageNumber
+            var interactivePageDescription = newPageDescription
+            const editedPage = { interactivePageTitle, interactivePageDescription }
+            console.log(editedPage);
             try {
-                const response = await fetch("http://localhost:8080/interactiveChapter/interactiveChapters/" + chapterIdToEdit, {
+                const response = await fetch("http://localhost:8080/interactivePage/interactivePages/" + pageIdToEdit, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(editedChapter),
+                    body: JSON.stringify(editedPage),
                 })
                 console.log(response);
                 if (response.ok == false) {
                     console.log("Error");
                     handleClickErrorSnackbar()
                 } else {
-                    console.log("Interactive Chapter Edited Successfully!");
+                    console.log("Interactive Page Edited Successfully!");
                     handleClickSnackbar()
                 }
             } catch (err) {
@@ -267,11 +259,11 @@ function TeachingInteractiveBook(props) {
     }
 
     const renderEmptyRowMessage = () => {
-        if (books.length === 0) {
+        if (pages.length === 0) {
             return (
                 <TableRow>
                     <TableCell colSpan={4} style={{ textAlign: "center" }}>
-                        There are currently no interactive chapters in this book!
+                        There are currently no interactive pages in this book!
                     </TableCell>
                 </TableRow>
             );
@@ -287,14 +279,14 @@ function TeachingInteractiveBook(props) {
             <div>
                 <IconButton
                     aria-label="settings"
-                    onClick={(event) => handleClickDeleteDialogOpen(event, chapterIdToDelete)}
+                    onClick={(event) => handleClickDeleteDialogOpen(event, pageIdToDelete)}
                 >
                     <DeleteIcon />
                 </IconButton>
                 <IconButton
                     aria-label="settings"
                     onClick={(event) =>
-                        handleClickEditDialogOpen(event, chapterIdToEdit, editedChapterTitle, editedChapterDescription)
+                        handleClickEditDialogOpen(event, pageIdToEdit, editedPageNumber, editedPageDescription)
                     }
                 >
                     <EditIcon />
@@ -305,50 +297,84 @@ function TeachingInteractiveBook(props) {
 
     return (
         <div>
-            <Grid container spacing={0}>
-                <Grid item xs={2}>
-                    <TeachingCoursesDrawer courseId={bookId}></TeachingCoursesDrawer>
-                </Grid>
-                <Grid item xs={2}>
-                    <TeachingInteractiveChaptersBar />
-                </Grid>
-                <Grid item xs={8}>
-                    <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
-                        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
-                            Interactive Chapter Created Succesfully!
-                        </Alert>
-                    </Snackbar>
-                    <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar} >
-                        <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: "100%" }} >
-                            Interactive Chapter Deleted Succesfully!
-                        </Alert>
-                    </Snackbar>
-                    <Snackbar open={openEditSnackbar} autoHideDuration={5000} onClose={handleCloseEditSnackbar} >
-                        <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: "100%" }} >
-                            Interactive Chapter Updated Succesfully!
-                        </Alert>
-                    </Snackbar>
-                    <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={handleCloseErrorSnackbar} >
-                        <Alert onClose={handleCloseErrorSnackbar} severity="error" sx={{ width: "100%" }} >
-                            Error!
-                        </Alert>
-                    </Snackbar>
-                    <Breadcrumbs aria-label="breadcrumb">
-                        <Link to={`${booksPath}`}
-                            style={{ textDecoration: 'none', color: 'grey' }}>
-                            <LinkMaterial underline="hover" color="inherit">
-                                Interactive Books
-                            </LinkMaterial>
-                        </Link>
-                    </Breadcrumbs>
-                    {/* <div style={{ justifyContent: "center" }}>
-                        <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
-                            Pages
-                        </h1>
+            <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
+                <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
+                    Interactive Page Created Succesfully!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar} >
+                <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: "100%" }} >
+                    Interactive Page Deleted Succesfully!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={openEditSnackbar} autoHideDuration={5000} onClose={handleCloseEditSnackbar} >
+                <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: "100%" }} >
+                    Interactive Page Updated Succesfully!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={handleCloseErrorSnackbar} >
+                <Alert onClose={handleCloseErrorSnackbar} severity="error" sx={{ width: "100%" }} >
+                    Error!
+                </Alert>
+            </Snackbar>
+            {/* <Breadcrumbs aria-label="breadcrumb">
+                <Link to={`${booksPath}`}
+                    style={{ textDecoration: 'none', color: 'grey' }}>
+                    <LinkMaterial underline="hover" color="inherit">
+                        Interactive Books
+                    </LinkMaterial>
+                </Link>
+            </Breadcrumbs> */}
+            <div style={{ justifyContent: "center" }}>
+                <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
+                    Pages
+                </h1>
+            </div>
+            {/* <div style={{ padding: "5%" }}>
+                        <TableContainer component={Paper}>
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Interactive Chapter Name</TableCell>
+                                        <TableCell>Interactive Chapter Max Score</TableCell>
+                                        <TableCell>Created On</TableCell>
+                                        <TableCell>Actions</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {renderEmptyRowMessage()}
+                                    {books.map((book) => (
+                                        <TableRow
+                                            key={book.interactiveBookId}
+                                            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                <Link
+                                                    to={`${booksPath}/${book.interactiveBookId}`}
+                                                    state={{ bookTitle: book.interactiveBookTitle }}
+                                                    style={{ textDecoration: "none" }}
+                                                >
+                                                    {book.interactiveBookTitle}
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell>{book.interactiveBookMaxScore}</TableCell>
+                                            <TableCell>{book.creationDate}</TableCell>
+                                            <TableCell>
+                                                <div>
+                                                    {renderExtraActions(
+                                                        book.bookId,
+                                                        book.bookTitle,
+                                                        book.createdByUserId,
+                                                        book.createdByUserType
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </div> */}
-                    <TeachingInteractivePage chapterId={chapterIdToBrowse} pageId={pageIdToBrowse}></TeachingInteractivePage>
-                </Grid>
-            </Grid>
             <div>
                 <Dialog open={open} onClose={handleClose}>
                     <DialogTitle>Create New Interactive Book</DialogTitle>
@@ -360,10 +386,10 @@ function TeachingInteractiveBook(props) {
                             fullWidth
                             required
                             style={{ margin: "6px 0" }}
-                            value={newChapterTitle}
-                            onChange={(e) => setNewChapterTitle(e.target.value)}
-                            error={chapterTitleError.value}
-                            helperText={chapterTitleError.errorMessage}
+                            value={newPageNumber}
+                            onChange={(e) => setNewPageNumber(e.target.value)}
+                            error={pageNumberError.value}
+                            helperText={pageNumberError.errorMessage}
                         />
                         <TextField
                             id="outlined-basic"
@@ -372,15 +398,15 @@ function TeachingInteractiveBook(props) {
                             fullWidth
                             required
                             style={{ margin: "6px 0" }}
-                            value={newChapterDescription}
-                            onChange={(e) => setNewChapterDescription(e.target.value)}
-                            error={chapterDescriptionError.value}
-                            helperText={chapterDescriptionError.errorMessage}
+                            value={newPageDescription}
+                            onChange={(e) => setNewPageDescription(e.target.value)}
+                            error={pageDescriptionError.value}
+                            helperText={pageDescriptionError.errorMessage}
                         />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={createNewChapter}>Create</Button>
+                        <Button onClick={createNewPage}>Create</Button>
                     </DialogActions>
                 </Dialog>
             </div>
@@ -403,7 +429,7 @@ function TeachingInteractiveBook(props) {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleDeleteDialogClose}>Cancel</Button>
-                        <Button onClick={deleteChapter} autoFocus>
+                        <Button onClick={deletePage} autoFocus>
                             Delete
                         </Button>
                     </DialogActions>
@@ -429,11 +455,11 @@ function TeachingInteractiveBook(props) {
                             variant="outlined"
                             fullWidth
                             style={{ margin: "6px 0" }}
-                            value={editedChapterTitle}
+                            value={editedPageNumber}
                             required
-                            onChange={(e) => setEditedChapterTitle(e.target.value)}
-                            error={chapterDescriptionError.value}
-                            helperText={chapterDescriptionError.errorMessage}
+                            onChange={(e) => setEditedPageNumber(e.target.value)}
+                            error={pageDescriptionError.value}
+                            helperText={pageDescriptionError.errorMessage}
                         />
                         <TextField
                             id="outlined-basic"
@@ -441,16 +467,16 @@ function TeachingInteractiveBook(props) {
                             variant="outlined"
                             fullWidth
                             style={{ margin: "6px 0" }}
-                            value={editedChapterDescription}
+                            value={editedPageDescription}
                             required
-                            onChange={(e) => setEditedChapterDescription(e.target.value)}
-                            error={chapterDescriptionError.value}
-                            helperText={chapterDescriptionError.errorMessage}
+                            onChange={(e) => setEditedPageDescription(e.target.value)}
+                            error={pageDescriptionError.value}
+                            helperText={pageDescriptionError.errorMessage}
                         />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleEditDialogClose}>Cancel</Button>
-                        <Button onClick={editChapter} autoFocus>
+                        <Button onClick={editPage} autoFocus>
                             Edit
                         </Button>
                     </DialogActions>
@@ -460,4 +486,4 @@ function TeachingInteractiveBook(props) {
     );
 }
 
-export default TeachingInteractiveBook;
+export default TeachingInteractivePage;
