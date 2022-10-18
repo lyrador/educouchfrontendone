@@ -542,7 +542,7 @@ export default function EditQuizPage() {
   };
 
   function calculateMaxQuizScore() {
-    var tempMaxScore = maxScore;
+    var tempMaxScore = 0;
     for (const question of formQuestions) {
       tempMaxScore = parseFloat(tempMaxScore) + parseFloat(question.questionMaxPoints);
     }
@@ -553,6 +553,7 @@ export default function EditQuizPage() {
   const handleSave = (e) => {
     e.preventDefault();
     linkQuizQuestions();
+    calculateMaxQuizScore();
     currentQuiz.assessmentTitle = title;
     currentQuiz.assessmentDescription = description;
     currentQuiz.assessmentMaxScore = maxScore;
@@ -656,6 +657,7 @@ export default function EditQuizPage() {
                     editQuestionContentProp={editQuestionContent}
                     editQuestionHintProp={editQuestionHint}
                     removeQuestionProp={removeQuestion}
+                    editQuestionMaxPointsProp={ editQuestionMaxPoints}
                   />
                 </Paper>
               );
