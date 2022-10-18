@@ -12,18 +12,25 @@ import SockJS from 'sockjs-client'
 import Stomp from 'stompjs';
 import { getRoom } from '../services/getRoom';
 
+
 import BASE_URL from '../services/baseUrl';
+// username
+import { useAuth } from '../context/AuthProvider';
+
 const SOCKET_URL = BASE_URL + '/ws-message';
 
 export default function Room() {  
 	const navigate = useNavigate();
     var roomId = useParams();
     roomId = roomId.roomId;
-    const [searchParams] = useSearchParams();
+
+	// finding the username
+    const auth = useAuth();
+    const user = auth.user;
+    var username = user.username;
 
 	const [rid, setRid] = useState(null);
 	const [incomingDrawings, setIncomingDrawings] = useState(null);
-  	const [username, setUsername] = useState(null);
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [snackbarMsg, setSnackbarMsg] = useState('');
 	const [usersList, setUsersList] = useState([]);
@@ -51,14 +58,11 @@ export default function Room() {
 
     useEffect(() => {
 		if(!rid || !username) {
-			console.log('Happened here.');
-			setRid(roomId)
-			setUsername(searchParams.username)
+			setRid(roomId);
 			localStorage.setItem('rid', roomId);
-			localStorage.setItem('username',searchParams.username);		
+			localStorage.setItem('username',username);		
 		}
 		if(loading) {
-			console.log('Nicely done. ');
 			ws.current = new SockJS(SOCKET_URL);
 			ws.current.onopen = () => alert("ws opened");
 			ws.current.onclose = () => alert(1000);
