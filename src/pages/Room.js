@@ -34,6 +34,7 @@ export default function Room() {
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [snackbarMsg, setSnackbarMsg] = useState('');
 	const [usersList, setUsersList] = useState([]);
+	// const [userNotInCallList, setUserNotInCallList] = useState([]);
 	const [loading, setLoading] = useState(true);
 
 	const CONNECT_USER = 'CONNECT_USER';
@@ -54,7 +55,21 @@ export default function Room() {
 			.catch((err) => {
 				navigate.push('/');
 			})		
-	}, [])
+	}, []);
+
+	// const [refreshPage, setRefreshPage] = useState("");
+
+	// useEffect(() => {
+	// 	setRefreshPage(false);
+	// 	retrieveAllNotInCallLearner(roomId)
+	// 	.then((resp) => {
+	// 		console.log("Resp is " + resp);
+	// 		setUserNotInCallList(resp)
+	// 	})
+	// 	.catch((err) => {
+	// 		console.log("Error in retrieving learners not in call.");
+	// 	})
+	// },[refreshPage]);
 
     useEffect(() => {
 		if(!rid || !username) {
@@ -87,7 +102,17 @@ export default function Room() {
 				canvasSubscription = stomp.current.subscribe(`/topic/${rid}`, coordinates => {
 					setIncomingDrawings(JSON.parse(coordinates.body)) 
 				});
+
+				// stomp.current.send(`/app/send/${rid}/get-learner-not-participants`);
+
+				// participantsSubscription = stomp.current.subscribe(`/topic/${rid}/get-learner-not-participants`, usernameList => {
+				// 	const response = JSON.parse(usernameList.body);
+					
+				// 	setUserNotInCallList(response);
+				// });
+
 			});
+			
 
 			return () => {
 				ws.current.close();
@@ -163,6 +188,7 @@ export default function Room() {
 			usersList={usersList}
 			username={username}
 			loading={loading}
+			// usersNotInCall = {userNotInCallList}
 		/>
 		<CustomizedSnackbar 
 			open={snackbarOpen} 
