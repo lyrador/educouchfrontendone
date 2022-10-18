@@ -306,13 +306,13 @@ function TeachingInteractiveBook(props) {
     return (
         <div>
             <Grid container spacing={0}>
-                <Grid item xs={2}>
+                {/* <Grid item xs={2}>
                     <TeachingCoursesDrawer courseId={bookId}></TeachingCoursesDrawer>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={2}>
                     <TeachingInteractiveChaptersBar />
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item xs={10}>
                     <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                         <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
                             Interactive Chapter Created Succesfully!
@@ -336,7 +336,7 @@ function TeachingInteractiveBook(props) {
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link to={`${booksPath}`}
                             style={{ textDecoration: 'none', color: 'grey' }}>
-                            <LinkMaterial underline="hover" color="inherit">
+                            <LinkMaterial underline="hover" color="grey">
                                 Interactive Books
                             </LinkMaterial>
                         </Link>

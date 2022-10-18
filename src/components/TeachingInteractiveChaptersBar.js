@@ -52,6 +52,7 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import LowPriorityIcon from '@mui/icons-material/LowPriority';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -360,6 +361,13 @@ function TeachingInteractiveChaptersBar(props) {
         <div>
             <div id="sidenavbar" className="sidebar">
                 {/* <a href="#" className="settings" onclick="closeNav()"><SettingsIcon /></a> */}
+                <div style={{ float: 'left' }}>
+                    <Link to={`${booksPath}`} style={{ textDecoration: 'none' }}>
+                        <Button variant="text" style={{ fontSize: '10px' }}>
+                            <ArrowBackIcon />
+                        </Button>
+                    </Link>
+                </div>
                 <div style={{ width: "100%", display: "flex" }}>
                     <div style={{ width: "85%" }}>
                         <h2>Interactive Chapters</h2>
@@ -422,7 +430,7 @@ function TeachingInteractiveChaptersBar(props) {
                 <Divider />
                 {renderEmptyRowMessage}
                 {deleteMode == false &&
-                    <div style={{ height: "80%", maxHeight: "80%", overflow: "auto" }}>
+                    <div style={{ height: "75%", maxHeight: "75%", overflow: "auto" }}>
                         {chapters.map((chapter) => (
                             <div>
                                 <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
@@ -432,7 +440,7 @@ function TeachingInteractiveChaptersBar(props) {
                     </div>
                 }
                 {deleteMode &&
-                    <div style={{ height: "80%", maxHeight: "80%", overflow: "auto" }}>
+                    <div style={{ height: "75%", maxHeight: "75%", overflow: "auto" }}>
                         {chapters.map((chapter) => (
                             <div>
                                 <div style={{ width: "100%", display: "flex" }}>
