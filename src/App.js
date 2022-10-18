@@ -50,6 +50,7 @@ import CourseApprovalPage from "./pages/CourseApprovalPage";
 import LearnerCourseFolder from "./pages/LearnerCourseFolder";
 import LearnerChildFileCover from "./components/LearnerChildFileCover";
 import QuizAttempt from "./components/QuizAttemptComponents/QuizAttempt";
+import LearnerViewAssessments from "./pages/LearnerViewAssessments";
 
 function App() {
   return (
@@ -146,6 +147,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <LearnerCourseCalender />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/assessments"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerViewAssessments/>
                 </RequireAuth>
               }
             />
