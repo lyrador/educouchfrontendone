@@ -44,6 +44,9 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AddIcon from '@mui/icons-material/Add';
 import TeachingInteractiveChaptersBar from "./TeachingInteractiveChaptersBar";
 import TeachingInteractivePage from "../pages/TeachingInteractivePage";
+import Stack from '@mui/material/Stack';
+
+import Pagination from '@mui/material/Pagination';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -102,6 +105,11 @@ function TeachingInteractiveBook(props) {
     //     createData(1, 1, 'Plant Systems', "15/10/2022"),
     //     createData(2, 2, 'Human Systems', "15/10/2022"),
     // ]
+
+    const [page, setPage] = React.useState(1);
+    const handlePageChange = (event, value) => {
+        setPage(value);
+    };
 
     //create
     const [newChapterTitle, setNewChapterTitle] = useState("");
@@ -306,13 +314,13 @@ function TeachingInteractiveBook(props) {
     return (
         <div>
             <Grid container spacing={0}>
-                <Grid item xs={2}>
+                {/* <Grid item xs={2}>
                     <TeachingCoursesDrawer courseId={bookId}></TeachingCoursesDrawer>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={2}>
                     <TeachingInteractiveChaptersBar />
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item xs={10}>
                     <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                         <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
                             Interactive Chapter Created Succesfully!
@@ -336,7 +344,7 @@ function TeachingInteractiveBook(props) {
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link to={`${booksPath}`}
                             style={{ textDecoration: 'none', color: 'grey' }}>
-                            <LinkMaterial underline="hover" color="inherit">
+                            <LinkMaterial underline="hover" color="grey">
                                 Interactive Books
                             </LinkMaterial>
                         </Link>
@@ -346,7 +354,12 @@ function TeachingInteractiveBook(props) {
                             Pages
                         </h1>
                     </div> */}
-                    <TeachingInteractivePage chapterId={chapterIdToBrowse} pageId={pageIdToBrowse}></TeachingInteractivePage>
+                    <TeachingInteractivePage chapterId={chapterIdToBrowse} pageNumber={page}></TeachingInteractivePage>
+                    <div style={{ display: 'flex', marginTop: "5px", justifyContent: 'center', marginRight: '30px' }}>
+                        <div>
+                            <Pagination count={10} page={page} onChange={handlePageChange} showFirstButton showLastButton />
+                        </div>
+                    </div>
                 </Grid>
             </Grid>
             <div>
