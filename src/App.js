@@ -51,6 +51,8 @@ import LearnerCourseFolder from "./pages/LearnerCourseFolder";
 import LearnerChildFileCover from "./components/LearnerChildFileCover";
 import WhiteboardHomepage from "./pages/WhiteboardHomepage";
 import Room from "./pages/Room";
+import TeachingInteractiveBooksList from "./components/TeachingInteractiveBooksList";
+import TeachingInteractiveBook from "./components/TeachingInteractiveBook";
 
 function App() {
   return (
@@ -391,6 +393,24 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingFileList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/interactiveBook"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingInteractiveBooksList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/interactiveBook/:bookId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingInteractiveBook />
                 </RequireAuth>
               }
             />
