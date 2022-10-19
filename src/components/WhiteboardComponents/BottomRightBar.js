@@ -124,7 +124,7 @@ function BottomRightBar({scale, undo, disabled, setRoomId, roomId}) {
                 />
 
                 {/* Toggle theme */}
-                <CreateTooltip
+                {/* <CreateTooltip
                     id='toggleTheme'
                     background={{background: `${backgroundColor}`}}
                     action={toggle}
@@ -133,10 +133,10 @@ function BottomRightBar({scale, undo, disabled, setRoomId, roomId}) {
                     type={'info'}
                     effect='solid'
                     text={'Change Theme'}
-                />
+                /> */}
 
                 {/* Undo */}
-                <CreateTooltip
+                {/* <CreateTooltip
                     id='undo'
                     background={{background: `${disabled ? '#222' : backgroundColor}`}}
                     action={undo}
@@ -145,7 +145,7 @@ function BottomRightBar({scale, undo, disabled, setRoomId, roomId}) {
                     type={`${disabled ? 'error' : 'info'}`}
                     effect='solid'
                     text={'Undo'}
-                />
+                /> */}
 
                 <div className={styles.scale} style={{background: `${backgroundColor}`, color: `${color}`}}>Scale: {scale.toFixed(1)}</div> 
             </div>

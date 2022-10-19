@@ -15,6 +15,8 @@ function ShowInfoPanel({setShowInfoPanel}) {
                         <div className={styles.close}>x</div>
                     </div>
                 </div>
+                <br/>
+                <br/>
                 <div className={styles.middle}>
                     <div className={styles.paragraph}>
                         <h1 className={styles.heading}>Drawing</h1>
@@ -24,10 +26,10 @@ function ShowInfoPanel({setShowInfoPanel}) {
                         <h1 className={styles.heading}>Moving</h1>
                         <p className={styles.details}>🖱️ Right Click / ✌️ Two-finger-touch</p>
                     </div>
-                    <div className={styles.paragraph}>
+                    {/* <div className={styles.paragraph}>
                         <h1 className={styles.heading}>Zooming</h1>
                         <p className={styles.details}>🖱️ Scroll Wheel / 🤏 Pinch</p>
-                    </div>
+                    </div> */}
                 </div>
                 <div className={styles.bottom}>
                     <div className={styles.closeBtn} onClick={closePanel}>Close</div>

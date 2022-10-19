@@ -243,27 +243,27 @@ function Canvas({sendMessage, setRoomId, incomingDrawings, roomId, usersList, us
         setRightMouseDown(false);
     }
 
-    const onMouseWheel = (event) => {
-        const deltaY = event.deltaY;
-        const scaleAmount = -deltaY / 500;
-        setScale(scale * (1 + scaleAmount));
+    // const onMouseWheel = (event) => {
+    //     const deltaY = event.deltaY;
+    //     const scaleAmount = -deltaY / 500;
+    //     setScale(scale * (1 + scaleAmount));
 
-        // zoom the page based on where the cursor is
-        let distX = event.pageX / canvasRef.current.clientWidth;
-        let distY = event.pageY / canvasRef.current.clientHeight;
+    //     // zoom the page based on where the cursor is
+    //     let distX = event.pageX / canvasRef.current.clientWidth;
+    //     let distY = event.pageY / canvasRef.current.clientHeight;
 
-        // calculate how much we need to zoom
-        const unitsZoomedX = trueWidth() * scaleAmount;
-        const unitsZoomedY = trueHeight() * scaleAmount;
+    //     // calculate how much we need to zoom
+    //     const unitsZoomedX = trueWidth() * scaleAmount;
+    //     const unitsZoomedY = trueHeight() * scaleAmount;
 
-        const unitsAddLeft = unitsZoomedX * distX;
-        const unitsAddTop = unitsZoomedY * distY;
+    //     const unitsAddLeft = unitsZoomedX * distX;
+    //     const unitsAddTop = unitsZoomedY * distY;
 
-        setOffsetX(offsetX - unitsAddLeft);
-        setOffsetY(offsetY - unitsAddTop);
+    //     setOffsetX(offsetX - unitsAddLeft);
+    //     setOffsetY(offsetY - unitsAddTop);
 
-        redrawCanvas();
-    }
+    //     redrawCanvas();
+    // }
 
     const drawLine = (x0, y0, x1, y1, color, lineWidth, instrument) => {
         let context = canvasRef.current.getContext("2d");
@@ -499,7 +499,7 @@ function Canvas({sendMessage, setRoomId, incomingDrawings, roomId, usersList, us
                 onMouseUp={onMouseUp}
                 onMouseLeave={onMouseUp}
                 onMouseMove={onMouseMove}
-                onWheel={onMouseWheel}
+                // onWheel={onMouseWheel}
             >Your browser does not support HTML5 canvas</canvas>
             {instrument === 'eraser'
                 &&  <div
