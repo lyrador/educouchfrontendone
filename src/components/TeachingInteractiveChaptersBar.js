@@ -118,39 +118,40 @@ function TeachingInteractiveChaptersBar(props) {
     const location = useLocation();
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
     const courseId = location.pathname.split("/")[2];
-    const bookId = location.pathname.split("/")[4];
+    const interactiveBookId = location.pathname.split("/")[4];
+    console.log(interactiveBookId); 
 
     const [refreshPage, setRefreshPage] = useState("");
 
     const [deleteMode, setDeleteMode] = useState(false);
 
-    // //retrieve all
-    // const [books, setBooks] = useState([]);
+     //retrieve all chapters of the book
+     const [chapters, setChapters] = useState([]);
 
-    // React.useEffect(() => {
-    //     setRefreshPage(false);
-    //     fetch("http://localhost:8080/interactiveBooks/courses/" + bookId + "/interactiveBookss")
-    //         .then((res) => res.json())
-    //         .then((result) => {
-    //             setBooks(result);
-    //             console.log(result);
-    //         });
-    // }, [refreshPage]);
+     React.useEffect(() => {
+         setRefreshPage(false);
+         fetch("http://localhost:8080/interactiveChapter/interactiveBook/" + interactiveBookId + "/interactiveChapters")
+             .then((res) => res.json())
+             .then((result) => {
+                 setChapters(result);
+                 console.log(result);
+             });
+     }, [refreshPage]);
 
-    function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
-        return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
-    }
+    // function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
+    //     return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
+    // }
 
-    const chapters = [
-        createData(1, 1, 'Plant Systems', "Hello"),
-        createData(2, 2, 'Human Systems', "Hello"),
-        createData(3, 3, 'Skeletal Systems', "Hello"),
-        createData(4, 4, 'Muscular Systems', "Hello"),
-        createData(5, 5, 'Digestive Systems', "Hello"),
-        createData(6, 6, 'Circulatory Systems', "Hello"),
-        createData(7, 7, 'Planet Systems', "Hello"),
-        createData(8, 8, 'World Systems', "Hello"),
-    ]
+    // const chapters = [
+    //     createData(1, 1, 'Plant Systems', "Hello"),
+    //     createData(2, 2, 'Human Systems', "Hello"),
+    //     createData(3, 3, 'Skeletal Systems', "Hello"),
+    //     createData(4, 4, 'Muscular Systems', "Hello"),
+    //     createData(5, 5, 'Digestive Systems', "Hello"),
+    //     createData(6, 6, 'Circulatory Systems', "Hello"),
+    //     createData(7, 7, 'Planet Systems', "Hello"),
+    //     createData(8, 8, 'World Systems', "Hello"),
+    // ]
 
     //create
     const [newChapterTitle, setNewChapterTitle] = useState("");
@@ -231,7 +232,7 @@ function TeachingInteractiveChaptersBar(props) {
             const newChapter = { chapterTitle, chapterDescription }
             console.log(newChapter);
             try {
-                const response = await fetch("http://localhost:8080/interactiveChapter/interactiveChapters/" + bookId + "/interactiveChapters", {
+                const response = await fetch("http://localhost:8080/interactiveChapter/" + interactiveBookId + "/interactiveChapters", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(newChapter),
@@ -332,9 +333,9 @@ function TeachingInteractiveChaptersBar(props) {
     };
 
     const renderExtraActions = (
-        bookId,
-        bookTitle,
-        bookMaxScore
+        chapterId,
+        chapterTitle,
+        chapterDescription
     ) => {
         return (
             <div>
@@ -482,6 +483,7 @@ function TeachingInteractiveChaptersBar(props) {
                                 Remove
                             </Button>
                         }
+                    
                         {deleteMode == true &&
                             <Button
                                 className="btn-upload"

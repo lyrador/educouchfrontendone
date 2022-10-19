@@ -66,31 +66,23 @@ function TeachingInteractiveBooksList(props) {
     //paths
     const location = useLocation();
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
-    const bookId = location.pathname.split("/")[2];
+    const courseId = location.pathname.split("/")[2];
 
     const [refreshPage, setRefreshPage] = useState("");
 
-    // //retrieve all
-    // const [books, setBooks] = useState([]);
+     // //retrieve all books by course id
+     const [books, setBooks] = useState([]);
 
-    // React.useEffect(() => {
-    //     setRefreshPage(false);
-    //     fetch("http://localhost:8080/interactiveBooks/courses/" + bookId + "/interactiveBookss")
-    //         .then((res) => res.json())
-    //         .then((result) => {
-    //             setBooks(result);
-    //             console.log(result);
-    //         });
-    // }, [refreshPage]);
+     React.useEffect(() => {
+         setRefreshPage(false);
+         fetch("http://localhost:8080/interactiveBook/course/" + courseId + "/interactiveBooks")
+             .then((res) => res.json())
+             .then((result) => {
+                 setBooks(result);
+                 console.log(result);
+             });
+     }, [refreshPage]);
 
-    function createData(interactiveBookId, interactiveBookTitle, interactiveBookMaxScore, creationDate) {
-        return { interactiveBookId, interactiveBookTitle, interactiveBookMaxScore, creationDate };
-    }
-
-    const books = [
-        createData(1, 'Plant Systems', 90, "15/10/2022"),
-        createData(2, 'Human Systems', 100, "15/10/2022"),
-    ]
 
     //create
     const [newBookTitle, setNewBookTitle] = useState("");
@@ -119,8 +111,9 @@ function TeachingInteractiveBooksList(props) {
         setOpen(false);
     };
 
-    const handleClickDeleteDialogOpen = (event, bookId) => {
-        setBookIdToDelete(bookId);
+    const handleClickDeleteDialogOpen = (event, interactiveBookId) => {
+        setBookIdToDelete(interactiveBookId);
+        console.log(interactiveBookId); 
         setDeleteDialogOpen(true);
     };
 
@@ -138,8 +131,11 @@ function TeachingInteractiveBooksList(props) {
         setEditDialogOpen(false);
     };
 
+    console.log(courseId); 
+
     const createNewBook = async (e) => {
         e.preventDefault();
+        console.log(courseId); 
         setBookTitleError({ value: false, errorMessage: "" });
         setBookMaxScoreError({ value: false, errorMessage: "" });
         if (newBookTitle == "") {
@@ -149,12 +145,12 @@ function TeachingInteractiveBooksList(props) {
             setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
         }
         if (newBookTitle && newBookMaxScore) {
-            var interactiveBookTitle = newBookTitle
-            var interactiveBookMaxScore = newBookMaxScore
-            const newBook = { interactiveBookTitle, interactiveBookMaxScore }
+            var bookTitle = newBookTitle
+            var bookMaxScore = newBookMaxScore
+            const newBook = { bookTitle, bookMaxScore }
             console.log(newBook);
             try {
-                const response = await fetch("http://localhost:8080/interactiveBook/interactiveBooks/" + bookId + "/interactiveBooks", {
+                const response = await fetch("http://localhost:8080/interactiveBook/" + courseId + "/interactiveBooks", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(newBook),
@@ -180,7 +176,6 @@ function TeachingInteractiveBooksList(props) {
 
     const deleteBook = async (e) => {
         e.preventDefault();
-
         try {
             const response = await fetch("http://localhost:8080/interactiveBook/interactiveBooks/" + bookIdToDelete, {
                 method: "DELETE",
@@ -207,16 +202,16 @@ function TeachingInteractiveBooksList(props) {
         e.preventDefault();
         setBookTitleError({ value: false, errorMessage: "" });
         setBookMaxScoreError({ value: false, errorMessage: "" });
-        if (newBookTitle == "") {
+        if (editedBookTitle == "") {
             setBookTitleError({ value: true, errorMessage: "Interactive Book title cannot be empty!" });
         }
-        if (newBookMaxScore == "") {
+        if (editedBookMaxScore == "") {
             setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
         }
-        if (newBookTitle && newBookMaxScore) {
-            var interactiveBookTitle = newBookTitle
-            var interactiveBookMaxScore = newBookMaxScore
-            const editedBook = { interactiveBookTitle, interactiveBookMaxScore }
+        if (editedBookTitle && editedBookMaxScore) {
+            var bookTitle = editedBookTitle
+            var bookMaxScore = editedBookMaxScore
+            const editedBook = { bookTitle, bookMaxScore }
             console.log(editedBook);
             try {
                 const response = await fetch("http://localhost:8080/interactiveBook/interactiveBooks/" + bookIdToEdit, {
@@ -255,7 +250,7 @@ function TeachingInteractiveBooksList(props) {
     };
 
     const renderExtraActions = (
-        bookId,
+        interactiveBookId,
         bookTitle,
         bookMaxScore
     ) => {
@@ -263,14 +258,14 @@ function TeachingInteractiveBooksList(props) {
             <div>
                 <IconButton
                     aria-label="settings"
-                    onClick={(event) => handleClickDeleteDialogOpen(event, bookId)}
+                    onClick={(event) => handleClickDeleteDialogOpen(event, interactiveBookId)}
                 >
                     <DeleteIcon />
                 </IconButton>
                 <IconButton
                     aria-label="settings"
                     onClick={(event) =>
-                        handleClickEditDialogOpen(event, bookId, bookTitle, bookMaxScore)
+                        handleClickEditDialogOpen(event, interactiveBookId, bookTitle, bookMaxScore)
                     }
                 >
                     <EditIcon />
@@ -283,7 +278,7 @@ function TeachingInteractiveBooksList(props) {
         <div>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <TeachingCoursesDrawer courseId={bookId}></TeachingCoursesDrawer>
+                    <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
                     <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
@@ -351,18 +346,18 @@ function TeachingInteractiveBooksList(props) {
                                             <TableCell component="th" scope="row">
                                                 <Link
                                                     to={`${booksPath}/${book.interactiveBookId}`}
-                                                    state={{ bookTitle: book.interactiveBookTitle }}
+                                                    state={{ bookTitle: book.bookTitle }}
                                                     style={{ textDecoration: "none" }}
                                                 >
-                                                    {book.interactiveBookTitle}
+                                                    {book.bookTitle}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell>{book.interactiveBookMaxScore}</TableCell>
+                                            <TableCell>{book.bookMaxScore}</TableCell>
                                             <TableCell>{book.creationDate}</TableCell>
                                             <TableCell>
                                                 <div>
                                                     {renderExtraActions(
-                                                        book.bookId,
+                                                        book.interactiveBookId,
                                                         book.bookTitle,
                                                         book.createdByUserId,
                                                         book.createdByUserType

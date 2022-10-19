@@ -81,27 +81,27 @@ function TeachingInteractiveBook(props) {
 
     const [refreshPage, setRefreshPage] = useState("");
 
-    // //retrieve all
-    // const [books, setBooks] = useState([]);
+    // //retrieve all books by course id
+     const [books, setBooks] = useState([]);
 
-    // React.useEffect(() => {
-    //     setRefreshPage(false);
-    //     fetch("http://localhost:8080/interactiveBooks/courses/" + bookId + "/interactiveBookss")
-    //         .then((res) => res.json())
-    //         .then((result) => {
-    //             setBooks(result);
-    //             console.log(result);
-    //         });
-    // }, [refreshPage]);
+     React.useEffect(() => {
+         setRefreshPage(false);
+         fetch("http://localhost:8080/interactiveBook/course/" + courseId + "/interactiveBooks")
+             .then((res) => res.json())
+             .then((result) => {
+                 setBooks(result);
+                 console.log(result);
+             });
+     }, [refreshPage]);
 
     function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
         return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
     }
 
-    const books = [
-        createData(1, 1, 'Plant Systems', "15/10/2022"),
-        createData(2, 2, 'Human Systems', "15/10/2022"),
-    ]
+    // const books = [
+    //     createData(1, 1, 'Plant Systems', "15/10/2022"),
+    //     createData(2, 2, 'Human Systems', "15/10/2022"),
+    // ]
 
     //create
     const [newChapterTitle, setNewChapterTitle] = useState("");
