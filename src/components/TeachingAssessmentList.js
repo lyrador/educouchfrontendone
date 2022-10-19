@@ -384,7 +384,7 @@ function TeachingAssessmentList(props) {
   function continueAsPartialAssessment() {
     navigate(`${assessmentsPath}/createAssessment`, {
       state: {
-        assessmentPathProp: assessmentsPath,
+        assessmentsPathProp: assessmentsPath,
         // refreshFunctionProp: { refreshFunction },
       },
     });
@@ -415,6 +415,10 @@ function TeachingAssessmentList(props) {
       );
     }
   };
+
+  function dummyRouteToQuizAttempt() {
+    navigate(`/quizAttempt`);
+  }
 
   return (
     <div>
@@ -556,14 +560,16 @@ function TeachingAssessmentList(props) {
                           >
                             <DeleteIcon />
                           </IconButton>
-                          <IconButton
-                            aria-label="settings"
-                            onClick={(event) =>
-                              handleEditAssessment(event, assessment)
-                            }
-                          >
-                            <EditIcon />
-                          </IconButton>
+                          {assessment.open !== "true" && (
+                            <IconButton
+                              aria-label="settings"
+                              onClick={(event) =>
+                                handleEditAssessment(event, assessment)
+                              }
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          )}
                           {assessment.open !== "true" && (
                             <IconButton
                               aria-label="publish"
@@ -592,6 +598,13 @@ function TeachingAssessmentList(props) {
               onClick={continueAsPartialAssessment}
             >
               Create New Assessment
+            </Button>
+            <Button
+              variant="contained"
+              type="submit"
+              onClick={dummyRouteToQuizAttempt}
+            >
+              Dummy Buttom Quiz Attempt
             </Button>
           </Grid>
         </Grid>
@@ -632,8 +645,8 @@ function TeachingAssessmentList(props) {
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              These will release the assesment for Learners to view. Are you
-              sure you want to release?
+              Are you sure you want to release? <br></br>
+              You will not be able to Edit Assessment once Published.
             </DialogContentText>
           </DialogContent>
           <DialogActions>

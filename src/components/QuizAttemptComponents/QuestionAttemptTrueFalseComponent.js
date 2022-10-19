@@ -10,10 +10,9 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 
-export default function TrueFalseComponent(props) {
+export default function QuestionAttemptTrueFalseComponent(props) {
   React.useEffect(() => {
-    props.addBooleanOptionsProp(["true", "false"]);
-    setCorrectOption(props.correctOptionProp)
+    setCorrectOption(props.correctOptionProp);
   }, []);
 
   const [trueFalseValue, setTrueFalseValue] = useState("");
@@ -23,15 +22,12 @@ export default function TrueFalseComponent(props) {
     setTrueFalseValue(e.target.checked);
   }
   function handleCorrectOption(e) {
-    setCorrectOption(e.target.checked)
+    setCorrectOption(e.target.checked);
     props.selectCorrectOptionProp(props.questionIdProp, e.target.checked);
   }
 
   return (
     <Grid>
-      <div>
-        <b>Learner Input</b>
-      </div>
       <Grid container direction={"row"} alignItems={"center"}>
         <p>False</p>
         <Switch
@@ -43,20 +39,6 @@ export default function TrueFalseComponent(props) {
 
         <div></div>
       </Grid>
-      <br></br>
-      <br></br>
-      <div>
-        <b>Select Correct Option</b>
-      </div>
-      <Grid container direction={"row"} alignItems={"center"} marginBottom={"35px"}>
-        <p>False</p>
-        <Switch
-          checked={correctOption}
-          onChange={handleCorrectOption}
-          inputProps={{ "aria-label": "controlled" }}
-        />
-        <p>True</p>
-      </Grid>{" "}
     </Grid>
   );
 }

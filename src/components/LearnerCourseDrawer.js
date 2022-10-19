@@ -71,7 +71,12 @@ function LearnerCoursesDrawer({ courseId, learnerStatus }) {
                                     <ListItemText primary="Forum" />
                                 </ListItemButton>
                             </Link>
-                            <Link to={`${coursePath}/assessments`} style={{ textDecoration: 'none', color: 'black' }}>
+                            <Link to={`${coursePath}/assessments`} style={{ textDecoration: 'none', color: 'black' }}
+                                state={{
+                                    courseIdProp: courseId,
+                                    learnerStatusProp: learnerStatus,
+                                    testingProp: 200
+                                }}>
                                 <ListItemButton>
                                     <ListItemText primary="Assessments" />
                                 </ListItemButton>

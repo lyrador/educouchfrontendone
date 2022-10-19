@@ -115,21 +115,23 @@ export default function CreateQuizForm(props) {
   function editQuizSettings(
     title,
     description,
-    maxScore,
     startDate,
     endDate,
     hasTimeLimit,
     timeLimit,
-    isAutoRelease
+    isAutoRelease,
+    hasMaxAttempts,
+    maxAttempts
   ) {
     currentQuiz.assessmentTitle = title;
     currentQuiz.assessmentDescription = description;
-    currentQuiz.assessmentMaxScore = maxScore;
     currentQuiz.assessmentStartDate = startDate;
     currentQuiz.assessmentEndDate = endDate;
     currentQuiz.hasTimeLimit = hasTimeLimit;
     currentQuiz.timeLimit = timeLimit;
     currentQuiz.isAutoRelease = isAutoRelease;
+    currentQuiz.hasMaxAttempts = hasMaxAttempts;
+    currentQuiz.maxAttempts = maxAttempts;
   }
 
   function editQuestionTitle(questionId, questionTitle) {
@@ -161,6 +163,17 @@ export default function CreateQuizForm(props) {
     );
     if (questionIndex > -1) {
       tempFormQuestions[questionIndex].questionContent = questionContent;
+      setFormQuestions(tempFormQuestions);
+    }
+  }
+
+  function editQuestionHint(questionId, questionHint) {
+    const tempFormQuestions = [...formQuestions];
+    const questionIndex = tempFormQuestions.findIndex(
+      (f) => f.localid == questionId
+    );
+    if (questionIndex > -1) {
+      tempFormQuestions[questionIndex].questionHint = questionHint;
       setFormQuestions(tempFormQuestions);
     }
   }
@@ -222,6 +235,7 @@ export default function CreateQuizForm(props) {
       questionTitle: "Untitled Question",
       questionType: "shortAnswer",
       questionContent: "Type Question Body here...",
+      questionHint: "Type Question Guide here...",
       questionMaxPoints: 0.0,
       options: [],
       correctOption: "",
@@ -257,11 +271,12 @@ export default function CreateQuizForm(props) {
   };
 
   function calculateMaxQuizScore() {
-    var maxScore = 0;
+    var maxScore = 0.0;
     for (const question of formQuestions) {
-      maxScore += question.questionMaxPoints;
+      maxScore = parseFloat(maxScore) + parseFloat(question.questionMaxPoints);
     }
-    console.log("quiz max score: ", maxScore);
+    currentQuiz.assessmentMaxScore = maxScore;
+    console.log("quiz max score: ", currentQuiz.assessmentMaxScore);
   }
 
   const handleSave = (e) => {
@@ -276,6 +291,7 @@ export default function CreateQuizForm(props) {
 
         body: JSON.stringify(updatedQuiz),
       }).then((res) => res.json());
+      console.log("created Quiz: ",updatedQuiz)
       handleCancel();
     }
   };
@@ -398,6 +414,7 @@ export default function CreateQuizForm(props) {
                   removeQuestionOptionProp={removeQuestionOption}
                   selectCorrectOptionProp={selectCorrectQuestionOption}
                   editQuestionContentProp={editQuestionContent}
+                  editQuestionHintProp={ editQuestionHint}
                   removeQuestionProp={removeQuestion}
                   editQuestionMaxPointsProp={editQuestionMaxPoints}
                 />

@@ -15,7 +15,7 @@ import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 
 export default function CreateAssessment(props) {
   const location = useLocation();
-  const assessmentPath = location.state.assessmentPathProp;
+  const assessmentsPath = location.state.assessmentsPathProp;
   const createAssessmentPath = location.pathname
     .split("/")
     .slice(0, 5)
@@ -48,9 +48,9 @@ export default function CreateAssessment(props) {
       >
         <Breadcrumbs aria-label="breadcrumb">
           <Link
-            to={`${assessmentPath}`}
+            to={`${assessmentsPath}`}
             state={{
-              assessmentsPathProp: { assessmentPath },
+              assessmentsPathProp: { assessmentsPath },
             }}
             style={{ textDecoration: "none", color: "grey" }}
           >
@@ -61,7 +61,7 @@ export default function CreateAssessment(props) {
           <Link
             to={`${createAssessmentPath}`}
             state={{
-              assessmentsPathProp: { assessmentPath },
+              assessmentsPathProp: { assessmentsPath },
             }}
             style={{ textDecoration: "none", color: "grey" }}
           >
@@ -73,7 +73,7 @@ export default function CreateAssessment(props) {
         <h1>Assessment Creation</h1>
 
         <PartialCreateAssessment
-          assessmentPathProp={assessmentPath}
+          assessmentPathProp={assessmentsPath}
           createAssessmentPathProp={createAssessmentPath}
           courseIdProp={courseId}
         />

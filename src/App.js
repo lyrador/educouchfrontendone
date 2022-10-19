@@ -53,6 +53,8 @@ import WhiteboardHomepage from "./pages/WhiteboardHomepage";
 import Room from "./pages/Room";
 import TeachingInteractiveBooksList from "./components/TeachingInteractiveBooksList";
 import TeachingInteractiveBook from "./components/TeachingInteractiveBook";
+import QuizAttempt from "./components/QuizAttemptComponents/QuizAttempt";
+import LearnerViewAssessments from "./pages/LearnerViewAssessments";
 
 function App() {
   return (
@@ -153,6 +155,15 @@ function App() {
               }
             />
             <Route
+              path="/learnerCourseDetails/:courseId/assessments"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerViewAssessments/>
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/myTeachingCourse/:courseId/classRuns"
               element={
                 <RequireAuth>
@@ -229,7 +240,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <ClassRunListPage/>
+                  <ClassRunListPage />
                 </RequireAuth>
               }
             />
@@ -238,7 +249,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <ClassRunListPage/>
+                  <ClassRunListPage />
                 </RequireAuth>
               }
             />
@@ -247,13 +258,10 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerCourseFolder/>
+                  <LearnerCourseFolder />
                 </RequireAuth>
               }
             />
-            
-
-
             <Route
               path="/courseExplorer/"
               element={
@@ -295,7 +303,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <CourseApprovalPage/>
+                  <CourseApprovalPage />
                 </RequireAuth>
               }
             />
@@ -383,7 +391,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerChildFileCover/>
+                  <LearnerChildFileCover />
                 </RequireAuth>
               }
             />
@@ -499,6 +507,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <EditQuizPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/quizAttempt"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <QuizAttempt />
                 </RequireAuth>
               }
             />
