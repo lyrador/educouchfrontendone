@@ -116,11 +116,11 @@ function TeachingCoursesDrawer(props) {
               <ListItemText primary="Gradebook" />
             </ListItemButton>
           </Link>
-          <Link to={`${coursePath}/whiteboard`} style={{ textDecoration: 'none', color: 'black' }}>
+          {/* <Link to={`${coursePath}/whiteboard`} style={{ textDecoration: 'none', color: 'black' }}>
             <ListItemButton>
               <ListItemText primary="Whiteboard" />
             </ListItemButton>
-          </Link>
+          </Link> */}
           <Link to={`/myTeachingCourse/${props.courseId}/inClass`} style={{ textDecoration: 'none', color: 'black' }}>
             <ListItemButton>
               <ListItemText primary="In-Class" />

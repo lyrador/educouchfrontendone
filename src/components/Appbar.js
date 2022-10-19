@@ -240,6 +240,11 @@ export default function Appbar() {
                     </Link>
                   </li>
                 )}
+                <li className="nav-item">
+                  <Link to="/whiteboardHomepage" className="nav-links">
+                    Whiteboard
+                  </Link>
+                </li>
               </ul>
             </div>
           </nav>
