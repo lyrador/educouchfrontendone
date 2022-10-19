@@ -448,7 +448,7 @@ function TeachingInteractiveChaptersBar(props) {
                                     <div style={{ width: "10%", paddingLeft: "8px" }}>
                                         <IconButton
                                             aria-label="settings"
-                                            onClick={(event) => handleClickDeleteDialogOpen(event)}
+                                            onClick={(event) => handleClickDeleteDialogOpen(event, chapter.interactiveChapterId)}
                                         >
                                             <RemoveCircleIcon style={{ color: "red" }} />
                                         </IconButton>
