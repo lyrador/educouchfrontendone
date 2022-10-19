@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import LearnerCoursesDrawer from "../LearnerCourseDrawer";
 import QuizAttemptDisplay from "./QuizAttemptDisplay";
 import QuizInformation from "./QuizInformation";
+import { useAuth } from "../../context/AuthProvider";
 
 export default function QuizAttempt(props) {
   const navigate = useNavigate();
@@ -11,7 +12,9 @@ export default function QuizAttempt(props) {
   var courseId = location.state.courseIdProp;
   var learnerStatus = location.state.learnerStatusProp;
   var quizId = location.state.quizIdProp;
-
+  var auth = useAuth();
+  var user = auth.user;
+  var learnerId = user.userId;
   const [currentQuiz, setCurrentQuiz] = useState();
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [startQuiz, setStartQuiz] = useState("");
@@ -25,6 +28,7 @@ export default function QuizAttempt(props) {
   const [hasMaxAttempts, setHasMaxAttempts] = useState();
   const [maxAttempts, setMaxAttempts] = useState(0);
   const [quizStatusEnum, setQuizStatusEnum] = useState();
+  const [questionAttempts, setQuestionAttempts] = useState([]);
 
   React.useEffect(() => {
     fetch("http://localhost:8080/quiz/getQuizById/" + quizId)
@@ -50,7 +54,26 @@ export default function QuizAttempt(props) {
     setTitle(currentQuiz.assessmentTitle);
   }
 
+  // fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
+  //   method: "POST",
+  //   headers: { "Content-Type": "application/json" },
+
+  //   body: JSON.stringify(updatedQuiz),
+  // })
+
+
   function handleStartQuiz() {
+    fetch(
+      "http://localhost:8080/quizAttempt/createQuizAttempt/" +
+        quizId +
+        "/" +
+      learnerId, {method: "POST"}
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        setQuestionAttempts(result);
+        console.log("questionAttempts fetched: ", result);
+      });
     setStartQuiz("true");
   }
 
@@ -85,10 +108,12 @@ export default function QuizAttempt(props) {
         <Grid>
           <QuizAttemptDisplay
             currentQuizProp={currentQuiz}
+            quizIdProp={quizId}
             questionsProp={quizQuestions}
             hasTimeLimitProp={hasTimeLimit}
             timeLimitProp={timeLimit}
             quizStatusEnumProp={quizStatusEnum}
+            questionAttemptsProp={questionAttempts}
           />
         </Grid>
       )}
