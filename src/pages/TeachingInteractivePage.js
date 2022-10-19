@@ -40,6 +40,7 @@ import Divider from '@mui/material/Divider';
 import "../css/TeachingInteractiveBook.css";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AddIcon from '@mui/icons-material/Add';
+import MediaCard from "./MediaCard";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -296,7 +297,7 @@ function TeachingInteractivePage(props) {
     };
 
     return (
-        <div>
+        <div style={{ backgroundColor: "#F8F9FA", width: "100%", height: "75vh", paddding: 0 }}>
             <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
                     Interactive Page Created Succesfully!
@@ -327,8 +328,14 @@ function TeachingInteractivePage(props) {
             </Breadcrumbs> */}
             <div style={{ justifyContent: "center" }}>
                 <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
-                    Pages
+                    Page {props.pageNumber}
                 </h1>
+            </div>
+            <div style={{ width: "100%", height: "100%", justifyContent: "center", display: 'flex' }}>
+                <Paper elevation={3} style={{ width: "90%", height: "90%" }}>
+                    Hello
+                    <MediaCard></MediaCard>
+                </Paper>
             </div>
             {/* <div style={{ padding: "5%" }}>
                         <TableContainer component={Paper}>
