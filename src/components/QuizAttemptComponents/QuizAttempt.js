@@ -1,9 +1,17 @@
 import { Button, Grid } from "@mui/material";
 import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import LearnerCoursesDrawer from "../LearnerCourseDrawer";
 import QuizAttemptDisplay from "./QuizAttemptDisplay";
 import QuizInformation from "./QuizInformation";
 
-export default function QuizAttempt() {
+export default function QuizAttempt(props) {
+  const navigate = useNavigate();
+  var location = useLocation(props);
+  var courseId = location.state.courseIdProp;
+  var learnerStatus = location.state.learnerStatusProp;
+  var quizId = location.state.quizIdProp;
+
   const [currentQuiz, setCurrentQuiz] = useState();
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [startQuiz, setStartQuiz] = useState("");
@@ -19,12 +27,12 @@ export default function QuizAttempt() {
   const [quizStatusEnum, setQuizStatusEnum] = useState();
 
   React.useEffect(() => {
-    fetch("http://localhost:8080/quiz/getQuizById/1")
+    fetch("http://localhost:8080/quiz/getQuizById/" + quizId)
       .then((res) => res.json())
       .then((result) => {
         setStartQuiz("false");
         setCurrentQuiz(result);
-        setQuizQuestions(result.questions)
+        setQuizQuestions(result.questions);
         setTitle(result.assessmentTitle);
         setDescription(result.assessmentDescription);
         setMaxScore(result.assessmentMaxScore);
@@ -34,7 +42,7 @@ export default function QuizAttempt() {
         setTimeLimit(result.timeLimit);
         setHasMaxAttempts(result.hasMaxAttempts);
         setMaxAttempts(result.maxAttempts);
-        setQuizStatusEnum(result.assessmentStatusEnum)
+        setQuizStatusEnum(result.assessmentStatusEnum);
       });
   }, []);
 
@@ -51,6 +59,12 @@ export default function QuizAttempt() {
       <h1>{title}</h1>
       {startQuiz == "false" ? (
         <Grid container direction={"column"} alignContent={"center"}>
+          <Grid item xs={2}>
+            <LearnerCoursesDrawer
+              courseId={courseId}
+              learnerStatus={learnerStatus}
+            />
+          </Grid>
           <Grid item>Quiz Description: {description}</Grid>
           <Grid item>Quiz Max Score: {maxScore}</Grid>
           <Grid item>Quiz Start Date: {startDate}</Grid>
@@ -69,13 +83,13 @@ export default function QuizAttempt() {
         </Grid>
       ) : (
         <Grid>
-            <QuizAttemptDisplay
-              currentQuizProp={currentQuiz}
-              questionsProp={quizQuestions}
-              hasTimeLimitProp={hasTimeLimit}
-              timeLimitProp={timeLimit}
-              quizStatusEnumProp={quizStatusEnum}
-            />
+          <QuizAttemptDisplay
+            currentQuizProp={currentQuiz}
+            questionsProp={quizQuestions}
+            hasTimeLimitProp={hasTimeLimit}
+            timeLimitProp={timeLimit}
+            quizStatusEnumProp={quizStatusEnum}
+          />
         </Grid>
       )}
     </Grid>

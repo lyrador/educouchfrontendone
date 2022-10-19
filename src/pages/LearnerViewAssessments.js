@@ -10,13 +10,14 @@ import {
   TableRow,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useNavigationType } from "react-router-dom";
 import LearnerCoursesDrawer from "../components/LearnerCourseDrawer";
 import { useAuth } from "../context/AuthProvider";
 
 export default function LearnerViewAssessments(props) {
   var auth = useAuth();
   var user = auth.user;
+  const navigate = useNavigate();
 
   var location = useLocation(props);
   var courseId = location.state.courseIdProp;
@@ -25,17 +26,17 @@ export default function LearnerViewAssessments(props) {
   const [assessments, setAssessments] = useState([]);
   const renderEmptyRowMessage = () => {
     if (assessments.length === 0) {
-      console.log("assessment list is empty")
+      console.log("assessment list is empty");
       return (
         <TableRow>
-          <TableCell
-             style={{ textAlign: "center" }}>
+          <TableCell style={{ textAlign: "center" }}>
             There are currently no assessments in this course!
           </TableCell>
         </TableRow>
       );
     }
   };
+
   React.useEffect(() => {
     fetch(
       "http://localhost:8080/assessment/getAllReleasedAssessments/" + courseId
@@ -46,6 +47,16 @@ export default function LearnerViewAssessments(props) {
         console.log("released assessments under this course: ", result);
       });
   }, []);
+
+  function handleViewAssessment(quizId) {
+    navigate(`/quizAttempt`, {
+      state: {
+        quizIdProp: quizId,
+        courseIdProp: courseId,
+        learnerStatusProp: learnerStatus,
+      },
+    });
+  }
 
   return (
     <Grid container spacing={0}>
@@ -89,17 +100,22 @@ export default function LearnerViewAssessments(props) {
                   <TableCell align="right">{assessment.startDate}</TableCell>
                   <TableCell align="right">{assessment.endDate}</TableCell>
                   <TableCell align="right">
+                    {assessment.isExpired === "true" ? <p style={{color:"red"}}>Expired</p> :
+                    <>
                     {assessment.open === "true" && "Open"}
-                    {assessment.open === "false" && "Close"}
-                    {assessment.isExpired === "true" && "Expired"}
+                    {assessment.open === "false" && "Close"}</>}
+
                   </TableCell>
                   <TableCell align="right">
                     <Button
                       className="btn-choose"
                       variant="outlined"
                       type="submit"
+                      onClick={() =>
+                        handleViewAssessment(assessment.assessmentId)
+                      }
                     >
-                      View Profile
+                      View Assessment
                     </Button>
                   </TableCell>
                 </TableRow>
