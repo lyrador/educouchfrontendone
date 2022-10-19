@@ -11,19 +11,24 @@ export default function QuizAttemptDisplay(props) {
   React.useEffect(() => {
     setCurrentQuiz(props.currentQuizProp);
     setQuizQuestions(props.questionsProp);
-    setQuizStatusEnum(props.assessmentStatusEnum)
+    setQuizStatusEnum(props.assessmentStatusEnum);
   }, []);
 
-  
   return (
     <Grid container spacing={0} direction={"column"} alignContent={"center"}>
-          {props.hasTimeLimitProp == "true" && <QuizAttemptTimer timeLimitProp={props.timeLimitProp} />}
+      {props.hasTimeLimitProp == "true" && (
+        <QuizAttemptTimer timeLimitProp={props.timeLimitProp} />
+      )}
       <Grid width={"60%"}>
         {quizQuestions.map((question, index) => {
           return (
             <Grid width={"auto"}>
               <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
-                <QuizQuestionAttemptComponent questionProp={question} quizStatusEnumProp={quizStatusEnum} indexProp={index+1} />
+                <QuizQuestionAttemptComponent
+                  questionProp={question}
+                  quizStatusEnumProp={quizStatusEnum}
+                  indexProp={index + 1}
+                />
               </Paper>
             </Grid>
           );

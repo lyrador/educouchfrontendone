@@ -1,12 +1,20 @@
+import { AppBar, Grid, Paper } from "@mui/material";
 import React, { useRef, useState } from "react";
 
 export default function QuizAttemptTimer(props) {
   const [quizTimeLimit, setQuizTimeLimit] = useState();
   const [timer, setTimer] = useState("00:00:00");
+  const [panic, setPanic] = useState("");
   const Ref = useRef(null);
 
   React.useEffect(() => {
     clearTimer(getDeadTime());
+    //need to figure out how to set time < 1 min set panic to true
+    if (Date.parse(getDeadTime()) - Date.parse(new Date())) {
+      setPanic("false");
+    } else {
+      setPanic("true");
+    }
   }, []);
 
   const getTimeRemaining = (e) => {
@@ -62,5 +70,19 @@ export default function QuizAttemptTimer(props) {
     deadline.setSeconds(deadline.getSeconds() + timeLimit);
     return deadline;
   };
-  return <div>{timer}</div>;
+  return (
+    <Paper
+      style={{
+        height: 110,
+        width: 250,
+        position: "fixed",
+        marginTop: 50,
+        marginLeft: 50,
+        backgroundColor: "#6495ED"
+      }}
+    >
+      <Grid container justifyContent={"center"} paddingTop={3}>
+        <p style={{fontSize: "40px", color: "white"}}>{timer}</p></Grid>
+    </Paper>
+  );
 }
