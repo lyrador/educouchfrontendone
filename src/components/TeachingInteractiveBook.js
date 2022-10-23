@@ -78,24 +78,36 @@ function TeachingInteractiveBook(props) {
     //paths
     const location = useLocation();
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
-    console.log(booksPath)
+    // console.log(booksPath)
     const courseId = location.pathname.split("/")[2];
     const bookId = location.pathname.split("/")[4];
 
     const [refreshPage, setRefreshPage] = useState("");
 
     // //retrieve all books by course id
-     const [books, setBooks] = useState([]);
+    // const [books, setBooks] = useState([]);
 
-     React.useEffect(() => {
-         setRefreshPage(false);
-         fetch("http://localhost:8080/interactiveBook/course/" + courseId + "/interactiveBooks")
-             .then((res) => res.json())
-             .then((result) => {
-                 setBooks(result);
-                 console.log(result);
-             });
-     }, [refreshPage]);
+    // React.useEffect(() => {
+    //      setRefreshPage(false);
+    //      fetch("http://localhost:8080/interactiveBook/course/" + courseId + "/interactiveBooks")
+    //          .then((res) => res.json())
+    //          .then((result) => {
+    //              setBooks(result);
+    //              console.log(result);
+    //          });
+    //  }, [refreshPage]);
+
+    const [pages, setPages] = useState([]);
+
+    React.useEffect(() => {
+        setRefreshPage(false);
+        fetch("http://localhost:8080/interactivePage/interactiveChapter/" + chapterIdToBrowse + "/interactivePages")
+            .then((res) => res.json())
+            .then((result) => {
+                setPages(result);
+                console.log(result);
+            });
+    }, [refreshPage]);
 
     function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
         return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
@@ -109,6 +121,7 @@ function TeachingInteractiveBook(props) {
     const [page, setPage] = React.useState(1);
     const handlePageChange = (event, value) => {
         setPage(value);
+        setRefreshInteractivePage(true)
     };
 
     //create
@@ -132,8 +145,10 @@ function TeachingInteractiveBook(props) {
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
 
     //browsing
-    const [chapterIdToBrowse, setChapterIdToBrowse] = useState("");
+    const [chapterIdToBrowse, setChapterIdToBrowse] = useState(1);
     const [pageIdToBrowse, setPageIdToBrowse] = useState("");
+
+    const [refreshInteractivePage, setRefreshInteractivePage] = useState("");
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -274,17 +289,66 @@ function TeachingInteractiveBook(props) {
         };
     }
 
-    const renderEmptyRowMessage = () => {
-        if (books.length === 0) {
-            return (
-                <TableRow>
-                    <TableCell colSpan={4} style={{ textAlign: "center" }}>
-                        There are currently no interactive chapters in this book!
-                    </TableCell>
-                </TableRow>
-            );
+    //create
+    const [newPageNumber, setNewPageNumber] = useState("");
+    const [newPageDescription, setNewPageDescription] = useState("");
+
+    const [pageNumberError, setPageNumberError] = useState({ value: false, errorMessage: "" });
+    const [pageDescriptionError, setPageDescriptionError] = useState({ value: false, errorMessage: "" });
+
+
+
+    const createNewPage = async (e) => {
+        e.preventDefault();
+        setPageNumberError({ value: false, errorMessage: "" });
+        setPageDescriptionError({ value: false, errorMessage: "" });
+        if (newPageNumber == "") {
+            setPageNumberError({ value: true, errorMessage: "Interactive Page Number cannot be empty!" });
         }
-    };
+        // if (newPageDescription == "") {
+        //     setPageDescriptionError({ value: true, errorMessage: "Interactive Page description cannot be empty!" });
+        // }
+        if (newPageNumber) {
+            var pageNumber = newPageNumber
+            // var pageDescription = newPageDescription
+            const newPage = { pageNumber }
+            console.log(newPage);
+            try {
+                const response = await fetch("http://localhost:8080/interactivePage/" + chapterIdToBrowse + "/interactivePages", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newPage),
+                })
+                console.log(response);
+                if (response.ok == false) {
+                    console.log("Error");
+                    handleClickErrorSnackbar()
+                } else {
+                    console.log("New Page Created Successfully!");
+                    handleClickSnackbar()
+                }
+            } catch (err) {
+                console.log(err);
+                handleClickErrorSnackbar()
+            }
+            setRefreshPage(true)
+            handleClose();
+            setNewPageNumber("");
+        };
+    }
+
+
+    // const renderEmptyRowMessage = () => {
+    //     if (chapters.length === 0) {
+    //         return (
+    //             <TableRow>
+    //                 <TableCell colSpan={4} style={{ textAlign: "center" }}>
+    //                     There are currently no interactive chapters in this book!
+    //                 </TableCell>
+    //             </TableRow>
+    //         );
+    //     }
+    // };
 
     const renderExtraActions = (
         bookId,
@@ -323,17 +387,17 @@ function TeachingInteractiveBook(props) {
                 <Grid item xs={10}>
                     <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                         <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
-                            Interactive Chapter Created Succesfully!
+                            Interactive Page Created Succesfully!
                         </Alert>
                     </Snackbar>
                     <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar} >
                         <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: "100%" }} >
-                            Interactive Chapter Deleted Succesfully!
+                            Interactive Page Deleted Succesfully!
                         </Alert>
                     </Snackbar>
                     <Snackbar open={openEditSnackbar} autoHideDuration={5000} onClose={handleCloseEditSnackbar} >
                         <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: "100%" }} >
-                            Interactive Chapter Updated Succesfully!
+                            Interactive Page Updated Succesfully!
                         </Alert>
                     </Snackbar>
                     <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={handleCloseErrorSnackbar} >
@@ -354,15 +418,29 @@ function TeachingInteractiveBook(props) {
                             Pages
                         </h1>
                     </div> */}
-                    <TeachingInteractivePage chapterId={chapterIdToBrowse} pageNumber={page}></TeachingInteractivePage>
+                    <TeachingInteractivePage chapterId={chapterIdToBrowse} pageNumber={page} 
+                    refreshInteractivePage={refreshInteractivePage} setRefreshInteractivePage={setRefreshInteractivePage}></TeachingInteractivePage>
                     <div style={{ display: 'flex', marginTop: "5px", justifyContent: 'center', marginRight: '30px' }}>
                         <div>
-                            <Pagination count={10} page={page} onChange={handlePageChange} showFirstButton showLastButton />
+                            <Pagination count={pages.length} page={page} onChange={handlePageChange} showFirstButton showLastButton />
+                        </div>
+                        <div>
+                            <Button
+                                className="btn-upload"
+                                color="primary"
+                                component="span"
+                                variant="contained"
+                                onClick={handleClickOpen}
+                                style={{ width: "40%", marginRight: "10px" }}
+                                startIcon={<AddIcon />}
+                            >
+                                Add
+                            </Button>
                         </div>
                     </div>
                 </Grid>
             </Grid>
-            <div>
+            {/* <div>
                 <Dialog open={open} onClose={handleClose}>
                     <DialogTitle>Create New Interactive Book</DialogTitle>
                     <DialogContent>
@@ -394,6 +472,41 @@ function TeachingInteractiveBook(props) {
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
                         <Button onClick={createNewChapter}>Create</Button>
+                    </DialogActions>
+                </Dialog>
+            </div> */}
+            <div>
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle>Create New Interactive Page</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            id="outlined-basic"
+                            label="Interactive Page Number"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            style={{ margin: "6px 0" }}
+                            value={newPageNumber}
+                            onChange={(e) => setNewPageNumber(e.target.value)}
+                            error={pageNumberError.value}
+                            helperText={pageNumberError.errorMessage}
+                        />
+                        {/* <TextField
+                            id="outlined-basic"
+                            label="Interactive Page Description"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            style={{ margin: "6px 0" }}
+                            value={newPageDescription}
+                            onChange={(e) => setNewPageDescription(e.target.value)}
+                            error={pageDescriptionError.value}
+                            helperText={pageDescriptionError.errorMessage}
+                        /> */}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={createNewPage}>Create</Button>
                     </DialogActions>
                 </Dialog>
             </div>

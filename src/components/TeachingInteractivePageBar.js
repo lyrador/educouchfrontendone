@@ -7,6 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
 
 import { Link, useLocation, useParams } from "react-router-dom";
 import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
@@ -38,7 +39,7 @@ import MuiAlert from "@mui/material/Alert";
 
 import Divider from '@mui/material/Divider';
 
-import "../css/TeachingInteractiveBook.css";
+import "../css/TeachingInteractivePage.css";
 import InteractiveBookDrawer from "./InteractiveBookDrawer";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AddIcon from '@mui/icons-material/Add';
@@ -53,12 +54,23 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import LowPriorityIcon from '@mui/icons-material/LowPriority';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import TextFieldsIcon from '@mui/icons-material/TextFields';
+import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
+import QuizIcon from '@mui/icons-material/Quiz';
+
+import {
+    Typography,
+    LinearProgress,
+    ThemeProvider,
+    createTheme,
+} from "@mui/material";
+import UploadService from "../services/UploadFilesService";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-function TeachingInteractiveChaptersBar(props) {
+function TeachingInteractivePageBar(props) {
 
     //snackbar
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
@@ -115,6 +127,64 @@ function TeachingInteractiveChaptersBar(props) {
         prevOpenMenu.current = openMenu;
     }, [openMenu]);
 
+    //upload
+    const theme = createTheme({
+        components: {
+            MuiLinearProgress: {
+                styleOverrides: {
+                    root: {
+                        height: 15,
+                        borderRadius: 5,
+                    },
+                    colorPrimary: {
+                        backgroundColor: "#EEEEEE",
+                    },
+                    bar: {
+                        borderRadius: 5,
+                        backgroundColor: "#1a90ff",
+                    },
+                },
+            },
+        },
+    });
+
+    const [currentFile, setCurrentFile] = useState(undefined);
+    const [previewImage, setPreviewImage] = useState(
+        "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg"
+    );
+    const [progress, setProgress] = useState(0);
+    const [message, setMessage] = useState("");
+    const [isError, setIsError] = useState(false);
+    const [isUploaded, setIsUploaded] = useState(false);
+    const [uploadedAttachmentId, setUploadedAttachmentId] = useState("");
+
+    const selectFile = (event) => {
+        setCurrentFile(event.target.files[0]);
+        setPreviewImage(URL.createObjectURL(event.target.files[0]));
+        setProgress(0);
+        setMessage("");
+    };
+
+    const uploadFile = () => {
+        setProgress(0);
+        UploadService.upload(currentFile, (event) => {
+            setProgress(Math.round((100 * event.loaded) / event.total));
+        })
+            .then((response) => {
+                setMessage("Succesfully Uploaded!");
+                setUploadedAttachmentId(response.data.fileId);
+                setIsError(false);
+                setIsUploaded(true);
+                console.log(response);
+            })
+            .catch((err) => {
+                setMessage("Could not upload the image!");
+                setIsError(true);
+                setProgress(0);
+                setCurrentFile(undefined);
+            });
+    };
+
     //paths
     const location = useLocation();
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
@@ -122,46 +192,44 @@ function TeachingInteractiveChaptersBar(props) {
     const interactiveBookId = location.pathname.split("/")[4];
     // console.log(interactiveBookId); 
 
-    const [refreshPage, setRefreshPage] = useState("");
+    const [refreshPageBar, setRefreshPageBar] = useState("");
 
     const [deleteMode, setDeleteMode] = useState(false);
 
-     //retrieve all chapters of the book
-     const [chapters, setChapters] = useState([]);
+    //  //retrieve all chapters of the book
+    //  const [pageItems, setPageItems] = useState([]);
 
-     React.useEffect(() => {
-         setRefreshPage(false);
-         fetch("http://localhost:8080/interactiveChapter/interactiveBook/" + interactiveBookId + "/interactiveChapters")
-             .then((res) => res.json())
-             .then((result) => {
-                 setChapters(result);
-                 console.log(result);
-             });
-     }, [refreshPage]);
+    //  React.useEffect(() => {
+    //      setRefreshPageBar(false);
+    //      fetch("http://localhost:8080/pageItem/interactivePage/" + props.pageId + "/pageItem")
+    //          .then((res) => res.json())
+    //          .then((result) => {
+    //              setPageItems(result);
+    //              console.log(result);
+    //          });
+    //  }, [refreshPageBar]);
 
-    // function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
-    //     return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
-    // }
+    function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
+        return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
+    }
 
-    // const chapters = [
-    //     createData(1, 1, 'Plant Systems', "Hello"),
-    //     createData(2, 2, 'Human Systems', "Hello"),
-    //     createData(3, 3, 'Skeletal Systems', "Hello"),
-    //     createData(4, 4, 'Muscular Systems', "Hello"),
-    //     createData(5, 5, 'Digestive Systems', "Hello"),
-    //     createData(6, 6, 'Circulatory Systems', "Hello"),
-    //     createData(7, 7, 'Planet Systems', "Hello"),
-    //     createData(8, 8, 'World Systems', "Hello"),
-    // ]
+    const chapters = [
+        createData(1, 1, 'Plant Systems', "Hello"),
+        createData(2, 2, 'Human Systems', "Hello"),
+        createData(3, 3, 'Skeletal Systems', "Hello"),
+    ]
 
     //create
-    const [newChapterTitle, setNewChapterTitle] = useState("");
-    const [newChapterDescription, setNewChapterDescription] = useState("");
+    const [newPageItemXPosition, setNewPageItemXPosition] = useState("");
+    const [newPageItemYPosition, setNewPageItemYPosition] = useState("");
+    const [newTextItemWords, setNewTextItemWords] = useState("");
+    const [newTextFontSize, setNewTextFontSize] = useState("");
 
-    const [chapterTitleError, setChapterTitleError] = useState({ value: false, errorMessage: "" });
-    const [chapterDescriptionError, setChapterDescriptionError] = useState({ value: false, errorMessage: "" });
+    const [pageItemXPositionError, setPageItemXPositionError] = useState({ value: false, errorMessage: "" });
+    const [pageItemYPositionError, setPageItemYPositionError] = useState({ value: false, errorMessage: "" });
 
     const [open, setOpen] = React.useState(false);
+    const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
 
     //delete
     const [chapterIdToDelete, setChapterIdToDelete] = useState("");
@@ -198,6 +266,14 @@ function TeachingInteractiveChaptersBar(props) {
         setOpen(false);
     };
 
+    const handleOpenUploadDialog = () => {
+        setOpenUploadDialog(true);
+    };
+
+    const handleCloseUploadDialog = () => {
+        setOpenUploadDialog(false);
+    };
+
     const handleClickDeleteDialogOpen = (event, chapterId) => {
         setChapterIdToDelete(chapterId);
         setDeleteDialogOpen(true);
@@ -217,45 +293,75 @@ function TeachingInteractiveChaptersBar(props) {
         setEditDialogOpen(false);
     };
 
-    const createNewChapter = async (e) => {
+    const createNewTextItem = async (e) => {
         e.preventDefault();
-        setChapterTitleError({ value: false, errorMessage: "" });
-        setChapterDescriptionError({ value: false, errorMessage: "" });
-        if (newChapterTitle == "") {
-            setChapterTitleError({ value: true, errorMessage: "Interactive Chapter title cannot be empty!" });
+        setPageItemXPositionError({ value: false, errorMessage: "" });
+        setPageItemYPositionError({ value: false, errorMessage: "" });
+        if (newPageItemXPosition == "") {
+            setPageItemXPositionError({ value: true, errorMessage: "Page Item X Position cannot be empty!" });
         }
-        if (newChapterDescription == "") {
-            setChapterDescriptionError({ value: true, errorMessage: "Interactive Chapter description cannot be empty!" });
+        if (newPageItemYPosition == "") {
+            setPageItemYPositionError({ value: true, errorMessage: "Page Item Y Position cannot be empty!" });
         }
-        if (newChapterTitle && newChapterDescription) {
-            var chapterTitle = newChapterTitle
-            var chapterDescription = newChapterDescription
-            const newChapter = { chapterTitle, chapterDescription }
-            console.log(newChapter);
+        if (newPageItemXPosition && newPageItemYPosition) {
+            var pageItemXPosition = parseFloat(newPageItemXPosition)
+            var pageItemYPosition = parseFloat(newPageItemYPosition)
+            var textItemWords = newTextItemWords
+            var textFontSize = parseFloat(newTextFontSize)
+            const textItemRequest = { pageItemXPosition, pageItemYPosition, textItemWords, textFontSize }
+            console.log(textItemRequest);
             try {
-                const response = await fetch("http://localhost:8080/interactiveChapter/" + interactiveBookId + "/interactiveChapters", {
+                const response = await fetch("http://localhost:8080/pageItem/" + props.pageId + "/addTextItem", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newChapter),
+                    body: JSON.stringify(textItemRequest),
                 })
                 console.log(response);
                 if (response.ok == false) {
                     console.log("Error");
                     handleClickErrorSnackbar()
                 } else {
-                    console.log("New Chapter Created Successfully!");
+                    console.log("New Text Item Created Successfully!");
                     handleClickSnackbar()
                 }
             } catch (err) {
                 console.log(err);
                 handleClickErrorSnackbar()
             }
-            setRefreshPage(true)
+            setRefreshPageBar(true)
             handleClose();
-            handleClickSnackbar();
-            setNewChapterTitle("");
         };
     }
+
+    const createNewFileItem = async (e) => {
+        e.preventDefault();
+        var pageItemXPosition = 50
+        var pageItemYPosition = 50
+        var attachmentId = uploadedAttachmentId
+        const fileItemRequest = { pageItemXPosition, pageItemYPosition, attachmentId }
+        console.log(fileItemRequest);
+        try {
+            const response = await fetch("http://localhost:8080/pageItem/" + props.pageId + "/addFileItem", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(fileItemRequest),
+            })
+            console.log(response);
+            if (response.ok == false) {
+                console.log("Error");
+                handleClickErrorSnackbar()
+            } else {
+                console.log("New File Item Created Successfully!");
+                handleClickSnackbar()
+            }
+        } catch (err) {
+            console.log(err);
+            handleClickErrorSnackbar()
+        }
+        setRefreshPageBar(true)
+        handleCloseUploadDialog();
+    }
+
 
     const deleteChapter = async (e) => {
         e.preventDefault();
@@ -277,24 +383,24 @@ function TeachingInteractiveChaptersBar(props) {
             console.log(err);
             handleClickErrorSnackbar()
         }
-        setRefreshPage(true);
+        setRefreshPageBar(true);
         handleDeleteDialogClose();
         handleClickDeleteSnackbar();
     };
 
     const editChapter = async (e) => {
         e.preventDefault();
-        setChapterTitleError({ value: false, errorMessage: "" });
-        setChapterDescriptionError({ value: false, errorMessage: "" });
-        if (newChapterTitle == "") {
-            setChapterTitleError({ value: true, errorMessage: "Interactive Chapter title cannot be empty!" });
+        setPageItemXPositionError({ value: false, errorMessage: "" });
+        setPageItemYPositionError({ value: false, errorMessage: "" });
+        if (newPageItemXPosition == "") {
+            setPageItemXPositionError({ value: true, errorMessage: "Interactive Chapter title cannot be empty!" });
         }
-        if (newChapterDescription == "") {
-            setChapterDescriptionError({ value: true, errorMessage: "Interactive Chapter description cannot be empty!" });
+        if (newPageItemYPosition == "") {
+            setPageItemYPositionError({ value: true, errorMessage: "Interactive Chapter description cannot be empty!" });
         }
-        if (newChapterTitle && newChapterDescription) {
-            var interactiveChapterTitle = newChapterTitle
-            var interactiveChapterDescription = newChapterDescription
+        if (newPageItemXPosition && newPageItemYPosition) {
+            var interactiveChapterTitle = newPageItemXPosition
+            var interactiveChapterDescription = newPageItemYPosition
             const editedChapter = { interactiveChapterTitle, interactiveChapterDescription }
             console.log(editedChapter);
             try {
@@ -315,7 +421,7 @@ function TeachingInteractiveChaptersBar(props) {
                 console.log(err);
                 handleClickErrorSnackbar()
             }
-            setRefreshPage(true);
+            setRefreshPageBar(true);
             handleEditDialogClose();
             handleClickEditSnackbar();
         };
@@ -360,18 +466,42 @@ function TeachingInteractiveChaptersBar(props) {
 
     return (
         <div>
-            <div id="sidenavbar" className="sidebar">
-                {/* <a href="#" className="settings" onclick="closeNav()"><SettingsIcon /></a> */}
-                <div style={{ float: 'left' }}>
-                    <Link to={`${booksPath}`} style={{ textDecoration: 'none' }}>
-                        <Button variant="text" style={{ fontSize: '10px' }}>
-                            <ArrowBackIcon />
-                        </Button>
-                    </Link>
+            <div id="sidenavbar2" className="sidebarPage">
+                <div style={{ width: "100%", display: "flex" }}>
+                    <Button
+                        className="btn-upload"
+                        color="primary"
+                        component="span"
+                        variant="contained"
+                        onClick={handleClickOpen}
+                        style={{ width: "10%", marginRight: "10px", marginLeft: '20px' }}
+                    >
+                        <TextFieldsIcon />
+                    </Button>
+                    <Button
+                        className="btn-upload"
+                        color="primary"
+                        component="span"
+                        variant="contained"
+                        onClick={handleOpenUploadDialog}
+                        style={{ width: "10%", marginRight: "10px" }}
+                    >
+                        <InsertPhotoIcon />
+                    </Button>
+                    <Button
+                        className="btn-upload"
+                        color="primary"
+                        component="span"
+                        variant="contained"
+                        onClick={handleClickOpen}
+                        style={{ width: "10%", marginRight: "10px" }}
+                    >
+                        <QuizIcon />
+                    </Button>
                 </div>
                 <div style={{ width: "100%", display: "flex" }}>
                     <div style={{ width: "85%" }}>
-                        <h2>Interactive Chapters</h2>
+                        <h2>Page Toolbar</h2>
                     </div>
                     <div style={{ width: "5%" }} >
                         <div>
@@ -432,9 +562,9 @@ function TeachingInteractiveChaptersBar(props) {
                 {renderEmptyRowMessage}
                 {deleteMode == false &&
                     <div style={{ height: "75%", maxHeight: "75%", overflow: "auto" }}>
-                        {chapters.map((chapter) => (
+                        {props.pageItems.map((pageItem) => (
                             <div>
-                                <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
+                                <div className="pageLine">{pageItem.pageItemId}</div>
                                 <Divider />
                             </div>
                         ))}
@@ -442,19 +572,19 @@ function TeachingInteractiveChaptersBar(props) {
                 }
                 {deleteMode &&
                     <div style={{ height: "75%", maxHeight: "75%", overflow: "auto" }}>
-                        {chapters.map((chapter) => (
+                        {props.pageItems.map((pageItem) => (
                             <div>
                                 <div style={{ width: "100%", display: "flex" }}>
                                     <div style={{ width: "10%", paddingLeft: "8px" }}>
                                         <IconButton
                                             aria-label="settings"
-                                            onClick={(event) => handleClickDeleteDialogOpen(event, chapter.interactiveChapterId)}
+                                            onClick={(event) => handleClickDeleteDialogOpen(event, pageItem.pageItemId)}
                                         >
                                             <RemoveCircleIcon style={{ color: "red" }} />
                                         </IconButton>
                                     </div>
                                     <div className="deleteJiggle" style={{ width: "85%", paddingLeft: "8px" }} >
-                                        <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
+                                        <div className="pageLine">{pageItem.pageItemId}</div>
                                     </div>
                                 </div>
                                 <Divider />
@@ -491,7 +621,7 @@ function TeachingInteractiveChaptersBar(props) {
                                 Remove
                             </Button>
                         }
-                    
+
                         {deleteMode == true &&
                             <Button
                                 className="btn-upload"
@@ -513,17 +643,17 @@ function TeachingInteractiveChaptersBar(props) {
             </div>
             <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
-                    Interactive Chapter Created Succesfully!
+                    Page Item Created Succesfully!
                 </Alert>
             </Snackbar>
             <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar} >
                 <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: "100%" }} >
-                    Interactive Chapter Deleted Succesfully!
+                    Page Item Deleted Succesfully!
                 </Alert>
             </Snackbar>
             <Snackbar open={openEditSnackbar} autoHideDuration={5000} onClose={handleCloseEditSnackbar} >
                 <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: "100%" }} >
-                    Interactive Chapter Updated Succesfully!
+                    Page Item Updated Succesfully!
                 </Alert>
             </Snackbar>
             <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={handleCloseErrorSnackbar} >
@@ -531,6 +661,171 @@ function TeachingInteractiveChaptersBar(props) {
                     Error!
                 </Alert>
             </Snackbar>
+            <div>
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle>Create New Text Item</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            id="outlined-basic"
+                            label="Page Item X Position"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            style={{ margin: "6px 0" }}
+                            value={newPageItemXPosition}
+                            onChange={(e) => setNewPageItemXPosition(e.target.value)}
+                            error={pageItemXPositionError.value}
+                            helperText={pageItemXPositionError.errorMessage}
+                        />
+                        <TextField
+                            id="outlined-basic"
+                            label="Page Item Y Position"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            style={{ margin: "6px 0" }}
+                            value={newPageItemYPosition}
+                            onChange={(e) => setNewPageItemYPosition(e.target.value)}
+                            error={pageItemYPositionError.value}
+                            helperText={pageItemYPositionError.errorMessage}
+                        />
+                        <TextField
+                            id="outlined-multiline-static" multiline rows={6}
+                            label="Text"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            style={{ margin: "6px 0" }}
+                            value={newTextItemWords}
+                            onChange={(e) => setNewTextItemWords(e.target.value)}
+                        // error={pageItemYPositionError.value}
+                        // helperText={pageItemYPositionError.errorMessage}
+                        />
+                        <TextField
+                            id="outlined-basic"
+                            label="Font Size"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            style={{ margin: "6px 0" }}
+                            value={newTextFontSize}
+                            onChange={(e) => setNewTextFontSize(e.target.value)}
+                        // error={pageItemYPositionError.value}
+                        // helperText={pageItemYPositionError.errorMessage}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={createNewTextItem}>Create</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog open={openUploadDialog} onClose={handleCloseUploadDialog}>
+                    <DialogTitle>Upload File</DialogTitle>
+                    <DialogContent>
+                        <div>
+                            {previewImage && (
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <img
+                                        className="preview my20"
+                                        src={previewImage}
+                                        alt=""
+                                        style={{ height: "40%", width: "40%", justifySelf: 'center' }}
+                                    />
+                                </div>
+                            )}
+                            {currentFile && (
+                                <Box className="my20" display="flex" alignItems="center">
+                                    <Box width="100%" mr={1}>
+                                        <ThemeProvider theme={theme}>
+                                            <LinearProgress variant="determinate" value={progress} />
+                                        </ThemeProvider>
+                                    </Box>
+                                    <Box minWidth={35}>
+                                        <Typography
+                                            variant="body2"
+                                            color="textSecondary"
+                                        >{`${progress}%`}</Typography>
+                                    </Box>
+                                </Box>
+                            )}
+                            {message && (
+                                <Typography
+                                    variant="subtitle2"
+                                    className={`upload-message ${isError ? "error" : ""}`}
+                                >
+                                    {message}
+                                </Typography>
+                            )}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <label htmlFor="btn-upload">
+                                    <input
+                                        id="btn-upload"
+                                        name="btn-upload"
+                                        style={{ display: "none" }}
+                                        type="file"
+                                        accept="/*"
+                                        onChange={selectFile}
+                                    />
+                                    <Button className="btn-choose" variant="outlined" component="span">
+                                        Choose File
+                                    </Button>
+                                </label>
+                                <Button
+                                    className="btn-upload"
+                                    color="primary"
+                                    variant="contained"
+                                    component="span"
+                                    disabled={!currentFile}
+                                    onClick={uploadFile}
+                                >
+                                    Upload
+                                </Button>
+                            </div>
+                        </div>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseUploadDialog}>Cancel</Button>
+                        <Button onClick={createNewFileItem}>Add</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            {/* <div>
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle>Create New Interactive Chapter</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            id="outlined-basic"
+                            label="Interactive Chapter Title"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            style={{ margin: "6px 0" }}
+                            value={newPageItemXPosition}
+                            onChange={(e) => setNewPageItemXPosition(e.target.value)}
+                            error={pageItemXPositionError.value}
+                            helperText={pageItemXPositionError.errorMessage}
+                        />
+                        <TextField
+                            id="outlined-multiline-static" multiline rows={6}
+                            label="Interactive Chapter Description"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            style={{ margin: "6px 0" }}
+                            value={newPageItemYPosition}
+                            onChange={(e) => setNewPageItemYPosition(e.target.value)}
+                            error={pageItemYPositionError.value}
+                            helperText={pageItemYPositionError.errorMessage}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={createNewChapter}>Create</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
             <div>
                 <Dialog open={open} onClose={handleClose}>
                     <DialogTitle>Create New Interactive Chapter</DialogTitle>
@@ -542,10 +837,10 @@ function TeachingInteractiveChaptersBar(props) {
                             fullWidth
                             required
                             style={{ margin: "6px 0" }}
-                            value={newChapterTitle}
-                            onChange={(e) => setNewChapterTitle(e.target.value)}
-                            error={chapterTitleError.value}
-                            helperText={chapterTitleError.errorMessage}
+                            value={newPageItemXPosition}
+                            onChange={(e) => setNewPageItemXPosition(e.target.value)}
+                            error={pageItemXPositionError.value}
+                            helperText={pageItemXPositionError.errorMessage}
                         />
                         <TextField
                             id="outlined-multiline-static" multiline rows={6}
@@ -554,10 +849,10 @@ function TeachingInteractiveChaptersBar(props) {
                             fullWidth
                             required
                             style={{ margin: "6px 0" }}
-                            value={newChapterDescription}
-                            onChange={(e) => setNewChapterDescription(e.target.value)}
-                            error={chapterDescriptionError.value}
-                            helperText={chapterDescriptionError.errorMessage}
+                            value={newPageItemYPosition}
+                            onChange={(e) => setNewPageItemYPosition(e.target.value)}
+                            error={pageItemYPositionError.value}
+                            helperText={pageItemYPositionError.errorMessage}
                         />
                     </DialogContent>
                     <DialogActions>
@@ -565,7 +860,7 @@ function TeachingInteractiveChaptersBar(props) {
                         <Button onClick={createNewChapter}>Create</Button>
                     </DialogActions>
                 </Dialog>
-            </div>
+            </div> */}
             <div>
                 <Dialog
                     open={deleteDialogOpen}
@@ -614,8 +909,8 @@ function TeachingInteractiveChaptersBar(props) {
                             value={editedChapterTitle}
                             required
                             onChange={(e) => setEditedChapterTitle(e.target.value)}
-                            error={chapterDescriptionError.value}
-                            helperText={chapterDescriptionError.errorMessage}
+                            error={pageItemYPositionError.value}
+                            helperText={pageItemYPositionError.errorMessage}
                         />
                         <TextField
                             id="outlined-basic"
@@ -626,8 +921,8 @@ function TeachingInteractiveChaptersBar(props) {
                             value={editedChapterDescription}
                             required
                             onChange={(e) => setEditedChapterDescription(e.target.value)}
-                            error={chapterDescriptionError.value}
-                            helperText={chapterDescriptionError.errorMessage}
+                            error={pageItemYPositionError.value}
+                            helperText={pageItemYPositionError.errorMessage}
                         />
                     </DialogContent>
                     <DialogActions>
@@ -652,10 +947,10 @@ function TeachingInteractiveChaptersBar(props) {
                             fullWidth
                             required
                             style={{ margin: "6px 0" }}
-                            value={newChapterTitle}
-                            onChange={(e) => setNewChapterTitle(e.target.value)}
-                            error={chapterTitleError.value}
-                            helperText={chapterTitleError.errorMessage}
+                            value={newPageItemXPosition}
+                            onChange={(e) => setNewPageItemXPosition(e.target.value)}
+                            error={pageItemXPositionError.value}
+                            helperText={pageItemXPositionError.errorMessage}
                         />
                         <TextField
                             id="outlined-basic"
@@ -664,15 +959,15 @@ function TeachingInteractiveChaptersBar(props) {
                             fullWidth
                             required
                             style={{ margin: "6px 0" }}
-                            value={newChapterDescription}
-                            onChange={(e) => setNewChapterDescription(e.target.value)}
-                            error={chapterDescriptionError.value}
-                            helperText={chapterDescriptionError.errorMessage}
+                            value={newPageItemYPosition}
+                            onChange={(e) => setNewPageItemYPosition(e.target.value)}
+                            error={pageItemYPositionError.value}
+                            helperText={pageItemYPositionError.errorMessage}
                         />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleCloseSettings}>Cancel</Button>
-                        <Button onClick={createNewChapter}>Create</Button>
+                        <Button onClick={handleCloseSettings}>Create</Button>
                     </DialogActions>
                 </Dialog>
             </div>
@@ -680,4 +975,4 @@ function TeachingInteractiveChaptersBar(props) {
     );
 }
 
-export default TeachingInteractiveChaptersBar;
+export default TeachingInteractivePageBar;
