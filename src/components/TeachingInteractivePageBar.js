@@ -65,6 +65,7 @@ import {
     createTheme,
 } from "@mui/material";
 import UploadService from "../services/UploadFilesService";
+import CreateInteractiveQuizForm from "../pages/CreateInteractiveQuizForm";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -220,10 +221,7 @@ function TeachingInteractivePageBar(props) {
     ]
 
     //create
-    const [newPageItemXPosition, setNewPageItemXPosition] = useState("");
-    const [newPageItemYPosition, setNewPageItemYPosition] = useState("");
     const [newTextItemWords, setNewTextItemWords] = useState("");
-    const [newTextFontSize, setNewTextFontSize] = useState("");
 
     const [pageItemXPositionError, setPageItemXPositionError] = useState({ value: false, errorMessage: "" });
     const [pageItemYPositionError, setPageItemYPositionError] = useState({ value: false, errorMessage: "" });
@@ -241,6 +239,7 @@ function TeachingInteractivePageBar(props) {
     const [chapterIdToEdit, setChapterIdToEdit] = useState("");
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
     const [openSettings, setOpenSettings] = React.useState(false);
+    const [openCreateInteractiveQuizDialog, setOpenCreateInteractiveQuizDialog] = React.useState(false);
 
     const handleOpenSettings = () => {
         setOpenSettings(true);
@@ -264,6 +263,14 @@ function TeachingInteractivePageBar(props) {
 
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const handleOpenCreateInteractiveQuizDialog = () => {
+        setOpenCreateInteractiveQuizDialog(true);
+    };
+
+    const handleCloseInteractiveQuizDialog = () => {
+        setOpenCreateInteractiveQuizDialog(false);
     };
 
     const handleOpenUploadDialog = () => {
@@ -293,55 +300,41 @@ function TeachingInteractivePageBar(props) {
         setEditDialogOpen(false);
     };
 
-    const createNewTextItem = async (e) => {
+    const addPageDescription = async (e) => {
         e.preventDefault();
-        setPageItemXPositionError({ value: false, errorMessage: "" });
-        setPageItemYPositionError({ value: false, errorMessage: "" });
-        if (newPageItemXPosition == "") {
-            setPageItemXPositionError({ value: true, errorMessage: "Page Item X Position cannot be empty!" });
-        }
-        if (newPageItemYPosition == "") {
-            setPageItemYPositionError({ value: true, errorMessage: "Page Item Y Position cannot be empty!" });
-        }
-        if (newPageItemXPosition && newPageItemYPosition) {
-            var pageItemXPosition = parseFloat(newPageItemXPosition)
-            var pageItemYPosition = parseFloat(newPageItemYPosition)
-            var textItemWords = newTextItemWords
-            var textFontSize = parseFloat(newTextFontSize)
-            const textItemRequest = { pageItemXPosition, pageItemYPosition, textItemWords, textFontSize }
-            console.log(textItemRequest);
-            try {
-                const response = await fetch("http://localhost:8080/pageItem/" + props.pageId + "/addTextItem", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(textItemRequest),
-                })
-                console.log(response);
-                if (response.ok == false) {
-                    console.log("Error");
-                    handleClickErrorSnackbar()
-                } else {
-                    console.log("New Text Item Created Successfully!");
-                    handleClickSnackbar()
-                }
-            } catch (err) {
-                console.log(err);
+        var pageDescription = newTextItemWords
+        var pageNumber = props.pageNumber
+        const editedPage = { pageDescription, pageNumber }
+        try {
+            const response = await fetch("http://localhost:8080/interactivePage/interactivePages/" + props.pageId, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(editedPage),
+            })
+            console.log(response);
+            if (response.ok == false) {
+                console.log("Error");
                 handleClickErrorSnackbar()
+            } else {
+                console.log("Page Description Updated Successfully!");
+                handleClickSnackbar()
             }
-            setRefreshPageBar(true)
-            handleClose();
-        };
+        } catch (err) {
+            console.log(err);
+            handleClickErrorSnackbar()
+        }
+        setRefreshPageBar(true)
+        props.setRefreshInteractivePage(true)
+        handleClose();
     }
 
     const createNewFileItem = async (e) => {
         e.preventDefault();
-        var pageItemXPosition = 50
-        var pageItemYPosition = 50
         var attachmentId = uploadedAttachmentId
-        const fileItemRequest = { pageItemXPosition, pageItemYPosition, attachmentId }
+        const fileItemRequest = { attachmentId }
         console.log(fileItemRequest);
         try {
-            const response = await fetch("http://localhost:8080/pageItem/" + props.pageId + "/addFileItem", {
+            const response = await fetch("http://localhost:8080/interactivePage/" + props.pageId + "/addFileItem", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(fileItemRequest),
@@ -359,6 +352,7 @@ function TeachingInteractivePageBar(props) {
             handleClickErrorSnackbar()
         }
         setRefreshPageBar(true)
+        props.setRefreshInteractivePage(true)
         handleCloseUploadDialog();
     }
 
@@ -388,44 +382,34 @@ function TeachingInteractivePageBar(props) {
         handleClickDeleteSnackbar();
     };
 
-    const editChapter = async (e) => {
-        e.preventDefault();
-        setPageItemXPositionError({ value: false, errorMessage: "" });
-        setPageItemYPositionError({ value: false, errorMessage: "" });
-        if (newPageItemXPosition == "") {
-            setPageItemXPositionError({ value: true, errorMessage: "Interactive Chapter title cannot be empty!" });
-        }
-        if (newPageItemYPosition == "") {
-            setPageItemYPositionError({ value: true, errorMessage: "Interactive Chapter description cannot be empty!" });
-        }
-        if (newPageItemXPosition && newPageItemYPosition) {
-            var interactiveChapterTitle = newPageItemXPosition
-            var interactiveChapterDescription = newPageItemYPosition
-            const editedChapter = { interactiveChapterTitle, interactiveChapterDescription }
-            console.log(editedChapter);
-            try {
-                const response = await fetch("http://localhost:8080/interactiveChapter/interactiveChapters/" + chapterIdToEdit, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(editedChapter),
-                })
-                console.log(response);
-                if (response.ok == false) {
-                    console.log("Error");
-                    handleClickErrorSnackbar()
-                } else {
-                    console.log("Interactive Chapter Edited Successfully!");
-                    handleClickSnackbar()
-                }
-            } catch (err) {
-                console.log(err);
-                handleClickErrorSnackbar()
-            }
-            setRefreshPageBar(true);
-            handleEditDialogClose();
-            handleClickEditSnackbar();
-        };
-    }
+    // const editChapter = async (e) => {
+    //     e.preventDefault();
+    //     setPageItemXPositionError({ value: false, errorMessage: "" });
+    //     setPageItemYPositionError({ value: false, errorMessage: "" });
+    //     const editedChapter = { interactiveChapterTitle, interactiveChapterDescription }
+    //     console.log(editedChapter);
+    //     try {
+    //         const response = await fetch("http://localhost:8080/interactiveChapter/interactiveChapters/" + chapterIdToEdit, {
+    //             method: "PUT",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify(editedChapter),
+    //         })
+    //         console.log(response);
+    //         if (response.ok == false) {
+    //             console.log("Error");
+    //             handleClickErrorSnackbar()
+    //         } else {
+    //             console.log("Interactive Chapter Edited Successfully!");
+    //             handleClickSnackbar()
+    //         }
+    //     } catch (err) {
+    //         console.log(err);
+    //         handleClickErrorSnackbar()
+    //     }
+    //     setRefreshPageBar(true);
+    //     handleEditDialogClose();
+    //     handleClickEditSnackbar();
+    // }
 
     const renderEmptyRowMessage = () => {
         if (chapters.length === 0) {
@@ -493,7 +477,7 @@ function TeachingInteractivePageBar(props) {
                         color="primary"
                         component="span"
                         variant="contained"
-                        onClick={handleClickOpen}
+                        onClick={handleOpenCreateInteractiveQuizDialog}
                         style={{ width: "10%", marginRight: "10px" }}
                     >
                         <QuizIcon />
@@ -562,17 +546,17 @@ function TeachingInteractivePageBar(props) {
                 {renderEmptyRowMessage}
                 {deleteMode == false &&
                     <div style={{ height: "75%", maxHeight: "75%", overflow: "auto" }}>
-                        {props.pageItems.map((pageItem) => (
+                        {/* {props.pageItems.map((pageItem) => (
                             <div>
                                 <div className="pageLine">{pageItem.pageItemId}</div>
                                 <Divider />
                             </div>
-                        ))}
+                        ))} */}
                     </div>
                 }
                 {deleteMode &&
                     <div style={{ height: "75%", maxHeight: "75%", overflow: "auto" }}>
-                        {props.pageItems.map((pageItem) => (
+                        {/* {props.pageItems.map((pageItem) => (
                             <div>
                                 <div style={{ width: "100%", display: "flex" }}>
                                     <div style={{ width: "10%", paddingLeft: "8px" }}>
@@ -589,7 +573,7 @@ function TeachingInteractivePageBar(props) {
                                 </div>
                                 <Divider />
                             </div>
-                        ))}
+                        ))} */}
                     </div>
                 }
                 <div style={{ height: "10%" }}>
@@ -662,33 +646,21 @@ function TeachingInteractivePageBar(props) {
                 </Alert>
             </Snackbar>
             <div>
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Create New Text Item</DialogTitle>
+                <Dialog open={openCreateInteractiveQuizDialog} onClose={handleCloseInteractiveQuizDialog}>
+                    <DialogTitle>Add Quiz Question</DialogTitle>
                     <DialogContent>
-                        <TextField
-                            id="outlined-basic"
-                            label="Page Item X Position"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            style={{ margin: "6px 0" }}
-                            value={newPageItemXPosition}
-                            onChange={(e) => setNewPageItemXPosition(e.target.value)}
-                            error={pageItemXPositionError.value}
-                            helperText={pageItemXPositionError.errorMessage}
-                        />
-                        <TextField
-                            id="outlined-basic"
-                            label="Page Item Y Position"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            style={{ margin: "6px 0" }}
-                            value={newPageItemYPosition}
-                            onChange={(e) => setNewPageItemYPosition(e.target.value)}
-                            error={pageItemYPositionError.value}
-                            helperText={pageItemYPositionError.errorMessage}
-                        />
+                        {/* <CreateInteractiveQuizForm></CreateInteractiveQuizForm> */}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseInteractiveQuizDialog}>Cancel</Button>
+                        <Button onClick={addPageDescription}>Add</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle>Add Page Description</DialogTitle>
+                    <DialogContent>
                         <TextField
                             id="outlined-multiline-static" multiline rows={6}
                             label="Text"
@@ -701,22 +673,10 @@ function TeachingInteractivePageBar(props) {
                         // error={pageItemYPositionError.value}
                         // helperText={pageItemYPositionError.errorMessage}
                         />
-                        <TextField
-                            id="outlined-basic"
-                            label="Font Size"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            style={{ margin: "6px 0" }}
-                            value={newTextFontSize}
-                            onChange={(e) => setNewTextFontSize(e.target.value)}
-                        // error={pageItemYPositionError.value}
-                        // helperText={pageItemYPositionError.errorMessage}
-                        />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={createNewTextItem}>Create</Button>
+                        <Button onClick={addPageDescription}>Add</Button>
                     </DialogActions>
                 </Dialog>
             </div>
@@ -791,76 +751,6 @@ function TeachingInteractivePageBar(props) {
                     </DialogActions>
                 </Dialog>
             </div>
-            {/* <div>
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Create New Interactive Chapter</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            id="outlined-basic"
-                            label="Interactive Chapter Title"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            style={{ margin: "6px 0" }}
-                            value={newPageItemXPosition}
-                            onChange={(e) => setNewPageItemXPosition(e.target.value)}
-                            error={pageItemXPositionError.value}
-                            helperText={pageItemXPositionError.errorMessage}
-                        />
-                        <TextField
-                            id="outlined-multiline-static" multiline rows={6}
-                            label="Interactive Chapter Description"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            style={{ margin: "6px 0" }}
-                            value={newPageItemYPosition}
-                            onChange={(e) => setNewPageItemYPosition(e.target.value)}
-                            error={pageItemYPositionError.value}
-                            helperText={pageItemYPositionError.errorMessage}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={createNewChapter}>Create</Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-            <div>
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Create New Interactive Chapter</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            id="outlined-basic"
-                            label="Interactive Chapter Title"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            style={{ margin: "6px 0" }}
-                            value={newPageItemXPosition}
-                            onChange={(e) => setNewPageItemXPosition(e.target.value)}
-                            error={pageItemXPositionError.value}
-                            helperText={pageItemXPositionError.errorMessage}
-                        />
-                        <TextField
-                            id="outlined-multiline-static" multiline rows={6}
-                            label="Interactive Chapter Description"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            style={{ margin: "6px 0" }}
-                            value={newPageItemYPosition}
-                            onChange={(e) => setNewPageItemYPosition(e.target.value)}
-                            error={pageItemYPositionError.value}
-                            helperText={pageItemYPositionError.errorMessage}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={createNewChapter}>Create</Button>
-                    </DialogActions>
-                </Dialog>
-            </div> */}
             <div>
                 <Dialog
                     open={deleteDialogOpen}
@@ -883,91 +773,6 @@ function TeachingInteractivePageBar(props) {
                         <Button onClick={deleteChapter} autoFocus>
                             Delete
                         </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-            <div>
-                <Dialog
-                    open={editDialogOpen}
-                    onClose={handleEditDialogClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">
-                        {"You are editing this interactive chapter"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            Enter the new interactive chapter details
-                        </DialogContentText>
-                        <TextField
-                            id="outlined-basic"
-                            label="Interactive Chapter Title"
-                            variant="outlined"
-                            fullWidth
-                            style={{ margin: "6px 0" }}
-                            value={editedChapterTitle}
-                            required
-                            onChange={(e) => setEditedChapterTitle(e.target.value)}
-                            error={pageItemYPositionError.value}
-                            helperText={pageItemYPositionError.errorMessage}
-                        />
-                        <TextField
-                            id="outlined-basic"
-                            label="Interactive Chapter Description"
-                            variant="outlined"
-                            fullWidth
-                            style={{ margin: "6px 0" }}
-                            value={editedChapterDescription}
-                            required
-                            onChange={(e) => setEditedChapterDescription(e.target.value)}
-                            error={pageItemYPositionError.value}
-                            helperText={pageItemYPositionError.errorMessage}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleEditDialogClose}>Cancel</Button>
-                        <Button onClick={editChapter} autoFocus>
-                            Edit
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-            <div>
-                <Dialog open={openSettings} onClose={handleCloseSettings}>
-                    <DialogTitle>Interactive Chapters Settings</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            You are in the chapters settings
-                        </DialogContentText>
-                        <TextField
-                            id="outlined-basic"
-                            label="Interactive Book Title"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            style={{ margin: "6px 0" }}
-                            value={newPageItemXPosition}
-                            onChange={(e) => setNewPageItemXPosition(e.target.value)}
-                            error={pageItemXPositionError.value}
-                            helperText={pageItemXPositionError.errorMessage}
-                        />
-                        <TextField
-                            id="outlined-basic"
-                            label="Interactive Book Max Score"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            style={{ margin: "6px 0" }}
-                            value={newPageItemYPosition}
-                            onChange={(e) => setNewPageItemYPosition(e.target.value)}
-                            error={pageItemYPositionError.value}
-                            helperText={pageItemYPositionError.errorMessage}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseSettings}>Cancel</Button>
-                        <Button onClick={handleCloseSettings}>Create</Button>
                     </DialogActions>
                 </Dialog>
             </div>

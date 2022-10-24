@@ -126,18 +126,18 @@ function TeachingInteractiveChaptersBar(props) {
 
     const [deleteMode, setDeleteMode] = useState(false);
 
-     //retrieve all chapters of the book
-     const [chapters, setChapters] = useState([]);
+    //retrieve all chapters of the book
+    const [chapters, setChapters] = useState([]);
 
-     React.useEffect(() => {
-         setRefreshPage(false);
-         fetch("http://localhost:8080/interactiveChapter/interactiveBook/" + interactiveBookId + "/interactiveChapters")
-             .then((res) => res.json())
-             .then((result) => {
-                 setChapters(result);
-                 console.log(result);
-             });
-     }, [refreshPage]);
+    React.useEffect(() => {
+        setRefreshPage(false);
+        fetch("http://localhost:8080/interactiveChapter/interactiveBook/" + interactiveBookId + "/interactiveChapters")
+            .then((res) => res.json())
+            .then((result) => {
+                setChapters(result);
+                console.log(result);
+            });
+    }, [refreshPage]);
 
     // function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
     //     return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
@@ -196,6 +196,10 @@ function TeachingInteractiveChaptersBar(props) {
 
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const handleChapterChange = (event, chapterId) => {
+        props.setChapterIdToBrowse(chapterId)
     };
 
     const handleClickDeleteDialogOpen = (event, chapterId) => {
@@ -434,7 +438,10 @@ function TeachingInteractiveChaptersBar(props) {
                     <div style={{ height: "75%", maxHeight: "75%", overflow: "auto" }}>
                         {chapters.map((chapter) => (
                             <div>
-                                <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
+                                <Button onClick={(event) => handleChapterChange(event, chapter.interactiveChapterId)}>
+                                    {chapter.interactiveChapterId}
+                                    <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
+                                </Button>
                                 <Divider />
                             </div>
                         ))}
@@ -454,7 +461,9 @@ function TeachingInteractiveChaptersBar(props) {
                                         </IconButton>
                                     </div>
                                     <div className="deleteJiggle" style={{ width: "85%", paddingLeft: "8px" }} >
-                                        <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
+                                        <Button>
+                                            <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
+                                        </Button>
                                     </div>
                                 </div>
                                 <Divider />
@@ -491,7 +500,7 @@ function TeachingInteractiveChaptersBar(props) {
                                 Remove
                             </Button>
                         }
-                    
+
                         {deleteMode == true &&
                             <Button
                                 className="btn-upload"
