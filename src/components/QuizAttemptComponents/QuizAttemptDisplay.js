@@ -8,7 +8,7 @@ export default function QuizAttemptDisplay(props) {
 
   const [currentQuiz, setCurrentQuiz] = useState();
   const [quizQuestions, setQuizQuestions] = useState([]);
-  const [questionAttempts, setQuestionAttempts] = useState([]);
+  const [questionAttempts, setQuestionAttempts] = useState(props.questionAttemptsProp);
   const [quizStatusEnum, setQuizStatusEnum] = useState();
 
   React.useEffect(() => {
@@ -18,17 +18,26 @@ export default function QuizAttemptDisplay(props) {
     setQuestionAttempts(props.questionAttemptsProp);
   }, []);
 
-  // function selectCorrectQuestionOption(questionId, option) {
-  //   const tempFormQuestions = [...formQuestions];
-  //   const questionIndex = tempFormQuestions.findIndex(
-  //     (f) => f.localid == questionId
-  //   );
-  //   if (option && option != "") {
-  //     tempFormQuestions[questionIndex].correctOption = option;
-  //     setFormQuestions(tempFormQuestions);
-  //     console.log("correct option selected: ", option);
-  //   }
-  // }
+  function selectOption() {
+
+  }
+
+  function inputShortAnswerResponse(questionIdProp, shortAnswerResponse) {
+    // console.log(questionIdProp)
+    console.log("here are attempts:", questionAttempts)
+    const tempQuestionAttempts = [...questionAttempts];
+    const questionAttemptIndex = tempQuestionAttempts.findIndex(
+    //need to find index of question attempt with same question id prop as question id
+      (f) => f.questionAttemptedQuestionId == questionIdProp
+    );
+    console.log("found index", questionAttemptIndex);
+    if (questionAttemptIndex > -1) {
+      //write short answer response into that questionAttempt
+      tempQuestionAttempts[questionAttemptIndex].shortAnswerResponse = shortAnswerResponse;
+      setQuestionAttempts(tempQuestionAttempts);
+      console.log("input short answer:", shortAnswerResponse)
+    }
+  }
 
   return (
     <Grid container spacing={0} direction={"column"} alignContent={"center"}>
@@ -45,7 +54,7 @@ export default function QuizAttemptDisplay(props) {
                   quizStatusEnumProp={quizStatusEnum}
                   indexProp={index + 1}
                   // selectOptionProp={}
-                  // shortAnswerResponseProp={}
+                  inputShortAnswerResponseProp={inputShortAnswerResponse}
                 />
               </Paper>
             </Grid>

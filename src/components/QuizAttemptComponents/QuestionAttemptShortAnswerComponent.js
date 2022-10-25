@@ -6,7 +6,10 @@ export default function QuestionAttemptShortAnswerComponent(props) {
       multiline
       type="text"
       placeholder="Input your answer here"
-      style={{ width: "70%", fontSize: 20}}
+      style={{ width: "70%", fontSize: 20 }}
+      onChange={(e) =>
+        props.inputShortAnswerResponseProp(props.questionIdProp, e.target.value)
+      }
     />
   );
 }

@@ -54,27 +54,20 @@ export default function QuizAttempt(props) {
     setTitle(currentQuiz.assessmentTitle);
   }
 
-  // fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-
-  //   body: JSON.stringify(updatedQuiz),
-  // })
-
-
   function handleStartQuiz() {
     fetch(
       "http://localhost:8080/quizAttempt/createQuizAttempt/" +
         quizId +
         "/" +
-      learnerId, {method: "POST"}
+        learnerId,
+      { method: "POST" }
     )
       .then((res) => res.json())
       .then((result) => {
-        setQuestionAttempts(result);
-        console.log("questionAttempts fetched: ", result);
+        setQuestionAttempts(result.questionAttempts);
+        setStartQuiz("true");
+        console.log("questionAttempts fetched: ", result.questionAttempts);
       });
-    setStartQuiz("true");
   }
 
   return (

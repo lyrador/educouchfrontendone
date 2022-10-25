@@ -48,7 +48,6 @@ export default function QuizQuestionAttemptComponent(props) {
         <Grid>
           <QuestionAttemptContentComponent
             isQuestionAttemptProp={"true"}
-            questionIdProp={props.questionProp.localid}
             questionContentProp={props.questionProp.questionContent}
           />
         </Grid>
@@ -57,6 +56,8 @@ export default function QuizQuestionAttemptComponent(props) {
           {props.questionProp.questionType == "shortAnswer" && (
             <QuestionAttemptShortAnswerComponent
               isQuestionAttemptProp={"true"}
+              questionIdProp={ props.questionProp.questionId}
+              inputShortAnswerResponseProp={props.inputShortAnswerResponseProp}
             />
           )}
           {props.questionProp.questionType == "mcq" && (
