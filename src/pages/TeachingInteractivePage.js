@@ -326,7 +326,7 @@ function TeachingInteractivePage(props) {
                             width='100%'
                             height='100%'
                             controls
-                            url='https://educouchbucket.s3.ap-southeast-1.amazonaws.com/Cute+Husky+Dogs+Crawling++HQ.mp4'
+                            url={currentPage.attachment.fileURL}
                         />
                     </div>
                 );
