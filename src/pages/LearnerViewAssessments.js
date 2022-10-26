@@ -29,7 +29,7 @@ export default function LearnerViewAssessments(props) {
       console.log("assessment list is empty");
       return (
         <TableRow>
-          <TableCell style={{ textAlign: "center" }}>
+          <TableCell style={{ textAlign: "left" }}>
             There are currently no assessments in this course!
           </TableCell>
         </TableRow>
