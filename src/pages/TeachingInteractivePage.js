@@ -120,19 +120,14 @@ function TeachingInteractivePage(props) {
     //create
     const [newPageNumber, setNewPageNumber] = useState("");
     const [newPageDescription, setNewPageDescription] = useState("");
-    const [openAddPageDialog, setOpenAddPageDialog] = React.useState(false);
-    const handleClickOpen = () => { setOpenAddPageDialog(true) };
-    const handleClose = () => { setOpenAddPageDialog(false) };
+
+
+    console.log(currentPage.pageNumber)
 
     const createNewPage = async (e) => {
         e.preventDefault();
-        setPageNumberError({ value: false, errorMessage: "" });
         setPageDescriptionError({ value: false, errorMessage: "" });
-        if (newPageNumber == "") {
-            setPageNumberError({ value: true, errorMessage: "Interactive Page Number cannot be empty!" });
-        }
-        if (newPageNumber) {
-            var pageNumber = newPageNumber
+            var pageNumber = pages.length + 1; 
             const newPage = { pageNumber }
             console.log(newPage);
             try {
@@ -146,7 +141,6 @@ function TeachingInteractivePage(props) {
                     console.log("Error");
                     handleClickErrorSnackbar()
                 } else {
-                    console.log("New Page Created Successfully!");
                     handleClickSnackbar()
                 }
             } catch (err) {
@@ -154,16 +148,14 @@ function TeachingInteractivePage(props) {
                 handleClickErrorSnackbar()
             }
             setRefreshInteractivePage(true)
-            handleClose();
-        };
     }
 
     //delete
     const [pageIdToDelete, setPageIdToDelete] = useState("");
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-    const handleClickDeleteDialogOpen = (event, pageId) => {
-        setPageIdToDelete(pageId);
+    const handleClickDeleteDialogOpen = (event) => {
+        setPageIdToDelete(currentPage.interactivePageId);
         setDeleteDialogOpen(true);
     };
 
@@ -204,6 +196,7 @@ function TeachingInteractivePage(props) {
     const handleClickEditDialogOpen = (event, pageId, pageTitle) => {
         setEditedPageNumber(pageTitle);
         setPageIdToEdit(pageId);
+        console.log(pageId); 
         setEditDialogOpen(true);
     };
 
@@ -213,11 +206,11 @@ function TeachingInteractivePage(props) {
 
     const editPage = async (e) => {
         e.preventDefault();
-        setPageNumberError({ value: false, errorMessage: "" });
+        //setPageNumberError({ value: false, errorMessage: "" });
         setPageDescriptionError({ value: false, errorMessage: "" });
-        if (newPageNumber == "") {
-            setPageNumberError({ value: true, errorMessage: "Interactive Page title cannot be empty!" });
-        }
+        // if (newPageNumber == "") {
+        //     setPageNumberError({ value: true, errorMessage: "Interactive Page title cannot be empty!" });
+        // }
         if (newPageDescription == "") {
             setPageDescriptionError({ value: true, errorMessage: "Interactive Page description cannot be empty!" });
         }
@@ -250,19 +243,7 @@ function TeachingInteractivePage(props) {
         };
     }
 
-    //settings
-    const [openSettings, setOpenSettings] = React.useState(false);
-
-    const handleOpenSettings = () => {
-        setOpenSettings(true);
-    };
-
-    const handleCloseSettings = () => {
-        setOpenSettings(false);
-    };
-
     //error handling
-    const [pageNumberError, setPageNumberError] = useState({ value: false, errorMessage: "" });
     const [pageDescriptionError, setPageDescriptionError] = useState({ value: false, errorMessage: "" });
 
     //debug
@@ -377,12 +358,6 @@ function TeachingInteractivePage(props) {
                                     </Typography>
                                 </div>
                             </div>
-                            {/*<IconButton
-                                aria-label="settings"
-                                onClick={(event) => printStatement()}
-                            >
-                                <DeleteIcon />
-                            </IconButton> */}
                         </div>
                         }
                     </Paper>
@@ -406,11 +381,24 @@ function TeachingInteractivePage(props) {
                         color="primary"
                         component="span"
                         variant="contained"
-                        onClick={handleClickOpen}
+                        onClick={createNewPage}
                         style={{ width: "40%", marginRight: "10px" }}
                         startIcon={<AddIcon />}
                     >
                         Add
+                    </Button>
+                </div>
+                <div>
+                    <Button
+                        className="btn-upload"
+                        color="secondary"
+                        component="span"
+                        variant="contained"
+                        onClick={handleClickDeleteDialogOpen}
+                        style={{ width: "80%", marginRight: "5px" }}
+                        startIcon={<DeleteIcon />}
+                    >
+                        Delete
                     </Button>
                 </div>
             </div>
@@ -426,8 +414,7 @@ function TeachingInteractivePage(props) {
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            These will delete all the chapters and pages inside the
-                            interactive book. You will not be able to undo this action. Are you sure you
+                            This will delete this entire page in this chapter. You will not be able to undo this action. Are you sure you
                             want to delete?
                         </DialogContentText>
                     </DialogContent>
@@ -477,25 +464,6 @@ function TeachingInteractivePage(props) {
                         <Button onClick={editPage} autoFocus>
                             Edit
                         </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-            <div>
-                <Dialog open={openAddPageDialog} onClose={handleClose}>
-                    <DialogTitle>Create New Interactive Page</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            id="outlined-basic" label="Interactive Page Number" variant="outlined" fullWidth required
-                            style={{ margin: "6px 0" }}
-                            value={newPageNumber}
-                            onChange={(e) => setNewPageNumber(e.target.value)}
-                            error={pageNumberError.value}
-                            helperText={pageNumberError.errorMessage}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={createNewPage}>Create</Button>
                     </DialogActions>
                 </Dialog>
             </div>
