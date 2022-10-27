@@ -163,6 +163,7 @@ function TeachingInteractivePage(props) {
         setDeleteDialogOpen(false);
     };
 
+    //when delete the pageId of the current page, the page numbers on the navigation bar adjusts however the page number in the db table doesnt, so somehow need to update the page number in DB
     const deletePage = async (e) => {
         e.preventDefault();
         try {
@@ -410,7 +411,7 @@ function TeachingInteractivePage(props) {
                     aria-describedby="alert-dialog-description"
                 >
                     <DialogTitle id="alert-dialog-title">
-                        {"Delete this interactive book?"}
+                        {"Delete this interactive page?"}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">

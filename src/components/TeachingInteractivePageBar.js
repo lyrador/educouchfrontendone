@@ -66,6 +66,8 @@ import {
 } from "@mui/material";
 import UploadService from "../services/UploadFilesService";
 import CreateInteractiveQuizForm from "../pages/CreateInteractiveQuizForm";
+import CreateQuizForm from "../pages/CreateQuizForm";
+import CreateAssessment from "../pages/CreateAssessment";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -416,7 +418,7 @@ function TeachingInteractivePageBar(props) {
             return (
                 <TableRow>
                     <TableCell colSpan={4} style={{ textAlign: "center" }}>
-                        There are currently no interactive chapters in this book!
+                        There are currently no interactive pages in this book!
                     </TableCell>
                 </TableRow>
             );
@@ -649,7 +651,8 @@ function TeachingInteractivePageBar(props) {
                 <Dialog open={openCreateInteractiveQuizDialog} onClose={handleCloseInteractiveQuizDialog}>
                     <DialogTitle>Add Quiz Question</DialogTitle>
                     <DialogContent>
-                        {/* <CreateInteractiveQuizForm></CreateInteractiveQuizForm> */}
+                         <CreateAssessment></CreateAssessment>
+                         {/* <CreateQuizForm></CreateQuizForm> */}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleCloseInteractiveQuizDialog}>Cancel</Button>
