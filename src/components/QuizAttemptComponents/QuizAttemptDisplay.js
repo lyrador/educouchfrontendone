@@ -10,10 +10,12 @@ export default function QuizAttemptDisplay(props) {
   const [questionAttempts, setQuestionAttempts] = useState(
     props.questionAttemptsProp
   );
+  const [quizAttempt, setQuizAttempt] = useState(props.currentQuizAttemptProp);
   const [quizStatusEnum, setQuizStatusEnum] = useState();
 
   React.useEffect(() => {
     setCurrentQuiz(props.currentQuizProp);
+    setQuizAttempt(props.currentQuizAttemptProp);
     setQuizQuestions(props.questionsProp);
     setQuizStatusEnum(props.assessmentStatusEnum);
     setQuestionAttempts(props.questionAttemptsProp);
@@ -28,17 +30,26 @@ export default function QuizAttemptDisplay(props) {
 
   function handleSaveQuizAttempt() {
     //call saveQuizAttempt api (api calls update quizAttempt)
-  }
+    quizAttempt.questionAttempts = questionAttempts;
+    console.log("current quiz attempt: ", quizAttempt);
+    fetch(
+      "http://localhost:8080/quizAttempt/updateQuizAttemptById/1",
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(quizAttempt),
+      }
+    )
+      .then((res) => res.json())
+      .then(console.log("saved: ", quizAttempt));
+  };
 
   function inputShortAnswerResponse(questionIdProp, shortAnswerResponse) {
-    // console.log(questionIdProp)
-    console.log("here are attempts:", questionAttempts);
     const tempQuestionAttempts = [...questionAttempts];
     const questionAttemptIndex = tempQuestionAttempts.findIndex(
       //need to find index of question attempt with same question id prop as question id
       (f) => f.questionAttemptedQuestionId == questionIdProp
     );
-    console.log("found index", questionAttemptIndex);
     if (questionAttemptIndex > -1) {
       //write short answer response into that questionAttempt
       tempQuestionAttempts[questionAttemptIndex].shortAnswerResponse =

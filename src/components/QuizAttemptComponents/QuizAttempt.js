@@ -29,6 +29,7 @@ export default function QuizAttempt(props) {
   const [maxAttempts, setMaxAttempts] = useState(0);
   const [quizStatusEnum, setQuizStatusEnum] = useState();
   const [questionAttempts, setQuestionAttempts] = useState([]);
+  const [quizAttempt, setQuizAttempt] = useState();
   const [quizExpired, setQuizExpired] = useState("false");
 
   React.useEffect(() => {
@@ -49,7 +50,7 @@ export default function QuizAttempt(props) {
         setMaxAttempts(result.maxAttempts);
         setQuizStatusEnum(result.assessmentStatusEnum);
         setQuizExpired(result.isExpired);
-        console.log("retrieved quiz:", result)
+        console.log("retrieved quiz:", result);
       });
   }, []);
 
@@ -68,6 +69,7 @@ export default function QuizAttempt(props) {
       .then((res) => res.json())
       .then((result) => {
         setQuestionAttempts(result.questionAttempts);
+        setQuizAttempt(result);
         setStartQuiz("true");
         console.log("questionAttempts fetched: ", result.questionAttempts);
       });
@@ -98,14 +100,17 @@ export default function QuizAttempt(props) {
           ) : (
             <Grid item>Maximum Attempts: Unlimited Attempts </Grid>
           )}
-          {currentQuiz.isExpired == "false" &&
-            <Button onClick={handleStartQuiz} variant="contained">Start Quiz</Button>
-          }
+          {currentQuiz.isExpired == "false" && (
+            <Button onClick={handleStartQuiz} variant="contained">
+              Start Quiz
+            </Button>
+          )}
         </Grid>
       ) : (
         <Grid>
           <QuizAttemptDisplay
             currentQuizProp={currentQuiz}
+            currentQuizAttemptProp={quizAttempt}
             quizIdProp={quizId}
             questionsProp={quizQuestions}
             hasTimeLimitProp={hasTimeLimit}

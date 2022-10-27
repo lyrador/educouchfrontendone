@@ -211,23 +211,20 @@ export default function CreateQuizForm(props) {
     if (updatedOptions && updatedOptions != "") {
       tempFormQuestions[questionIndex].options = updatedOptions;
     }
-    console.log(
-      "options after removal: ",
-      tempFormQuestions[questionIndex].options
-    );
-    console.log("supposed to assign this: ", updatedOptions);
+    console.log("options after removal: ", tempFormQuestions[questionIndex].options)
+    console.log("supposed to assign this: ", updatedOptions)
   }
 
   function selectCorrectQuestionOption(questionId, option) {
-    console.log("correct option selected: ", option);
+    console.log("correct option selected: ", option)
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
       (f) => f.localid == questionId
     );
-
-    console.log("here: ", option);
-    tempFormQuestions[questionIndex].correctOption = option;
-    setFormQuestions(tempFormQuestions);
+      console.log("here agaz")
+      tempFormQuestions[questionIndex].correctOption = option;
+      setFormQuestions(tempFormQuestions);
+    }
   }
 
   const addQuestion = () => {
@@ -294,7 +291,7 @@ export default function CreateQuizForm(props) {
 
         body: JSON.stringify(updatedQuiz),
       }).then((res) => res.json());
-      console.log("created Quiz: ", updatedQuiz);
+      console.log("created Quiz: ",updatedQuiz)
       handleCancel();
     }
   };
@@ -417,7 +414,7 @@ export default function CreateQuizForm(props) {
                   removeQuestionOptionProp={removeQuestionOption}
                   selectCorrectOptionProp={selectCorrectQuestionOption}
                   editQuestionContentProp={editQuestionContent}
-                  editQuestionHintProp={editQuestionHint}
+                  editQuestionHintProp={ editQuestionHint}
                   removeQuestionProp={removeQuestion}
                   editQuestionMaxPointsProp={editQuestionMaxPoints}
                 />
@@ -458,4 +455,4 @@ export default function CreateQuizForm(props) {
       </Grid>
     </Grid>
   );
-}
+
