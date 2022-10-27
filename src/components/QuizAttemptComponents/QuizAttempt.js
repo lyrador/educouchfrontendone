@@ -99,7 +99,7 @@ export default function QuizAttempt(props) {
             <Grid item>Maximum Attempts: Unlimited Attempts </Grid>
           )}
           {currentQuiz.isExpired == "false" &&
-            <Button onClick={handleStartQuiz}>Start Quiz</Button>
+            <Button onClick={handleStartQuiz} variant="contained">Start Quiz</Button>
           }
         </Grid>
       ) : (

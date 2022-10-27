@@ -1,14 +1,15 @@
-import { Grid, Paper } from "@mui/material";
+import { Button, Grid, Paper } from "@mui/material";
 import React, { useRef, useState } from "react";
 import { useAuth } from "../../context/AuthProvider";
 import QuizAttemptTimer from "./QuizAttemptTimer";
 import QuizQuestionAttemptComponent from "./QuizQuestionAttemptComponent";
 
 export default function QuizAttemptDisplay(props) {
-
   const [currentQuiz, setCurrentQuiz] = useState();
   const [quizQuestions, setQuizQuestions] = useState([]);
-  const [questionAttempts, setQuestionAttempts] = useState(props.questionAttemptsProp);
+  const [questionAttempts, setQuestionAttempts] = useState(
+    props.questionAttemptsProp
+  );
   const [quizStatusEnum, setQuizStatusEnum] = useState();
 
   React.useEffect(() => {
@@ -18,24 +19,32 @@ export default function QuizAttemptDisplay(props) {
     setQuestionAttempts(props.questionAttemptsProp);
   }, []);
 
-  function selectOption() {
+  function selectOption() {}
 
+  function handleSubmitQuizAttempt() {
+    //questionAttemptedCheck (if not all attempted have an alert to confirm submit)
+    //call submitQuizAttempt api (api calls update quizAttempt, then update state to submitted)
+  }
+
+  function handleSaveQuizAttempt() {
+    //call saveQuizAttempt api (api calls update quizAttempt)
   }
 
   function inputShortAnswerResponse(questionIdProp, shortAnswerResponse) {
     // console.log(questionIdProp)
-    console.log("here are attempts:", questionAttempts)
+    console.log("here are attempts:", questionAttempts);
     const tempQuestionAttempts = [...questionAttempts];
     const questionAttemptIndex = tempQuestionAttempts.findIndex(
-    //need to find index of question attempt with same question id prop as question id
+      //need to find index of question attempt with same question id prop as question id
       (f) => f.questionAttemptedQuestionId == questionIdProp
     );
     console.log("found index", questionAttemptIndex);
     if (questionAttemptIndex > -1) {
       //write short answer response into that questionAttempt
-      tempQuestionAttempts[questionAttemptIndex].shortAnswerResponse = shortAnswerResponse;
+      tempQuestionAttempts[questionAttemptIndex].shortAnswerResponse =
+        shortAnswerResponse;
       setQuestionAttempts(tempQuestionAttempts);
-      console.log("input short answer:", shortAnswerResponse)
+      // console.log("input short answer:", shortAnswerResponse)
     }
   }
 
@@ -44,7 +53,7 @@ export default function QuizAttemptDisplay(props) {
       {props.hasTimeLimitProp == "true" && (
         <QuizAttemptTimer timeLimitProp={props.timeLimitProp} />
       )}
-      <Grid width={"60%"}>
+      <Grid container width={"60%"} flexDirection={"column"}>
         {quizQuestions.map((question, index) => {
           return (
             <Grid width={"auto"}>
@@ -60,6 +69,31 @@ export default function QuizAttemptDisplay(props) {
             </Grid>
           );
         })}
+      </Grid>
+
+      <Grid
+        style={{
+          marginTop: "40px",
+          display: "flex",
+          flexDirection: "row",
+        }}
+      >
+        <Grid container justifyContent={"space-between"}>
+          <Button
+            onClick={handleSaveQuizAttempt}
+            variant="contained"
+            style={{ backgroundColor: "#e27602" }}
+          >
+            Save Quiz
+          </Button>
+          <Button
+            onClick={handleSubmitQuizAttempt}
+            variant="contained"
+            style={{ backgroundColor: "#9D26B0" }}
+          >
+            Submit Quiz
+          </Button>
+        </Grid>
       </Grid>
     </Grid>
   );
