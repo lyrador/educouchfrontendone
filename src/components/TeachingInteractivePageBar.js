@@ -651,8 +651,8 @@ function TeachingInteractivePageBar(props) {
                 <Dialog open={openCreateInteractiveQuizDialog} onClose={handleCloseInteractiveQuizDialog}>
                     <DialogTitle>Add Quiz Question</DialogTitle>
                     <DialogContent>
-                         <CreateAssessment></CreateAssessment>
-                         {/* <CreateQuizForm></CreateQuizForm> */}
+                         {/* <CreateAssessment></CreateAssessment> */}
+                         <CreateInteractiveQuizForm></CreateInteractiveQuizForm>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleCloseInteractiveQuizDialog}>Cancel</Button>
