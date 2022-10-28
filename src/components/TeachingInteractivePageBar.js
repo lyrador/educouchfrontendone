@@ -224,6 +224,7 @@ function TeachingInteractivePageBar(props) {
 
     //create
     const [newTextItemWords, setNewTextItemWords] = useState("");
+    const [title, setTitle] = useState("");
 
     const [pageItemXPositionError, setPageItemXPositionError] = useState({ value: false, errorMessage: "" });
     const [pageItemYPositionError, setPageItemYPositionError] = useState({ value: false, errorMessage: "" });
@@ -260,6 +261,7 @@ function TeachingInteractivePageBar(props) {
     };
 
     const handleClickOpen = () => {
+        setNewTextItemWords(props.currentPage.pageDescription)
         setOpen(true);
     };
 
@@ -306,7 +308,8 @@ function TeachingInteractivePageBar(props) {
         e.preventDefault();
         var pageDescription = newTextItemWords
         var pageNumber = props.pageNumber
-        const editedPage = { pageDescription, pageNumber }
+        var pageTitle = title
+        const editedPage = { pageDescription, pageNumber, pageTitle }
         try {
             const response = await fetch("http://localhost:8080/interactivePage/interactivePages/" + props.pageId, {
                 method: "PUT",
@@ -629,7 +632,7 @@ function TeachingInteractivePageBar(props) {
             </div>
             <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
-                    Page Item Created Succesfully!
+                    Page Edited Succesfully!
                 </Alert>
             </Snackbar>
             <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar} >
@@ -661,25 +664,33 @@ function TeachingInteractivePageBar(props) {
                 </Dialog>
             </div>
             <div>
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Add Page Description</DialogTitle>
+                <Dialog open={open} onClose={handleClose} maxWidth={'md'} fullWidth={true}>
+                    <DialogTitle>Update Page Description</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            id="outlined"
+                            label="Title"
+                            variant="outlined"
+                            fullWidth
+                            style={{ margin: "6px 0" }}
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                    </DialogContent>
                     <DialogContent>
                         <TextField
                             id="outlined-multiline-static" multiline rows={6}
                             label="Text"
                             variant="outlined"
                             fullWidth
-                            required
                             style={{ margin: "6px 0" }}
                             value={newTextItemWords}
                             onChange={(e) => setNewTextItemWords(e.target.value)}
-                        // error={pageItemYPositionError.value}
-                        // helperText={pageItemYPositionError.errorMessage}
                         />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={addPageDescription}>Add</Button>
+                        <Button onClick={addPageDescription}>Update</Button>
                     </DialogActions>
                 </Dialog>
             </div>

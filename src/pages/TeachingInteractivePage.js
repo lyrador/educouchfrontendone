@@ -127,27 +127,27 @@ function TeachingInteractivePage(props) {
     const createNewPage = async (e) => {
         e.preventDefault();
         setPageDescriptionError({ value: false, errorMessage: "" });
-            var pageNumber = pages.length + 1; 
-            const newPage = { pageNumber }
-            console.log(newPage);
-            try {
-                const response = await fetch("http://localhost:8080/interactivePage/" + props.chapterId + "/interactivePages", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newPage),
-                })
-                console.log(response);
-                if (response.ok == false) {
-                    console.log("Error");
-                    handleClickErrorSnackbar()
-                } else {
-                    handleClickSnackbar()
-                }
-            } catch (err) {
-                console.log(err);
+        var pageNumber = pages.length + 1;
+        const newPage = { pageNumber }
+        console.log(newPage);
+        try {
+            const response = await fetch("http://localhost:8080/interactivePage/" + props.chapterId + "/interactivePages", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newPage),
+            })
+            console.log(response);
+            if (response.ok == false) {
+                console.log("Error");
                 handleClickErrorSnackbar()
+            } else {
+                handleClickSnackbar()
             }
-            setRefreshInteractivePage(true)
+        } catch (err) {
+            console.log(err);
+            handleClickErrorSnackbar()
+        }
+        setRefreshInteractivePage(true)
     }
 
     //delete
@@ -197,7 +197,7 @@ function TeachingInteractivePage(props) {
     const handleClickEditDialogOpen = (event, pageId, pageTitle) => {
         setEditedPageNumber(pageTitle);
         setPageIdToEdit(pageId);
-        console.log(pageId); 
+        console.log(pageId);
         setEditDialogOpen(true);
     };
 
@@ -288,10 +288,14 @@ function TeachingInteractivePage(props) {
     };
 
     const renderVideoImageHolder = () => {
+        var height = "100%"
+        if (currentPage.pageDescription != "") {
+            height = "50%"
+        }
         if (currentPage.attachment) {
             if (currentPage.attachment.fileType.includes("image")) {
                 return (
-                    <div style={{ height: "50%" }}>
+                    <div style={{ height: height }}>
                         <img
                             src={currentPage.attachment.fileURL}
                             alt="Interactive Page Image"
@@ -303,7 +307,7 @@ function TeachingInteractivePage(props) {
             }
             else if (currentPage.attachment.fileType.includes("video")) {
                 return (
-                    <div style={{ height: "50%" }}>
+                    <div style={{ height: height }}>
                         <ReactPlayer className='video'
                             width='100%'
                             height='100%'
@@ -315,6 +319,29 @@ function TeachingInteractivePage(props) {
             }
         }
     };
+
+    const renderText = () => {
+        var height = "100%"
+        if (currentPage.attachment && !currentPage.question) {
+            height = "50%"
+        }
+        if (currentPage.pageDescription) {
+            console.log(currentPage)
+            return (
+                <div style={{ height: height, backgroundImage: "url('https://educouchbucket.s3.ap-southeast-1.amazonaws.com/img-noise-700x400+(1).png')" }}>
+                    <div style={{ padding: "2%" }}>
+                        <Typography gutterBottom variant="h5" component="div">
+                            {currentPage.pageTitle}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            {currentPage.pageDescription}
+                        </Typography>
+                    </div>
+                </div>
+            );
+        }
+        
+    }
 
     return (
         <div style={{ backgroundColor: "#F8F9FA", width: "100%", height: "75vh", paddding: 0 }}>
@@ -349,16 +376,7 @@ function TeachingInteractivePage(props) {
                         {renderEmptyRowMessage()}
                         {pages.length > 0 && <div style={{ width: "100%", height: "100%" }}>
                             {renderVideoImageHolder()}
-                            <div style={{ height: "50%", backgroundImage: "url('https://educouchbucket.s3.ap-southeast-1.amazonaws.com/img-noise-700x400+(1).png')" }}>
-                                <div style={{ padding: "2%" }}>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        Title
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {currentPage.pageDescription}
-                                    </Typography>
-                                </div>
-                            </div>
+                            {renderText()}
                         </div>
                         }
                     </Paper>
@@ -368,7 +386,8 @@ function TeachingInteractivePage(props) {
                         pageId={currentPage.interactivePageId}
                         pageNumber={currentPage.pageNumber}
                         refreshInteractivePage={refreshInteractivePage}
-                        setRefreshInteractivePage={setRefreshInteractivePage}>
+                        setRefreshInteractivePage={setRefreshInteractivePage}
+                        currentPage={currentPage}>
                     </TeachingInteractivePageBar>
                 </div>
             </div>
