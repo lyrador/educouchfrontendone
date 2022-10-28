@@ -75,6 +75,9 @@ export default function LearnerViewAssessments(props) {
                 <TableCell style={{ color: "white" }}>
                   <b>Assessment Title</b>
                 </TableCell>
+                <TableCell style={{ color: "white" }}>
+                  <b>Assessment Type</b>
+                </TableCell>
                 <TableCell style={{ color: "white" }} align="right">
                   <b>Opening Date</b>
                 </TableCell>
@@ -97,6 +100,8 @@ export default function LearnerViewAssessments(props) {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell>{assessment.title}</TableCell>
+                  <TableCell>{assessment.assessmentType === "FileSubmission" ? "File Submission" : 
+                  "Quiz"}</TableCell>
                   <TableCell align="right">{assessment.startDate}</TableCell>
                   <TableCell align="right">{assessment.endDate}</TableCell>
                   <TableCell align="right">

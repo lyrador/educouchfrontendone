@@ -221,11 +221,11 @@ export default function CreateQuizForm(props) {
     const questionIndex = tempFormQuestions.findIndex(
       (f) => f.localid == questionId
     );
-      console.log("here agaz")
-      tempFormQuestions[questionIndex].correctOption = option;
-      setFormQuestions(tempFormQuestions);
-    }
+    console.log("here agaz")
+    tempFormQuestions[questionIndex].correctOption = option;
+    setFormQuestions(tempFormQuestions);
   }
+
 
   const addQuestion = () => {
     setQuestionCounter(questionCounter + 1);
@@ -291,7 +291,7 @@ export default function CreateQuizForm(props) {
 
         body: JSON.stringify(updatedQuiz),
       }).then((res) => res.json());
-      console.log("created Quiz: ",updatedQuiz)
+      console.log("created Quiz: ", updatedQuiz)
       handleCancel();
     }
   };
@@ -414,7 +414,7 @@ export default function CreateQuizForm(props) {
                   removeQuestionOptionProp={removeQuestionOption}
                   selectCorrectOptionProp={selectCorrectQuestionOption}
                   editQuestionContentProp={editQuestionContent}
-                  editQuestionHintProp={ editQuestionHint}
+                  editQuestionHintProp={editQuestionHint}
                   removeQuestionProp={removeQuestion}
                   editQuestionMaxPointsProp={editQuestionMaxPoints}
                 />
@@ -455,4 +455,4 @@ export default function CreateQuizForm(props) {
       </Grid>
     </Grid>
   );
-
+}
