@@ -361,7 +361,12 @@ function TeachingAnnouncementList(props) {
             <input
               type="text"
               placeholder="Search..."
-              style={{ float: "right", marginLeft: "auto" }}
+              style={{
+                float: "right",
+                marginLeft: "auto",
+                height: "30px",
+                fontSize: "12pt",
+              }}
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
@@ -414,6 +419,9 @@ function TeachingAnnouncementList(props) {
                           .toLowerCase()
                           .includes(query) ||
                         announcement.createdByUserName
+                          .toLowerCase()
+                          .includes(query) ||
+                        announcement.createdDateTime
                           .toLowerCase()
                           .includes(query)
                     )

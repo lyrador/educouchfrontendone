@@ -1,10 +1,11 @@
-import React from 'react'
-import '../App.css';
-import '../css/CardItem.css';
-import { Link } from 'react-router-dom';
+import React from "react";
+import "../App.css";
+import "../css/CardItem.css";
+import { Link } from "react-router-dom";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Divider, Typography, Stack } from '@mui/material';
+import { Divider, Typography, Stack, Badge } from "@mui/material";
+import CampaignIcon from "@mui/icons-material/Campaign";
 
 //days of week
 var weekday = new Array(7);
@@ -16,40 +17,60 @@ weekday[4] = "Thursday";
 weekday[5] = "Friday";
 weekday[6] = "Saturday";
 
-function ClassRunCardItem({ courseId, src, courseCode, courseTitle, classRunDaysOfWeek, startDate, endDate, classRunStartTime, classRunEndTime }) {
+function ClassRunCardItem({
+  courseId,
+  src,
+  courseCode,
+  courseTitle,
+  courseAnnouncements,
+  classRunDaysOfWeek,
+  startDate,
+  endDate,
+  classRunStartTime,
+  classRunEndTime,
+}) {
+  return (
+    <>
+      <div className="card-flex-item">
+        <Link
+          to={"/learnerCourseDetails/" + courseId}
+          className="cards-item-link"
+        >
+          <figure
+            className="cards-item-pic-wrap"
+            data-category={courseCode.concat(" : ", courseTitle)}
+          >
+            <img src={src} alt="picture" className="cards-item-img" />
+          </figure>
+          <div className="cards-item-info">
+            <Typography variant="h6" component="div" color="text.secondary">
+              <Stack spacing={1}>
+                {classRunDaysOfWeek.map((x) => {
+                  return <Typography variant="h6">{weekday[x]} </Typography>;
+                })}
+              </Stack>
+            </Typography>
+            <Divider></Divider>
+            <br />
+            <Typography sx={{ mb: 1.5 }} color="text.secondary">
+              {classRunStartTime} - {classRunEndTime}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Start Date: {startDate}
+            </Typography>
 
-    return (
-        <>
-            <div className='card-flex-item'>
-
-                <Link to={"/learnerCourseDetails/" + courseId} className='cards-item-link'>
-                    <figure className='cards-item-pic-wrap' data-category={courseCode.concat(" : ", courseTitle)}>
-                        <img src={src} alt='picture' className='cards-item-img' />
-                    </figure>
-                    <div className='cards-item-info'>
-                        <Typography variant="h6" component="div" color="text.secondary">
-                            <Stack spacing={1}>{classRunDaysOfWeek.map(x => { return (<Typography variant="h6">{weekday[x]} </Typography>) })}
-                            </Stack>
-                        </Typography>
-                        <Divider></Divider>
-                        <br />
-                        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                            {classRunStartTime} - {classRunEndTime}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Start Date: {startDate}
-                        </Typography>
-
-                        <Typography variant="body2" color="text.secondary">
-                            End Date: {endDate}
-                        </Typography>
-                    </div>
-
-
-                </Link>
-            </div>
-        </>
-    )
+            <Typography variant="body2" color="text.secondary">
+              End Date: {endDate}
+            </Typography>
+            <br />
+            <Badge badgeContent={courseAnnouncements.length} color="primary">
+              <CampaignIcon color="action" />
+            </Badge>
+          </div>
+        </Link>
+      </div>
+    </>
+  );
 }
 
 export default ClassRunCardItem;

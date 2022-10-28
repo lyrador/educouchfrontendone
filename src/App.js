@@ -14,6 +14,7 @@ import TeachingCourse from "./pages/TeachingCourse";
 import TeachingCourseNew from "./pages/TeachingCourseNew";
 import TeachingAssessmentList from "./components/TeachingAssessmentList";
 import TeachingAnnouncementList from "./components/TeachingAnnouncementList";
+import LearnerAnnouncementList from "./components/LearnerAnnouncementList";
 import FileSubmission from "./components/FileSubmission";
 import TeachingForumList from "./components/TeachingForumList";
 import TeachingDiscussion from "./components/TeachingDiscussion";
@@ -242,6 +243,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <LearnerCourseDetails />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/announcements"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerAnnouncementList />
                 </RequireAuth>
               }
             />
