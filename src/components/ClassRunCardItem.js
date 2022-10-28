@@ -6,6 +6,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Divider, Typography, Stack, Badge } from "@mui/material";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import IconButton from "@mui/material/IconButton";
 
 //days of week
 var weekday = new Array(7);
@@ -64,7 +65,11 @@ function ClassRunCardItem({
             </Typography>
             <br />
             <Badge badgeContent={courseAnnouncements.length} color="primary">
-              <CampaignIcon color="action" />
+              <Link to={"/learnerCourseDetails/" + courseId + "/announcements"}>
+                <IconButton aria-label="settings">
+                  <CampaignIcon color="action" />
+                </IconButton>
+              </Link>
             </Badge>
           </div>
         </Link>
