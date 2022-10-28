@@ -13,6 +13,7 @@ import TeachingCoursesList from "./pages/TeachingCoursesList";
 import TeachingCourse from "./pages/TeachingCourse";
 import TeachingCourseNew from "./pages/TeachingCourseNew";
 import TeachingAssessmentList from "./components/TeachingAssessmentList";
+import TeachingAnnouncementList from "./components/TeachingAnnouncementList";
 import FileSubmission from "./components/FileSubmission";
 import TeachingForumList from "./components/TeachingForumList";
 import TeachingDiscussion from "./components/TeachingDiscussion";
@@ -159,7 +160,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerViewAssessments/>
+                  <LearnerViewAssessments />
                 </RequireAuth>
               }
             />
@@ -178,6 +179,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingClassEvents />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/announcements"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingAnnouncementList />
                 </RequireAuth>
               }
             />
@@ -374,7 +384,7 @@ function App() {
               path="/whiteboardHomepage"
               element={
                 <RequireAuth>
-                  <WhiteboardHomepage/>
+                  <WhiteboardHomepage />
                 </RequireAuth>
               }
             />
@@ -382,7 +392,7 @@ function App() {
               path="/room/:roomId"
               element={
                 <RequireAuth>
-                  <Room/>
+                  <Room />
                 </RequireAuth>
               }
             />
