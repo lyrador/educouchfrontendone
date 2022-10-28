@@ -68,6 +68,7 @@ import UploadService from "../services/UploadFilesService";
 import CreateInteractiveQuizForm from "../pages/CreateInteractiveQuizForm";
 import CreateQuizForm from "../pages/CreateQuizForm";
 import CreateAssessment from "../pages/CreateAssessment";
+import ReactPlayer from "react-player";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -261,6 +262,7 @@ function TeachingInteractivePageBar(props) {
     };
 
     const handleClickOpen = () => {
+        setTitle(props.currentPage.pageTitle)
         setNewTextItemWords(props.currentPage.pageDescription)
         setOpen(true);
     };
@@ -351,6 +353,13 @@ function TeachingInteractivePageBar(props) {
             } else {
                 console.log("New File Item Created Successfully!");
                 handleClickSnackbar()
+                setCurrentFile(undefined)
+                setPreviewImage("https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg")
+                setProgress(0)
+                setMessage("")
+                setIsError(false)
+                setIsUploaded(false)
+                setUploadedAttachmentId("")
             }
         } catch (err) {
             console.log(err);
@@ -361,6 +370,29 @@ function TeachingInteractivePageBar(props) {
         handleCloseUploadDialog();
     }
 
+    const removeFileItem = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch("http://localhost:8080/interactivePage/" + props.pageId + "/removeFileItem", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+            })
+            console.log(response);
+            if (response.ok == false) {
+                console.log("Error");
+                handleClickErrorSnackbar()
+            } else {
+                console.log("File Item Removed Successfully!");
+                handleClickSnackbar()
+            }
+        } catch (err) {
+            console.log(err);
+            handleClickErrorSnackbar()
+        }
+        setRefreshPageBar(true)
+        props.setRefreshInteractivePage(true)
+        handleCloseUploadDialog();
+    }
 
     const deleteChapter = async (e) => {
         e.preventDefault();
@@ -452,6 +484,60 @@ function TeachingInteractivePageBar(props) {
             </div>
         );
     };
+
+    const renderVideoImageHolder = () => {
+        if (props.currentPage.attachment) {
+            if (props.currentPage.attachment.fileType.includes("image")) {
+                return (
+                    <div>
+                        <img
+                            src={props.currentPage.attachment.fileURL}
+                            alt="Interactive Page Image"
+                            width="100%"
+                            height="100%"
+                            objectFit="contain"
+                        />
+                    </div>
+                );
+            }
+            else if (props.currentPage.attachment.fileType.includes("video")) {
+                return (
+                    <div style={{ height: '200px' }}>
+                        <ReactPlayer className='video'
+                            width='100%'
+                            height='100%'
+                            controls
+                            url={props.currentPage.attachment.fileURL}
+                        />
+                    </div>
+                );
+            }
+        } else {
+            return <div style={{ textAlign: 'center' }}>
+                <div>
+                    There is no current file!
+                </div>
+            </div>
+        }
+    };
+
+    const renderFileRemovalButton = () => {
+        if (props.currentPage.attachment) {
+            return (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Button
+                    className="btn-upload"
+                    color="primary"
+                    variant="contained"
+                    component="span"
+                    onClick={removeFileItem}
+                >
+                    Remove File
+                </Button>
+            </div>
+            )
+        }
+    }
 
     return (
         <div>
@@ -632,17 +718,17 @@ function TeachingInteractivePageBar(props) {
             </div>
             <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
-                    Page Edited Succesfully!
+                    Page Updated Succesfully!
                 </Alert>
             </Snackbar>
             <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar} >
                 <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: "100%" }} >
-                    Page Item Deleted Succesfully!
+                    Page Deleted Succesfully!
                 </Alert>
             </Snackbar>
             <Snackbar open={openEditSnackbar} autoHideDuration={5000} onClose={handleCloseEditSnackbar} >
                 <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: "100%" }} >
-                    Page Item Updated Succesfully!
+                    Page Updated Succesfully!
                 </Alert>
             </Snackbar>
             <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={handleCloseErrorSnackbar} >
@@ -654,8 +740,8 @@ function TeachingInteractivePageBar(props) {
                 <Dialog open={openCreateInteractiveQuizDialog} onClose={handleCloseInteractiveQuizDialog}>
                     <DialogTitle>Add Quiz Question</DialogTitle>
                     <DialogContent>
-                         {/* <CreateAssessment></CreateAssessment> */}
-                         <CreateInteractiveQuizForm></CreateInteractiveQuizForm>
+                        {/* <CreateAssessment></CreateAssessment> */}
+                        <CreateInteractiveQuizForm></CreateInteractiveQuizForm>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleCloseInteractiveQuizDialog}>Cancel</Button>
@@ -698,6 +784,11 @@ function TeachingInteractivePageBar(props) {
                 <Dialog open={openUploadDialog} onClose={handleCloseUploadDialog}>
                     <DialogTitle>Upload File</DialogTitle>
                     <DialogContent>
+                        <h3 style={{ fontWeight: 'normal' }}>Current File</h3>
+                        {renderVideoImageHolder()}
+                        {renderFileRemovalButton()}
+                        <br></br>
+                        <h3 style={{ fontWeight: 'normal' }}>New File</h3>
                         <div>
                             {previewImage && (
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -761,7 +852,7 @@ function TeachingInteractivePageBar(props) {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleCloseUploadDialog}>Cancel</Button>
-                        <Button onClick={createNewFileItem}>Add</Button>
+                        <Button onClick={createNewFileItem}>Update</Button>
                     </DialogActions>
                 </Dialog>
             </div>

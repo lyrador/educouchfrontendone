@@ -97,6 +97,34 @@ function TeachingInteractiveBook(props) {
     //          });
     //  }, [refreshPage]);
 
+    //retrieve book
+    const[book, setBook] = useState([]);
+
+    React.useEffect(() => {
+        setRefreshPage(false);
+        console.log(props.chapterId)
+        fetch("http://localhost:8080/interactiveBook/" + bookId + "/interactiveBooks")
+            .then((res) => res.json())
+            .then((result) => {
+                setBook(result);
+                // setInitialChapter(result);
+                console.log(result);
+            });
+    }, [refreshPage]);
+
+    const setInitialChapter = (book) => {
+        if (book.interactiveChapters.length == 0) {
+            chapterIdToBrowse = undefined
+        } else {
+            for (const chapter of book.interactiveChapters) {
+                if (chapter.chapterIndex == 1) {
+                    setChapterIdToBrowse(chapter.interactiveChapterId)
+                }
+            }
+        }
+    }
+
+    //retrieve pages
     const [pages, setPages] = useState([]);
 
     React.useEffect(() => {
@@ -139,7 +167,8 @@ function TeachingInteractiveBook(props) {
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
 
     //browsing
-    const [chapterIdToBrowse, setChapterIdToBrowse] = useState(1);
+    const [chapterIdToBrowse, setChapterIdToBrowse] = useState("");
+    const [chapterIndexToBrowse, setChapterIndexToBrowse] = useState("");
 
     const [refreshInteractivePageChild, setRefreshInteractivePageChild] = useState(false);
 
@@ -326,10 +355,11 @@ function TeachingInteractiveBook(props) {
                     <TeachingCoursesDrawer courseId={bookId}></TeachingCoursesDrawer>
                 </Grid> */}
                 <Grid item xs={2}>
-                    <TeachingInteractiveChaptersBar chapterIdToBrowse={chapterIdToBrowse} setChapterIdToBrowse={setChapterIdToBrowse}/>
+                    <TeachingInteractiveChaptersBar chapterIdToBrowse={chapterIdToBrowse} setChapterIdToBrowse={setChapterIdToBrowse} 
+                    chapterIndexToBrowse={chapterIndexToBrowse} setChapterIndexToBrowse={setChapterIndexToBrowse} refreshPage={refreshPage} setRefreshPage={setRefreshPage} />
                 </Grid>
                 <Grid item xs={10}>
-                    {chapterIdToBrowse}
+                    {/* {chapterIdToBrowse} */}
                     <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                         <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
                             Interactive Page Created Succesfully!
@@ -350,20 +380,16 @@ function TeachingInteractiveBook(props) {
                             Error!
                         </Alert>
                     </Snackbar>
-                    <Breadcrumbs aria-label="breadcrumb">
-                        <Link to={`${booksPath}`}
-                            style={{ textDecoration: 'none', color: 'grey' }}>
-                            <LinkMaterial underline="hover" color="grey">
-                                Interactive Books
-                            </LinkMaterial>
-                        </Link>
-                    </Breadcrumbs>
                     {/* <div style={{ justifyContent: "center" }}>
                         <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
                             Pages
                         </h1>
                     </div> */}
-                    <TeachingInteractivePage chapterId={chapterIdToBrowse}></TeachingInteractivePage>
+                    <TeachingInteractivePage 
+                    chapterId={chapterIdToBrowse} 
+                    chapterIndex={chapterIndexToBrowse}
+                    book={book}
+                    ></TeachingInteractivePage>
                 </Grid>
             </Grid>
             {/* <div>

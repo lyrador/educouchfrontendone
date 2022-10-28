@@ -90,6 +90,7 @@ function TeachingInteractivePage(props) {
     const [pages, setPages] = useState([]);
     React.useEffect(() => {
         setRefreshInteractivePage(false);
+        console.log(props.chapterId)
         fetch("http://localhost:8080/interactivePage/interactiveChapter/" + props.chapterId + "/interactivePages")
             .then((res) => res.json())
             .then((result) => {
@@ -253,12 +254,34 @@ function TeachingInteractivePage(props) {
     };
 
     const renderEmptyRowMessage = () => {
-        if (pages.length === 0) {
-            return (
-                <div>
-                    There are currently no interactive pages in this book! Add a Page to Continue.
-                </div>
-            );
+        console.log(props.chapterId)
+        if (props.book.interactiveChapters) {
+            if (props.book.interactiveChapters.length == 0) {
+                return (
+                    <div style={{ height: '100%', width: '100%', backgroundColor: 'lightgray', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div style={{ fontSize: 24, lineHeight: '200px' }}>
+                            There are currently no interactive chapters in this book! Add a Chapter to Continue.
+                        </div>
+                    </div>
+                );
+            } else if (!props.chapterId) {
+                return (
+                    <div style={{ height: '100%', width: '100%', backgroundColor: 'lightgray', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div style={{ fontSize: 24, lineHeight: '200px' }}>
+                            Please select an interactive chapter to continue.
+                        </div>
+                    </div>
+                );
+            }
+            else if (props.chapterId && pages.length === 0) {
+                return (
+                    <div style={{ height: '100%', width: '100%', backgroundColor: 'lightgray', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div style={{ fontSize: 24, lineHeight: '200px' }}>
+                            There are currently no interactive pages in this chapter! Add a Page to Continue.
+                        </div>
+                    </div>
+                );
+            }
         }
     };
 
@@ -289,7 +312,7 @@ function TeachingInteractivePage(props) {
 
     const renderVideoImageHolder = () => {
         var height = "100%"
-        if (currentPage.pageDescription != "") {
+        if (currentPage.pageDescription || currentPage.pageTitle) {
             height = "50%"
         }
         if (currentPage.attachment) {
@@ -301,6 +324,7 @@ function TeachingInteractivePage(props) {
                             alt="Interactive Page Image"
                             width="100%"
                             height="100%"
+                            objectFit="contain"
                         />
                     </div>
                 );
@@ -340,7 +364,7 @@ function TeachingInteractivePage(props) {
                 </div>
             );
         }
-        
+
     }
 
     return (
@@ -365,13 +389,31 @@ function TeachingInteractivePage(props) {
                     Error!
                 </Alert>
             </Snackbar>
+            <div>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link to={`${booksPath}`}
+                        style={{ textDecoration: 'none', color: 'grey' }}>
+                        <LinkMaterial underline="hover" color="grey">
+                            Interactive Books
+                        </LinkMaterial>
+                    </Link>
+                    {props.chapterIndex && <p>
+                        Chapter {props.chapterIndex}
+                    </p>
+                    }
+                    {currentPage.pageNumber && <p>
+                        Page {currentPage.pageNumber}
+                    </p>
+                    }
+                </Breadcrumbs>
+            </div>
             <div style={{ width: "100%", height: "100%", justifyContent: "center", display: 'flex' }}>
                 <div style={{ width: "80%", height: "100%", justifyContent: "center", display: 'flex' }}>
-                    <div style={{ justifyContent: "center" }}>
+                    {/* <div style={{ justifyContent: "center" }}>
                         <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
                             Page {pageNumberPointer}
                         </h1>
-                    </div>
+                    </div> */}
                     <Paper elevation={3} style={{ width: "90%", height: "90%" }}>
                         {renderEmptyRowMessage()}
                         {pages.length > 0 && <div style={{ width: "100%", height: "100%" }}>
