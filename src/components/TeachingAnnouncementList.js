@@ -226,23 +226,39 @@ function TeachingAnnouncementList(props) {
 
   const editAnnouncement = (e) => {
     e.preventDefault();
-    var announcementTitle = editAnnouncementTitle;
-    var announcementBody = editAnnouncementBody;
-    const newEditedAnnoucement = { announcementTitle, announcementBody };
-    fetch(
-      "http://localhost:8080/announcement/updateAnnouncementById/" +
-        announcementIdToEdit,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newEditedAnnoucement),
-      }
-    ).then(() => {
-      console.log("Announcement Edited Successfully!");
-      setRefreshPage(true);
-      handleEditDialogClose();
-      handleClickEditSnackbar();
-    });
+    setAnnouncementTitleError({ value: false, errorMessage: "" });
+    setAnnouncementBodyError({ value: false, errorMessage: "" });
+    if (editAnnouncementTitle == "") {
+      setAnnouncementTitleError({
+        value: true,
+        errorMessage: "Announcement Title cannot be empty!",
+      });
+    }
+    if (editAnnouncementBody == "") {
+      setAnnouncementBodyError({
+        value: true,
+        errorMessage: "Announcement Body cannot be empty!",
+      });
+    }
+    if (editAnnouncementTitle && editAnnouncementBody) {
+      var announcementTitle = editAnnouncementTitle;
+      var announcementBody = editAnnouncementBody;
+      const newEditedAnnouncement = { announcementTitle, announcementBody };
+      fetch(
+        "http://localhost:8080/announcement/updateAnnouncementById/" +
+          announcementIdToEdit,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newEditedAnnouncement),
+        }
+      ).then(() => {
+        console.log("Announcement Edited Successfully!");
+        setRefreshPage(true);
+        handleEditDialogClose();
+        handleClickEditSnackbar();
+      });
+    }
   };
 
   const renderEmptyRowMessage = () => {
@@ -340,15 +356,6 @@ function TeachingAnnouncementList(props) {
               Announcement Updated Succesfully!
             </Alert>
           </Snackbar>
-          <Breadcrumbs aria-label="breadcrumb">
-            <LinkMaterial
-              underline="hover"
-              color="inherit"
-              href={`${announcementPath}`}
-            >
-              Announcements
-            </LinkMaterial>
-          </Breadcrumbs>
 
           <div className="search">
             <input
@@ -398,10 +405,17 @@ function TeachingAnnouncementList(props) {
                 <TableBody>
                   {renderEmptyRowMessage()}
                   {announcements
-                    .filter((announcement) =>
-                      announcement.announcementTitle
-                        .toLowerCase()
-                        .includes(query)
+                    .filter(
+                      (announcement) =>
+                        announcement.announcementTitle
+                          .toLowerCase()
+                          .includes(query) ||
+                        announcement.announcementBody
+                          .toLowerCase()
+                          .includes(query) ||
+                        announcement.createdByUserName
+                          .toLowerCase()
+                          .includes(query)
                     )
                     .map((announcement) => (
                       <TableRow
@@ -410,17 +424,7 @@ function TeachingAnnouncementList(props) {
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        <TableCell>
-                          <Link
-                            to={`${announcementPath}/${announcement.announcementId}`}
-                            state={{
-                              announcementTitle: announcement.announcementTitle,
-                            }}
-                            style={{ textDecoration: "none" }}
-                          >
-                            {announcement.announcementTitle}
-                          </Link>
-                        </TableCell>
+                        <TableCell>{announcement.announcementTitle}</TableCell>
                         <TableCell>{announcement.announcementBody}</TableCell>
                         <TableCell>{announcement.createdByUserName}</TableCell>
                         <TableCell>{announcement.createdDateTime}</TableCell>
@@ -520,12 +524,27 @@ function TeachingAnnouncementList(props) {
             </DialogContentText>
             <TextField
               id="outlined-basic"
-              label="Discussion Title"
+              label="New Announcement Title"
               variant="outlined"
               fullWidth
               style={{ margin: "6px 0" }}
               value={editAnnouncementTitle}
               onChange={(e) => setEditAnnouncementTitle(e.target.value)}
+              error={announcementTitleError.value}
+              helperText={announcementTitleError.errorMessage}
+            />
+            <TextField
+              id="outlined-basic"
+              label="New Announcement Body"
+              variant="outlined"
+              fullWidth
+              multiline
+              maxRows={10}
+              style={{ margin: "6px 0" }}
+              value={editAnnouncementBody}
+              onChange={(e) => setEditAnnouncementBody(e.target.value)}
+              error={announcementBodyError.value}
+              helperText={announcementBodyError.errorMessage}
             />
           </DialogContent>
           <DialogActions>
