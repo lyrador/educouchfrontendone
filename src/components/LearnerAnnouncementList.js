@@ -71,17 +71,6 @@ function LearnerAnnouncementList(props) {
     ).then();
   }
 
-  function handleMarkAsUnread(announcementId) {
-    fetch(
-      "http://localhost:8080/announcement/markAnnouncementAsUnread/" +
-        announcementId,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      }
-    ).then();
-  }
-
   return (
     <div>
       <Grid container spacing={0}>
@@ -163,11 +152,8 @@ function LearnerAnnouncementList(props) {
                           {announcement.isRead == "READ" && (
                             <FormGroup>
                               <FormControlLabel
-                                control={<Checkbox defaultChecked />}
-                                onChange={handleMarkAsUnread(
-                                  announcement.announcementId
-                                )}
-                                label="Mark as Unread"
+                                control={<Checkbox defaultChecked disabled />}
+                                label="Read"
                               />
                             </FormGroup>
                           )}
