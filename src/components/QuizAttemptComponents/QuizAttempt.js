@@ -15,6 +15,7 @@ export default function QuizAttempt(props) {
   var auth = useAuth();
   var user = auth.user;
   var learnerId = user.userId;
+  const [numberQuizAttempts, setNumberQuizAttempts] = useState(0);
   const [currentQuiz, setCurrentQuiz] = useState();
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [startQuiz, setStartQuiz] = useState("");
@@ -29,11 +30,29 @@ export default function QuizAttempt(props) {
   const [maxAttempts, setMaxAttempts] = useState(0);
   const [quizStatusEnum, setQuizStatusEnum] = useState();
   const [questionAttempts, setQuestionAttempts] = useState([]);
-  const [quizAttempt, setQuizAttempt] = useState();
+  const [quizAttempt, setQuizAttempt] = useState({});
   const [hasPreviousAttempt, setHasPreviousAttempt] = useState(false);
   const [quizExpired, setQuizExpired] = useState("false");
-
+  const [buttonRendered, setButtonRendered] = useState("");
   React.useEffect(() => {
+    // console.log("Received hasPreviousAttemptprop: ", location.state.hasPreviousAttemptProp)
+    // console.log("Received numAttempts: ", location.state.numberQuizAttemptsProp)
+
+    // setStartQuiz("false");
+    // setCurrentQuiz(location.state.currentQuizProp);
+    // setTitle(location.state.titleProp);
+    // setDescription(location.state.descriptionProp);
+    // setMaxScore(location.state.maxScoreProp);
+    // setStartDate(location.state.startDateProp);
+    // setEndDate(location.state.endDateProp);
+    // setHasTimeLimit(location.state.hasTimeLimitProp);
+    // setTimeLimit(location.state.timeLimitProp);
+    // setHasMaxAttempts(location.state.hasMaxAttempts);
+    // setMaxAttempts(location.state.maxAttempts);
+    // setQuizStatusEnum(location.state.quizStatusEnum);
+    // setQuizExpired(location.state.quizExpired);
+    // setHasPreviousAttempt(location.state.hasPreviousAttemptProp)
+
     fetch("http://localhost:8080/quiz/getQuizById/" + quizId)
       .then((res) => res.json())
       .then((result) => {
@@ -52,25 +71,40 @@ export default function QuizAttempt(props) {
         setQuizStatusEnum(result.assessmentStatusEnum);
         setQuizExpired(result.isExpired);
         console.log("retrieved quiz:", result);
-      });
-
-    fetch(
-      "http://localhost:8080/quizAttempt/getMostRecentQuizAttemptByLearnerId/" +
-        quizId +
-        "/" +
-        learnerId
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        console.log("most recent attempt: ", result);
-        if (result.quizAttemptId == null) {
-          setHasPreviousAttempt(false);
-        } else {
-          setHasPreviousAttempt(true);
-          setQuizAttempt(result);
-          setQuestionAttempts(result.questionAttempts);
-        }
-      });
+      })
+      .then(
+        fetch(
+          "http://localhost:8080/quizAttempt/getMostRecentQuizAttemptByLearnerId/" +
+            quizId +
+            "/" +
+            learnerId
+        )
+          .then((res) => res.json())
+          .then((result) => {
+            console.log("most recent attempt: ", result);
+            if (result.quizAttemptId == null) {
+              setHasPreviousAttempt(false);
+            } else {
+              setHasPreviousAttempt(true);
+              setQuizAttempt(result);
+              setQuestionAttempts(result.questionAttempts);
+            }
+          })
+      );
+    //   .then(
+    //     fetch(
+    //       "http://localhost:8080/quizAttempt/getNumberQuizAttemptsByLearnerId/" +
+    //         quizId +
+    //         "/" +
+    //         learnerId
+    //     )
+    //       .then((res) => res.json())
+    //       .then((result) => {
+    //         console.log("no. attempts: ", result);
+    //         setNumberQuizAttempts(result);
+    //       })
+    //   )
+    //   .then(renderButton);
   }, []);
 
   function handleResumeQuiz() {
@@ -78,7 +112,55 @@ export default function QuizAttempt(props) {
     console.log("questionAttempts fetched: ", questionAttempts);
   }
 
+  // function renderButton() {
+  //   console.log("renderButtonCalled");
+  //   if (currentQuiz.isExpired == "true") {
+  //     console.log("quizExpired");
+  //     setButtonRendered("quizExpired");
+  //   } else {
+  //     //quiz not expired
+  //     console.log("quizNotExpired");
+  //     if (hasMaxAttempts == "true") {
+  //       //has max attempts
+  //       console.log("hasMaxAttempts");
+  //       if (numberQuizAttempts > maxAttempts) {
+  //         console.log("noAttemptsLeft");
+  //         setButtonRendered("noAttemptsLeft");
+  //       } else {
+  //         console.log("hasAttemptsLeft");
+  //         //numberQuizAttempts <= maxAttempts, still has attempts left
+  //         if (!hasPreviousAttempt) {
+  //           //no existing attempts
+  //           console.log("startQuiz");
+  //           setButtonRendered("startQuiz");
+  //         } else {
+  //           //has existing attempts
+  //           if (quizAttempt.assessmentAttemptStatusEnum == "SUBMITTED") {
+  //             console.log("startQuiz");
+  //             setButtonRendered("startQuiz");
+  //           } else if (
+  //             quizAttempt.assessmentAttemptStatusEnum == "INCOMPLETE"
+  //           ) {
+  //             console.log("resumeQuiz");
+  //             setButtonRendered("resumeQuiz");
+  //           }
+  //         }
+  //       }
+  //     } else {
+  //       //no max attempts
+  //       if (quizAttempt.assessmentAttemptStatusEnum == "SUBMITTED") {
+  //         console.log("startQuiz");
+  //         setButtonRendered("startQuiz");
+  //       } else if (quizAttempt.assessmentAttemptStatusEnum == "INCOMPLETE") {
+  //         console.log("resumeQuiz");
+  //         setButtonRendered("resumeQuiz");
+  //       }
+  //     }
+  //   }
+  // }
+
   function handleStartQuiz() {
+    console.log("clicked handleStartQuiz");
     fetch(
       "http://localhost:8080/quizAttempt/createQuizAttempt/" +
         quizId +
@@ -115,19 +197,33 @@ export default function QuizAttempt(props) {
           ) : (
             <Grid item>No Time Limit</Grid>
           )}
-          {hasMaxAttempts == "true" ? (
-            <Grid item>Maximum Attempts: {maxAttempts}</Grid>
+          {/* {hasMaxAttempts == "true" ? (
+            <Grid>
+              <Grid item>Maximum Attempts: {maxAttempts}</Grid>
+              {numberQuizAttempts <= maxAttempts ? (
+                <Grid item>Current Attempt Number: {numberQuizAttempts}</Grid>
+              ) : (
+                <Grid item>Max Attempts Reached</Grid>
+              )}
+            </Grid>
           ) : (
             <Grid item>Maximum Attempts: Unlimited Attempts </Grid>
-          )}
-          {currentQuiz.isExpired == "false" && (
+          )} */}
+
+          {hasPreviousAttempt ? (
             <>
-              {hasPreviousAttempt ? <Button variant="contained" onClick={handleResumeQuiz}>Resume Quiz</Button> :
-                <Button onClick={handleStartQuiz} variant="contained">
-                  Start Quiz
+              {quizAttempt.assessmentAttemptStatusEnum === "INCOMPLETE" ? (
+                <Button variant="contained" onClick={handleResumeQuiz}>
+                  Resume Quiz
                 </Button>
-              }
+              ) : (
+                <p>you have submitted alr sry</p>
+              )}
             </>
+          ) : (
+            <Button onClick={handleStartQuiz} variant="contained">
+              Start Quiz
+            </Button>
           )}
         </Grid>
       ) : (

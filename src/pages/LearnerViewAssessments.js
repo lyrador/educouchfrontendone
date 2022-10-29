@@ -1,3 +1,4 @@
+import { ConstructionOutlined } from "@mui/icons-material";
 import {
   Button,
   Grid,
@@ -12,11 +13,13 @@ import {
 import React, { useState } from "react";
 import { useLocation, useNavigate, useNavigationType } from "react-router-dom";
 import LearnerCoursesDrawer from "../components/LearnerCourseDrawer";
+import QuizTitleComponent from "../components/QuizComponents/QuizTitleComponent";
 import { useAuth } from "../context/AuthProvider";
 
 export default function LearnerViewAssessments(props) {
   var auth = useAuth();
   var user = auth.user;
+  var learnerId = user.userId;
   const navigate = useNavigate();
 
   var location = useLocation(props);
@@ -24,6 +27,25 @@ export default function LearnerViewAssessments(props) {
   var learnerStatus = location.state.learnerStatusProp;
 
   const [assessments, setAssessments] = useState([]);
+  const [numberQuizAttempts, setNumberQuizAttempts] = useState(0);
+  const [currentQuiz, setCurrentQuiz] = useState();
+  const [quizQuestions, setQuizQuestions] = useState([]);
+  const [startQuiz, setStartQuiz] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState();
+  const [maxScore, setMaxScore] = useState();
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  const [hasTimeLimit, setHasTimeLimit] = useState("true");
+  const [timeLimit, setTimeLimit] = useState();
+  const [hasMaxAttempts, setHasMaxAttempts] = useState();
+  const [maxAttempts, setMaxAttempts] = useState(0);
+  const [quizStatusEnum, setQuizStatusEnum] = useState();
+  const [questionAttempts, setQuestionAttempts] = useState([]);
+  const [quizAttempt, setQuizAttempt] = useState();
+  const [hasPreviousAttempt, setHasPreviousAttempt] = useState(false);
+  const [quizExpired, setQuizExpired] = useState("false");
+
   const renderEmptyRowMessage = () => {
     if (assessments.length === 0) {
       console.log("assessment list is empty");
@@ -48,8 +70,8 @@ export default function LearnerViewAssessments(props) {
       });
   }, []);
 
-  function handleViewAssessment(assessmentId, assignmentType) {
 
+  function handleViewAssessment(assessmentId, assignmentType) {
     if (assignmentType === "FileSubmission") {
       navigate(`/fileSubmissionAttempt`, {
         state: {
@@ -57,15 +79,22 @@ export default function LearnerViewAssessments(props) {
           courseIdProp: courseId,
           learnerStatusProp: learnerStatus,
         },
-      }); 
+      });
     } else {
       navigate(`/quizAttempt`, {
         state: {
           quizIdProp: assessmentId,
           courseIdProp: courseId,
           learnerStatusProp: learnerStatus,
+          currentQuizProp: currentQuiz,
+          // quizAttemptProp: quizAttempt,
+          quizStatusEnumProp: quizStatusEnum,
+          questionAttemptsProp: questionAttempts,
+          hasPreviousAttemptProp: hasPreviousAttempt,
+          quizExpiredProp: quizExpired,
+          numberQuizAttemptsProp: numberQuizAttempts,
         },
-      });
+      })
     }
   }
 
@@ -111,16 +140,22 @@ export default function LearnerViewAssessments(props) {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell>{assessment.title}</TableCell>
-                  <TableCell>{assessment.assessmentType === "FileSubmission" ? "File Submission" : 
-                  "Quiz"}</TableCell>
+                  <TableCell>
+                    {assessment.assessmentType === "FileSubmission"
+                      ? "File Submission"
+                      : "Quiz"}
+                  </TableCell>
                   <TableCell align="right">{assessment.startDate}</TableCell>
                   <TableCell align="right">{assessment.endDate}</TableCell>
                   <TableCell align="right">
-                    {assessment.isExpired === "true" ? <p style={{color:"red"}}>Expired</p> :
-                    <>
-                    {assessment.open === "true" && "Open"}
-                    {assessment.open === "false" && "Close"}</>}
-
+                    {assessment.isExpired === "true" ? (
+                      <p style={{ color: "red" }}>Expired</p>
+                    ) : (
+                      <>
+                        {assessment.open === "true" && "Open"}
+                        {assessment.open === "false" && "Close"}
+                      </>
+                    )}
                   </TableCell>
                   <TableCell align="right">
                     <Button
@@ -128,7 +163,10 @@ export default function LearnerViewAssessments(props) {
                       variant="outlined"
                       type="submit"
                       onClick={() =>
-                        handleViewAssessment(assessment.assessmentId, assessment.assessmentType)
+                        handleViewAssessment(
+                          assessment.assessmentId,
+                          assessment.assessmentType
+                        )
                       }
                     >
                       View Assessment
