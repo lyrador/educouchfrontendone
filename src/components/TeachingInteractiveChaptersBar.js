@@ -547,7 +547,7 @@ function TeachingInteractiveChaptersBar(props) {
                         {chapters.map((chapter) => (
                             <div>
                                 <div style={{ width: "100%", display: "flex" }}>
-                                    <div style={{ width: "10%", paddingLeft: "8px" }}>
+                                    <div style={{ width: "10%", paddingLeft: "10px", paddingTop: '6px' }}>
                                         <IconButton
                                             aria-label="settings"
                                             onClick={(event) => handleClickDeleteDialogOpen(event, chapter.interactiveChapterId)}
@@ -556,7 +556,7 @@ function TeachingInteractiveChaptersBar(props) {
                                         </IconButton>
                                     </div>
                                     <div className="deleteJiggle" style={{ width: "85%", paddingLeft: "8px" }} >
-                                        <Button fullWidth>
+                                        <Button fullWidth style={{ justifyContent: "flex-start" }}>
                                             <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
                                         </Button>
                                     </div>
