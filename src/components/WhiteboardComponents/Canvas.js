@@ -499,6 +499,8 @@ function Canvas({sendMessage, setRoomId, incomingDrawings, roomId, usersList, us
                 onMouseUp={onMouseUp}
                 onMouseLeave={onMouseUp}
                 onMouseMove={onMouseMove}
+                width = "100vh"
+                height = "80vh"
                 // onWheel={onMouseWheel}
             >Your browser does not support HTML5 canvas</canvas>
             {instrument === 'eraser'

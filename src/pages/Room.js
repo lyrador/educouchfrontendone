@@ -2,9 +2,16 @@
 import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 // react
 import React, { useState, useEffect, useRef } from 'react'
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import SendIcon from '@mui/icons-material/Send';
+import Stack from '@mui/material/Stack';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // components
 import CustomizedSnackbar from '../components/WhiteboardComponents/CustomizedSnackbar';
 import Canvas from '../components/WhiteboardComponents/Canvas';
+import GroupChat from '../components/WhiteboardComponents/GroupChat';
 // context
 import {ThemeProvider} from "../context/ThemeContext";
 // sockets
@@ -37,11 +44,15 @@ export default function Room() {
 	// const [userNotInCallList, setUserNotInCallList] = useState([]);
 	const [loading, setLoading] = useState(true);
 
+	// chat message
+	const [newMessage, setNewMessage] = useState("");
+
 	const CONNECT_USER = 'CONNECT_USER';
 	const DISCONNECT_USER = 'DISCONNECT_USER';
 
 	let messagesSubscription = null;
 	let canvasSubscription = null;
+	let groupChatSubscription = null;
 
 	const ws = useRef(null);
 	const stomp = useRef(null);
@@ -94,14 +105,29 @@ export default function Room() {
 
 				messagesSubscription = stomp.current.subscribe(`/topic/${rid}/user`, roomActions => {
 					const response = JSON.parse(roomActions.body);
-					setSnackbarMsg(response.message);
+					// setSnackbarMsg(response.message);
 					setUsersList(response.users);
-					setSnackbarOpen(true);
+					// setSnackbarOpen(true);
+					toast.info(response.message, {
+						position: "top-right",
+						autoClose: 5000,
+						hideProgressBar: false,
+						closeOnClick: true,
+						pauseOnHover: true,
+						draggable: true,
+						progress: undefined,
+						theme: "light",
+					});
 				});
 
 				canvasSubscription = stomp.current.subscribe(`/topic/${rid}`, coordinates => {
 					setIncomingDrawings(JSON.parse(coordinates.body)) 
 				});
+
+				groupChatSubscription = stomp.current.subscribe(`/topic/${rid}/chat`, textMessage => {
+					showMessage(JSON.parse(textMessage.body));
+
+				})
 
 				// stomp.current.send(`/app/send/${rid}/get-learner-not-participants`);
 
@@ -140,6 +166,45 @@ export default function Room() {
 
 	const sendMessage = (message) => {
 		stomp.current.send(`/app/send/${rid}`, {}, JSON.stringify(message));
+	}
+	// chat message
+	function showMessage(textMessage) {
+        toast('🦄 ' + textMessage.author + ": " + textMessage.message, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    };
+	const sendNewChat = (e) => {
+        e.preventDefault();
+        if(newMessage === "") {
+            toast.error('Unable to send empty message', {
+                position: "top-right",
+                autoClose: 1000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                });
+        } else {
+            sendChatMessage(newMessage);
+            setNewMessage("");
+        }
+        
+      };
+	const sendChatMessage = (message) => {
+		const textMessage = {
+			message: message,
+			author: username
+		}
+		stomp.current.send(`/app/send/${rid}/chat`, {}, JSON.stringify(textMessage));
 	}
 
 	const setRoomId = (newId) => {
@@ -190,15 +255,33 @@ export default function Room() {
 			loading={loading}
 			// usersNotInCall = {userNotInCallList}
 		/>
-		<CustomizedSnackbar 
-			open={snackbarOpen} 
-			setShowSnackbar={setSnackbarOpen} 
-			snackbarMsg={snackbarMsg} 
-			severity='info' 
-			transition='left' 
-			verticalAnchor='top' 
-			horizontalAnchor='right'
-		/>
+		<div>
+            <div className="messages">
+                <ToastContainer
+                    position="top-right"
+                    autoClose={10000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                />
+                <ToastContainer />
+            </div>
+            <div className="chat-input">
+                <Stack direction="row" spacing={2}>
+                    <TextField id="outlined-basic" label="Outlined" variant="outlined" onChange={(e) => setNewMessage(e.target.value)}/>
+                    <Button variant="contained" endIcon={<SendIcon />} onClick = {sendNewChat}>
+                        Send
+                    </Button>
+                </Stack>
+
+            </div>
+
+        </div>
       </ThemeProvider>
     </div>
   )
