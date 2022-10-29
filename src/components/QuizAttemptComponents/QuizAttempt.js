@@ -30,6 +30,7 @@ export default function QuizAttempt(props) {
   const [quizStatusEnum, setQuizStatusEnum] = useState();
   const [questionAttempts, setQuestionAttempts] = useState([]);
   const [quizAttempt, setQuizAttempt] = useState();
+  const [hasPreviousAttempt, setHasPreviousAttempt] = useState(false);
   const [quizExpired, setQuizExpired] = useState("false");
 
   React.useEffect(() => {
@@ -52,10 +53,29 @@ export default function QuizAttempt(props) {
         setQuizExpired(result.isExpired);
         console.log("retrieved quiz:", result);
       });
+
+    fetch(
+      "http://localhost:8080/quizAttempt/getMostRecentQuizAttemptByLearnerId/" +
+        quizId +
+        "/" +
+        learnerId
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        console.log("most recent attempt: ", result);
+        if (result.quizAttemptId == null) {
+          setHasPreviousAttempt(false);
+        } else {
+          setHasPreviousAttempt(true);
+          setQuizAttempt(result);
+          setQuestionAttempts(result.questionAttempts);
+        }
+      });
   }, []);
 
-  function loadQuiz() {
-    setTitle(currentQuiz.assessmentTitle);
+  function handleResumeQuiz() {
+    setStartQuiz("true");
+    console.log("questionAttempts fetched: ", questionAttempts);
   }
 
   function handleStartQuiz() {
@@ -71,7 +91,7 @@ export default function QuizAttempt(props) {
         setQuestionAttempts(result.questionAttempts);
         setQuizAttempt(result);
         setStartQuiz("true");
-        console.log("questionAttempts fetched: ", result.questionAttempts);
+        // console.log("questionAttempts fetched: ", result.questionAttempts);
       });
   }
 
@@ -101,14 +121,20 @@ export default function QuizAttempt(props) {
             <Grid item>Maximum Attempts: Unlimited Attempts </Grid>
           )}
           {currentQuiz.isExpired == "false" && (
-            <Button onClick={handleStartQuiz} variant="contained">
-              Start Quiz
-            </Button>
+            <>
+              {hasPreviousAttempt ? <Button variant="contained" onClick={handleResumeQuiz}>Resume Quiz</Button> :
+                <Button onClick={handleStartQuiz} variant="contained">
+                  Start Quiz
+                </Button>
+              }
+            </>
           )}
         </Grid>
       ) : (
         <Grid>
           <QuizAttemptDisplay
+            courseIdProp={courseId}
+            learnerStatusProp={learnerStatus}
             currentQuizProp={currentQuiz}
             currentQuizAttemptProp={quizAttempt}
             quizIdProp={quizId}

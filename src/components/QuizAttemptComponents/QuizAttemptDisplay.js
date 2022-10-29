@@ -1,5 +1,6 @@
 import { Button, Grid, Paper } from "@mui/material";
 import React, { useRef, useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
 import QuizAttemptTimer from "./QuizAttemptTimer";
 import QuizQuestionAttemptComponent from "./QuizQuestionAttemptComponent";
@@ -10,18 +11,33 @@ export default function QuizAttemptDisplay(props) {
   const [questionAttempts, setQuestionAttempts] = useState(
     props.questionAttemptsProp
   );
+  const navigate = useNavigate();
+  var location = useLocation(props);
+  var courseId = location.state.courseIdProp;
+  var learnerStatus = location.state.learnerStatusProp;
   const [quizAttempt, setQuizAttempt] = useState(props.currentQuizAttemptProp);
   const [quizStatusEnum, setQuizStatusEnum] = useState();
+  var quizAttemptLoaded = true;
 
   React.useEffect(() => {
+    console.log("quizAttemptDisplay useEffect called")
     setCurrentQuiz(props.currentQuizProp);
     setQuizAttempt(props.currentQuizAttemptProp);
     setQuizQuestions(props.questionsProp);
     setQuizStatusEnum(props.assessmentStatusEnum);
     setQuestionAttempts(props.questionAttemptsProp);
-  }, []);
+  }, [quizAttemptLoaded]);
 
   function selectOption() {}
+
+  function handleExit() {
+    navigate(`/learnerCourseDetails/` + courseId + `/assessments`, {
+      state: {
+        courseIdProp: courseId,
+        learnerStatusProp: learnerStatus,
+      },
+    }); 
+  }
 
   function handleSubmitQuizAttempt() {
     //questionAttemptedCheck (if not all attempted have an alert to confirm submit)
@@ -41,10 +57,12 @@ export default function QuizAttemptDisplay(props) {
       }
     )
       .then((res) => res.json())
-      .then(console.log("saved: ", quizAttempt));
+      .then(console.log("saved: ", quizAttempt))
+      .then(handleExit());
   };
 
   function inputShortAnswerResponse(questionIdProp, shortAnswerResponse) {
+    console.log("shortAnswerResponse received: ", shortAnswerResponse)
     const tempQuestionAttempts = [...questionAttempts];
     const questionAttemptIndex = tempQuestionAttempts.findIndex(
       //need to find index of question attempt with same question id prop as question id
@@ -55,7 +73,7 @@ export default function QuizAttemptDisplay(props) {
       tempQuestionAttempts[questionAttemptIndex].shortAnswerResponse =
         shortAnswerResponse;
       setQuestionAttempts(tempQuestionAttempts);
-      // console.log("input short answer:", shortAnswerResponse)
+      console.log("set short answer", tempQuestionAttempts[questionAttemptIndex].shortAnswerResponse)
     }
   }
 
@@ -75,6 +93,8 @@ export default function QuizAttemptDisplay(props) {
                   indexProp={index + 1}
                   // selectOptionProp={}
                   inputShortAnswerResponseProp={inputShortAnswerResponse}
+                  questionAttemptProp={questionAttempts[index]}
+                  questionAttemptsProp={questionAttempts}
                 />
               </Paper>
             </Grid>

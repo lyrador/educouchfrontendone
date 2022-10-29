@@ -48,14 +48,25 @@ export default function LearnerViewAssessments(props) {
       });
   }, []);
 
-  function handleViewAssessment(quizId) {
-    navigate(`/quizAttempt`, {
-      state: {
-        quizIdProp: quizId,
-        courseIdProp: courseId,
-        learnerStatusProp: learnerStatus,
-      },
-    });
+  function handleViewAssessment(assessmentId, assignmentType) {
+
+    if (assignmentType === "FileSubmission") {
+      navigate(`/fileSubmissionAttempt`, {
+        state: {
+          fileSubmissionIdProp: assessmentId,
+          courseIdProp: courseId,
+          learnerStatusProp: learnerStatus,
+        },
+      }); 
+    } else {
+      navigate(`/quizAttempt`, {
+        state: {
+          quizIdProp: assessmentId,
+          courseIdProp: courseId,
+          learnerStatusProp: learnerStatus,
+        },
+      });
+    }
   }
 
   return (
@@ -117,7 +128,7 @@ export default function LearnerViewAssessments(props) {
                       variant="outlined"
                       type="submit"
                       onClick={() =>
-                        handleViewAssessment(assessment.assessmentId)
+                        handleViewAssessment(assessment.assessmentId, assessment.assessmentType)
                       }
                     >
                       View Assessment

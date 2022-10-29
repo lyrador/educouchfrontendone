@@ -51,6 +51,7 @@ import LearnerCourseFolder from "./pages/LearnerCourseFolder";
 import LearnerChildFileCover from "./components/LearnerChildFileCover";
 import QuizAttempt from "./components/QuizAttemptComponents/QuizAttempt";
 import LearnerViewAssessments from "./pages/LearnerViewAssessments";
+import FileSubmissionAttempt from "./components/FileSubmissionAttemptComponents/FileSubmissionAttempt";
 
 function App() {
   return (
@@ -155,7 +156,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerViewAssessments/>
+                  <LearnerViewAssessments />
                 </RequireAuth>
               }
             />
@@ -478,6 +479,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <QuizAttempt />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/fileSubmissionAttempt"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <FileSubmissionAttempt />
                 </RequireAuth>
               }
             />

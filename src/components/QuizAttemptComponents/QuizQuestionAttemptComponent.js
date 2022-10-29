@@ -14,8 +14,28 @@ import QuestionAttemptTrueFalseComponent from "./QuestionAttemptTrueFalseCompone
 import QuizAttemptMCQComponent from "./QuizAttemptMCQComponent";
 export default function QuizQuestionAttemptComponent(props) {
   const [question, setQuestion] = useState(props.questionProp);
+  const [questionAttempt, setQuestionAttempt] = React.useState();
+  const [shortAnswerResponse, setShortAnswerResponse] = useState("");
+  const [optionSelected, setOptionSelected] = useState("");
   const [index, setIndex] = useState(props.indexProp);
   const [onEdit, setOnEdit] = useState(false);
+
+  React.useEffect(() => {
+    // var questionId = props.questionIdProp;
+    // for (var i = 0; i < props.questionAttemptsProp.length; i++) {
+    //   if (props.questionAttemptsProp[i].questionAttemptId == questionId) {
+    //     setQuestionAttempt(props.questionAttemptsProp[i]);
+    //     console.log("questionAttempt: ", props.questionAttemptsProp[i])
+    //     setShortAnswerResponse(questionAttempt.shortAnswerResponse);
+    //     setOptionSelected(questionAttempt.optionSelected);
+    //   }
+    // }
+    console.log("quizQuestionAttempt useEffect called")
+    console.log("questionAttempt: ", props.questionAttemptProp);
+    console.log("questionAttempts: ", props.questionAttemptsProp)
+    setShortAnswerResponse(props.questionAttemptProp.shortAnswerResponse)
+    setOptionSelected(props.questionAttemptProp.optionSelected)
+  }, []);
 
   return (
     <Grid
@@ -51,23 +71,24 @@ export default function QuizQuestionAttemptComponent(props) {
             questionContentProp={props.questionProp.questionContent}
           />
         </Grid>
-
         <Grid item>
           {props.questionProp.questionType == "shortAnswer" && (
             <QuestionAttemptShortAnswerComponent
-              isQuestionAttemptProp={"true"}
-              questionIdProp={ props.questionProp.questionId}
+              questionIdProp={props.questionProp.questionId}
               inputShortAnswerResponseProp={props.inputShortAnswerResponseProp}
+              questionAttemptsProp={props.questionAttemptsProp}
+              shortAnswerResponseProp={shortAnswerResponse}
             />
           )}
           {props.questionProp.questionType == "mcq" && (
             <div>
               <QuizAttemptMCQComponent
-                isQuestionAttemptProp={"true"}
                 mcqOptionsProp={question.options}
                 questionIdProp={props.questionProp.localid}
                 correctOptionProp={question.correctOption}
                 selectCorrectOptionProp={props.selectCorrectOptionProp}
+                questionAttemptsProp={props.questionAttemptsProp}
+                optionSelectedProp={optionSelected}
               />
               {props.quizStatusEnumProp == "GRADED" && (
                 <QuestionGuideComponent
@@ -81,11 +102,11 @@ export default function QuizQuestionAttemptComponent(props) {
           {props.questionProp.questionType == "trueFalse" && (
             <div>
               <QuestionAttemptTrueFalseComponent
-                isQuestionAttemptProp={"true"}
                 questionIdProp={props.questionProp.localid}
                 booleanOptionsProp={question.options}
                 correctOptionProp={question.correctOption}
                 selectCorrectOptionProp={props.selectCorrectOptionProp}
+                questionAttemptsProp={props.questionAttemptsProp}
               />
               {props.quizStatusEnumProp == "GRADED" && (
                 <QuestionGuideComponent
