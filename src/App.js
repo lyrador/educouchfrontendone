@@ -55,6 +55,8 @@ import TeachingInteractiveBooksList from "./components/TeachingInteractiveBooksL
 import TeachingInteractiveBook from "./components/TeachingInteractiveBook";
 import QuizAttempt from "./components/QuizAttemptComponents/QuizAttempt";
 import LearnerViewAssessments from "./pages/LearnerViewAssessments";
+import LearnerInteractiveBooksList from "./components/LearnerInteractiveBookList";
+import LearnerInteractiveBook from "./components/LearnerInteractiveBook";
 
 function App() {
   return (
@@ -419,6 +421,24 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingInteractiveBook />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/learnerInteractiveBook"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerInteractiveBooksList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/learnerInteractiveBook/:bookId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerInteractiveBook />
                 </RequireAuth>
               }
             />

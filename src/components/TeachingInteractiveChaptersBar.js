@@ -54,6 +54,8 @@ import MenuList from '@mui/material/MenuList';
 import LowPriorityIcon from '@mui/icons-material/LowPriority';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -85,14 +87,10 @@ function TeachingInteractiveChaptersBar(props) {
     const [openMenu, setOpenMenu] = React.useState(false);
     const anchorRef = React.useRef(null);
 
-    const handleToggle = () => {
-        setOpenMenu((prevOpen) => !prevOpen);
-    };
+    const handleToggle = () => { setOpenMenu((prevOpen) => !prevOpen) };
 
     const handleCloseMenu = (event) => {
-        if (anchorRef.current && anchorRef.current.contains(event.target)) {
-            return;
-        }
+        if (anchorRef.current && anchorRef.current.contains(event.target)) { return }
         setOpenMenu(false);
     };
 
@@ -108,10 +106,7 @@ function TeachingInteractiveChaptersBar(props) {
     // return focus to the button when we transitioned from !open -> open
     const prevOpenMenu = React.useRef(openMenu);
     React.useEffect(() => {
-        if (prevOpenMenu.current === true && openMenu === false) {
-            anchorRef.current.focus();
-        }
-
+        if (prevOpenMenu.current === true && openMenu === false) { anchorRef.current.focus() }
         prevOpenMenu.current = openMenu;
     }, [openMenu]);
 
@@ -120,39 +115,51 @@ function TeachingInteractiveChaptersBar(props) {
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
     const courseId = location.pathname.split("/")[2];
     const interactiveBookId = location.pathname.split("/")[4];
-    console.log(interactiveBookId); 
 
     const [refreshPage, setRefreshPage] = useState("");
 
     const [deleteMode, setDeleteMode] = useState(false);
 
-     //retrieve all chapters of the book
-     const [chapters, setChapters] = useState([]);
+    //retrieve all chapters of the book
+    const [chapters, setChapters] = useState([]);
+    const [chaptersToBeReordered, setChaptersToBeReordered] = useState([]);
 
-     React.useEffect(() => {
-         setRefreshPage(false);
-         fetch("http://localhost:8080/interactiveChapter/interactiveBook/" + interactiveBookId + "/interactiveChapters")
-             .then((res) => res.json())
-             .then((result) => {
-                 setChapters(result);
-                 console.log(result);
-             });
-     }, [refreshPage]);
+    const setChaptersToBeReorderedMethod = (chapters) => {
+        const retrievedChaptersToBeReordered = new Array()
+        for (const retrievedChapter of chapters) {
+            var chapterId = retrievedChapter.interactiveChapterId
+            var chapterIndex = retrievedChapter.chapterIndex.toString()
+            var chapterTitle = retrievedChapter.chapterTitle
+            const tempChapter = { chapterId, chapterIndex, chapterTitle }
+            retrievedChaptersToBeReordered.push(tempChapter)
+            console.log(retrievedChapter);
+        }
+        setChaptersToBeReordered(retrievedChaptersToBeReordered)
+    };
 
-    // function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
-    //     return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
+    // const setInitialChapter = (chapters) => {
+    //     if (chapters.length == 0) {
+    //         props.setChapterIdToBrowse(undefined)
+    //     } else {
+    //         for (const chapter of chapters) {
+    //             if (chapter.chapterIndex == 1) {
+    //                 props.setChapterIdToBrowse(chapter.interactiveChapterId)
+    //             }
+    //         }
+    //     }
     // }
 
-    // const chapters = [
-    //     createData(1, 1, 'Plant Systems', "Hello"),
-    //     createData(2, 2, 'Human Systems', "Hello"),
-    //     createData(3, 3, 'Skeletal Systems', "Hello"),
-    //     createData(4, 4, 'Muscular Systems', "Hello"),
-    //     createData(5, 5, 'Digestive Systems', "Hello"),
-    //     createData(6, 6, 'Circulatory Systems', "Hello"),
-    //     createData(7, 7, 'Planet Systems', "Hello"),
-    //     createData(8, 8, 'World Systems', "Hello"),
-    // ]
+    React.useEffect(() => {
+        setRefreshPage(false);
+        fetch("http://localhost:8080/interactiveChapter/interactiveBook/" + interactiveBookId + "/interactiveChapters")
+            .then((res) => res.json())
+            .then((result) => {
+                setChapters(result);
+                // setInitialChapter(result)
+                setChaptersToBeReorderedMethod(result)
+                props.setRefreshPage(true)
+            });
+    }, [refreshPage]);
 
     //create
     const [newChapterTitle, setNewChapterTitle] = useState("");
@@ -163,33 +170,6 @@ function TeachingInteractiveChaptersBar(props) {
 
     const [open, setOpen] = React.useState(false);
 
-    //delete
-    const [chapterIdToDelete, setChapterIdToDelete] = useState("");
-    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-
-    //edit
-    const [editedChapterTitle, setEditedChapterTitle] = useState("");
-    const [editedChapterDescription, setEditedChapterDescription] = useState("");
-    const [chapterIdToEdit, setChapterIdToEdit] = useState("");
-    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-    const [openSettings, setOpenSettings] = React.useState(false);
-
-    const handleOpenSettings = () => {
-        setOpenSettings(true);
-    };
-
-    const handleCloseSettings = () => {
-        setOpenSettings(false);
-    };
-
-    const toggleDeleteMode = () => {
-        if (deleteMode) {
-            setDeleteMode(false)
-        } else {
-            setDeleteMode(true)
-        }
-    };
-
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -197,6 +177,11 @@ function TeachingInteractiveChaptersBar(props) {
     const handleClose = () => {
         setOpen(false);
     };
+
+    //delete
+    const [chapterIdToDelete, setChapterIdToDelete] = useState("");
+    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+    const [deleteAllDialogOpen, setDeleteAllDialogOpen] = React.useState(false);
 
     const handleClickDeleteDialogOpen = (event, chapterId) => {
         setChapterIdToDelete(chapterId);
@@ -207,6 +192,29 @@ function TeachingInteractiveChaptersBar(props) {
         setDeleteDialogOpen(false);
     };
 
+    const toggleDeleteMode = () => {
+        if (deleteMode) {
+            setDeleteMode(false)
+        } else {
+            setDeleteMode(true)
+        }
+    };
+
+    const handleClickDeleteAllDialogOpen = (event) => {
+        setDeleteAllDialogOpen(true);
+    };
+
+    const handleDeleteAllDialogClose = () => {
+        setDeleteAllDialogOpen(false);
+    };
+
+    //edit
+    const [editedChapterTitle, setEditedChapterTitle] = useState("");
+    const [editedChapterDescription, setEditedChapterDescription] = useState("");
+    const [chapterIdToEdit, setChapterIdToEdit] = useState("");
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+    const [openSettings, setOpenSettings] = React.useState(false);
+
     const handleClickEditDialogOpen = (event, chapterId, chapterTitle) => {
         setEditedChapterTitle(chapterTitle);
         setChapterIdToEdit(chapterId);
@@ -215,6 +223,42 @@ function TeachingInteractiveChaptersBar(props) {
 
     const handleEditDialogClose = () => {
         setEditDialogOpen(false);
+    };
+
+    //reorder
+    const [reorderDialogOpen, setReorderDialogOpen] = React.useState(false);
+
+
+    const handleClickReorderDialogOpen = (event) => {
+        setReorderDialogOpen(true);
+    };
+
+    const handleReorderDialogClose = () => {
+        setReorderDialogOpen(false);
+    };
+
+    function handleOnDragEnd(result) {
+        console.log(result)
+        const chapterItems = Array.from(chaptersToBeReordered)
+        const [reorderedChapterItem] = chapterItems.splice(result.source.index, 1)
+        chapterItems.splice(result.destination.index, 0, reorderedChapterItem)
+        setChaptersToBeReordered(chapterItems)
+        console.log(chaptersToBeReordered)
+    }
+
+    //settings
+
+    const handleOpenSettings = () => {
+        setOpenSettings(true);
+    };
+
+    const handleCloseSettings = () => {
+        setOpenSettings(false);
+    };
+
+    const handleChapterChange = (event, chapterId, chapterIndex) => {
+        props.setChapterIdToBrowse(chapterId)
+        props.setChapterIndexToBrowse(chapterIndex)
     };
 
     const createNewChapter = async (e) => {
@@ -254,6 +298,7 @@ function TeachingInteractiveChaptersBar(props) {
             handleClose();
             handleClickSnackbar();
             setNewChapterTitle("");
+            setNewChapterDescription("")
         };
     }
 
@@ -279,6 +324,30 @@ function TeachingInteractiveChaptersBar(props) {
         }
         setRefreshPage(true);
         handleDeleteDialogClose();
+        handleClickDeleteSnackbar();
+    };
+
+    const deleteAllChapters = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch("http://localhost:8080/interactiveChapter/interactiveChapters/" + interactiveBookId + "/deleteAll", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+            })
+            console.log(response);
+            if (response.ok == false) {
+                console.log("Error");
+                handleClickErrorSnackbar()
+            } else {
+                console.log("All Interactive Chapters Deleted Successfully!");
+                handleClickDeleteSnackbar()
+            }
+        } catch (err) {
+            console.log(err);
+            handleClickErrorSnackbar()
+        }
+        setRefreshPage(true);
+        handleDeleteAllDialogClose();
         handleClickDeleteSnackbar();
     };
 
@@ -319,6 +388,34 @@ function TeachingInteractiveChaptersBar(props) {
             handleEditDialogClose();
             handleClickEditSnackbar();
         };
+    }
+
+    const reorderChapters = async (e) => {
+        e.preventDefault();
+        for (var i = 0; i < chaptersToBeReordered.length; i++) {
+            chaptersToBeReordered[i].chapterIndex = i + 1
+        }
+        try {
+            const response = await fetch("http://localhost:8080/interactiveChapter/" + interactiveBookId + "/interactiveChapters/reorderInteractiveChapters", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(chaptersToBeReordered),
+            })
+            console.log(response);
+            if (response.ok == false) {
+                console.log("Error");
+                handleClickErrorSnackbar()
+            } else {
+                console.log("Interactive Chapters Reordered Successfully!");
+                handleClickSnackbar()
+            }
+        } catch (err) {
+            console.log(err);
+            handleClickErrorSnackbar()
+        }
+        setRefreshPage(true);
+        handleReorderDialogClose();
+        handleClickEditSnackbar();
     }
 
     const renderEmptyRowMessage = () => {
@@ -392,6 +489,9 @@ function TeachingInteractiveChaptersBar(props) {
                                 placement="bottom-start"
                                 transition
                                 disablePortal
+                                style={{
+                                    zIndex: 10
+                                }}
                             >
                                 {({ TransitionProps, placement }) => (
                                     <Grow
@@ -409,12 +509,12 @@ function TeachingInteractiveChaptersBar(props) {
                                                     aria-labelledby="composition-button"
                                                     onKeyDown={handleListKeyDown}
                                                 >
-                                                    <MenuItem onClick={handleClickDeleteDialogOpen}>
+                                                    <MenuItem onClick={handleClickDeleteAllDialogOpen}>
                                                         <DeleteIcon style={{ color: 'grey' }} />
                                                         &nbsp;
                                                         Delete All Chapters
                                                     </MenuItem>
-                                                    <MenuItem onClick={handleClickDeleteDialogOpen}>
+                                                    <MenuItem onClick={handleClickReorderDialogOpen}>
                                                         <LowPriorityIcon style={{ color: 'grey' }} />
                                                         &nbsp;
                                                         Reorder Chapters
@@ -434,7 +534,9 @@ function TeachingInteractiveChaptersBar(props) {
                     <div style={{ height: "75%", maxHeight: "75%", overflow: "auto" }}>
                         {chapters.map((chapter) => (
                             <div>
-                                <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
+                                <Button onClick={(event) => handleChapterChange(event, chapter.interactiveChapterId, chapter.chapterIndex)} fullWidth style={{ justifyContent: "flex-start", textTransform: 'none' }}>
+                                    <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
+                                </Button>
                                 <Divider />
                             </div>
                         ))}
@@ -445,7 +547,7 @@ function TeachingInteractiveChaptersBar(props) {
                         {chapters.map((chapter) => (
                             <div>
                                 <div style={{ width: "100%", display: "flex" }}>
-                                    <div style={{ width: "10%", paddingLeft: "8px" }}>
+                                    <div style={{ width: "10%", paddingLeft: "10px", paddingTop: '6px' }}>
                                         <IconButton
                                             aria-label="settings"
                                             onClick={(event) => handleClickDeleteDialogOpen(event, chapter.interactiveChapterId)}
@@ -454,7 +556,9 @@ function TeachingInteractiveChaptersBar(props) {
                                         </IconButton>
                                     </div>
                                     <div className="deleteJiggle" style={{ width: "85%", paddingLeft: "8px" }} >
-                                        <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
+                                        <Button fullWidth style={{ justifyContent: "flex-start" }}>
+                                            <div className="chapterLine">Chapter {chapter.chapterIndex} - {chapter.chapterTitle}</div>
+                                        </Button>
                                     </div>
                                 </div>
                                 <Divider />
@@ -491,7 +595,7 @@ function TeachingInteractiveChaptersBar(props) {
                                 Remove
                             </Button>
                         }
-                    
+
                         {deleteMode == true &&
                             <Button
                                 className="btn-upload"
@@ -593,6 +697,30 @@ function TeachingInteractiveChaptersBar(props) {
             </div>
             <div>
                 <Dialog
+                    open={deleteAllDialogOpen}
+                    onClose={handleDeleteAllDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Delete all interactive chapters?"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            These will delete all the pages inside all the chapters. You will not be able to undo this action. 
+                            Are you sure you want to delete?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDeleteAllDialogClose}>Cancel</Button>
+                        <Button onClick={deleteAllChapters} autoFocus>
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
                     open={editDialogOpen}
                     onClose={handleEditDialogClose}
                     aria-labelledby="alert-dialog-title"
@@ -673,6 +801,94 @@ function TeachingInteractiveChaptersBar(props) {
                     <DialogActions>
                         <Button onClick={handleCloseSettings}>Cancel</Button>
                         <Button onClick={createNewChapter}>Create</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
+                    open={reorderDialogOpen} onClose={handleReorderDialogClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth={'sm'} fullWidth={true}
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Chapter Re-Ordering"}
+                    </DialogTitle>
+                    <DialogContent>
+                        {/* <DialogContentText id="alert-dialog-description">
+                            Enter the new interactive chapter details
+                        </DialogContentText> */}
+                        <div style={{ width: '60%', margin: 'auto', display: 'flex' }}>
+                            <div style={{ width: '15%' }}>
+                                <ul style={{ listStyleType: 'none' }}>
+                                    <li>
+                                        <div style={{ display: 'flex', width: '100%' }}>
+                                            <div style={{ borderStyle: 'solid', borderWidth: '1px', margin: '0 4px 2px 0', width: '100%', textAlign: 'center', backgroundColor: 'cadetblue' }}>
+                                                <h3>New</h3>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <ul style={{ listStyleType: 'none' }}>
+                                    {chaptersToBeReordered.map(({ chapterIndex, chapterTitle }, index) => {
+                                        return (
+                                            <li>
+                                                <div style={{ display: 'flex', width: '100%' }}>
+                                                    <div style={{ borderStyle: 'solid', borderWidth: '1px', margin: '0 4px 2px 0', width: '100%', textAlign: 'center', backgroundColor: 'aquamarine' }}>
+                                                        <h3>{index + 1}</h3>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
+                            </div>
+                            <div style={{ width: '85%' }}>
+                                <ul style={{ listStyleType: 'none' }}>
+                                    <li>
+                                        <div style={{ display: 'flex', width: '100%' }}>
+                                            <div style={{ borderStyle: 'solid', borderWidth: '1px', marginBottom: '2px', width: '100%', textAlign: 'center', backgroundColor: 'cadetblue' }}>
+                                                <h3 style={{ marginLeft: '5px' }}>Previous</h3>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <DragDropContext onDragEnd={handleOnDragEnd}>
+                                    <Droppable droppableId="chaptersReordering">
+                                        {(provided) =>
+                                            <ul {...provided.droppableProps} ref={provided.innerRef} style={{ listStyleType: 'none' }}>
+                                                {chaptersToBeReordered.map(({ chapterIndex, chapterTitle }, index) => {
+                                                    return (
+                                                        <Draggable key={chapterIndex} draggableId={chapterIndex} index={index}>
+                                                            {(provided) => (
+                                                                <li {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+                                                                    <div style={{ display: 'flex', width: '100%' }}>
+                                                                        {((index + 1).toString() == chapterIndex) &&
+                                                                            <div style={{ borderStyle: 'solid', borderWidth: '1px', marginBottom: '2px', width: '100%', borderRadius: '10px'}}>
+                                                                                <h3 style={{ marginLeft: '5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{chapterIndex} - {chapterTitle}</h3>
+                                                                            </div>
+                                                                        }
+                                                                        {((index + 1).toString() != chapterIndex) &&
+                                                                            <div style={{ borderStyle: 'solid', borderWidth: '1px', marginBottom: '2px', width: '100%', borderRadius: '10px', backgroundColor: 'yellow' }}>
+                                                                                <h3 style={{ marginLeft: '5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{chapterIndex} - {chapterTitle}</h3>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                </li>
+                                                            )}
+                                                        </Draggable>
+                                                    )
+                                                })}
+                                                {provided.placeholder}
+                                            </ul>
+                                        }
+                                    </Droppable>
+                                </DragDropContext>
+                            </div>
+                        </div>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleReorderDialogClose}>Cancel</Button>
+                        <Button onClick={reorderChapters} autoFocus>
+                            Reorder
+                        </Button>
                     </DialogActions>
                 </Dialog>
             </div>

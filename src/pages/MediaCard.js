@@ -8,12 +8,12 @@ import Typography from '@mui/material/Typography';
 
 export default function MediaCard() {
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: 1000, height: "100%" }}>
       <CardMedia
-        component="img"
+        component="video"
         alt="green iguana"
-        height="140"
-        image="https://educouchbucket.s3.ap-southeast-1.amazonaws.com/1_92adf06PCF91kCYu1nPLQg.jpeg"
+        height="50%"
+        video="https://educouchbucket.s3.ap-southeast-1.amazonaws.com/Cute+Husky+Dogs+Crawling++HQ.mp4"
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">

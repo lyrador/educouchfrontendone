@@ -1,10 +1,13 @@
 import { Grid } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function QuizTitleComponent(props) {
 
   const [onEdit, setOnEdit] = useState(false);
 
+  React.useEffect(() => { 
+    console.log("received questiontitle: ", props.questionTitleProp)
+  }, [])
     
   return (
     <Grid item key={props.questionIdProp} style={{ marginBottom: 30 }}>
