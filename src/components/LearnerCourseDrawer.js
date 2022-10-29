@@ -77,6 +77,13 @@ function LearnerCoursesDrawer({ courseId, learnerStatus }) {
                                     learnerStatusProp: learnerStatus,
                                     testingProp: 200
                                 }}>
+                            </Link>
+                            <Link to={`${coursePath}/learnerInteractiveBook`} style={{ textDecoration: 'none', color: 'black' }}>
+                                <ListItemButton>
+                                    <ListItemText primary="Interactive Books" />
+                                </ListItemButton>
+                            </Link>
+                            <Link to={`${coursePath}/assessments`} style={{ textDecoration: 'none', color: 'black' }}>
                                 <ListItemButton>
                                     <ListItemText primary="Assessments" />
                                 </ListItemButton>

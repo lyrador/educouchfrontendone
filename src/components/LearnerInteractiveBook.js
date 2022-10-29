@@ -47,12 +47,14 @@ import TeachingInteractivePage from "../pages/TeachingInteractivePage";
 import Stack from '@mui/material/Stack';
 
 import Pagination from '@mui/material/Pagination';
+import LearnerInteractiveChaptersBar from "./LearnerInteractiveChaptersBar";
+import LearnerInteractivePage from "../pages/LearnerInteractivePage";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-function TeachingInteractiveBook(props) {
+function LearnerInteractiveBook(props) {
 
     //snackbar
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
@@ -351,15 +353,11 @@ function TeachingInteractiveBook(props) {
     return (
         <div>
             <Grid container spacing={0}>
-                {/* <Grid item xs={2}>
-                    <TeachingCoursesDrawer courseId={bookId}></TeachingCoursesDrawer>
-                </Grid> */}
                 <Grid item xs={2}>
-                    <TeachingInteractiveChaptersBar chapterIdToBrowse={chapterIdToBrowse} setChapterIdToBrowse={setChapterIdToBrowse} 
+                    <LearnerInteractiveChaptersBar chapterIdToBrowse={chapterIdToBrowse} setChapterIdToBrowse={setChapterIdToBrowse} 
                     chapterIndexToBrowse={chapterIndexToBrowse} setChapterIndexToBrowse={setChapterIndexToBrowse} refreshPage={refreshPage} setRefreshPage={setRefreshPage} />
                 </Grid>
                 <Grid item xs={10}>
-                    {/* {chapterIdToBrowse} */}
                     <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                         <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
                             Interactive Page Created Succesfully!
@@ -380,16 +378,11 @@ function TeachingInteractiveBook(props) {
                             Error!
                         </Alert>
                     </Snackbar>
-                    {/* <div style={{ justifyContent: "center" }}>
-                        <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
-                            Pages
-                        </h1>
-                    </div> */}
-                    <TeachingInteractivePage 
+                    <LearnerInteractivePage
                     chapterId={chapterIdToBrowse} 
                     chapterIndex={chapterIndexToBrowse}
                     book={book}
-                    ></TeachingInteractivePage>
+                    ></LearnerInteractivePage>
                 </Grid>
             </Grid>
             {/* <div>
@@ -503,4 +496,4 @@ function TeachingInteractiveBook(props) {
     );
 }
 
-export default TeachingInteractiveBook;
+export default LearnerInteractiveBook;
