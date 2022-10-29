@@ -1,36 +1,40 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import styles from '../../css/BottomRightBar.module.scss'
 import infoPanelStyles from '../../css/ShowInfoPanel.module.scss';
 import { ThemeContext } from '../../context/ThemeContext';
 import CustomizedSnackbar from './CustomizedSnackbar';
-import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import CreateTooltip from './CreateTooltip';
 import ReactTooltip from 'react-tooltip';
-import {getRoom} from '../../services/getRoom';
+import { getRoom } from '../../services/getRoom';
+import { checkRoomInvitation } from '../../services/checkRoomInvitation';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
-function BottomRightBar({scale, undo, disabled, setRoomId, roomId}) {
+function BottomRightBar({ scale, undo, disabled, setRoomId, roomId }) {
     const { theme, toggle, info } = React.useContext(ThemeContext);
     const [backgroundColor, setBackgroundColor] = useState('#E2E6EA');
     const [color, setColor] = useState('#222');
     const [showJoinRoomPanel, setShowJoinRoomPanel] = useState(false);
     const roomIdRef = useRef(null);
+    const passwordRef = useRef(null);
     const [showSnackbar, setShowSnackbar] = useState(false);
     const [button, setButton] = useState(infoPanelStyles.closeBtnDisabled);
     const [snackbarMsg, setSnackbarMsg] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
     useEffect(() => {
-        if(!theme.secondaryColor) return;
+        if (!theme.secondaryColor) return;
         setBackgroundColor(theme.secondaryColor);
 
-        if(!theme.color) return;
+        if (!theme.color) return;
         setColor(theme.color);
     }, [theme])
 
     const setButtonStyle = () => {
-        if(roomIdRef.current.value === '') {
+        if (roomIdRef.current.value === '') {
             setButton(infoPanelStyles.closeBtnDisabled)
         } else {
             setButton(infoPanelStyles.closeBtn)
@@ -38,30 +42,49 @@ function BottomRightBar({scale, undo, disabled, setRoomId, roomId}) {
     }
 
     const changeRoom = () => {
-        if(roomIdRef.current.value === '') return 
+        if (roomIdRef.current.value === '' || passwordRef.current.value === '') return
         else {
-            if(roomId === roomIdRef.current.value) {
+            if (roomId === roomIdRef.current.value) {
                 // User is trying to connect to the same room he's already connected
-                setSnackbarMsg('You are already connected to this room!')
-                setShowSnackbar(true);
-                setSnackbarSeverity("warning");
+                toast.warn("You are in this room currently!", {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                });
             } else {
                 // User tries to connect to a different room, therefor we should check if the room exists in DB
-                getRoom(roomIdRef.current.value)
+                checkRoomInvitation(roomIdRef.current.value, passwordRef.current.value)
                     .then(() => {
-                        console.log('here 1')
-                        setSnackbarMsg('Connected succssfully')
                         setRoomId(roomIdRef.current.value);
                         setShowJoinRoomPanel(false);
                         setButton(infoPanelStyles.closeBtnDisabled)
-                        setShowSnackbar(true);
-                        setSnackbarSeverity("success");
+                        toast.info("Successfully changed your room.", {
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "dark",
+                        });
                     })
                     .catch((err) => {
-                        console.log('here 2')
-                        setSnackbarMsg('Room doesn\'t exist')
-                        setShowSnackbar(true);
-                        setSnackbarSeverity("error");
+                        toast.error("Room doesn't exist, or wrong passcode!", {
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "dark",
+                        });
                     })
             }
         }
@@ -75,19 +98,17 @@ function BottomRightBar({scale, undo, disabled, setRoomId, roomId}) {
 
     return (
         <>
-            {showJoinRoomPanel && 
+            {showJoinRoomPanel &&
                 <div className={infoPanelStyles.infoPanel}>
                     <div className={infoPanelStyles.inner}>
-                        <div className={infoPanelStyles.top}>
-                            <div className={infoPanelStyles.paragraph}>
-                                <h1>Enter a room ID</h1>
-                                <div className={infoPanelStyles.close} onClick={() => setShowJoinRoomPanel(false)}>x</div>
-                            </div>
-                        </div>
                         <div className={infoPanelStyles.middle}>
                             <div className={infoPanelStyles.enterId}>
                                 <h1 className={infoPanelStyles.heading}>Enter ID:</h1>
-                                <input className={infoPanelStyles.input} placeholder="fkjsldwkwqrn" ref={roomIdRef} onChange={setButtonStyle}/>
+                                <input className={infoPanelStyles.input} placeholder="Enter room ID here" ref={roomIdRef} onChange={setButtonStyle} />
+                            </div>
+                            <div className={infoPanelStyles.enterId}>
+                                <h1 className={infoPanelStyles.heading}>Enter passcode:</h1>
+                                <input className={infoPanelStyles.input} placeholder="Enter passcode here" ref={passwordRef} onChange={setButtonStyle} />
                             </div>
                         </div>
                         <div className={infoPanelStyles.bottom}>
@@ -96,7 +117,7 @@ function BottomRightBar({scale, undo, disabled, setRoomId, roomId}) {
                     </div>
                 </div>
             }
-            <div className={styles.bottomRightBar}> 
+            <div className={styles.bottomRightBar}>
 
                 {/* Copy Current Room ID */}
                 <CopyToClipboard
@@ -104,7 +125,7 @@ function BottomRightBar({scale, undo, disabled, setRoomId, roomId}) {
                     onCopy={copyID}
                 >
                     <div>
-                        <a data-tip data-for='copyRoomAddress' className={styles.toggleTheme} style={{background: `${backgroundColor}`, color: `${color}`}}> 🔗 </a>
+                        <a data-tip data-for='copyRoomAddress' className={styles.toggleTheme} style={{ background: `${backgroundColor}`, color: `${color}` }}> 🔗 </a>
                         <ReactTooltip id='copyRoomAddress' type='info' effect="solid">
                             <span>Copy ID </span>
                         </ReactTooltip>
@@ -114,7 +135,7 @@ function BottomRightBar({scale, undo, disabled, setRoomId, roomId}) {
                 {/* Change Room */}
                 <CreateTooltip
                     id='joinRoom'
-                    background={{background: `${backgroundColor}`, color: `${color}`}}
+                    background={{ background: `${backgroundColor}`, color: `${color}` }}
                     action={() => setShowJoinRoomPanel(!showJoinRoomPanel)}
                     stylesClass={styles.toggleTheme}
                     icon='🚪'
@@ -123,34 +144,21 @@ function BottomRightBar({scale, undo, disabled, setRoomId, roomId}) {
                     text={'Change Room'}
                 />
 
-                {/* Toggle theme */}
-                {/* <CreateTooltip
-                    id='toggleTheme'
-                    background={{background: `${backgroundColor}`}}
-                    action={toggle}
-                    stylesClass={styles.toggleTheme}
-                    icon='💡'
-                    type={'info'}
-                    effect='solid'
-                    text={'Change Theme'}
-                /> */}
-
-                {/* Undo */}
-                {/* <CreateTooltip
-                    id='undo'
-                    background={{background: `${disabled ? '#222' : backgroundColor}`}}
-                    action={undo}
-                    stylesClass={styles.undo}
-                    icon='↺'
-                    type={`${disabled ? 'error' : 'info'}`}
-                    effect='solid'
-                    text={'Undo'}
-                /> */}
-
-                <div className={styles.scale} style={{background: `${backgroundColor}`, color: `${color}`}}>Scale: {scale.toFixed(1)}</div> 
+                <div className={styles.scale} style={{ background: `${backgroundColor}`, color: `${color}` }}>Scale: {scale.toFixed(1)}</div>
             </div>
 
-            <CustomizedSnackbar open={showSnackbar} setShowSnackbar={setShowSnackbar} snackbarMsg={snackbarMsg} severity={snackbarSeverity}/>
+            <ToastContainer
+                position="top-right"
+                autoClose={10000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </>
     )
 }

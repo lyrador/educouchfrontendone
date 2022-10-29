@@ -13,7 +13,7 @@ import CustomizedSnackbar from '../components/WhiteboardComponents/CustomizedSna
 import Canvas from '../components/WhiteboardComponents/Canvas';
 import GroupChat from '../components/WhiteboardComponents/GroupChat';
 // context
-import {ThemeProvider} from "../context/ThemeContext";
+import { ThemeProvider } from "../context/ThemeContext";
 // sockets
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs';
@@ -26,15 +26,15 @@ import { useAuth } from '../context/AuthProvider';
 
 const SOCKET_URL = BASE_URL + '/ws-message';
 
-export default function Room() {  
+export default function Room() {
 	const navigate = useNavigate();
-    var roomId = useParams();
-    roomId = roomId.roomId;
+	var roomId = useParams();
+	roomId = roomId.roomId;
 
 	// finding the username
-    const auth = useAuth();
-    const user = auth.user;
-    var username = user.username;
+	const auth = useAuth();
+	const user = auth.user;
+	var username = user.username;
 
 	const [rid, setRid] = useState(null);
 	const [incomingDrawings, setIncomingDrawings] = useState(null);
@@ -45,7 +45,8 @@ export default function Room() {
 	const [loading, setLoading] = useState(true);
 
 	// chat message
-	const [newMessage, setNewMessage] = useState("");
+	// const [newMessage, setNewMessage] = useState("");
+	const newMessage = useRef(null);
 
 	const CONNECT_USER = 'CONNECT_USER';
 	const DISCONNECT_USER = 'DISCONNECT_USER';
@@ -65,7 +66,7 @@ export default function Room() {
 			})
 			.catch((err) => {
 				navigate.push('/');
-			})		
+			})
 	}, []);
 
 	// const [refreshPage, setRefreshPage] = useState("");
@@ -82,13 +83,13 @@ export default function Room() {
 	// 	})
 	// },[refreshPage]);
 
-    useEffect(() => {
-		if(!rid || !username) {
+	useEffect(() => {
+		if (!rid || !username) {
 			setRid(roomId);
 			localStorage.setItem('rid', roomId);
-			localStorage.setItem('username',username);		
+			localStorage.setItem('username', username);
 		}
-		if(loading) {
+		if (loading) {
 			ws.current = new SockJS(SOCKET_URL);
 			ws.current.onopen = () => alert("ws opened");
 			ws.current.onclose = () => alert(1000);
@@ -100,7 +101,7 @@ export default function Room() {
 					username: username,
 					payload: CONNECT_USER,
 					roomId: rid
-				} ;
+				};
 				stomp.current.send(`/app/send/${rid}/user`, {}, JSON.stringify(userJoinedRoom));
 
 				messagesSubscription = stomp.current.subscribe(`/topic/${rid}/user`, roomActions => {
@@ -109,19 +110,19 @@ export default function Room() {
 					setUsersList(response.users);
 					// setSnackbarOpen(true);
 					toast.info(response.message, {
-						position: "top-right",
+						position: "top-center",
 						autoClose: 5000,
 						hideProgressBar: false,
 						closeOnClick: true,
 						pauseOnHover: true,
 						draggable: true,
 						progress: undefined,
-						theme: "light",
+						theme: "dark",
 					});
 				});
 
 				canvasSubscription = stomp.current.subscribe(`/topic/${rid}`, coordinates => {
-					setIncomingDrawings(JSON.parse(coordinates.body)) 
+					setIncomingDrawings(JSON.parse(coordinates.body))
 				});
 
 				groupChatSubscription = stomp.current.subscribe(`/topic/${rid}/chat`, textMessage => {
@@ -133,21 +134,21 @@ export default function Room() {
 
 				// participantsSubscription = stomp.current.subscribe(`/topic/${rid}/get-learner-not-participants`, usernameList => {
 				// 	const response = JSON.parse(usernameList.body);
-					
+
 				// 	setUserNotInCallList(response);
 				// });
 
 			});
-			
+
 
 			return () => {
 				ws.current.close();
 				console.log('Initialization done.');
 			};
-			
+
 		};
 	}, [rid, username]);
-	
+
 	// handle route change | When user clicks back button, disconnect from room
 	// useEffect(() => {
 	// 	console.log("Route change")
@@ -169,36 +170,37 @@ export default function Room() {
 	}
 	// chat message
 	function showMessage(textMessage) {
-        toast('🦄 ' + textMessage.author + ": " + textMessage.message, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-        });
-    };
+		toast('🦄 ' + textMessage.author + ": " + textMessage.message, {
+			position: "top-right",
+			autoClose: 10000,
+			hideProgressBar: false,
+			closeOnClick: true,
+			pauseOnHover: true,
+			draggable: true,
+			progress: undefined,
+			theme: "light",
+		});
+	};
 	const sendNewChat = (e) => {
-        e.preventDefault();
-        if(newMessage === "") {
-            toast.error('Unable to send empty message', {
-                position: "top-right",
-                autoClose: 1000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                });
-        } else {
-            sendChatMessage(newMessage);
-            setNewMessage("");
-        }
-        
-      };
+		e.preventDefault();
+		if (newMessage.current.value === "") {
+			toast.error('Unable to send empty message', {
+				position: "top-right",
+				autoClose: 1000,
+				hideProgressBar: true,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: "light",
+			});
+		} else {
+			sendChatMessage(newMessage.current.value);
+			newMessage.current.value = "";
+			// setNewMessage("");
+		}
+
+	};
 	const sendChatMessage = (message) => {
 		const textMessage = {
 			message: message,
@@ -218,17 +220,17 @@ export default function Room() {
 	const disconnect = () => {
 		const rid = localStorage.getItem('rid');
 		const username = localStorage.getItem('username');
-		
-		if(rid && username) {
+
+		if (rid && username) {
 			const userLeftRoom = {
 				username: username,
 				payload: DISCONNECT_USER,
 				roomId: rid
-			} ;
+			};
 			stomp.current.send(`/app/send/${rid}/user`, {}, JSON.stringify(userLeftRoom));
 			stomp.current.disconnect(frame => {
-				if(messagesSubscription) messagesSubscription.unsubscribe();
-				if(canvasSubscription) canvasSubscription.unsubscribe();
+				if (messagesSubscription) messagesSubscription.unsubscribe();
+				if (canvasSubscription) canvasSubscription.unsubscribe();
 			}, {})
 
 			localStorage.removeItem('rid');
@@ -242,24 +244,37 @@ export default function Room() {
 	// 		disconnect();
 	// 	}
 	// } 
-  return (
-    <div>
-      <ThemeProvider>
-	  	<Canvas
-			sendMessage={sendMessage}
-			setRoomId={setRoomId}
-			incomingDrawings={incomingDrawings}
-			roomId={rid}
-			usersList={usersList}
-			username={username}
-			loading={loading}
-			// usersNotInCall = {userNotInCallList}
-		/>
+	return (
 		<div>
-            <div className="messages">
-                <ToastContainer
-                    position="top-right"
-                    autoClose={10000}
+			{/* <ThemeProvider> */}
+			<Canvas
+				sendMessage={sendMessage}
+				setRoomId={setRoomId}
+				incomingDrawings={incomingDrawings}
+				roomId={rid}
+				usersList={usersList}
+				username={username}
+				loading={loading}
+			// usersNotInCall = {userNotInCallList}
+			/>
+			<div>
+				<div className="messages">
+					<ToastContainer
+						position="top-right"
+						autoClose={10000}
+						hideProgressBar={false}
+						newestOnTop={false}
+						closeOnClick
+						rtl={false}
+						pauseOnFocusLoss
+						draggable
+						pauseOnHover
+						theme="light"
+					/>
+					<ToastContainer />
+					{/* <ToastContainer
+                    position="top-center"
+                    autoClose={5000}
                     hideProgressBar={false}
                     newestOnTop={false}
                     closeOnClick
@@ -269,26 +284,31 @@ export default function Room() {
                     pauseOnHover
                     theme="light"
                 />
-                <ToastContainer />
-            </div>
-            <div className="chat-input">
-                <Stack direction="row" spacing={2}>
-                    <TextField id="outlined-basic" label="Outlined" variant="outlined" onChange={(e) => setNewMessage(e.target.value)}/>
-                    <Button variant="contained" endIcon={<SendIcon />} onClick = {sendNewChat}>
-                        Send
-                    </Button>
-                </Stack>
+                <ToastContainer /> */}
+				</div>
+				<div className="chat-input">
+					<Stack direction="row" spacing={2}>
+						<TextField id="outlined-basic" label="Type your message here" variant="outlined" inputRef={newMessage} onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								sendNewChat(e);
+							}
+						}}
+							fullWidth style={{ marginLeft: '2em' }} />
+						<Button variant="contained" endIcon={<SendIcon />} onClick={sendNewChat} style={{ marginRight: '2em' }}>
+							Send
+						</Button>
+					</Stack>
 
-            </div>
+				</div>
 
-        </div>
-      </ThemeProvider>
-    </div>
-  )
+			</div>
+			{/* </ThemeProvider> */}
+		</div>
+	)
 }
 
 export async function getServerSideProps(context) {
-  return {
-    props: {}, // will be passed to the page component as props
-  };
+	return {
+		props: {}, // will be passed to the page component as props
+	};
 }
