@@ -183,6 +183,7 @@ function TeachingAnnouncementList(props) {
       const newAnnouncement = {
         announcementTitle: announcementTitle,
         announcementBody: announcementBody,
+        isRead: "UNREAD",
         createdByUserId,
         createdByUserName,
         createdByUserType,
@@ -207,7 +208,7 @@ function TeachingAnnouncementList(props) {
     }
   };
 
-  const deleteForum = (e) => {
+  const deleteAnnouncement = (e) => {
     e.preventDefault();
     fetch(
       "http://localhost:8080/announcement/deleteAnnouncementById/" +
@@ -372,7 +373,7 @@ function TeachingAnnouncementList(props) {
           </div>
           <div style={{ justifyContent: "center" }}>
             <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
-              Announcements
+              List of Announcements
             </h1>
             <Button
               className="btn-upload"
@@ -510,7 +511,7 @@ function TeachingAnnouncementList(props) {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleDeleteDialogClose}>Cancel</Button>
-            <Button onClick={deleteForum} autoFocus>
+            <Button onClick={deleteAnnouncement} autoFocus>
               Delete
             </Button>
           </DialogActions>

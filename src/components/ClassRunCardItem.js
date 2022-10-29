@@ -24,6 +24,7 @@ function ClassRunCardItem({
   courseCode,
   courseTitle,
   courseAnnouncements,
+  isEnrolled,
   classRunDaysOfWeek,
   startDate,
   endDate,
@@ -64,13 +65,18 @@ function ClassRunCardItem({
               End Date: {endDate}
             </Typography>
             <br />
-            <Badge badgeContent={courseAnnouncements.length} color="primary">
-              <Link to={"/learnerCourseDetails/" + courseId + "/announcements"}>
-                <IconButton aria-label="settings">
-                  <CampaignIcon color="action" />
-                </IconButton>
-              </Link>
-            </Badge>
+
+            {isEnrolled && (
+              <Badge badgeContent={courseAnnouncements.length} color="primary">
+                <Link
+                  to={"/learnerCourseDetails/" + courseId + "/announcements"}
+                >
+                  <IconButton aria-label="settings">
+                    <CampaignIcon color="action" />
+                  </IconButton>
+                </Link>
+              </Badge>
+            )}
           </div>
         </Link>
       </div>

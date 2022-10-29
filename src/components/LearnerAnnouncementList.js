@@ -1,15 +1,19 @@
 import * as React from "react";
 
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-
 import { useLocation } from "react-router-dom";
-import { Grid } from "@mui/material";
+import {
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 
 import { useState } from "react";
 
@@ -56,6 +60,28 @@ function LearnerAnnouncementList(props) {
 
   const [query, setQuery] = useState("");
 
+  function handleMarkAsRead(announcementId) {
+    fetch(
+      "http://localhost:8080/announcement/markAnnouncementAsRead/" +
+        announcementId,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    ).then();
+  }
+
+  function handleMarkAsUnread(announcementId) {
+    fetch(
+      "http://localhost:8080/announcement/markAnnouncementAsUnread/" +
+        announcementId,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    ).then();
+  }
+
   return (
     <div>
       <Grid container spacing={0}>
@@ -99,6 +125,9 @@ function LearnerAnnouncementList(props) {
                     <TableCell>
                       <b>Created On</b>
                     </TableCell>
+                    <TableCell>
+                      <b>Actions</b>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -130,6 +159,30 @@ function LearnerAnnouncementList(props) {
                         <TableCell>{announcement.announcementBody}</TableCell>
                         <TableCell>{announcement.createdByUserName}</TableCell>
                         <TableCell>{announcement.createdDateTime}</TableCell>
+                        <TableCell>
+                          {announcement.isRead == "READ" && (
+                            <FormGroup>
+                              <FormControlLabel
+                                control={<Checkbox defaultChecked />}
+                                onChange={handleMarkAsUnread(
+                                  announcement.announcementId
+                                )}
+                                label="Mark as Unread"
+                              />
+                            </FormGroup>
+                          )}
+                          {announcement.isRead == "UNREAD" && (
+                            <FormGroup>
+                              <FormControlLabel
+                                control={<Checkbox />}
+                                onChange={handleMarkAsRead(
+                                  announcement.announcementId
+                                )}
+                                label="Mark As Read"
+                              />
+                            </FormGroup>
+                          )}
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>

@@ -185,6 +185,7 @@ function ClassRunCards() {
                           courseId={classRun.course.courseId}
                           courseCode={classRun.course.courseCode}
                           courseTitle={classRun.course.courseTitle}
+                          isEnrolled="true"
                           courseAnnouncements={classRun.course.announcements}
                           classRunDaysOfWeek={classRun.classRunDaysOfTheWeek}
                           startDate={classRun.classRunStart}
