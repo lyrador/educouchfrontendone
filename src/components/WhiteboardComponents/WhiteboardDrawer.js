@@ -1,5 +1,3 @@
-WhiteboardDrawer
-
 import * as React from 'react';
 import '../../css/DrawerLeft.css';
 import Box from '@mui/material/Box';
