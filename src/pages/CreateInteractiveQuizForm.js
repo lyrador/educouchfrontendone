@@ -30,8 +30,23 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import AddIcon from "@mui/icons-material/Add";
 import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsComponent";
 import { Construction } from "@mui/icons-material";
+import { omitTriggerPropKeys } from "rsuite/esm/Picker";
+import MuiAlert from "@mui/material/Alert";
+
+// Alert = React.forwardRef(function Alert(props, ref) {
+//   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+// });
 
 export default function CreateInteractiveQuizForm(props) {
+
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const handleClickSnackbar = () => { setOpenSnackbar(true) };
+  const handleCloseSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenSnackbar(false) };
+
+  const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
+    const handleClickErrorSnackbar = () => { setOpenErrorSnackbar(true) };
+    const handleCloseErrorSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenErrorSnackbar(false) };
+
   const location = useLocation();
   console.log(location)
   //console.log(props.pageId); 
@@ -39,6 +54,7 @@ export default function CreateInteractiveQuizForm(props) {
   const courseId = location.pathname.split("/").slice(2, 3).join("/");
   const createQuizFormPath = location.pathname;
   const currentQuiz = location.state.newQuizProp;
+  const [trigger, setTrigger] = useState(false)
   const [question, setQuestion] = useState({localid: "1",
   questionTitle: "title",
   questionType: "shortAnswer",
@@ -83,22 +99,23 @@ export default function CreateInteractiveQuizForm(props) {
     errorMessage: "",
   });
 
-  const handleClickSnackbar = () => {
-    setOpenOptionErrorSnackbar(true);
-  };
+  // const handleClickSnackbar = () => {
+  //   setOpenOptionErrorSnackbar(true);
+  // };
 
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenOptionErrorSnackbar(false);
-  };
+  // const handleCloseSnackbar = (event, reason) => {
+  //   if (reason === "clickaway") {
+  //     return;
+  //   }
+  //   setOpenOptionErrorSnackbar(false);
+  // };
 
   React.useEffect(() => {
-    x = 1; 
     console.log("heres the question: ", question);
     console.log("getting triggered"); 
-  }, [x]);
+    quiz1.questions = questionList
+    setTrigger(false); 
+  }, [trigger]);
 
   const [open, setOpen] = React.useState(false);
   function handleOpenSettingsDialogue() {
@@ -125,7 +142,7 @@ export default function CreateInteractiveQuizForm(props) {
             question.questionTitle +
             " cannot be empty!",
         });
-        handleClickSnackbar();
+        // handleClickSnackbar();
         return false;
       }
     return true;
@@ -168,16 +185,23 @@ export default function CreateInteractiveQuizForm(props) {
 
   function editQuestionTitle(localId, questionTitle) {
     console.log("passing in: ", questionTitle)
+    if (question.questionTitle != questionTitle) {
     question.questionTitle = questionTitle;
-    setQuestion(question)
-    console.log(question); 
-    console.log("question title now: ", question.questionTitle)
+      setQuestion(question)
+      setTrigger(true); 
+      console.log(question); 
+      console.log("question title now: ", question.questionTitle)
+    }
   }
 
   function editQuestionType(localId, questionType) {
-    question.questionType = questionType; 
-    setQuestion(question); 
-    console.log("question type now: ", question.questionType)
+    if (question.questionType != questionType) {
+      question.questionType = questionType; 
+      setQuestion(question); 
+      setTrigger(true); 
+      console.log(question)
+      console.log("question type now: ", question.questionType)
+    }
   }
 
   function editQuestionContent(localId, questionContent) {
@@ -246,23 +270,34 @@ export default function CreateInteractiveQuizForm(props) {
   //   console.log("quiz max score: ", maxScore);
   // }
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    //edit validatequiz to just make sure the mcq/ truefalse questions have a non-null questionGuide or somehting
-    if (validateQuiz()) {
-       //const updatedQuiz = handleQuizDateConversions(currentQuiz);
-      linkQuizQuestions();
-      console.log(quiz1)
+    try {
+      if (validateQuiz()) {
+        linkQuizQuestions();
+        console.log(quiz1)
+      }
 
-      fetch("http://localhost:8080/quiz/createQuizForInteractivePage/" + 1, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-
-        body: JSON.stringify(quiz1),
-      }).then((res) => res.json());
-      handleCancel();
+        const response = await fetch("http://localhost:8080/quiz/createQuizForInteractivePage/" + props.pageId, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(quiz1),
+        })
+      console.log(response);
+          if (response.ok == false) {
+              console.log("Error");
+              handleClickErrorSnackbar()
+          } else {
+            console.log("Quiz Created Successfully!");
+            handleClickSnackbar()
+          }
+    } catch (err) {
+      console.log(err);
+      handleClickErrorSnackbar()
     }
+    handleClickSnackbar();
   };
+
 
   const handleCancel = (e) => {
     //need to implement
@@ -284,6 +319,17 @@ export default function CreateInteractiveQuizForm(props) {
           Select Correct MCQ Option Field cannot be empty!
         </Alert>
       </Snackbar>
+      <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
+          <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
+              Quiz Created Succesfully!
+          </Alert>
+      </Snackbar>
+      <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={handleCloseErrorSnackbar} >
+          <Alert onClose={handleCloseErrorSnackbar} severity="error" sx={{ width: "100%" }} >
+              Error!
+          </Alert>
+      </Snackbar>
+
 
       <Grid item xs={10}>
         <Grid item width={"80%"}>
@@ -299,6 +345,7 @@ export default function CreateInteractiveQuizForm(props) {
           >
             <h1 style={{ color: "whitesmoke" }}>Quiz Creation</h1>
           </Grid>
+          {questionList}
           <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
             <QuizQuestionComponent
               textFieldProp={textField}
