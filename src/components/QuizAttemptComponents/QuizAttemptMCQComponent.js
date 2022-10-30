@@ -46,11 +46,9 @@ import {
               renderValue={(selected) => selected}
             >
               {mcqOptions.map((item) => (
-                <Grid container direction={"row"}>
                   <MenuItem key={item} value={item}>
                     {item}
                   </MenuItem>
-                </Grid>
               ))}
             </Select>
 
