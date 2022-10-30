@@ -23,8 +23,7 @@ function LearnerCoursesDrawer({ courseId, learnerStatus }) {
     const location = useLocation();
     const coursePath = location.pathname.split('/').slice(0, 3).join('/');
 
-    
-    console.log('Course path is ' + coursePath);
+
     const drawer = (
         <div>
             <div className='drawerContainer'>
