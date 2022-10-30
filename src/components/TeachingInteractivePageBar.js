@@ -217,7 +217,7 @@ function TeachingInteractivePageBar(props) {
                 setPagesToBeReorderedMethod(result.interactivePages)
                 console.log(result);
             });
-    }, [refreshToolbar]);
+    }, [refreshToolbar || props.refreshInteractivePage]);
 
     React.useEffect(() => {
         setRefreshToolbar(false)
@@ -382,6 +382,7 @@ function TeachingInteractivePageBar(props) {
             handleClickErrorSnackbar()
         }
         props.setRefreshInteractivePage(true);
+        setRefreshToolbar(true)
         handleDeleteDialogClose();
         handleClickDeleteSnackbar();
     };
@@ -431,7 +432,7 @@ function TeachingInteractivePageBar(props) {
                 handleClickErrorSnackbar()
             }
             setRefreshToolbar(true)
-            props.setChapterEditRefreshPage2(true)
+            props.setChapterEditRefreshPage(true)
             handleEditDialogClose();
             handleClickSnackbar();
         };

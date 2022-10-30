@@ -137,16 +137,16 @@ function TeachingInteractiveBooksList(props) {
         e.preventDefault();
         console.log(courseId); 
         setBookTitleError({ value: false, errorMessage: "" });
-        setBookMaxScoreError({ value: false, errorMessage: "" });
+        // setBookMaxScoreError({ value: false, errorMessage: "" });
         if (newBookTitle == "") {
             setBookTitleError({ value: true, errorMessage: "Interactive Book title cannot be empty!" });
         }
-        if (newBookMaxScore == "") {
-            setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
-        }
+        // if (newBookMaxScore == "") {
+        //     setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
+        // }
         if (newBookTitle && newBookMaxScore) {
             var bookTitle = newBookTitle
-            var bookMaxScore = newBookMaxScore
+            var bookMaxScore = 100
             const newBook = { bookTitle, bookMaxScore }
             console.log(newBook);
             try {
@@ -201,16 +201,16 @@ function TeachingInteractiveBooksList(props) {
     const editBook = async (e) => {
         e.preventDefault();
         setBookTitleError({ value: false, errorMessage: "" });
-        setBookMaxScoreError({ value: false, errorMessage: "" });
+        // setBookMaxScoreError({ value: false, errorMessage: "" });
         if (editedBookTitle == "") {
             setBookTitleError({ value: true, errorMessage: "Interactive Book title cannot be empty!" });
         }
-        if (editedBookMaxScore == "") {
-            setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
-        }
+        // if (editedBookMaxScore == "") {
+        //     setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
+        // }
         if (editedBookTitle && editedBookMaxScore) {
             var bookTitle = editedBookTitle
-            var bookMaxScore = editedBookMaxScore
+            var bookMaxScore = 100
             const editedBook = { bookTitle, bookMaxScore }
             console.log(editedBook);
             try {
@@ -252,7 +252,7 @@ function TeachingInteractiveBooksList(props) {
     const renderExtraActions = (
         interactiveBookId,
         bookTitle,
-        bookMaxScore
+        //bookMaxScore
     ) => {
         return (
             <div>
@@ -265,7 +265,9 @@ function TeachingInteractiveBooksList(props) {
                 <IconButton
                     aria-label="settings"
                     onClick={(event) =>
-                        handleClickEditDialogOpen(event, interactiveBookId, bookTitle, bookMaxScore)
+                        handleClickEditDialogOpen(event, interactiveBookId, bookTitle, 
+                            //bookMaxScore
+                            )
                     }
                 >
                     <EditIcon />
@@ -331,7 +333,7 @@ function TeachingInteractiveBooksList(props) {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>Interactive Book Name</TableCell>
-                                        <TableCell>Interactive Book Max Score</TableCell>
+                                        {/* <TableCell>Interactive Book Max Score</TableCell> */}
                                         <TableCell>Created On</TableCell>
                                         <TableCell>Actions</TableCell>
                                     </TableRow>
@@ -352,8 +354,8 @@ function TeachingInteractiveBooksList(props) {
                                                     {book.bookTitle}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell>{book.bookMaxScore}</TableCell>
-                                            <TableCell>{book.creationDate}</TableCell>
+                                            {/* <TableCell>{book.bookMaxScore}</TableCell> */}
+                                            <TableCell>{book.creationDate.substring(0,10)}</TableCell>
                                             <TableCell>
                                                 <div>
                                                     {renderExtraActions(
@@ -388,7 +390,7 @@ function TeachingInteractiveBooksList(props) {
                             error={bookTitleError.value}
                             helperText={bookTitleError.errorMessage}
                         />
-                        <TextField
+                        {/* <TextField
                             id="outlined-basic"
                             label="Interactive Book Max Score"
                             variant="outlined"
@@ -399,7 +401,7 @@ function TeachingInteractiveBooksList(props) {
                             onChange={(e) => setNewBookMaxScore(e.target.value)}
                             error={bookMaxScoreError.value}
                             helperText={bookMaxScoreError.errorMessage}
-                        />
+                        /> */}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
@@ -458,7 +460,7 @@ function TeachingInteractiveBooksList(props) {
                             error={bookMaxScoreError.value}
                             helperText={bookMaxScoreError.errorMessage}
                         />
-                        <TextField
+                        {/* <TextField
                             id="outlined-basic"
                             label="Interactive Book Max Score"
                             variant="outlined"
@@ -469,7 +471,7 @@ function TeachingInteractiveBooksList(props) {
                             onChange={(e) => setEditedBookMaxScore(e.target.value)}
                             error={bookMaxScoreError.value}
                             helperText={bookMaxScoreError.errorMessage}
-                        />
+                        /> */}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleEditDialogClose}>Cancel</Button>

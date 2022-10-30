@@ -89,15 +89,6 @@ function TeachingInteractivePage(props) {
     //refresh view
     const [refreshInteractivePage, setRefreshInteractivePage] = useState("");
 
-    const [chapterEditRefreshPage2, setChapterEditRefreshPage2] = useState(false);
-
-    React.useEffect(() => {
-        if (chapterEditRefreshPage2 == true) {
-            props.setChapterEditRefreshPage(true)
-            setChapterEditRefreshPage2(false)
-        };
-    }, [chapterEditRefreshPage2]);
-
     //retrieve current page and page navigation
     const [currentPage, setCurrentPage] = useState([]);
     const [pageNumberPointer, setPageNumberPointer] = useState(1);
@@ -223,11 +214,6 @@ function TeachingInteractivePage(props) {
 
     //error handling
     const [pageDescriptionError, setPageDescriptionError] = useState({ value: false, errorMessage: "" });
-
-    //debug
-    const printStatement = () => {
-        console.log("Hello")
-    };
 
     const renderEmptyRowMessage = () => {
         console.log(props.chapterId)
@@ -385,8 +371,8 @@ function TeachingInteractivePage(props) {
                         setPageNumberPointer={setPageNumberPointer}
                         refreshPage={props.refreshPage} 
                         setRefreshPage={props.setRefreshPage}
-                        chapterEditRefreshPage2={chapterEditRefreshPage2}
-                        setChapterEditRefreshPage2={setChapterEditRefreshPage2}
+                        chapterEditRefreshPage={props.chapterEditRefreshPage}
+                        setChapterEditRefreshPage={props.setChapterEditRefreshPage}
                         >
                     </TeachingInteractivePageBar>
                 </div>
