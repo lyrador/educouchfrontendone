@@ -16,16 +16,18 @@ export default function QuizQuestionAttemptComponent(props) {
   const [question, setQuestion] = useState(props.questionProp);
   const [questionAttempt, setQuestionAttempt] = React.useState();
   const [shortAnswerResponse, setShortAnswerResponse] = useState("");
-  const [optionSelected, setOptionSelected] = useState(props.questionAttemptProp.optionSelected);
+  const [optionSelected, setOptionSelected] = useState(
+    props.questionAttemptProp.optionSelected
+  );
   const [index, setIndex] = useState(props.indexProp);
   const [onEdit, setOnEdit] = useState(false);
 
   React.useEffect(() => {
-    console.log("quizQuestionAttempt useEffect called")
+    console.log("quizQuestionAttempt useEffect called");
     console.log("questionAttempt: ", props.questionAttemptProp);
-    console.log("questionAttempts: ", props.questionAttemptsProp)
-    setShortAnswerResponse(props.questionAttemptProp.shortAnswerResponse)
-    setOptionSelected(props.questionAttemptProp.optionSelected)
+    console.log("questionAttempts: ", props.questionAttemptsProp);
+    setShortAnswerResponse(props.questionAttemptProp.shortAnswerResponse);
+    setOptionSelected(props.questionAttemptProp.optionSelected);
   }, []);
 
   return (
@@ -92,11 +94,11 @@ export default function QuizQuestionAttemptComponent(props) {
           {props.questionProp.questionType == "trueFalse" && (
             <div>
               <QuestionAttemptTrueFalseComponent
-                questionIdProp={props.questionProp.localid}
+                questionIdProp={question.questionId}
                 booleanOptionsProp={question.options}
-                correctOptionProp={question.correctOption}
-                selectCorrectOptionProp={props.selectCorrectOptionProp}
                 questionAttemptsProp={props.questionAttemptsProp}
+                selectOptionProp={props.selectOptionProp}
+                optionSelectedProp={optionSelected}
               />
               {props.quizStatusEnumProp == "GRADED" && (
                 <QuestionGuideComponent
