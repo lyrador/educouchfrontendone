@@ -1,5 +1,3 @@
-createWhiteboardHomepage.js
-
 import React, { useState, useEffect, useRef } from 'react';
 import ShowChooseNamePanel from '../components/WhiteboardComponents/ShowChooseNamePanel';
 import WhiteboardDrawer from '../components/WhiteboardComponents/WhiteboardDrawer';

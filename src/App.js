@@ -64,6 +64,8 @@ import LearnerGradeBook from "./pages/LearnerGradeBook";
 import LearnerInteractiveBooksList from "./components/LearnerInteractiveBookList";
 import LearnerInteractiveBook from "./components/LearnerInteractiveBook";
 import FileSubmissionAttempt from "./components/FileSubmissionAttemptComponents/FileSubmissionAttempt";
+import CreateWhiteboardHomepage from "./pages/CreateWhiteboardHomepage";
+// import ViewAllRoomPage from "./pages/ViewAllRoomPage";
 
 function App() {
   return (
@@ -433,10 +435,29 @@ function App() {
               path="/whiteboardHomepage"
               element={
                 <RequireAuth>
+                  <Appbar />
                   <WhiteboardHomepage />
                 </RequireAuth>
               }
             />
+            <Route
+              path="/createWhiteboardHomepage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateWhiteboardHomepage />
+                </RequireAuth>
+              }
+            />
+            {/* <Route
+              path="/viewAllRoomPage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <ViewAllRoomPage />
+                </RequireAuth>
+              }
+            /> */}
             <Route
               path="/room/:roomId"
               element={
