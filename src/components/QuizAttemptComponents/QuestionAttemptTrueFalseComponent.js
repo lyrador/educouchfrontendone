@@ -12,14 +12,14 @@ import React, { useState } from "react";
 
 export default function QuestionAttemptTrueFalseComponent(props) {
   React.useEffect(() => {
-    if (props.correctOptionProp !== "") {
+    if (props.optionSelectedProp !== "") {
       //if there is an existing correct option then use that
-      setCorrectOption(props.correctOptionProp === "true");
-      console.log("question no: ", props.questionIdProp);
-      console.log("correctOption not empty: ", props.correctOptionProp);
+      setTrueFalseValue(props.optionSelectedProp === "true");
+      console.log("questionId num: ", props.questionIdProp);
+      console.log("optionSelected not empty: ", props.optionSelectedProp);
     } else {
       //if not set as false
-      props.selectCorrectOptionProp(props.questionIdProp, false);
+      props.selectOptionProp(props.questionIdProp, false);
     }
   }, []);
 
@@ -28,10 +28,7 @@ export default function QuestionAttemptTrueFalseComponent(props) {
 
   function handleChange(e) {
     setTrueFalseValue(e.target.checked);
-  }
-  function handleCorrectOption(e) {
-    setCorrectOption(e.target.checked);
-    props.selectCorrectOptionProp(props.questionIdProp, e.target.checked);
+    props.selectOptionProp(props.questionIdProp, e.target.checked);
   }
 
   return (

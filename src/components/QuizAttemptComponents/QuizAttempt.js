@@ -35,24 +35,6 @@ export default function QuizAttempt(props) {
   const [quizExpired, setQuizExpired] = useState("false");
   const [buttonRendered, setButtonRendered] = useState("");
   React.useEffect(() => {
-    // console.log("Received hasPreviousAttemptprop: ", location.state.hasPreviousAttemptProp)
-    // console.log("Received numAttempts: ", location.state.numberQuizAttemptsProp)
-
-    // setStartQuiz("false");
-    // setCurrentQuiz(location.state.currentQuizProp);
-    // setTitle(location.state.titleProp);
-    // setDescription(location.state.descriptionProp);
-    // setMaxScore(location.state.maxScoreProp);
-    // setStartDate(location.state.startDateProp);
-    // setEndDate(location.state.endDateProp);
-    // setHasTimeLimit(location.state.hasTimeLimitProp);
-    // setTimeLimit(location.state.timeLimitProp);
-    // setHasMaxAttempts(location.state.hasMaxAttempts);
-    // setMaxAttempts(location.state.maxAttempts);
-    // setQuizStatusEnum(location.state.quizStatusEnum);
-    // setQuizExpired(location.state.quizExpired);
-    // setHasPreviousAttempt(location.state.hasPreviousAttemptProp)
-
     fetch("http://localhost:8080/quiz/getQuizById/" + quizId)
       .then((res) => res.json())
       .then((result) => {
@@ -91,20 +73,6 @@ export default function QuizAttempt(props) {
             }
           })
       );
-    //   .then(
-    //     fetch(
-    //       "http://localhost:8080/quizAttempt/getNumberQuizAttemptsByLearnerId/" +
-    //         quizId +
-    //         "/" +
-    //         learnerId
-    //     )
-    //       .then((res) => res.json())
-    //       .then((result) => {
-    //         console.log("no. attempts: ", result);
-    //         setNumberQuizAttempts(result);
-    //       })
-    //   )
-    //   .then(renderButton);
   }, []);
 
   function handleResumeQuiz() {
@@ -197,18 +165,6 @@ export default function QuizAttempt(props) {
           ) : (
             <Grid item>No Time Limit</Grid>
           )}
-          {/* {hasMaxAttempts == "true" ? (
-            <Grid>
-              <Grid item>Maximum Attempts: {maxAttempts}</Grid>
-              {numberQuizAttempts <= maxAttempts ? (
-                <Grid item>Current Attempt Number: {numberQuizAttempts}</Grid>
-              ) : (
-                <Grid item>Max Attempts Reached</Grid>
-              )}
-            </Grid>
-          ) : (
-            <Grid item>Maximum Attempts: Unlimited Attempts </Grid>
-          )} */}
 
           {hasPreviousAttempt ? (
             <>
