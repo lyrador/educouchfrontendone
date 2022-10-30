@@ -161,6 +161,17 @@ function TeachingInteractiveChaptersBar(props) {
             });
     }, [refreshPage]);
 
+    // React.useEffect(() => {
+    //     props.chapterEditRefreshPage(false);
+    //     fetch("http://localhost:8080/interactiveChapter/interactiveBook/" + interactiveBookId + "/interactiveChapters")
+    //         .then((res) => res.json())
+    //         .then((result) => {
+    //             setChapters(result);
+    //             setChaptersToBeReorderedMethod(result)
+    //             props.setChapterEditRefreshPage(true)
+    //         });
+    // }, [props.chapterEditRefreshPage]);
+
     //create
     const [newChapterTitle, setNewChapterTitle] = useState("");
     const [newChapterDescription, setNewChapterDescription] = useState("");

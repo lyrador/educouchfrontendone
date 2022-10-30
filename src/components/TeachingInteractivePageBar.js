@@ -69,6 +69,9 @@ import CreateInteractiveQuizForm from "../pages/CreateInteractiveQuizForm";
 import CreateQuizForm from "../pages/CreateQuizForm";
 import CreateAssessment from "../pages/CreateAssessment";
 import ReactPlayer from "react-player";
+import InfoIcon from '@mui/icons-material/Info';
+
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -76,7 +79,11 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 function TeachingInteractivePageBar(props) {
 
-    //snackbar
+    //snackbar    
+    const [openChapterSnackbar, setOpenChapterSnackbar] = React.useState(false);
+    const handleClickChapterSnackbar = () => { setOpenChapterSnackbar(true) };
+    const handleCloseChapterSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenChapterSnackbar(false) };
+
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
     const handleClickSnackbar = () => { setOpenSnackbar(true) };
     const handleCloseSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenSnackbar(false) };
@@ -194,73 +201,120 @@ function TeachingInteractivePageBar(props) {
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
     const courseId = location.pathname.split("/")[2];
     const interactiveBookId = location.pathname.split("/")[4];
-    // console.log(interactiveBookId); 
+    const [refreshToolbar, setRefreshToolbar] = React.useState("");
 
-    const [refreshPageBar, setRefreshPageBar] = useState("");
+    //retrieve chapter
+    const [chapter, setChapter] = useState([]);
 
-    const [deleteMode, setDeleteMode] = useState(false);
+    React.useEffect(() => {
+        setRefreshToolbar(false)
+        console.log("CAPSTONE")
+        console.log(props.chapterId)
+        fetch("http://localhost:8080/interactiveChapter/" + props.chapterId + "/interactiveChapters")
+            .then((res) => res.json())
+            .then((result) => {
+                setChapter(result);
+                setPagesToBeReorderedMethod(result.interactivePages)
+                console.log(result);
+            });
+    }, [refreshToolbar]);
 
-    //  //retrieve all chapters of the book
-    //  const [pageItems, setPageItems] = useState([]);
+    React.useEffect(() => {
+        setRefreshToolbar(false)
+        console.log("CAPSTONE")
+        console.log(props.chapterId)
+        fetch("http://localhost:8080/interactiveChapter/" + props.chapterId + "/interactiveChapters")
+            .then((res) => res.json())
+            .then((result) => {
+                setChapter(result);
+                setPagesToBeReorderedMethod(result.interactivePages)
+                console.log(result);
+            });
+    }, [props.chapterId]);
 
-    //  React.useEffect(() => {
-    //      setRefreshPageBar(false);
-    //      fetch("http://localhost:8080/pageItem/interactivePage/" + props.pageId + "/pageItem")
-    //          .then((res) => res.json())
-    //          .then((result) => {
-    //              setPageItems(result);
-    //              console.log(result);
-    //          });
-    //  }, [refreshPageBar]);
+    //retrieve all chapters of the book
+    const [pagesToBeReordered, setPagesToBeReordered] = useState([]);
 
-    function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
-        return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
+    const setPagesToBeReorderedMethod = (pages) => {
+        const retrievedPagesToBeReordered = new Array()
+        for (const retrievedPage of pages) {
+            var pageId = retrievedPage.interactivePageId
+            var pageNumber = retrievedPage.pageNumber.toString()
+            var pageTitle = retrievedPage.pageTitle
+            const tempPage = { pageId, pageNumber, pageTitle }
+            retrievedPagesToBeReordered.push(tempPage)
+            console.log(retrievedPage);
+        }
+        setPagesToBeReordered(retrievedPagesToBeReordered)
+    };
+
+    //reorder
+    const [reorderDialogOpen, setReorderDialogOpen] = React.useState(false);
+
+
+    const handleClickReorderDialogOpen = (event) => {
+        setReorderDialogOpen(true);
+    };
+
+    const handleReorderDialogClose = () => {
+        setReorderDialogOpen(false);
+    };
+
+    function handleOnDragEnd(result) {
+        console.log(result)
+        const pageItems = Array.from(pagesToBeReordered)
+        const [reorderedPageItem] = pageItems.splice(result.source.index, 1)
+        pageItems.splice(result.destination.index, 0, reorderedPageItem)
+        setPagesToBeReordered(pageItems)
+        console.log(pagesToBeReordered)
     }
 
-    const chapters = [
-        createData(1, 1, 'Plant Systems', "Hello"),
-        createData(2, 2, 'Human Systems', "Hello"),
-        createData(3, 3, 'Skeletal Systems', "Hello"),
-    ]
+    const reorderPages = async (e) => {
+        e.preventDefault();
+        for (var i = 0; i < pagesToBeReordered.length; i++) {
+            pagesToBeReordered[i].pageNumber = i + 1
+        }
+        try {
+            const response = await fetch("http://localhost:8080/interactivePage/" + props.chapterId + "/interactivePages/reorderInteractivePages", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(pagesToBeReordered),
+            })
+            console.log(response);
+            if (response.ok == false) {
+                console.log("Error");
+                handleClickErrorSnackbar()
+            } else {
+                console.log("Interactive Pages Reordered Successfully!");
+                props.setRefreshInteractivePage(true);
+                handleClickSnackbar()
+            }
+        } catch (err) {
+            console.log(err);
+            handleClickErrorSnackbar()
+        }
+        setRefreshToolbar(true);
+        handleReorderDialogClose();
+        handleClickEditSnackbar();
+    }
 
     //create
     const [newTextItemWords, setNewTextItemWords] = useState("");
     const [title, setTitle] = useState("");
 
-    const [pageItemXPositionError, setPageItemXPositionError] = useState({ value: false, errorMessage: "" });
-    const [pageItemYPositionError, setPageItemYPositionError] = useState({ value: false, errorMessage: "" });
+    const [chapterTitleError, setChapterTitleError] = useState({ value: false, errorMessage: "" });
+    const [chapterDescriptionError, setChapterDescriptionError] = useState({ value: false, errorMessage: "" });
 
     const [open, setOpen] = React.useState(false);
     const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
 
-    //delete
-    const [chapterIdToDelete, setChapterIdToDelete] = useState("");
-    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-
     //edit
     const [editedChapterTitle, setEditedChapterTitle] = useState("");
     const [editedChapterDescription, setEditedChapterDescription] = useState("");
-    const [chapterIdToEdit, setChapterIdToEdit] = useState("");
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-    const [openSettings, setOpenSettings] = React.useState(false);
     const [openCreateInteractiveQuizDialog, setOpenCreateInteractiveQuizDialog] = React.useState(false);
 
-    const handleOpenSettings = () => {
-        setOpenSettings(true);
-    };
-
-    const handleCloseSettings = () => {
-        setOpenSettings(false);
-    };
-
-    const toggleDeleteMode = () => {
-        if (deleteMode) {
-            setDeleteMode(false)
-        } else {
-            setDeleteMode(true)
-        }
-    };
-
+    //text
     const handleClickOpen = () => {
         setTitle(props.currentPage.pageTitle)
         setNewTextItemWords(props.currentPage.pageDescription)
@@ -271,6 +325,7 @@ function TeachingInteractivePageBar(props) {
         setOpen(false);
     };
 
+    //quiz
     const handleOpenCreateInteractiveQuizDialog = () => {
         setOpenCreateInteractiveQuizDialog(true);
     };
@@ -279,6 +334,7 @@ function TeachingInteractivePageBar(props) {
         setOpenCreateInteractiveQuizDialog(false);
     };
 
+    //file
     const handleOpenUploadDialog = () => {
         setOpenUploadDialog(true);
     };
@@ -287,8 +343,12 @@ function TeachingInteractivePageBar(props) {
         setOpenUploadDialog(false);
     };
 
-    const handleClickDeleteDialogOpen = (event, chapterId) => {
-        setChapterIdToDelete(chapterId);
+    //delete page
+    const [pageIdToDelete, setPageIdToDelete] = useState("");
+    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+
+    const handleClickDeleteDialogOpen = (event) => {
+        setPageIdToDelete(props.pageId);
         setDeleteDialogOpen(true);
     };
 
@@ -296,15 +356,86 @@ function TeachingInteractivePageBar(props) {
         setDeleteDialogOpen(false);
     };
 
+    //when delete the pageId of the current page, the page numbers on the navigation bar adjusts however the page number in the db table doesnt, so somehow need to update the page number in DB
+    const deletePage = async (e) => {
+        e.preventDefault();
+        var currentPageNum = props.pageNumber
+        if (currentPageNum - 1 != 0) {
+            currentPageNum = currentPageNum - 1
+        }
+        try {
+            const response = await fetch("http://localhost:8080/interactivePage/interactivePages/" + pageIdToDelete, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+            })
+            console.log(response);
+            if (response.ok == false) {
+                console.log("Error");
+                handleClickErrorSnackbar()
+            } else {
+                console.log("Interactive Page Deleted Successfully!");
+                handleClickDeleteSnackbar()
+                props.setPageNumberPointer(currentPageNum)
+            }
+        } catch (err) {
+            console.log(err);
+            handleClickErrorSnackbar()
+        }
+        props.setRefreshInteractivePage(true);
+        handleDeleteDialogClose();
+        handleClickDeleteSnackbar();
+    };
+
+    //edit chapter
     const handleClickEditDialogOpen = (event, chapterId, chapterTitle) => {
-        setEditedChapterTitle(chapterTitle);
-        setChapterIdToEdit(chapterId);
+        setEditedChapterTitle(chapter.chapterTitle)
+        setEditedChapterDescription(chapter.chapterDescription)
         setEditDialogOpen(true);
     };
 
     const handleEditDialogClose = () => {
         setEditDialogOpen(false);
     };
+
+    const editChapter = async (e) => {
+        e.preventDefault();
+        setChapterTitleError({ value: false, errorMessage: "" });
+        setChapterDescriptionError({ value: false, errorMessage: "" });
+        if (editedChapterTitle == "") {
+            setChapterTitleError({ value: true, errorMessage: "Interactive Chapter title cannot be empty!" });
+        }
+        if (editedChapterDescription == "") {
+            setChapterDescriptionError({ value: true, errorMessage: "Interactive Chapter description cannot be empty!" });
+        }
+        if (editedChapterTitle && editedChapterDescription) {
+            var chapterTitle = editedChapterTitle
+            var chapterDescription = editedChapterDescription
+            const editedChapter = { chapterTitle, chapterDescription }
+            console.log(editedChapter);
+            try {
+                const response = await fetch("http://localhost:8080/interactiveChapter/interactiveChapters/" + props.chapterId, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(editedChapter),
+                })
+                console.log(response);
+                if (response.ok == false) {
+                    console.log("Error");
+                    handleClickErrorSnackbar()
+                } else {
+                    console.log("Chapter Edited Successfully!");
+                    handleClickSnackbar()
+                }
+            } catch (err) {
+                console.log(err);
+                handleClickErrorSnackbar()
+            }
+            setRefreshToolbar(true)
+            props.setChapterEditRefreshPage2(true)
+            handleEditDialogClose();
+            handleClickSnackbar();
+        };
+    }
 
     const addPageDescription = async (e) => {
         e.preventDefault();
@@ -330,7 +461,7 @@ function TeachingInteractivePageBar(props) {
             console.log(err);
             handleClickErrorSnackbar()
         }
-        setRefreshPageBar(true)
+        //setRefreshToolbar(true)
         props.setRefreshInteractivePage(true)
         handleClose();
     }
@@ -365,7 +496,7 @@ function TeachingInteractivePageBar(props) {
             console.log(err);
             handleClickErrorSnackbar()
         }
-        setRefreshPageBar(true)
+        //refreshToolbar(true)
         props.setRefreshInteractivePage(true)
         handleCloseUploadDialog();
     }
@@ -389,101 +520,10 @@ function TeachingInteractivePageBar(props) {
             console.log(err);
             handleClickErrorSnackbar()
         }
-        setRefreshPageBar(true)
+        //setRefreshToolbar(true)
         props.setRefreshInteractivePage(true)
         handleCloseUploadDialog();
     }
-
-    const deleteChapter = async (e) => {
-        e.preventDefault();
-
-        try {
-            const response = await fetch("http://localhost:8080/interactiveChapter/interactiveChapters/" + chapterIdToDelete, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-            })
-            console.log(response);
-            if (response.ok == false) {
-                console.log("Error");
-                handleClickErrorSnackbar()
-            } else {
-                console.log("Interactive Chapter Deleted Successfully!");
-                handleClickDeleteSnackbar()
-            }
-        } catch (err) {
-            console.log(err);
-            handleClickErrorSnackbar()
-        }
-        setRefreshPageBar(true);
-        handleDeleteDialogClose();
-        handleClickDeleteSnackbar();
-    };
-
-    // const editChapter = async (e) => {
-    //     e.preventDefault();
-    //     setPageItemXPositionError({ value: false, errorMessage: "" });
-    //     setPageItemYPositionError({ value: false, errorMessage: "" });
-    //     const editedChapter = { interactiveChapterTitle, interactiveChapterDescription }
-    //     console.log(editedChapter);
-    //     try {
-    //         const response = await fetch("http://localhost:8080/interactiveChapter/interactiveChapters/" + chapterIdToEdit, {
-    //             method: "PUT",
-    //             headers: { "Content-Type": "application/json" },
-    //             body: JSON.stringify(editedChapter),
-    //         })
-    //         console.log(response);
-    //         if (response.ok == false) {
-    //             console.log("Error");
-    //             handleClickErrorSnackbar()
-    //         } else {
-    //             console.log("Interactive Chapter Edited Successfully!");
-    //             handleClickSnackbar()
-    //         }
-    //     } catch (err) {
-    //         console.log(err);
-    //         handleClickErrorSnackbar()
-    //     }
-    //     setRefreshPageBar(true);
-    //     handleEditDialogClose();
-    //     handleClickEditSnackbar();
-    // }
-
-    const renderEmptyRowMessage = () => {
-        if (chapters.length === 0) {
-            return (
-                <TableRow>
-                    <TableCell colSpan={4} style={{ textAlign: "center" }}>
-                        There are currently no interactive pages in this book!
-                    </TableCell>
-                </TableRow>
-            );
-        }
-    };
-
-    const renderExtraActions = (
-        chapterId,
-        chapterTitle,
-        chapterDescription
-    ) => {
-        return (
-            <div>
-                <IconButton
-                    aria-label="settings"
-                    onClick={(event) => handleClickDeleteDialogOpen(event, chapterIdToDelete)}
-                >
-                    <DeleteIcon />
-                </IconButton>
-                <IconButton
-                    aria-label="settings"
-                    onClick={(event) =>
-                        handleClickEditDialogOpen(event, chapterIdToEdit, editedChapterTitle, editedChapterDescription)
-                    }
-                >
-                    <EditIcon />
-                </IconButton>
-            </div>
-        );
-    };
 
     const renderVideoImageHolder = () => {
         if (props.currentPage.attachment) {
@@ -525,16 +565,16 @@ function TeachingInteractivePageBar(props) {
         if (props.currentPage.attachment) {
             return (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Button
-                    className="btn-upload"
-                    color="primary"
-                    variant="contained"
-                    component="span"
-                    onClick={removeFileItem}
-                >
-                    Remove File
-                </Button>
-            </div>
+                    <Button
+                        className="btn-upload"
+                        color="primary"
+                        variant="contained"
+                        component="span"
+                        onClick={removeFileItem}
+                    >
+                        Remove File
+                    </Button>
+                </div>
             )
         }
     }
@@ -543,179 +583,108 @@ function TeachingInteractivePageBar(props) {
         <div>
             <div id="sidenavbar2" className="sidebarPage">
                 <div style={{ width: "100%", display: "flex" }}>
-                    <Button
+                    <div style={{ width: "85%" }}>
+                        <h2>Chapter Tools</h2>
+                        <Divider />
+                    </div>
+                </div>
+                <div style={{ width: "100%", justifyContent: 'center', textAlign: 'center' }}>
+                    {props.chapterId && <Button
+                        className="btn-upload"
+                        color="primary"
+                        component="span"
+                        variant="contained"
+                        onClick={handleClickEditDialogOpen}
+                        style={{ width: "80%", marginTop: "10px" }}
+                        startIcon={<InfoIcon />}
+                    >
+                        Chapter Settings
+                    </Button>
+                    }
+                </div>
+                <br />
+                <div style={{ width: "100%", display: "flex" }}>
+                    <div style={{ width: "85%" }}>
+                        <h2>Page Tools</h2>
+                        <Divider />
+                    </div>
+                </div>
+                <div style={{ width: "100%", justifyContent: 'center', textAlign: 'center' }}>
+                    {props.pageId && <Button
                         className="btn-upload"
                         color="primary"
                         component="span"
                         variant="contained"
                         onClick={handleClickOpen}
-                        style={{ width: "10%", marginRight: "10px", marginLeft: '20px' }}
+                        style={{ width: "80%", marginTop: "10px" }}
+                        startIcon={<TextFieldsIcon />}
                     >
-                        <TextFieldsIcon />
+                        Text
                     </Button>
-                    <Button
+                    }
+                    {props.pageId && <Button
                         className="btn-upload"
                         color="primary"
                         component="span"
                         variant="contained"
                         onClick={handleOpenUploadDialog}
-                        style={{ width: "10%", marginRight: "10px" }}
+                        style={{ width: "80%", marginTop: "10px" }}
+                        startIcon={<InsertPhotoIcon />}
                     >
-                        <InsertPhotoIcon />
+                        Visuals
                     </Button>
-                    <Button
+                    }
+                    {props.pageId && <Button
                         className="btn-upload"
                         color="primary"
                         component="span"
                         variant="contained"
                         onClick={handleOpenCreateInteractiveQuizDialog}
-                        style={{ width: "10%", marginRight: "10px" }}
+                        style={{ width: "80%", marginTop: "10px" }}
+                        startIcon={<QuizIcon />}
                     >
-                        <QuizIcon />
+                        Quiz
                     </Button>
+                    }
+                    {props.pageId && <Button
+                        className="btn-upload"
+                        color="secondary"
+                        component="span"
+                        variant="contained"
+                        onClick={handleClickDeleteDialogOpen}
+                        style={{ width: "80%", marginTop: "30px" }}
+                        startIcon={<DeleteIcon />}
+                    >
+                        Delete Page
+                    </Button>
+                    }
+                    {props.pageId && <Button
+                        className="btn-upload"
+                        color="secondary"
+                        component="span"
+                        variant="contained"
+                        onClick={handleClickReorderDialogOpen}
+                        style={{ width: "80%", marginTop: "10px" }}
+                        startIcon={<LowPriorityIcon />}
+                    >
+                        Reorder Pages
+                    </Button>
+                    }
                 </div>
-                <div style={{ width: "100%", display: "flex" }}>
-                    <div style={{ width: "85%" }}>
-                        <h2>Page Toolbar</h2>
-                    </div>
-                    <div style={{ width: "5%" }} >
-                        <div>
-                            <IconButton
-                                ref={anchorRef}
-                                id="composition-button"
-                                aria-controls={openMenu ? 'composition-menu' : undefined}
-                                aria-expanded={openMenu ? 'true' : undefined}
-                                aria-haspopup="true"
-                                onClick={handleToggle}
-                            >
-                                <SettingsIcon />
-                            </IconButton>
-                            <Popper
-                                open={openMenu}
-                                anchorEl={anchorRef.current}
-                                role={undefined}
-                                placement="bottom-start"
-                                transition
-                                disablePortal
-                            >
-                                {({ TransitionProps, placement }) => (
-                                    <Grow
-                                        {...TransitionProps}
-                                        style={{
-                                            transformOrigin:
-                                                placement === 'bottom-start' ? 'left top' : 'left bottom',
-                                        }}
-                                    >
-                                        <Paper>
-                                            <ClickAwayListener onClickAway={handleCloseMenu}>
-                                                <MenuList
-                                                    autoFocusItem={openMenu}
-                                                    id="composition-menu"
-                                                    aria-labelledby="composition-button"
-                                                    onKeyDown={handleListKeyDown}
-                                                >
-                                                    <MenuItem onClick={handleClickDeleteDialogOpen}>
-                                                        <DeleteIcon style={{ color: 'grey' }} />
-                                                        &nbsp;
-                                                        Delete All Chapters
-                                                    </MenuItem>
-                                                    <MenuItem onClick={handleClickDeleteDialogOpen}>
-                                                        <LowPriorityIcon style={{ color: 'grey' }} />
-                                                        &nbsp;
-                                                        Reorder Chapters
-                                                    </MenuItem>
-                                                </MenuList>
-                                            </ClickAwayListener>
-                                        </Paper>
-                                    </Grow>
-                                )}
-                            </Popper>
-                        </div>
-                    </div>
-                </div>
-                <Divider />
-                {renderEmptyRowMessage}
-                {deleteMode == false &&
+                {/* {deleteMode == false &&
                     <div style={{ height: "75%", maxHeight: "75%", overflow: "auto" }}>
-                        {/* {props.pageItems.map((pageItem) => (
-                            <div>
-                                <div className="pageLine">{pageItem.pageItemId}</div>
-                                <Divider />
-                            </div>
-                        ))} */}
                     </div>
                 }
                 {deleteMode &&
                     <div style={{ height: "75%", maxHeight: "75%", overflow: "auto" }}>
-                        {/* {props.pageItems.map((pageItem) => (
-                            <div>
-                                <div style={{ width: "100%", display: "flex" }}>
-                                    <div style={{ width: "10%", paddingLeft: "8px" }}>
-                                        <IconButton
-                                            aria-label="settings"
-                                            onClick={(event) => handleClickDeleteDialogOpen(event, pageItem.pageItemId)}
-                                        >
-                                            <RemoveCircleIcon style={{ color: "red" }} />
-                                        </IconButton>
-                                    </div>
-                                    <div className="deleteJiggle" style={{ width: "85%", paddingLeft: "8px" }} >
-                                        <div className="pageLine">{pageItem.pageItemId}</div>
-                                    </div>
-                                </div>
-                                <Divider />
-                            </div>
-                        ))} */}
                     </div>
-                }
-                <div style={{ height: "10%" }}>
-                    <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "10px" }}>
-                        <Button
-                            className="btn-upload"
-                            color="primary"
-                            component="span"
-                            variant="contained"
-                            onClick={handleClickOpen}
-                            style={{ width: "40%", marginRight: "10px" }}
-                            startIcon={<AddIcon />}
-                        >
-                            Add
-                        </Button>
-                        {deleteMode == false &&
-                            <Button
-                                className="btn-upload"
-                                color="secondary"
-                                component="span"
-                                variant="contained"
-                                onClick={toggleDeleteMode}
-                                style={{
-                                    width: "40%",
-                                    // backgroundColor: "tomato"
-                                }}
-                                startIcon={<DeleteIcon />}
-                            >
-                                Remove
-                            </Button>
-                        }
-
-                        {deleteMode == true &&
-                            <Button
-                                className="btn-upload"
-                                color="secondary"
-                                component="span"
-                                variant="contained"
-                                onClick={toggleDeleteMode}
-                                style={{
-                                    width: "40%",
-                                    backgroundColor: "grey"
-                                }}
-                                startIcon={<CloseIcon />}
-                            >
-                                Cancel
-                            </Button>
-                        }
-                    </div>
-                </div>
+                } */}
             </div>
+            <Snackbar open={openChapterSnackbar} autoHideDuration={5000} onClose={handleCloseChapterSnackbar} >
+                <Alert onClose={handleCloseChapterSnackbar} severity="success" sx={{ width: "100%" }} >
+                    Chapter Updated Succesfully!
+                </Alert>
+            </Snackbar>
             <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
                     Page Updated Succesfully!
@@ -858,25 +827,161 @@ function TeachingInteractivePageBar(props) {
             </div>
             <div>
                 <Dialog
+                    open={editDialogOpen}
+                    onClose={handleEditDialogClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    maxWidth={'md'} fullWidth={true}
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Edit this interactive chapter?"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContent>
+                            <TextField
+                                id="outlined"
+                                label="Chapter Title"
+                                variant="outlined"
+                                fullWidth
+                                style={{ margin: "6px 0" }}
+                                value={editedChapterTitle}
+                                onChange={(e) => setEditedChapterTitle(e.target.value)}
+                                required
+                                error={chapterTitleError.value}
+                                helperText={chapterTitleError.errorMessage}
+                            />
+                        </DialogContent>
+                        <DialogContent>
+                            <TextField
+                                id="outlined-multiline-static" multiline rows={6}
+                                label="Chapter Description"
+                                variant="outlined"
+                                fullWidth
+                                style={{ margin: "6px 0" }}
+                                value={editedChapterDescription}
+                                onChange={(e) => setEditedChapterDescription(e.target.value)}
+                                required
+                                error={chapterDescriptionError.value}
+                                helperText={chapterDescriptionError.errorMessage}
+                            />
+                        </DialogContent>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleEditDialogClose}>Cancel</Button>
+                        <Button onClick={editChapter} autoFocus>
+                            Edit
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
                     open={deleteDialogOpen}
                     onClose={handleDeleteDialogClose}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
                     <DialogTitle id="alert-dialog-title">
-                        {"Delete this interactive chapter?"}
+                        {"Delete this interactive page?"}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            These will delete all the pages inside the
-                            chapter. You will not be able to undo this action. Are you sure you
+                            This will delete this entire page in this chapter. You will not be able to undo this action. Are you sure you
                             want to delete?
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleDeleteDialogClose}>Cancel</Button>
-                        <Button onClick={deleteChapter} autoFocus>
+                        <Button onClick={deletePage} autoFocus>
                             Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
+                    open={reorderDialogOpen} onClose={handleReorderDialogClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth={'sm'} fullWidth={true}
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Pages Re-Ordering"}
+                    </DialogTitle>
+                    <DialogContent>
+                        {/* <DialogContentText id="alert-dialog-description">
+                            Enter the new interactive chapter details
+                        </DialogContentText> */}
+                        <div style={{ width: '60%', margin: 'auto', display: 'flex' }}>
+                            <div style={{ width: '15%' }}>
+                                <ul style={{ listStyleType: 'none' }}>
+                                    <li>
+                                        <div style={{ display: 'flex', width: '100%' }}>
+                                            <div style={{ borderStyle: 'solid', borderWidth: '1px', margin: '0 4px 2px 0', width: '100%', textAlign: 'center', backgroundColor: 'cadetblue' }}>
+                                                <h3>New</h3>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <ul style={{ listStyleType: 'none' }}>
+                                    {pagesToBeReordered.map(({ chapterIndex, chapterTitle }, index) => {
+                                        return (
+                                            <li>
+                                                <div style={{ display: 'flex', width: '100%' }}>
+                                                    <div style={{ borderStyle: 'solid', borderWidth: '1px', margin: '0 4px 2px 0', width: '100%', textAlign: 'center', backgroundColor: 'aquamarine' }}>
+                                                        <h3>{index + 1}</h3>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
+                            </div>
+                            <div style={{ width: '85%' }}>
+                                <ul style={{ listStyleType: 'none' }}>
+                                    <li>
+                                        <div style={{ display: 'flex', width: '100%' }}>
+                                            <div style={{ borderStyle: 'solid', borderWidth: '1px', marginBottom: '2px', width: '100%', textAlign: 'center', backgroundColor: 'cadetblue' }}>
+                                                <h3 style={{ marginLeft: '5px' }}>Previous</h3>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <DragDropContext onDragEnd={handleOnDragEnd}>
+                                    <Droppable droppableId="pagesReordering">
+                                        {(provided) =>
+                                            <ul {...provided.droppableProps} ref={provided.innerRef} style={{ listStyleType: 'none' }}>
+                                                {pagesToBeReordered.map(({ pageNumber }, index) => {
+                                                    return (
+                                                        <Draggable key={pageNumber} draggableId={pageNumber} index={index}>
+                                                            {(provided) => (
+                                                                <li {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+                                                                    <div style={{ display: 'flex', width: '100%' }}>
+                                                                        {((index + 1).toString() == pageNumber) &&
+                                                                            <div style={{ borderStyle: 'solid', borderWidth: '1px', marginBottom: '2px', width: '100%', borderRadius: '10px' }}>
+                                                                                <h3 style={{ marginLeft: '5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pageNumber}</h3>
+                                                                            </div>
+                                                                        }
+                                                                        {((index + 1).toString() != pageNumber) &&
+                                                                            <div style={{ borderStyle: 'solid', borderWidth: '1px', marginBottom: '2px', width: '100%', borderRadius: '10px', backgroundColor: 'yellow' }}>
+                                                                                <h3 style={{ marginLeft: '5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pageNumber}</h3>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                </li>
+                                                            )}
+                                                        </Draggable>
+                                                    )
+                                                })}
+                                                {provided.placeholder}
+                                            </ul>
+                                        }
+                                    </Droppable>
+                                </DragDropContext>
+                            </div>
+                        </div>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleReorderDialogClose}>Cancel</Button>
+                        <Button onClick={reorderPages} autoFocus>
+                            Reorder
                         </Button>
                     </DialogActions>
                 </Dialog>
