@@ -144,7 +144,7 @@ function TeachingInteractiveBooksList(props) {
         // if (newBookMaxScore == "") {
         //     setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
         // }
-        if (newBookTitle && newBookMaxScore) {
+        if (newBookTitle) {
             var bookTitle = newBookTitle
             var bookMaxScore = 100
             const newBook = { bookTitle, bookMaxScore }
@@ -208,7 +208,7 @@ function TeachingInteractiveBooksList(props) {
         // if (editedBookMaxScore == "") {
         //     setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
         // }
-        if (editedBookTitle && editedBookMaxScore) {
+        if (editedBookTitle) {
             var bookTitle = editedBookTitle
             var bookMaxScore = 100
             const editedBook = { bookTitle, bookMaxScore }
