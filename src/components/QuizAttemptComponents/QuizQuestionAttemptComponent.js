@@ -16,20 +16,11 @@ export default function QuizQuestionAttemptComponent(props) {
   const [question, setQuestion] = useState(props.questionProp);
   const [questionAttempt, setQuestionAttempt] = React.useState();
   const [shortAnswerResponse, setShortAnswerResponse] = useState("");
-  const [optionSelected, setOptionSelected] = useState("");
+  const [optionSelected, setOptionSelected] = useState(props.questionAttemptProp.optionSelected);
   const [index, setIndex] = useState(props.indexProp);
   const [onEdit, setOnEdit] = useState(false);
 
   React.useEffect(() => {
-    // var questionId = props.questionIdProp;
-    // for (var i = 0; i < props.questionAttemptsProp.length; i++) {
-    //   if (props.questionAttemptsProp[i].questionAttemptId == questionId) {
-    //     setQuestionAttempt(props.questionAttemptsProp[i]);
-    //     console.log("questionAttempt: ", props.questionAttemptsProp[i])
-    //     setShortAnswerResponse(questionAttempt.shortAnswerResponse);
-    //     setOptionSelected(questionAttempt.optionSelected);
-    //   }
-    // }
     console.log("quizQuestionAttempt useEffect called")
     console.log("questionAttempt: ", props.questionAttemptProp);
     console.log("questionAttempts: ", props.questionAttemptsProp)
@@ -84,11 +75,10 @@ export default function QuizQuestionAttemptComponent(props) {
             <div>
               <QuizAttemptMCQComponent
                 mcqOptionsProp={question.options}
-                questionIdProp={props.questionProp.localid}
-                correctOptionProp={question.correctOption}
-                selectCorrectOptionProp={props.selectCorrectOptionProp}
-                questionAttemptsProp={props.questionAttemptsProp}
+                questionIdProp={question.questionId}
+                selectOptionProp={props.selectOptionProp}
                 optionSelectedProp={optionSelected}
+                questionAttemptsProp={props.questionAttemptsProp}
               />
               {props.quizStatusEnumProp == "GRADED" && (
                 <QuestionGuideComponent
