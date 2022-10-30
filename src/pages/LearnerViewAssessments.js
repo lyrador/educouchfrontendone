@@ -1,3 +1,4 @@
+import { ConstructionOutlined } from "@mui/icons-material";
 import {
   Button,
   Grid,
@@ -10,32 +11,54 @@ import {
   TableRow,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useNavigationType } from "react-router-dom";
 import LearnerCoursesDrawer from "../components/LearnerCourseDrawer";
+import QuizTitleComponent from "../components/QuizComponents/QuizTitleComponent";
 import { useAuth } from "../context/AuthProvider";
 
 export default function LearnerViewAssessments(props) {
   var auth = useAuth();
   var user = auth.user;
+  var learnerId = user.userId;
+  const navigate = useNavigate();
 
   var location = useLocation(props);
   var courseId = location.state.courseIdProp;
   var learnerStatus = location.state.learnerStatusProp;
 
   const [assessments, setAssessments] = useState([]);
+  const [numberQuizAttempts, setNumberQuizAttempts] = useState(0);
+  const [currentQuiz, setCurrentQuiz] = useState();
+  const [quizQuestions, setQuizQuestions] = useState([]);
+  const [startQuiz, setStartQuiz] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState();
+  const [maxScore, setMaxScore] = useState();
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  const [hasTimeLimit, setHasTimeLimit] = useState("true");
+  const [timeLimit, setTimeLimit] = useState();
+  const [hasMaxAttempts, setHasMaxAttempts] = useState();
+  const [maxAttempts, setMaxAttempts] = useState(0);
+  const [quizStatusEnum, setQuizStatusEnum] = useState();
+  const [questionAttempts, setQuestionAttempts] = useState([]);
+  const [quizAttempt, setQuizAttempt] = useState();
+  const [hasPreviousAttempt, setHasPreviousAttempt] = useState(false);
+  const [quizExpired, setQuizExpired] = useState("false");
+
   const renderEmptyRowMessage = () => {
     if (assessments.length === 0) {
-      console.log("assessment list is empty")
+      console.log("assessment list is empty");
       return (
         <TableRow>
-          <TableCell
-             style={{ textAlign: "center" }}>
+          <TableCell style={{ textAlign: "left" }}>
             There are currently no assessments in this course!
           </TableCell>
         </TableRow>
       );
     }
   };
+
   React.useEffect(() => {
     fetch(
       "http://localhost:8080/assessment/getAllReleasedAssessments/" + courseId
@@ -46,6 +69,34 @@ export default function LearnerViewAssessments(props) {
         console.log("released assessments under this course: ", result);
       });
   }, []);
+
+
+  function handleViewAssessment(assessmentId, assignmentType) {
+    if (assignmentType === "FileSubmission") {
+      navigate(`/fileSubmissionAttempt`, {
+        state: {
+          fileSubmissionIdProp: assessmentId,
+          courseIdProp: courseId,
+          learnerStatusProp: learnerStatus,
+        },
+      });
+    } else {
+      navigate(`/quizAttempt`, {
+        state: {
+          quizIdProp: assessmentId,
+          courseIdProp: courseId,
+          learnerStatusProp: learnerStatus,
+          currentQuizProp: currentQuiz,
+          // quizAttemptProp: quizAttempt,
+          quizStatusEnumProp: quizStatusEnum,
+          questionAttemptsProp: questionAttempts,
+          hasPreviousAttemptProp: hasPreviousAttempt,
+          quizExpiredProp: quizExpired,
+          numberQuizAttemptsProp: numberQuizAttempts,
+        },
+      })
+    }
+  }
 
   return (
     <Grid container spacing={0}>
@@ -63,6 +114,9 @@ export default function LearnerViewAssessments(props) {
               <TableRow sx={{ bgcolor: "#1975d2" }}>
                 <TableCell style={{ color: "white" }}>
                   <b>Assessment Title</b>
+                </TableCell>
+                <TableCell style={{ color: "white" }}>
+                  <b>Assessment Type</b>
                 </TableCell>
                 <TableCell style={{ color: "white" }} align="right">
                   <b>Opening Date</b>
@@ -86,20 +140,36 @@ export default function LearnerViewAssessments(props) {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell>{assessment.title}</TableCell>
+                  <TableCell>
+                    {assessment.assessmentType === "FileSubmission"
+                      ? "File Submission"
+                      : "Quiz"}
+                  </TableCell>
                   <TableCell align="right">{assessment.startDate}</TableCell>
                   <TableCell align="right">{assessment.endDate}</TableCell>
                   <TableCell align="right">
-                    {assessment.open === "true" && "Open"}
-                    {assessment.open === "false" && "Close"}
-                    {assessment.isExpired === "true" && "Expired"}
+                    {assessment.isExpired === "true" ? (
+                      <p style={{ color: "red" }}>Expired</p>
+                    ) : (
+                      <>
+                        {assessment.open === "true" && "Open"}
+                        {assessment.open === "false" && "Close"}
+                      </>
+                    )}
                   </TableCell>
                   <TableCell align="right">
                     <Button
                       className="btn-choose"
                       variant="outlined"
                       type="submit"
+                      onClick={() =>
+                        handleViewAssessment(
+                          assessment.assessmentId,
+                          assessment.assessmentType
+                        )
+                      }
                     >
-                      View Profile
+                      View Assessment
                     </Button>
                   </TableCell>
                 </TableRow>
