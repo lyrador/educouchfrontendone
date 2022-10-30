@@ -36,11 +36,78 @@ import { render } from "@testing-library/react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
+import {
+    Typography,
+    LinearProgress,
+    ThemeProvider,
+    createTheme,
+} from "@mui/material";
+import UploadService from "../services/UploadFilesService";
+import Box from "@mui/material/Box";
+
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 function TeachingInteractiveBooksList(props) {
+
+    //upload
+    const theme = createTheme({
+        components: {
+            MuiLinearProgress: {
+                styleOverrides: {
+                    root: {
+                        height: 15,
+                        borderRadius: 5,
+                    },
+                    colorPrimary: {
+                        backgroundColor: "#EEEEEE",
+                    },
+                    bar: {
+                        borderRadius: 5,
+                        backgroundColor: "#1a90ff",
+                    },
+                },
+            },
+        },
+    });
+
+    const [currentFile, setCurrentFile] = useState(undefined);
+    const [previewImage, setPreviewImage] = useState(
+        "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg"
+    );
+    const [progress, setProgress] = useState(0);
+    const [message, setMessage] = useState("");
+    const [isError, setIsError] = useState(false);
+    const [isUploaded, setIsUploaded] = useState(false);
+    const [uploadedAttachmentId, setUploadedAttachmentId] = useState("");
+
+    const selectFile = (event) => {
+        setCurrentFile(event.target.files[0]);
+        setPreviewImage(URL.createObjectURL(event.target.files[0]));
+        setProgress(0);
+        setMessage("");
+    };
+
+    const uploadFile = () => {
+        setProgress(0);
+        UploadService.upload(currentFile, (event) => {
+            setProgress(Math.round((100 * event.loaded) / event.total));
+        })
+            .then((response) => {
+                setMessage("Succesfully Uploaded!");
+                setUploadedAttachmentId(response.data.fileId);
+                setIsError(false);
+                setIsUploaded(true);
+                console.log(response);
+            })
+            .catch((err) => {
+                setMessage("Could not upload the image!");
+                setIsError(true);
+                setProgress(0);
+                setCurrentFile(undefined);
+            });
+    };
 
     //snackbar
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
@@ -70,18 +137,18 @@ function TeachingInteractiveBooksList(props) {
 
     const [refreshPage, setRefreshPage] = useState("");
 
-     // //retrieve all books by course id
-     const [books, setBooks] = useState([]);
+    // //retrieve all books by course id
+    const [books, setBooks] = useState([]);
 
-     React.useEffect(() => {
-         setRefreshPage(false);
-         fetch("http://localhost:8080/interactiveBook/course/" + courseId + "/interactiveBooks")
-             .then((res) => res.json())
-             .then((result) => {
-                 setBooks(result);
-                 console.log(result);
-             });
-     }, [refreshPage]);
+    React.useEffect(() => {
+        setRefreshPage(false);
+        fetch("http://localhost:8080/interactiveBook/course/" + courseId + "/interactiveBooks")
+            .then((res) => res.json())
+            .then((result) => {
+                setBooks(result);
+                console.log(result);
+            });
+    }, [refreshPage]);
 
 
     //create
@@ -102,6 +169,7 @@ function TeachingInteractiveBooksList(props) {
     const [editedBookMaxScore, setEditedBookMaxScore] = useState("");
     const [bookIdToEdit, setBookIdToEdit] = useState("");
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+    const [editedBook, setEditedBook] = useState("")
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -113,7 +181,7 @@ function TeachingInteractiveBooksList(props) {
 
     const handleClickDeleteDialogOpen = (event, interactiveBookId) => {
         setBookIdToDelete(interactiveBookId);
-        console.log(interactiveBookId); 
+        console.log(interactiveBookId);
         setDeleteDialogOpen(true);
     };
 
@@ -121,33 +189,40 @@ function TeachingInteractiveBooksList(props) {
         setDeleteDialogOpen(false);
     };
 
-    const handleClickEditDialogOpen = (event, bookId, bookTitle) => {
+    const handleClickEditDialogOpen = (event, bookId, bookTitle, book) => {
         setEditedBookTitle(bookTitle);
         setBookIdToEdit(bookId);
         setEditDialogOpen(true);
+        setEditedBook(book)
+        console.log("FOPJEWPFG")
+        console.log(book)
     };
 
     const handleEditDialogClose = () => {
         setEditDialogOpen(false);
     };
 
-    console.log(courseId); 
+    console.log(courseId);
 
     const createNewBook = async (e) => {
         e.preventDefault();
-        console.log(courseId); 
+        console.log(courseId);
         setBookTitleError({ value: false, errorMessage: "" });
-        setBookMaxScoreError({ value: false, errorMessage: "" });
+        // setBookMaxScoreError({ value: false, errorMessage: "" });
         if (newBookTitle == "") {
             setBookTitleError({ value: true, errorMessage: "Interactive Book title cannot be empty!" });
         }
-        if (newBookMaxScore == "") {
-            setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
+        // if (newBookMaxScore == "") {
+        //     setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
+        // }
+        if (uploadedAttachmentId == "") {
+            setBookTitleError({ value: true, errorMessage: "You must have a cover page!" });
         }
-        if (newBookTitle && newBookMaxScore) {
+        if (newBookTitle && uploadedAttachmentId) {
             var bookTitle = newBookTitle
-            var bookMaxScore = newBookMaxScore
-            const newBook = { bookTitle, bookMaxScore }
+            var bookMaxScore = 100
+            var attachmentId = uploadedAttachmentId
+            const newBook = { bookTitle, bookMaxScore, attachmentId }
             console.log(newBook);
             try {
                 const response = await fetch("http://localhost:8080/interactiveBook/" + courseId + "/interactiveBooks", {
@@ -162,6 +237,13 @@ function TeachingInteractiveBooksList(props) {
                 } else {
                     console.log("New Interactive Book Created Successfully!");
                     handleClickSnackbar()
+                    setCurrentFile(undefined)
+                    setPreviewImage("https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg")
+                    setProgress(0)
+                    setMessage("")
+                    setIsError(false)
+                    setIsUploaded(false)
+                    setUploadedAttachmentId("")
                 }
             } catch (err) {
                 console.log(err);
@@ -201,23 +283,30 @@ function TeachingInteractiveBooksList(props) {
     const editBook = async (e) => {
         e.preventDefault();
         setBookTitleError({ value: false, errorMessage: "" });
-        setBookMaxScoreError({ value: false, errorMessage: "" });
+        // setBookMaxScoreError({ value: false, errorMessage: "" });
         if (editedBookTitle == "") {
             setBookTitleError({ value: true, errorMessage: "Interactive Book title cannot be empty!" });
         }
-        if (editedBookMaxScore == "") {
-            setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
-        }
-        if (editedBookTitle && editedBookMaxScore) {
+        // if (editedBookMaxScore == "") {
+        //     setBookMaxScoreError({ value: true, errorMessage: "Interactive Book max score cannot be empty!" });
+        // }
+        if (editedBookTitle) {
             var bookTitle = editedBookTitle
-            var bookMaxScore = editedBookMaxScore
-            const editedBook = { bookTitle, bookMaxScore }
-            console.log(editedBook);
+            var bookMaxScore = 100
+            var attachmentId = 0
+            if (uploadedAttachmentId) {
+                attachmentId = uploadedAttachmentId
+            } else {
+                attachmentId = null
+            }
+            const newEditedBook = { bookTitle, bookMaxScore, attachmentId }
+            console.log("EDITEDBOOK")
+            console.log(newEditedBook);
             try {
                 const response = await fetch("http://localhost:8080/interactiveBook/interactiveBooks/" + bookIdToEdit, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(editedBook),
+                    body: JSON.stringify(newEditedBook),
                 })
                 console.log(response);
                 if (response.ok == false) {
@@ -226,6 +315,13 @@ function TeachingInteractiveBooksList(props) {
                 } else {
                     console.log("Interactive Book Edited Successfully!");
                     handleClickSnackbar()
+                    setCurrentFile(undefined)
+                    setPreviewImage("https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg")
+                    setProgress(0)
+                    setMessage("")
+                    setIsError(false)
+                    setIsUploaded(false)
+                    setUploadedAttachmentId("")
                 }
             } catch (err) {
                 console.log(err);
@@ -252,7 +348,8 @@ function TeachingInteractiveBooksList(props) {
     const renderExtraActions = (
         interactiveBookId,
         bookTitle,
-        bookMaxScore
+        //bookMaxScore
+        book
     ) => {
         return (
             <div>
@@ -265,13 +362,37 @@ function TeachingInteractiveBooksList(props) {
                 <IconButton
                     aria-label="settings"
                     onClick={(event) =>
-                        handleClickEditDialogOpen(event, interactiveBookId, bookTitle, bookMaxScore)
+                        handleClickEditDialogOpen(event, interactiveBookId, bookTitle, book
+                            //bookMaxScore
+                        )
                     }
                 >
                     <EditIcon />
                 </IconButton>
             </div>
         );
+    };
+
+    const renderImageHolder = () => {
+        if (editedBook) {
+                return (
+                    <div style={{justifyContent: 'center', display: 'flex'}}>
+                        <img
+                            src={editedBook.attachment.fileURL}
+                            alt="Interactive Page Image"
+                            width="150px"
+                            height="200px"
+                            objectFit="contain"
+                        />
+                    </div>
+                );
+        } else {
+            return <div style={{ textAlign: 'center' }}>
+                <div>
+                    There is no current book cover!
+                </div>
+            </div>
+        }
     };
 
     return (
@@ -330,8 +451,9 @@ function TeachingInteractiveBooksList(props) {
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                 <TableHead>
                                     <TableRow>
+                                        <TableCell></TableCell>
                                         <TableCell>Interactive Book Name</TableCell>
-                                        <TableCell>Interactive Book Max Score</TableCell>
+                                        {/* <TableCell>Interactive Book Max Score</TableCell> */}
                                         <TableCell>Created On</TableCell>
                                         <TableCell>Actions</TableCell>
                                     </TableRow>
@@ -343,6 +465,13 @@ function TeachingInteractiveBooksList(props) {
                                             key={book.interactiveBookId}
                                             sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                                         >
+                                            <TableCell>
+                                                <img src={book.attachment.fileURL}
+                                                    alt="Interactive Page Image"
+                                                    width="75px"
+                                                    height="100px"
+                                                    objectFit="contain"></img>
+                                            </TableCell>
                                             <TableCell component="th" scope="row">
                                                 <Link
                                                     to={`${booksPath}/${book.interactiveBookId}`}
@@ -352,15 +481,16 @@ function TeachingInteractiveBooksList(props) {
                                                     {book.bookTitle}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell>{book.bookMaxScore}</TableCell>
-                                            <TableCell>{book.creationDate}</TableCell>
+                                            {/* <TableCell>{book.bookMaxScore}</TableCell> */}
+                                            <TableCell>{book.creationDate.substring(0, 10)}</TableCell>
                                             <TableCell>
                                                 <div>
                                                     {renderExtraActions(
                                                         book.interactiveBookId,
                                                         book.bookTitle,
-                                                        book.createdByUserId,
-                                                        book.createdByUserType
+                                                        //book.createdByUserId,
+                                                        //book.createdByUserType,
+                                                        book
                                                     )}
                                                 </div>
                                             </TableCell>
@@ -388,7 +518,7 @@ function TeachingInteractiveBooksList(props) {
                             error={bookTitleError.value}
                             helperText={bookTitleError.errorMessage}
                         />
-                        <TextField
+                        {/* <TextField
                             id="outlined-basic"
                             label="Interactive Book Max Score"
                             variant="outlined"
@@ -399,7 +529,65 @@ function TeachingInteractiveBooksList(props) {
                             onChange={(e) => setNewBookMaxScore(e.target.value)}
                             error={bookMaxScoreError.value}
                             helperText={bookMaxScoreError.errorMessage}
-                        />
+                        /> */}
+                        {previewImage && (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <img
+                                    className="preview my20"
+                                    src={previewImage}
+                                    alt=""
+                                    style={{ height: "40%", width: "40%", justifySelf: 'center' }}
+                                />
+                            </div>
+                        )}
+                        {currentFile && (
+                            <Box className="my20" display="flex" alignItems="center">
+                                <Box width="100%" mr={1}>
+                                    <ThemeProvider theme={theme}>
+                                        <LinearProgress variant="determinate" value={progress} />
+                                    </ThemeProvider>
+                                </Box>
+                                <Box minWidth={35}>
+                                    <Typography
+                                        variant="body2"
+                                        color="textSecondary"
+                                    >{`${progress}%`}</Typography>
+                                </Box>
+                            </Box>
+                        )}
+                        {message && (
+                            <Typography
+                                variant="subtitle2"
+                                className={`upload-message ${isError ? "error" : ""}`}
+                            >
+                                {message}
+                            </Typography>
+                        )}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <label htmlFor="btn-upload">
+                                <input
+                                    id="btn-upload"
+                                    name="btn-upload"
+                                    style={{ display: "none" }}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={selectFile}
+                                />
+                                <Button className="btn-choose" variant="outlined" component="span">
+                                    Choose File
+                                </Button>
+                            </label>
+                            <Button
+                                className="btn-upload"
+                                color="primary"
+                                variant="contained"
+                                component="span"
+                                disabled={!currentFile}
+                                onClick={uploadFile}
+                            >
+                                Upload
+                            </Button>
+                        </div>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
@@ -458,7 +646,7 @@ function TeachingInteractiveBooksList(props) {
                             error={bookMaxScoreError.value}
                             helperText={bookMaxScoreError.errorMessage}
                         />
-                        <TextField
+                        {/* <TextField
                             id="outlined-basic"
                             label="Interactive Book Max Score"
                             variant="outlined"
@@ -469,7 +657,69 @@ function TeachingInteractiveBooksList(props) {
                             onChange={(e) => setEditedBookMaxScore(e.target.value)}
                             error={bookMaxScoreError.value}
                             helperText={bookMaxScoreError.errorMessage}
-                        />
+                        /> */}
+                        <h3 style={{ fontWeight: 'normal' }}>Current Cover</h3>
+                        {renderImageHolder()}
+                        <br></br>
+                        <h3 style={{ fontWeight: 'normal' }}>New Cover</h3>
+                        {previewImage && (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <img
+                                    className="preview my20"
+                                    src={previewImage}
+                                    alt=""
+                                    style={{ height: "40%", width: "40%", justifySelf: 'center' }}
+                                />
+                            </div>
+                        )}
+                        {currentFile && (
+                            <Box className="my20" display="flex" alignItems="center">
+                                <Box width="100%" mr={1}>
+                                    <ThemeProvider theme={theme}>
+                                        <LinearProgress variant="determinate" value={progress} />
+                                    </ThemeProvider>
+                                </Box>
+                                <Box minWidth={35}>
+                                    <Typography
+                                        variant="body2"
+                                        color="textSecondary"
+                                    >{`${progress}%`}</Typography>
+                                </Box>
+                            </Box>
+                        )}
+                        {message && (
+                            <Typography
+                                variant="subtitle2"
+                                className={`upload-message ${isError ? "error" : ""}`}
+                            >
+                                {message}
+                            </Typography>
+                        )}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <label htmlFor="btn-upload">
+                                <input
+                                    id="btn-upload"
+                                    name="btn-upload"
+                                    style={{ display: "none" }}
+                                    type="file"
+                                    accept="/*"
+                                    onChange={selectFile}
+                                />
+                                <Button className="btn-choose" variant="outlined" component="span">
+                                    Choose File
+                                </Button>
+                            </label>
+                            <Button
+                                className="btn-upload"
+                                color="primary"
+                                variant="contained"
+                                component="span"
+                                disabled={!currentFile}
+                                onClick={uploadFile}
+                            >
+                                Upload
+                            </Button>
+                        </div>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleEditDialogClose}>Cancel</Button>

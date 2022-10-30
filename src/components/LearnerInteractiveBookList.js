@@ -35,6 +35,8 @@ import { render } from "@testing-library/react";
 
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import BookCardItem from "./BookCardItem";
+import Box from "@mui/material/Box";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -70,18 +72,18 @@ function LearnerInteractiveBooksList(props) {
 
     const [refreshPage, setRefreshPage] = useState("");
 
-     // //retrieve all books by course id
-     const [books, setBooks] = useState([]);
+    // //retrieve all books by course id
+    const [books, setBooks] = useState([]);
 
-     React.useEffect(() => {
-         setRefreshPage(false);
-         fetch("http://localhost:8080/interactiveBook/course/" + courseId + "/interactiveBooks")
-             .then((res) => res.json())
-             .then((result) => {
-                 setBooks(result);
-                 console.log(result);
-             });
-     }, [refreshPage]);
+    React.useEffect(() => {
+        setRefreshPage(false);
+        fetch("http://localhost:8080/interactiveBook/course/" + courseId + "/interactiveBooks")
+            .then((res) => res.json())
+            .then((result) => {
+                setBooks(result);
+                console.log(result);
+            });
+    }, [refreshPage]);
 
     const renderEmptyRowMessage = () => {
         if (books.length === 0) {
@@ -137,7 +139,7 @@ function LearnerInteractiveBooksList(props) {
                         </h1>
                     </div>
                     <div style={{ padding: "5%" }}>
-                        <TableContainer component={Paper}>
+                        {/* <TableContainer component={Paper}>
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                 <TableHead>
                                     <TableRow>
@@ -168,7 +170,29 @@ function LearnerInteractiveBooksList(props) {
                                     ))}
                                 </TableBody>
                             </Table>
-                        </TableContainer>
+                        </TableContainer> */}
+                        <div className="books">
+                            <div className="books-container">
+                                <Box sx={{ width: "100%" }}>
+                                        <div className="books-wrapper">
+                                                <ul className="books-items">
+                                                    {books.map((book) => (
+                                                        <BookCardItem
+                                                            src={book.attachment.fileURL}
+                                                            text={book.bookTitle}
+                                                            label={book.bookTitle}
+                                                            bookId={book.interactiveBookId}
+                                                            path={`${booksPath}/${book.interactiveBookId}`}
+                                                        />
+                                                    ))}
+                                                    {books.values.length === 0 && (
+                                                        <h3>There are no interactive books in this course!</h3>
+                                                    )}
+                                                </ul>
+                                        </div>
+                                </Box>
+                            </div>
+                        </div>
                     </div>
                 </Grid>
             </Grid>
