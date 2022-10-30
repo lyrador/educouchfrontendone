@@ -33,6 +33,7 @@ import {
   Typography,
   Snackbar,
   Alert,
+  Divider,
 } from "@mui/material";
 
 export default function FileSubmissionAttempt(props) {
@@ -65,6 +66,7 @@ export default function FileSubmissionAttempt(props) {
     React.useState(false);
 
   React.useEffect(() => {
+    console.log("useEffect called");
     fetch(
       "http://localhost:8080/assessment/getFileSubmissionById/" +
         fileSubmissionId
@@ -91,7 +93,7 @@ export default function FileSubmissionAttempt(props) {
       })
       .then(
         fetch(
-          "http://localhost:8080/quizAttempt/getMostRecentQuizAttemptByLearnerId/" +
+          "http://localhost:8080/fileSubmissionAttempt/getFileSubmissionAttemptByAssessmentId/" +
             fileSubmissionId +
             "/" +
             learnerId
@@ -99,12 +101,17 @@ export default function FileSubmissionAttempt(props) {
           .then((res) => res.json())
           .then((result) => {
             console.log("most recent attempt: ", result);
-            if (result.quizAttemptId == null) {
+            if (result.fileSubmissionAttemptId == null) {
+              console.log("actually dont have recent attempts");
               setHasPreviousAttempt(false);
             } else {
+              console.log("there exist recent attempts");
               setHasPreviousAttempt(true);
               setFileSubmissionAttempt(result);
             }
+          })
+          .catch((err) => {
+            console.log(err.message);
           })
       );
   }, []);
@@ -129,6 +136,7 @@ export default function FileSubmissionAttempt(props) {
   };
 
   const refresh = () => {
+    console.log("refresh page called");
     fetch(
       "http://localhost:8080/assessment/getFileSubmissionById/" +
         fileSubmissionId
@@ -139,9 +147,29 @@ export default function FileSubmissionAttempt(props) {
         setAttachmentList(fileSub.attachments);
         console.log(currentFileSubmission);
       })
+      .then(
+        fetch(
+          "http://localhost:8080/fileSubmissionAttempt/getFileSubmissionAttemptByAssessmentId/" +
+            fileSubmissionId +
+            "/" +
+            learnerId
+        )
+          .then((res) => res.json())
+          .then((result) => {
+            console.log("most recent attempt: ", result);
+            if (result.fileSubmissionAttemptId == null) {
+              setHasPreviousAttempt(false);
+            } else {
+              setHasPreviousAttempt(true);
+              setFileSubmissionAttempt(result);
+            }
+          })
+      )
       .catch((err) => {
         console.log(err.message);
       });
+
+    //also fetch filesubmissionattempt
   };
 
   // progress bar
@@ -172,8 +200,12 @@ export default function FileSubmissionAttempt(props) {
 
   const uploadAttachment = () => {
     setProgress(0);
-    UploadService.uploadAttachmentToFileSubmission(
-      fileSubmissionId,
+    console.log(
+      "calling upload attachment to fileSubAttempt service for file: ",
+      currentFile
+    );
+    UploadService.uploadAttachmentToFileSubmissionAttempt(
+      fileSubmissionAttempt.fileSubmissionAttemptId,
       currentFile,
       (event) => {
         setProgress(Math.round((100 * event.loaded) / event.total));
@@ -200,6 +232,7 @@ export default function FileSubmissionAttempt(props) {
 
   function proceedFileSubmission() {
     if (!hasPreviousAttempt) {
+      console.log("proceed file sub, no previous attempt found");
       fetch(
         "http://localhost:8080/fileSubmissionAttempt/createFileSubmissionAttempt/" +
           fileSubmissionId +
@@ -217,6 +250,7 @@ export default function FileSubmissionAttempt(props) {
         .then(setViewSubmission(true));
     } else {
       //already has file submission attempt set
+      setViewSubmission(true);
     }
   }
 
@@ -312,22 +346,21 @@ export default function FileSubmissionAttempt(props) {
                     <TableCell colSpan={2}>
                       {!hasPreviousAttempt ? (
                         <div>
-                          <p>You do not have any uploads</p>
+                          <p>You do not have any File Uploads</p>
                         </div>
                       ) : (
-                        <div>
-                          {/* <AttachmentFileSubmissionComponent
-                            attachment={attachment}
-                            courseId={fileSubmissionId}
-                            handleRefreshDeleteFileSubmission={
-                              handleRefreshDelete
-                            }
-                            handleRefreshUpdateFileSubmission={
-                              handleRefreshUpdate
-                            }
-                          /> */}
-                          <p>u have some uploads</p>
-                        </div>
+                        <>
+                          {!(fileSubmissionAttempt.attachment == null) &&
+                            <div>
+                              <p>You have uploaded:</p>
+                              <br />
+                              {
+                                fileSubmissionAttempt.attachment
+                                  .fileOriginalName
+                              }
+                            </div>
+                          }
+                        </>
                       )}
                     </TableCell>
                   </TableRow>
@@ -364,22 +397,35 @@ export default function FileSubmissionAttempt(props) {
         fullWidth="lg"
       >
         <DialogContent>
-          <DialogContentText>Upload file</DialogContentText>
-          <br />
-          <label htmlFor="btn-upload">
-            <input
-              id="btn-upload"
-              name="btn-upload"
-              style={{ display: "none" }}
-              type="file"
-              accept=".doc,.docx,.pdf, .mp4"
-              onChange={selectFile}
-            />
-            <Button className="btn-choose" variant="outlined" component="span">
-              Submit File Submition
-            </Button>
-          </label>
-          <divider></divider>
+          <Grid
+            container
+            direction={"column"}
+            justifyItems={"center"}
+            alignItems={"center"}
+          >
+            <DialogContentText marginTop={"20px"}>
+              Select File to upload
+            </DialogContentText>
+            <br />
+            <label htmlFor="btn-upload">
+              <input
+                id="btn-upload"
+                name="btn-upload"
+                style={{ display: "none" }}
+                type="file"
+                accept=".doc,.docx,.pdf, .mp4"
+                onChange={selectFile}
+              />
+              <Button
+                className="btn-choose"
+                variant="outlined"
+                component="span"
+              >
+                Select File
+              </Button>
+            </label>
+          </Grid>
+          <Divider></Divider>
           {currentFile && (
             <Box className="my20" display="flex" alignItems="center">
               <Box width="100%" mr={1}>
@@ -398,7 +444,7 @@ export default function FileSubmissionAttempt(props) {
         </DialogContent>
         <DialogActions>
           <Button disabled={!currentFile} onClick={uploadAttachment}>
-            Upload
+            Submit File Submission
           </Button>
           <Button onClick={closeUploadDialogBox}>Cancel</Button>
         </DialogActions>
