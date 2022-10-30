@@ -145,11 +145,29 @@ export default function QuizAttempt(props) {
       });
   }
 
+  function handleViewGradedQuizAttempt() {
+    navigate(`/viewGradedQuizAttempt`, {
+      state: {
+        courseIdProp: courseId,
+        learnerStatusProp: learnerStatus,
+        quizIdProp: quizId,
+        learnerIdProp: learnerId,
+        quizAttemptProp: quizAttempt,
+        questionAttemptsProp: questionAttempts,
+      },
+    });
+  }
+
   return (
     <Grid container direction={"column"}>
       <h1>{title}</h1>
       {startQuiz == "false" ? (
-        <Grid container direction={"column"} alignContent={"center"}>
+        <Grid
+          container
+          direction={"column"}
+          alignContent={"center"}
+          marginTop={"20px"}
+        >
           <Grid item xs={2}>
             <LearnerCoursesDrawer
               courseId={courseId}
@@ -173,7 +191,27 @@ export default function QuizAttempt(props) {
                   Resume Quiz
                 </Button>
               ) : (
-                <p>you have submitted alr sry</p>
+                <>
+                  {" "}
+                  {quizAttempt.assessmentAttemptStatusEnum === "GRADED" ? (
+                    <Button onClick={handleViewGradedQuizAttempt} variant="contained">
+                      View Graded Attempt
+                    </Button>
+                  ) : (
+                    <Grid
+                      marginTop={"20px"}
+                      style={{
+                        backgroundColor: "#1975D2",
+                        padding: "7px",
+                        borderRadius: "6px",
+                      }}
+                    >
+                      <p style={{ color: "white" }}>
+                        Your attempt has been submitted!
+                      </p>
+                    </Grid>
+                  )}
+                </>
               )}
             </>
           ) : (

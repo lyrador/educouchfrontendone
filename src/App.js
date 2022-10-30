@@ -58,14 +58,15 @@ import TeachingInteractiveBook from "./components/TeachingInteractiveBook";
 import QuizAttempt from "./components/QuizAttemptComponents/QuizAttempt";
 import LearnerViewAssessments from "./pages/LearnerViewAssessments";
 import TeachingMarkerPage from "./pages/TeachingMarkerPage";
-import TeachingGradebook from "./pages/TeachingGradebook"
-import TeachingGradebookGrading from "./pages/TeachingGradebookGrading"
+import TeachingGradebook from "./pages/TeachingGradebook";
+import TeachingGradebookGrading from "./pages/TeachingGradebookGrading";
 import LearnerGradeBook from "./pages/LearnerGradeBook";
 import LearnerInteractiveBooksList from "./components/LearnerInteractiveBookList";
 import LearnerInteractiveBook from "./components/LearnerInteractiveBook";
 import FileSubmissionAttempt from "./components/FileSubmissionAttemptComponents/FileSubmissionAttempt";
 import CreateWhiteboardHomepage from "./pages/CreateWhiteboardHomepage";
 import ViewAllRoomPage from "./pages/ViewAllRoomPage";
+import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
 
 function App() {
   return (
@@ -210,7 +211,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId/gradebook"
               element={
@@ -355,7 +355,7 @@ function App() {
                 </RequireAuth>
               }
             />
-                        <Route
+            <Route
               path="/myTeachingCourse/:courseId/gradebook/:assessmentId"
               element={
                 <RequireAuth>
@@ -364,8 +364,7 @@ function App() {
                 </RequireAuth>
               }
             />
-
-<Route
+            <Route
               path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId"
               element={
                 <RequireAuth>
@@ -410,7 +409,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/myTeachingCourse/:courseId/files"
               element={
@@ -420,8 +418,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
-            
             <Route
               path="/myTeachingCourse/:courseId/files/:folderId"
               element={
@@ -475,8 +471,7 @@ function App() {
                 </RequireAuth>
               }
             />
-
-<Route
+            <Route
               path="/learnerCourseDetails/:courseId/gradebook"
               element={
                 <RequireAuth>
@@ -485,8 +480,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
-
             <Route
               path="/myTeachingCourse/:moduleCode/files"
               element={
@@ -635,6 +628,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <FileSubmissionAttempt />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/viewGradedQuizAttempt"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <ViewGradedQuizAttempt />
                 </RequireAuth>
               }
             />
