@@ -1,7 +1,7 @@
 // router
-import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, BrowserRouter } from 'react-router-dom';
 // react
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
@@ -9,11 +9,7 @@ import Stack from '@mui/material/Stack';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // components
-import CustomizedSnackbar from '../components/WhiteboardComponents/CustomizedSnackbar';
 import Canvas from '../components/WhiteboardComponents/Canvas';
-import GroupChat from '../components/WhiteboardComponents/GroupChat';
-// context
-import { ThemeProvider } from "../context/ThemeContext";
 // sockets
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs';
@@ -38,8 +34,6 @@ export default function Room() {
 
 	const [rid, setRid] = useState(null);
 	const [incomingDrawings, setIncomingDrawings] = useState(null);
-	const [snackbarOpen, setSnackbarOpen] = useState(false);
-	const [snackbarMsg, setSnackbarMsg] = useState('');
 	const [usersList, setUsersList] = useState([]);
 	// const [userNotInCallList, setUserNotInCallList] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -69,20 +63,6 @@ export default function Room() {
 			})
 	}, []);
 
-	// const [refreshPage, setRefreshPage] = useState("");
-
-	// useEffect(() => {
-	// 	setRefreshPage(false);
-	// 	retrieveAllNotInCallLearner(roomId)
-	// 	.then((resp) => {
-	// 		console.log("Resp is " + resp);
-	// 		setUserNotInCallList(resp)
-	// 	})
-	// 	.catch((err) => {
-	// 		console.log("Error in retrieving learners not in call.");
-	// 	})
-	// },[refreshPage]);
-
 	useEffect(() => {
 		if (!rid || !username) {
 			setRid(roomId);
@@ -92,7 +72,10 @@ export default function Room() {
 		if (loading) {
 			ws.current = new SockJS(SOCKET_URL);
 			ws.current.onopen = () => alert("ws opened");
-			ws.current.onclose = () => alert(1000);
+			ws.current.onclose = (() => {
+				ws.alert(1000);
+				disconnect();
+			})
 
 			stomp.current = Stomp.over(ws.current);
 			stomp.current.reconnect_delay = 5000;
@@ -119,6 +102,7 @@ export default function Room() {
 						progress: undefined,
 						theme: "dark",
 					});
+
 				});
 
 				canvasSubscription = stomp.current.subscribe(`/topic/${rid}`, coordinates => {
@@ -148,22 +132,6 @@ export default function Room() {
 
 		};
 	}, [rid, username]);
-
-	// handle route change | When user clicks back button, disconnect from room
-	// useEffect(() => {
-	// 	console.log("Route change")
-	// 	const handleRouteChange = (url, { shallow }) => {
-	// 		disconnect();
-	// 	}
-
-	// 	// router.events.on('routeChangeStart', handleRouteChange)
-
-	// 	// // If the component is unmounted, unsubscribe
-	// 	// // from the event with the `off` method:
-	// 	// return () => {
-	// 	// 	router.events.off('routeChangeStart', handleRouteChange)
-	// 	// }
-	// }, [router])
 
 	const sendMessage = (message) => {
 		stomp.current.send(`/app/send/${rid}`, {}, JSON.stringify(message));
@@ -217,11 +185,12 @@ export default function Room() {
 		setRid(newId)
 	}
 
+
 	const disconnect = () => {
 		const rid = localStorage.getItem('rid');
 		const username = localStorage.getItem('username');
-
-		if (rid && username) {
+		// check if they are connected
+		if (rid && username && canvasSubscription) {
 			const userLeftRoom = {
 				username: username,
 				payload: DISCONNECT_USER,
@@ -231,19 +200,26 @@ export default function Room() {
 			stomp.current.disconnect(frame => {
 				if (messagesSubscription) messagesSubscription.unsubscribe();
 				if (canvasSubscription) canvasSubscription.unsubscribe();
+				if (groupChatSubscription) groupChatSubscription.unsubscribe();
 			}, {})
 
 			localStorage.removeItem('rid');
 			localStorage.removeItem('username');
-		}
+		};
 	}
 
+	useEffect(() => {
+		window.addEventListener("beforeunload", (ev) => {
+			ev.preventDefault();
+			disconnect();
+		});
+
+	})
+
+
+
 	// Run this code when client refreshes the page or closes the tab (disconnect the socket and send message in room)
-	// if (process.browser) {
-	// 	window.onbeforeunload = () => {
-	// 		disconnect();
-	// 	}
-	// } 
+
 	return (
 		<div>
 			{/* <ThemeProvider> */}

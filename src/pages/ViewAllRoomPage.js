@@ -3,7 +3,7 @@ import ShowChooseNamePanel from '../components/WhiteboardComponents/ShowChooseNa
 import WhiteboardDrawer from '../components/WhiteboardComponents/WhiteboardDrawer';
 import styles from '../css/layout.module.scss';
 import {
-    Grid, Typography, Divider, TableCell, TableRow, TableContainer, Paper, Table, TableHead, TableBody
+    Stack,Avatar, ListItemAvatar, List, Grid, Typography, Divider, TableCell, TableRow, TableContainer, Paper, Table, TableHead, TableBody
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { ToastContainer, toast } from 'react-toastify';
@@ -12,6 +12,7 @@ import '../css/whiteboardHomepage.css';
 import { getAllRooms } from '../services/getAllRooms';
 import { generatePath } from 'react-router-dom';
 import { ListItemText } from '@material-ui/core';
+import avatar from '../assets/defaultAvatar.jpg';
 
 export default function ViewAllRoomPage() {
 
@@ -51,7 +52,7 @@ export default function ViewAllRoomPage() {
                 <Grid item xs={10}>
                     <ToastContainer></ToastContainer>
                     <Typography variant="h5">
-                        View All Existing Rooms
+                        View All Active Rooms
                     </Typography>
                     <br />
                     <Divider></Divider>
@@ -66,6 +67,7 @@ export default function ViewAllRoomPage() {
                                         <TableCell>Room password</TableCell>
                                         <TableCell>Room name</TableCell>
                                         <TableCell>Creator</TableCell>
+                                        <TableCell>Current participants</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -79,10 +81,30 @@ export default function ViewAllRoomPage() {
                                             <TableCell>{room.password}</TableCell>
                                             <TableCell>{room.roomName}</TableCell>
                                             <TableCell>{room.organizers[0]}</TableCell>
+                                            <TableCell>
+                                                <List>
+                                                    {room.participants && room.participants.map((x) => {
+                                                        return (
+                                                            <div>
+                                                                <Stack direction="row"><ListItemAvatar>
+                                                                    <Avatar
+                                                                        src={avatar}
+                                                                    />
+                                                                </ListItemAvatar>
+                                                                    <ListItemText primary={x}></ListItemText>
+                                                                </Stack>
+
+                                                            </div>
+
+                                                        )
+                                                    })}
+                                                </List>
+
+                                            </TableCell>
                                             {/* <TableCell>
                                                 <List dense={dense}>
                                                     {generate(
-                                                        <ListItemText primary={educator}></ListItemText>
+                                                       
                                                     )}
                                                 </List>
                                             </TableCell> */}

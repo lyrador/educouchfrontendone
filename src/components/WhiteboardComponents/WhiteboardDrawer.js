@@ -25,21 +25,29 @@ function WhiteboardDrawer(props) {
         <div>
             <div className='drawerContainer'>
                 <List>
+
                     <Link to={'/whiteboardHomepage'} style={{ textDecoration: 'none', color: 'black' }}>
                         <ListItemButton>
                             <ListItemText primary="Join existing room" />
                         </ListItemButton>
                     </Link>
-                    <Link to={'/createWhiteboardHomepage'} style={{ textDecoration: 'none', color: 'black' }}>
-                        <ListItemButton>
-                            <ListItemText primary="Create room" />
-                        </ListItemButton>
-                    </Link>
-                    <Link to={'/viewAllRoomPage'} style={{ textDecoration: 'none', color: 'black' }}>
-                        <ListItemButton>
-                            <ListItemText primary="View all rooms" />
-                        </ListItemButton>
-                    </Link>
+                    {user.userType !== "LEARNER" &&
+                        <Link to={'/createWhiteboardHomepage'} style={{ textDecoration: 'none', color: 'black' }}>
+                            <ListItemButton>
+                                <ListItemText primary="Create room" />
+                            </ListItemButton>
+                        </Link>
+
+                    }
+                    {user.userType !== "LEARNER" &&
+                        <Link to={'/viewAllRoomPage'} style={{ textDecoration: 'none', color: 'black' }}>
+                            <ListItemButton>
+                                <ListItemText primary="View all rooms" />
+                            </ListItemButton>
+                        </Link>
+                    }
+
+
                 </List>
             </div>
         </div>
