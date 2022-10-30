@@ -63,6 +63,7 @@ import TeachingGradebookGrading from "./pages/TeachingGradebookGrading"
 import LearnerGradeBook from "./pages/LearnerGradeBook";
 import LearnerInteractiveBooksList from "./components/LearnerInteractiveBookList";
 import LearnerInteractiveBook from "./components/LearnerInteractiveBook";
+import FileSubmissionAttempt from "./components/FileSubmissionAttemptComponents/FileSubmissionAttempt";
 
 function App() {
   return (
@@ -604,6 +605,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <QuizAttempt />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/fileSubmissionAttempt"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <FileSubmissionAttempt />
                 </RequireAuth>
               }
             />

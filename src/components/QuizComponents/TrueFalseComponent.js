@@ -13,11 +13,19 @@ import React, { useState } from "react";
 export default function TrueFalseComponent(props) {
   React.useEffect(() => {
     props.addBooleanOptionsProp(["true", "false"]);
-    setCorrectOption(props.correctOptionProp)
+    //if there is an existing correct option then use that
+    if (props.correctOptionProp!== "") {
+      setCorrectOption(props.correctOptionProp === "true")
+      console.log("question no: ", props.questionIdProp)
+      console.log("correctOption not empty: ", props.correctOptionProp)
+    } else {
+      //if not set as false
+      props.selectCorrectOptionProp(props.questionIdProp, false);
+    }
   }, []);
 
   const [trueFalseValue, setTrueFalseValue] = useState("");
-  const [correctOption, setCorrectOption] = useState("");
+  const [correctOption, setCorrectOption] = useState(props.correctOptionProp);
 
   function handleChange(e) {
     setTrueFalseValue(e.target.checked);

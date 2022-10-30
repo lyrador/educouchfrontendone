@@ -50,6 +50,8 @@ import Pagination from '@mui/material/Pagination';
 
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
 
+import PostAddIcon from '@mui/icons-material/PostAdd';
+
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -79,6 +81,7 @@ function TeachingInteractivePage(props) {
 
     //paths
     const location = useLocation();
+    console.log(location); 
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
     const courseId = location.pathname.split("/")[2];
     const bookId = location.pathname.split("/")[4];
@@ -86,20 +89,14 @@ function TeachingInteractivePage(props) {
     //refresh view
     const [refreshInteractivePage, setRefreshInteractivePage] = useState("");
 
-    //retrieve all pages
-    const [pages, setPages] = useState([]);
+    const [chapterEditRefreshPage2, setChapterEditRefreshPage2] = useState(false);
+
     React.useEffect(() => {
-        if (props.chapterId) {
-            setRefreshInteractivePage(false);
-            console.log(props.chapterId)
-            fetch("http://localhost:8080/interactivePage/interactiveChapter/" + props.chapterId + "/interactivePages")
-                .then((res) => res.json())
-                .then((result) => {
-                    setPages(result);
-                    console.log(result);
-                });
+        if (chapterEditRefreshPage2 == true) {
+            props.setChapterEditRefreshPage(true)
+            setChapterEditRefreshPage2(false)
         };
-    }, [refreshInteractivePage || props.chapterId]);
+    }, [chapterEditRefreshPage2]);
 
     //retrieve current page and page navigation
     const [currentPage, setCurrentPage] = useState([]);
@@ -109,9 +106,26 @@ function TeachingInteractivePage(props) {
         setRefreshInteractivePage(true)
     };
 
+    //retrieve all pages
+    const [pages, setPages] = useState([]);
+    React.useEffect(() => {
+        if (props.chapterId) {
+            setRefreshInteractivePage(false);
+            console.log(props.chapterId)
+            console.log("HELLO")
+            fetch("http://localhost:8080/interactivePage/interactiveChapter/" + props.chapterId + "/interactivePages")
+                .then((res) => res.json())
+                .then((result) => {
+                    setPages(result);
+                    console.log(result);
+                });
+        };
+    }, [refreshInteractivePage || props.chapterId]);
+
     React.useEffect(() => {
         if (props.chapterId && pageNumberPointer) {
             setRefreshInteractivePage(false);
+            console.log("HELLO")
             var queryString = props.chapterId + "&" + pageNumberPointer
             fetch("http://localhost:8080/interactivePage/getPageByChapterIdAndPageNumber/" + queryString)
                 .then((res) => res.json())
@@ -155,44 +169,6 @@ function TeachingInteractivePage(props) {
         setRefreshInteractivePage(true)
     }
 
-    //delete
-    const [pageIdToDelete, setPageIdToDelete] = useState("");
-    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-
-    const handleClickDeleteDialogOpen = (event) => {
-        setPageIdToDelete(currentPage.interactivePageId);
-        setDeleteDialogOpen(true);
-    };
-
-    const handleDeleteDialogClose = () => {
-        setDeleteDialogOpen(false);
-    };
-
-    //when delete the pageId of the current page, the page numbers on the navigation bar adjusts however the page number in the db table doesnt, so somehow need to update the page number in DB
-    const deletePage = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch("http://localhost:8080/interactivePage/interactivePages/" + pageIdToDelete, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-            })
-            console.log(response);
-            if (response.ok == false) {
-                console.log("Error");
-                handleClickErrorSnackbar()
-            } else {
-                console.log("Interactive Page Deleted Successfully!");
-                handleClickDeleteSnackbar()
-            }
-        } catch (err) {
-            console.log(err);
-            handleClickErrorSnackbar()
-        }
-        setRefreshInteractivePage(true);
-        handleDeleteDialogClose();
-        handleClickDeleteSnackbar();
-    };
-
     //edit
     const [editedPageNumber, setEditedPageNumber] = useState("");
     const [editedPageDescription, setEditedPageDescription] = useState("");
@@ -212,11 +188,7 @@ function TeachingInteractivePage(props) {
 
     const editPage = async (e) => {
         e.preventDefault();
-        //setPageNumberError({ value: false, errorMessage: "" });
         setPageDescriptionError({ value: false, errorMessage: "" });
-        // if (newPageNumber == "") {
-        //     setPageNumberError({ value: true, errorMessage: "Interactive Page title cannot be empty!" });
-        // }
         if (newPageDescription == "") {
             setPageDescriptionError({ value: true, errorMessage: "Interactive Page description cannot be empty!" });
         }
@@ -287,31 +259,6 @@ function TeachingInteractivePage(props) {
                 );
             }
         }
-    };
-
-    const renderExtraActions = (
-        bookId,
-        bookTitle,
-        bookMaxScore
-    ) => {
-        return (
-            <div>
-                <IconButton
-                    aria-label="settings"
-                    onClick={(event) => handleClickDeleteDialogOpen(event, pageIdToDelete)}
-                >
-                    <DeleteIcon />
-                </IconButton>
-                <IconButton
-                    aria-label="settings"
-                    onClick={(event) =>
-                        handleClickEditDialogOpen(event, pageIdToEdit, editedPageNumber, editedPageDescription)
-                    }
-                >
-                    <EditIcon />
-                </IconButton>
-            </div>
-        );
     };
 
     const renderVideoImageHolder = () => {
@@ -393,7 +340,7 @@ function TeachingInteractivePage(props) {
                     Error!
                 </Alert>
             </Snackbar>
-            <div>
+            <div style={{paddingBottom: '10px', paddingLeft: '4%', paddingTop: '10px'}}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link to={`${booksPath}`}
                         style={{ textDecoration: 'none', color: 'grey' }}>
@@ -433,11 +380,18 @@ function TeachingInteractivePage(props) {
                         pageNumber={currentPage.pageNumber}
                         refreshInteractivePage={refreshInteractivePage}
                         setRefreshInteractivePage={setRefreshInteractivePage}
-                        currentPage={currentPage}>
+                        currentPage={currentPage}
+                        chapterId={props.chapterId}
+                        setPageNumberPointer={setPageNumberPointer}
+                        refreshPage={props.refreshPage} 
+                        setRefreshPage={props.setRefreshPage}
+                        chapterEditRefreshPage2={chapterEditRefreshPage2}
+                        setChapterEditRefreshPage2={setChapterEditRefreshPage2}
+                        >
                     </TeachingInteractivePageBar>
                 </div>
             </div>
-            <div style={{ display: 'flex', marginTop: "5px", justifyContent: 'center', marginRight: '30px' }}>
+            <div style={{ display: 'flex', marginTop: "5px", justifyContent: 'center', marginRight: '150px' }}>
                 <div>
                     <Pagination count={pages.length} page={pageNumberPointer} onChange={handlePageChange} showFirstButton showLastButton />
                 </div>
@@ -446,51 +400,14 @@ function TeachingInteractivePage(props) {
                         className="btn-upload"
                         color="primary"
                         component="span"
-                        variant="contained"
+                        variant="outlined"
                         onClick={createNewPage}
                         style={{ width: "40%", marginRight: "10px" }}
-                        startIcon={<AddIcon />}
+                        // startIcon={<PostAddIcon />}
                     >
-                        Add
+                        <PostAddIcon />
                     </Button>
                 </div>
-                <div>
-                    <Button
-                        className="btn-upload"
-                        color="secondary"
-                        component="span"
-                        variant="contained"
-                        onClick={handleClickDeleteDialogOpen}
-                        style={{ width: "80%", marginRight: "5px" }}
-                        startIcon={<DeleteIcon />}
-                    >
-                        Delete
-                    </Button>
-                </div>
-            </div>
-            <div>
-                <Dialog
-                    open={deleteDialogOpen}
-                    onClose={handleDeleteDialogClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">
-                        {"Delete this interactive page?"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            This will delete this entire page in this chapter. You will not be able to undo this action. Are you sure you
-                            want to delete?
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleDeleteDialogClose}>Cancel</Button>
-                        <Button onClick={deletePage} autoFocus>
-                            Delete
-                        </Button>
-                    </DialogActions>
-                </Dialog>
             </div>
             <div>
                 <Dialog
