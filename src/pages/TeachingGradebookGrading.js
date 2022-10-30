@@ -27,6 +27,8 @@ function TeachingGradebookGrading() {
     const courseId = location.pathname.split('/')[2];
     const assessmentId = location.pathname.split('/')[4];
     const title = location.state.title;
+    const identifier = location.state.identifier;
+    const isOpen = location.state.isOpen;
 
     const [refreshPage, setRefreshPage] = useState('');
 
@@ -53,15 +55,17 @@ function TeachingGradebookGrading() {
             headerName: 'Action',
             width: 200,
             renderCell: (params) => {
+              console.log(!isOpen || !params.row.didAttempt)
               return(
                 <Button
                   variant="contained"
                   size="small"
                   tabIndex={params.hasFocus ? 0 : -1}
+                  disabled={!isOpen || !params.row.didAttempt}
                 >
                                             <Link
                           to={`${gradebookPath}/${assessmentId}/${params.row.learnerId}`}
-                          state={{ title: title , name : params.row.learnerName, assessmentTotal : params.row.quizMax, isGraded : params.row.graded, learnerScore : params.row.obtainedScore, mcqScore : params.row.learnerMcqScore, isQuiz : params.row.quiz}}
+                          state={{ title: title , name : params.row.learnerName, assessmentTotal : params.row.quizMax, isGraded : params.row.graded, learnerScore : params.row.obtainedScore, mcqScore : params.row.learnerMcqScore, isQuiz : params.row.quiz, identifier : identifier, isOpen : isOpen}}
                           style={{ textDecoration: "none" }}
                         >
                           Grade
@@ -74,7 +78,7 @@ function TeachingGradebookGrading() {
 
       React.useEffect(() => {
         setRefreshPage(false);
-        fetch("http://localhost:8080/gradeBookEntry/getLearnerAttemptPage?courseId=" + courseId + "&assessmentId=" + assessmentId)
+        fetch("http://localhost:8080/gradeBookEntry/getLearnerAttemptPage?courseId=" + courseId + "&assessmentId=" + assessmentId + "&identifier=" + identifier)
             .then(res => res.json())
             .then((result) => {
                 setLearners(result);

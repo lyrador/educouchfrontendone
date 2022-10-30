@@ -30,9 +30,7 @@ export default function QuizAttemptDisplay(props) {
     setQuizQuestions(props.questionsProp);
     setQuizStatusEnum(props.assessmentStatusEnum);
     setQuestionAttempts(props.questionAttemptsProp);
-  }, [quizAttemptLoaded]);
-
-  function selectOption() {}
+  }, []);
 
   const getTimeRemaining = (e) => {
     const total = Date.parse(e) - Date.parse(new Date());
@@ -70,6 +68,14 @@ export default function QuizAttemptDisplay(props) {
       ) {
         setPanic(true);
       }
+      if ( (hours > 9 ? hours : "0" + hours) +
+      ":" +
+      (minutes > 9 ? minutes : "0" + minutes) +
+      ":" +
+      (seconds > 9 ? seconds : "0" + seconds) ===
+    "00:00:00") {
+        handleSubmitQuizAttempt();
+      }
     }
   };
 
@@ -93,7 +99,7 @@ export default function QuizAttemptDisplay(props) {
     var hours = timer.slice(0, 2);
     var minutes = timer.slice(3, 5);
     var timeLimitRemaining = parseFloat(hours * 60) + parseFloat(minutes);
-    console.log("timeLimit Remaining: ", timeLimitRemaining)
+    console.log("timeLimit Remaining: ", timeLimitRemaining);
     clearTimer();
     return timeLimitRemaining;
   }
@@ -103,7 +109,7 @@ export default function QuizAttemptDisplay(props) {
     // This is where you need to adjust if
     // you entend to add more time
     if (props.timeLimitProp != quizAttempt.timeLimitRemaining) {
-      var timeLimit = quizAttempt.timeLimitRemaining * 60
+      var timeLimit = quizAttempt.timeLimitRemaining * 60;
     } else {
       var timeLimit = props.timeLimitProp * 60;
     }
@@ -124,7 +130,6 @@ export default function QuizAttemptDisplay(props) {
     console.log("clicked handleSubmitQuiz");
     var timeLimitRemaining = stopTimer();
     quizAttempt.timeLimitRemaining = timeLimitRemaining;
-    //questionAttemptedCheck (if not all attempted have an alert to confirm submit)
     //call submitQuizAttempt api (api calls update quizAttempt, then update state to submitted)
     fetch(
       "http://localhost:8080/quizAttempt/submitQuizAttempt/" +
@@ -163,7 +168,6 @@ export default function QuizAttemptDisplay(props) {
   }
 
   function inputShortAnswerResponse(questionIdProp, shortAnswerResponse) {
-    console.log("shortAnswerResponse received: ", shortAnswerResponse);
     const tempQuestionAttempts = [...questionAttempts];
     const questionAttemptIndex = tempQuestionAttempts.findIndex(
       //need to find index of question attempt with same question id prop as question id
@@ -175,9 +179,24 @@ export default function QuizAttemptDisplay(props) {
         shortAnswerResponse;
       setQuestionAttempts(tempQuestionAttempts);
       console.log(
-        "set short answer",
         tempQuestionAttempts[questionAttemptIndex].shortAnswerResponse
       );
+    }
+  }
+
+  function selectOption(questionIdProp, mcqOption) {
+    console.log("reached selectOption, selected: ", mcqOption);
+    const tempQuestionAttempts = [...questionAttempts];
+    const questionAttemptIndex = tempQuestionAttempts.findIndex(
+      //need to find index of question attempt with same question id prop as question id
+      (f) => f.questionAttemptedQuestionId == questionIdProp
+    );
+    console.log("found index: ", questionAttemptIndex)
+    if (questionAttemptIndex > -1) {
+      //write selectedOption into that questionAttempt
+      tempQuestionAttempts[questionAttemptIndex].optionSelected = mcqOption;
+      setQuestionAttempts(tempQuestionAttempts);
+      console.log(tempQuestionAttempts[questionAttemptIndex].optionSelected);
     }
   }
 
@@ -201,7 +220,6 @@ export default function QuizAttemptDisplay(props) {
               <p style={{ fontSize: "40px", color: "white" }}>{timer}</p>
             )}
           </Grid>
-          <Button onClick={stopTimer}>stop</Button>
         </Paper>
       )}
       <Grid container width={"60%"} flexDirection={"column"}>
@@ -213,8 +231,8 @@ export default function QuizAttemptDisplay(props) {
                   questionProp={question}
                   quizStatusEnumProp={quizStatusEnum}
                   indexProp={index + 1}
-                  // selectOptionProp={}
                   inputShortAnswerResponseProp={inputShortAnswerResponse}
+                  selectOptionProp={selectOption}
                   questionAttemptProp={questionAttempts[index]}
                   questionAttemptsProp={questionAttempts}
                 />
