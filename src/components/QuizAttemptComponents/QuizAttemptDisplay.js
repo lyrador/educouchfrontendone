@@ -30,7 +30,7 @@ export default function QuizAttemptDisplay(props) {
     setQuizQuestions(props.questionsProp);
     setQuizStatusEnum(props.assessmentStatusEnum);
     setQuestionAttempts(props.questionAttemptsProp);
-  }, [quizAttemptLoaded]);
+  }, []);
 
   const getTimeRemaining = (e) => {
     const total = Date.parse(e) - Date.parse(new Date());
@@ -67,6 +67,14 @@ export default function QuizAttemptDisplay(props) {
         "00:00:10"
       ) {
         setPanic(true);
+      }
+      if ( (hours > 9 ? hours : "0" + hours) +
+      ":" +
+      (minutes > 9 ? minutes : "0" + minutes) +
+      ":" +
+      (seconds > 9 ? seconds : "0" + seconds) ===
+    "00:00:00") {
+        handleSubmitQuizAttempt();
       }
     }
   };
@@ -212,7 +220,6 @@ export default function QuizAttemptDisplay(props) {
               <p style={{ fontSize: "40px", color: "white" }}>{timer}</p>
             )}
           </Grid>
-          <Button onClick={stopTimer}>stop</Button>
         </Paper>
       )}
       <Grid container width={"60%"} flexDirection={"column"}>

@@ -349,7 +349,7 @@ export default function QuizSettingsComponents(props) {
               onChange={(e) => setTimeLimit(e.target.value)}
             />
           )}
-          <Stack
+          {/* <Stack
             spacing={1}
             style={{ paddingBottom: "10px", marginTop: "20px" }}
           >
@@ -382,7 +382,7 @@ export default function QuizSettingsComponents(props) {
                 onChange={(e) => setMaxAttempts(e.target.value)}
               />
             )}
-          </Stack>
+          </Stack> */}
 
           <Stack spacing={1}>
             <InputLabel id="select-autoReleaseResults-trueFalse">

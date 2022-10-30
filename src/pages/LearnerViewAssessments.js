@@ -169,7 +169,7 @@ export default function LearnerViewAssessments(props) {
                         )
                       }
                     >
-                      View Assessment
+                      View Details 
                     </Button>
                   </TableCell>
                 </TableRow>

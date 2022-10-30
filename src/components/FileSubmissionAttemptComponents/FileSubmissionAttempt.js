@@ -24,7 +24,7 @@ export default function FileSubmissionAttempt(props) {
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [fileSubmissionStatusEnum, setFileSubmissionStatusEnum] = useState();
-  const [fileSubmissionExpired, setFileSubmissionExpired] = useState("false");
+  const [fileSubmissionExpired, setFileSubmissionExpired] = useState(false);
   const [hasPreviousAttempt, setHasPreviousAttempt] = useState(false);
 
   //
@@ -72,31 +72,48 @@ export default function FileSubmissionAttempt(props) {
       );
   }, []);
 
-  function uploadFileSubmission() {}
+  function proceedFileSubmission() {
+    if (!hasPreviousAttempt) {
+      fetch(
+        "http://localhost:8080/fileSubmissionAttempt/createFileSubmissionAttempt/" +
+          fileSubmissionId +
+          "/" +
+          learnerId
+      )
+        .then((res) => res.json())
+        .then((result) => {
+          console.log("instantiated new file sub attempt: ", result);
+          setFileSubmissionAttempt(result);
+        })
+        .then(setViewSubmission(true));
+    } else {
+      //already has file submission attempt set
+    }
+  }
 
   return (
     <Grid container direction={"column"}>
       <h1>{title}</h1>
-      <h1>{title}</h1>
+      <Grid item xs={2}>
+        <LearnerCoursesDrawer
+          courseId={courseId}
+          learnerStatus={learnerStatus}
+        />
+      </Grid>
       {!viewSubmission ? (
-        <Grid container direction={"column"} alignContent={"center"}>
-          <Grid item xs={2}>
-            <LearnerCoursesDrawer
-              courseId={courseId}
-              learnerStatus={learnerStatus}
-            />
-          </Grid>
+        <Grid
+          container
+          direction={"column"}
+          alignContent={"center"}
+          style={{ marginLeft: "800px" }}
+        >
           <Grid item>File Submission Description: {description}</Grid>
           <Grid item>File Submission Max Score: {maxScore}</Grid>
           <Grid item>File Submission Start Date: {startDate}</Grid>
           <Grid item>File Submission Deadline: {endDate}</Grid>
-          {hasPreviousAttempt ? (
-            <Button variant="contained" onClick={uploadFileSubmission}>
-              Re-upload File Submission
-            </Button>
-          ) : (
-            <Button onClick={uploadFileSubmission} variant="contained">
-              Upload File Submission
+          {!fileSubmissionExpired && (
+            <Button onClick={proceedFileSubmission} variant="contained">
+              Proceed to File Submission
             </Button>
           )}
         </Grid>
@@ -106,6 +123,5 @@ export default function FileSubmissionAttempt(props) {
         </Grid>
       )}
     </Grid>
-
   );
 }

@@ -171,25 +171,25 @@ function LearnerInteractiveBooksList(props) {
                                 </TableBody>
                             </Table>
                         </TableContainer> */}
+                        {books.length === 0 && (
+                            <h3>There are no interactive books in this course!</h3>
+                        )}
                         <div className="books">
                             <div className="books-container">
                                 <Box sx={{ width: "100%" }}>
-                                        <div className="books-wrapper">
-                                                <ul className="books-items">
-                                                    {books.map((book) => (
-                                                        <BookCardItem
-                                                            src={book.attachment.fileURL}
-                                                            text={book.bookTitle}
-                                                            label={book.bookTitle}
-                                                            bookId={book.interactiveBookId}
-                                                            path={`${booksPath}/${book.interactiveBookId}`}
-                                                        />
-                                                    ))}
-                                                    {books.values.length === 0 && (
-                                                        <h3>There are no interactive books in this course!</h3>
-                                                    )}
-                                                </ul>
-                                        </div>
+                                    <div className="books-wrapper">
+                                        <ul className="books-items">
+                                            {books.map((book) => (
+                                                <BookCardItem
+                                                    src={book.attachment.fileURL}
+                                                    text={book.bookTitle}
+                                                    label={book.bookTitle}
+                                                    bookId={book.interactiveBookId}
+                                                    path={`${booksPath}/${book.interactiveBookId}`}
+                                                />
+                                            ))}
+                                        </ul>
+                                    </div>
                                 </Box>
                             </div>
                         </div>
