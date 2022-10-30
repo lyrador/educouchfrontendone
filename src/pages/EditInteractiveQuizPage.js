@@ -63,6 +63,7 @@ export default function EditInteractiveQuizPage() {
         setCurrentQuiz(result);
         setQuestions(result.questions);
         setQuestion(result.questions[0])
+        //setQuestions(currentQuiz.questions);
         setQuestionCounter(result.questionCounter + 1);
         setTitle(result.assessmentTitle);
         setDescription(result.assessmentDescription);
@@ -242,77 +243,77 @@ export default function EditInteractiveQuizPage() {
 //     setEndDate(newDate);
 //   };
 
-   function handleProceedQuestions() {
-     setQuestions(currentQuiz.questions);
-//     const tempStartDate = startDate;
-//     const tempEndDate = endDate;
-     setTitleError({ value: false, errorMessage: "" });
-     setDescriptionError({ value: false, errorMessage: "" });
-     setMaxScoreError({ value: false, errorMessage: "" });
-//     setStartDateError({ value: false, errorMessage: "" });
-//     setEndDateError({ value: false, errorMessage: "" });
-//     setTimeLimitError({ value: false, errorMessage: "" });
-//     setMaxAttemptsError({ value: false, errorMessage: "" });
-    if (title == "") {
-      setTitleError({
-        value: true,
-        errorMessage: "Title field cannot be left empty!",
-      });
-    }
-    if (description == "") {
-      setDescriptionError({
-        value: true,
-        errorMessage: "Description Field cannot be left empty!",
-      });
-    }
-    if (maxScore == "") {
-      setMaxScoreError({
-        value: true,
-        errorMessage: "Max Score Field cannot be left empty!",
-      });
-    }
-//     const dateComparisonBoolean = tempEndDate < tempStartDate;
-//     if (dateComparisonBoolean) {
-//       setStartDateError({
+//    function handleProceedQuestions() {
+//      setQuestions(currentQuiz.questions);
+// //     const tempStartDate = startDate;
+// //     const tempEndDate = endDate;
+//      setTitleError({ value: false, errorMessage: "" });
+//      setDescriptionError({ value: false, errorMessage: "" });
+//      setMaxScoreError({ value: false, errorMessage: "" });
+// //     setStartDateError({ value: false, errorMessage: "" });
+// //     setEndDateError({ value: false, errorMessage: "" });
+// //     setTimeLimitError({ value: false, errorMessage: "" });
+// //     setMaxAttemptsError({ value: false, errorMessage: "" });
+//     if (title == "") {
+//       setTitleError({
 //         value: true,
-//         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
-//       });
-//       setEndDateError({
-//         value: true,
-//         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
+//         errorMessage: "Title field cannot be left empty!",
 //       });
 //     }
-//     if (timeLimit < 5) {
-//       setTimeLimitError({
+//     if (description == "") {
+//       setDescriptionError({
 //         value: true,
-//         errorMessage: "Quiz Time Limit cannot be less than 5 minutes!",
+//         errorMessage: "Description Field cannot be left empty!",
 //       });
 //     }
-//     if (maxAttempts < 1) {
-//       setMaxAttemptsError({
+//     if (maxScore == "") {
+//       setMaxScoreError({
 //         value: true,
-//         errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
+//         errorMessage: "Max Score Field cannot be left empty!",
 //       });
 //     }
-    if (validateQuizSettings()) {
-      console.log("passedValidations");
-      editQuizSettings(
-        title,
-        description
-//         maxScore,
-//         startDate,
-//         endDate,
-//         hasTimeLimit,
-//         timeLimit,
-//         hasMaxAttempts,
-//         maxAttempts,
-//         isAutoRelease
-       );
-       setEditSettings("false");
-     } else {
-       console.log("did not pass the vibe check");
-     }
-  }
+// //     const dateComparisonBoolean = tempEndDate < tempStartDate;
+// //     if (dateComparisonBoolean) {
+// //       setStartDateError({
+// //         value: true,
+// //         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
+// //       });
+// //       setEndDateError({
+// //         value: true,
+// //         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
+// //       });
+// //     }
+// //     if (timeLimit < 5) {
+// //       setTimeLimitError({
+// //         value: true,
+// //         errorMessage: "Quiz Time Limit cannot be less than 5 minutes!",
+// //       });
+// //     }
+// //     if (maxAttempts < 1) {
+// //       setMaxAttemptsError({
+// //         value: true,
+// //         errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
+// //       });
+// //     }
+//     if (validateQuizSettings()) {
+//       console.log("passedValidations");
+//       editQuizSettings(
+//         title,
+//         description
+// //         maxScore,
+// //         startDate,
+// //         endDate,
+// //         hasTimeLimit,
+// //         timeLimit,
+// //         hasMaxAttempts,
+// //         maxAttempts,
+// //         isAutoRelease
+//        );
+//        setEditSettings("false");
+//      } else {
+//        console.log("did not pass the vibe check");
+//      }
+//   }
    function handleBackToSettings() {
 //     calculateMaxQuizScore();
      setEditSettings("true");
@@ -568,7 +569,7 @@ function editQuestionTitle(localId, questionTitle) {
               }}
             >
               <h1 style={{ color: "whitesmoke" }}>Interactive Question</h1>
-              <Button
+              {/* <Button
                 aria-label="settings"
                 variant="contained"
                 style={{ backgroundColor: "#989898" }}
@@ -576,7 +577,7 @@ function editQuestionTitle(localId, questionTitle) {
               >
                 <SettingsIcon style={{ marginRight: 10 }} />
                 Back To Settings
-              </Button>
+              </Button> */}
             </Grid>
 
             <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
@@ -622,16 +623,16 @@ function editQuestionTitle(localId, questionTitle) {
               }}
             >
               <h1 style={{ color: "whitesmoke" }}>Edit Quiz Settings</h1>
-              <Button
+              {/* <Button
                 aria-label="settings"
                 variant="contained"
                 style={{ backgroundColor: "#989898" }}
-                onClick={() => handleProceedQuestions()}
+                // onClick={() => handleProceedQuestions()}
               >
                 Proceed to Questions
-              </Button>
+              </Button> */}
             </Grid>
-            <Paper elevation={3} style={paperStyle}>
+            {/* <Paper elevation={3} style={paperStyle}>
               <p style={{ color: "grey" }}>Quiz Title</p>
               <TextField
                 required
@@ -657,7 +658,7 @@ function editQuestionTitle(localId, questionTitle) {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
-            </Paper>
+            </Paper> */}
           </Grid>
         )}
       </Grid>
