@@ -81,6 +81,7 @@ function TeachingInteractivePage(props) {
 
     //paths
     const location = useLocation();
+    console.log(location); 
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
     const courseId = location.pathname.split("/")[2];
     const bookId = location.pathname.split("/")[4];
