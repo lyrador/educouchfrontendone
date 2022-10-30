@@ -14,20 +14,38 @@ import {
   Select,
   MenuItem,
   InputLabel,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useState } from "react";
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
 import SettingsIcon from "@mui/icons-material/Settings";
-import AddIcon from "@mui/icons-material/Add";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete"; 
 import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsComponent";
 import EditSettingsComponent from "../components/QuizComponents/EditQuizSettingsComponent";
 import EditQuizSettingsComponent from "../components/QuizComponents/EditQuizSettingsComponent";
 import { CatchingPokemonSharp } from "@mui/icons-material";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import MuiAlert from "@mui/material/Alert";
 
-export default function EditInteractiveQuizPage() {
+// Alert = React.forwardRef(function Alert(props, ref) {
+//   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+// });
+
+export default function EditInteractiveQuizPage(props) {
+
+  const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
+    const handleClickErrorSnackbar = () => { setOpenErrorSnackbar(true) };
+    const handleCloseErrorSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenErrorSnackbar(false) };
+
+  const [openDeleteSnackbar, setOpenDeleteSnackbar] = React.useState(false);
+  const handleClickDeleteSnackbar = () => { setOpenDeleteSnackbar(true) };
+  const handleCloseDeleteSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenDeleteSnackbar(false) };
+
   const location = useLocation();
   const navigate = useNavigate();
   const courseId = location.pathname.split("/").slice(2, 3).join("/");
@@ -35,7 +53,7 @@ export default function EditInteractiveQuizPage() {
   const editQuizPath = location.pathname;
   const assessmentId = location.state.assessmentIdProp;
   const [currentQuiz, setCurrentQuiz] = useState();
-  const[question, setQuestion] = useState({})
+  const [question, setQuestion] = useState({});
   const [questions, setQuestions] = useState([]);
   const [textField, setTextField] = useState("");
   const [editSettings, setEditSettings] = useState("");
@@ -43,6 +61,7 @@ export default function EditInteractiveQuizPage() {
   const [title, setTitle] = useState();
   const [description, setDescription] = useState();
   const [maxScore, setMaxScore] = useState();
+  const [trigger, setTrigger] = useState(false); 
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [hasTimeLimit, setHasTimeLimit] = useState("true");
@@ -56,13 +75,14 @@ export default function EditInteractiveQuizPage() {
   var endDateString = "";
 
   React.useEffect(() => {
-    fetch("http://localhost:8080/quiz/getQuizByInteractivePageId/" + 1)
+    fetch("http://localhost:8080/quiz/getQuizByInteractivePageId/" + props.pageId)
       .then((res) => res.json())
       .then((result) => {
-        console.log(result); 
+        console.log(result);
+        console.log("page id is " + props.pageId); 
         setCurrentQuiz(result);
         setQuestions(result.questions);
-        setQuestion(result.questions[0])
+        setQuestion(result.questions[0]);
         setQuestionCounter(result.questionCounter + 1);
         setTitle(result.assessmentTitle);
         setDescription(result.assessmentDescription);
@@ -75,7 +95,12 @@ export default function EditInteractiveQuizPage() {
         setMaxAttempts(result.maxAttempts);
         setIsAutoRelease(result.isAutoRelease);
       });
-  }, []);
+  }, [props.pageId]);
+
+  React.useEffect(() => {
+    //currentQuiz.questions = questions
+    setTrigger(false); 
+  }, [trigger]); 
 
   const [openReleaseSnackbar, setOpenReleaseSnackbar] = React.useState(false);
 
@@ -102,74 +127,73 @@ export default function EditInteractiveQuizPage() {
     value: false,
     errorMessage: "",
   });
-//   const [startDateError, setStartDateError] = useState({
-//     value: false,
-//     errorMessage: "",
-//   });
-//   const [endDateError, setEndDateError] = useState({
-//     value: false,
-//     errorMessage: "",
-//   });
-//   const [timeLimitError, setTimeLimitError] = useState({
-//     value: false,
-//     errorMessage: "",
-//   });
-//   const [maxAttemptsError, setMaxAttemptsError] = useState({
-//     value: false,
-//     errorMessage: "",
-//   });
+  //   const [startDateError, setStartDateError] = useState({
+  //     value: false,
+  //     errorMessage: "",
+  //   });
+  //   const [endDateError, setEndDateError] = useState({
+  //     value: false,
+  //     errorMessage: "",
+  //   });
+  //   const [timeLimitError, setTimeLimitError] = useState({
+  //     value: false,
+  //     errorMessage: "",
+  //   });
+  //   const [maxAttemptsError, setMaxAttemptsError] = useState({
+  //     value: false,
+  //     errorMessage: "",
+  //   });
 
-   function validateQuizSettings() {
-//     const tempStartDate = startDate;
-//     const tempEndDate = endDate;
-//     const dateComparisonBoolean = tempEndDate >= tempStartDate;
-//     if (hasTimeLimit == "true" || hasMaxAttempts == "true") {
-//       if (hasTimeLimit == "true" && hasMaxAttempts == "true") {
-//         console.log("fail dis");
-//         return (
-//           title &&
-//           description &&
-//           maxScore &&
-//           dateComparisonBoolean &&
-//           timeLimit > 4 &&
-//           maxAttempts > 0
-//         );
-//       } else if (hasTimeLimit == "true") {
-//         console.log("fail dat");
-//         return (
-//           title &&
-//           description &&
-//           maxScore &&
-//           dateComparisonBoolean &&
-//           timeLimit > 4
-//         );
-//       } else {
-//         console.log("fail dat other one");
+  function validateQuizSettings() {
+    //     const tempStartDate = startDate;
+    //     const tempEndDate = endDate;
+    //     const dateComparisonBoolean = tempEndDate >= tempStartDate;
+    //     if (hasTimeLimit == "true" || hasMaxAttempts == "true") {
+    //       if (hasTimeLimit == "true" && hasMaxAttempts == "true") {
+    //         console.log("fail dis");
+    //         return (
+    //           title &&
+    //           description &&
+    //           maxScore &&
+    //           dateComparisonBoolean &&
+    //           timeLimit > 4 &&
+    //           maxAttempts > 0
+    //         );
+    //       } else if (hasTimeLimit == "true") {
+    //         console.log("fail dat");
+    //         return (
+    //           title &&
+    //           description &&
+    //           maxScore &&
+    //           dateComparisonBoolean &&
+    //           timeLimit > 4
+    //         );
+    //       } else {
+    //         console.log("fail dat other one");
 
-         return (
-           title &&
-           description 
-//           maxScore &&
-//           dateComparisonBoolean &&
-//           maxAttempts > 0
-        );
-       }
-//     } else {
-//       return title && description && maxScore && dateComparisonBoolean;
-//     }
-//   }
+    return (
+      title && description
+      //           maxScore &&
+      //           dateComparisonBoolean &&
+      //           maxAttempts > 0
+    );
+  }
+  //     } else {
+  //       return title && description && maxScore && dateComparisonBoolean;
+  //     }
+  //   }
 
-   const handleClick = (e) => {
-//     e.preventDefault();
-//     const tempStartDate = startDate;
-//     const tempEndDate = endDate;
-     setTitleError({ value: false, errorMessage: "" });
-     setDescriptionError({ value: false, errorMessage: "" });
+  const handleClick = (e) => {
+    //     e.preventDefault();
+    //     const tempStartDate = startDate;
+    //     const tempEndDate = endDate;
+    setTitleError({ value: false, errorMessage: "" });
+    setDescriptionError({ value: false, errorMessage: "" });
     setMaxScoreError({ value: false, errorMessage: "" });
-//     setStartDateError({ value: false, errorMessage: "" });
-//     setEndDateError({ value: false, errorMessage: "" });
-//     setTimeLimitError({ value: false, errorMessage: "" });
-//     setMaxAttemptsError({ value: false, errorMessage: "" });
+    //     setStartDateError({ value: false, errorMessage: "" });
+    //     setEndDateError({ value: false, errorMessage: "" });
+    //     setTimeLimitError({ value: false, errorMessage: "" });
+    //     setMaxAttemptsError({ value: false, errorMessage: "" });
 
     if (title == "") {
       setTitleError({
@@ -189,70 +213,70 @@ export default function EditInteractiveQuizPage() {
         errorMessage: "Max Score Field cannot be left empty!",
       });
     }
-//     if (maxAttempts < 1) {
-//       setMaxAttemptsError({
-//         value: true,
-//         errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
-//       });
-//     }
+    //     if (maxAttempts < 1) {
+    //       setMaxAttemptsError({
+    //         value: true,
+    //         errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
+    //       });
+    //     }
 
-//     const dateComparisonBoolean = tempEndDate < tempStartDate;
-//     if (dateComparisonBoolean) {
-//       setStartDateError({
-//         value: true,
-//         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
-//       });
-//       setEndDateError({
-//         value: true,
-//         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
-//       });
-//     }
-//     if (timeLimit < 5) {
-//       setTimeLimitError({
-//         value: true,
-//         errorMessage: "Quiz Time Limit cannot be less than 5 minutes!",
-//       });
-//     }
-     if (validateQuizSettings()) {
-       editQuizSettings(
-         title,
-         description,
-//         maxScore,
-//         startDate,
-//         endDate,
-//         hasTimeLimit,
-//         timeLimit,
-//         hasMaxAttempts,
-//         maxAttempts,
-//         isAutoRelease
-    );
-       console.log("passedValidations");
-       handleClickReleaseSnackbar();
+    //     const dateComparisonBoolean = tempEndDate < tempStartDate;
+    //     if (dateComparisonBoolean) {
+    //       setStartDateError({
+    //         value: true,
+    //         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
+    //       });
+    //       setEndDateError({
+    //         value: true,
+    //         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
+    //       });
+    //     }
+    //     if (timeLimit < 5) {
+    //       setTimeLimitError({
+    //         value: true,
+    //         errorMessage: "Quiz Time Limit cannot be less than 5 minutes!",
+    //       });
+    //     }
+    if (validateQuizSettings()) {
+      editQuizSettings(
+        title,
+        description
+        //         maxScore,
+        //         startDate,
+        //         endDate,
+        //         hasTimeLimit,
+        //         timeLimit,
+        //         hasMaxAttempts,
+        //         maxAttempts,
+        //         isAutoRelease
+      );
+      console.log("passedValidations");
+      handleClickReleaseSnackbar();
     } else {
       console.log("did not pass the vibe check");
     }
   };
 
-//   const handleStartDateChange = (newDate) => {
-//     setStartDate(newDate);
-//     console.log("new start date: ", startDate);
-//   };
+  //   const handleStartDateChange = (newDate) => {
+  //     setStartDate(newDate);
+  //     console.log("new start date: ", startDate);
+  //   };
 
-//   const handleEndDateChange = (newDate) => {
-//     setEndDate(newDate);
-//   };
+  //   const handleEndDateChange = (newDate) => {
+  //     setEndDate(newDate);
+  //   };
 
-   function handleProceedQuestions() {
-     setQuestions(currentQuiz.questions);
-//     const tempStartDate = startDate;
-//     const tempEndDate = endDate;
-     setTitleError({ value: false, errorMessage: "" });
-     setDescriptionError({ value: false, errorMessage: "" });
-     setMaxScoreError({ value: false, errorMessage: "" });
-//     setStartDateError({ value: false, errorMessage: "" });
-//     setEndDateError({ value: false, errorMessage: "" });
-//     setTimeLimitError({ value: false, errorMessage: "" });
-//     setMaxAttemptsError({ value: false, errorMessage: "" });
+  function handleProceedQuestions() {
+    setQuestions(currentQuiz.questions);
+    //     const tempStartDate = startDate;
+    //     const tempEndDate = endDate;
+    setTitleError({ value: false, errorMessage: "" });
+    setDescriptionError({ value: false, errorMessage: "" });
+    setMaxScoreError({ value: false, errorMessage: "" });
+    //     setStartDateError({ value: false, errorMessage: "" });
+    //     setEndDateError({ value: false, errorMessage: "" });
+    //     setTimeLimitError({ value: false, errorMessage: "" });
+    //     setMaxAttemptsError({ value: false, errorMessage: "" });
     if (title == "") {
       setTitleError({
         value: true,
@@ -271,112 +295,110 @@ export default function EditInteractiveQuizPage() {
         errorMessage: "Max Score Field cannot be left empty!",
       });
     }
-//     const dateComparisonBoolean = tempEndDate < tempStartDate;
-//     if (dateComparisonBoolean) {
-//       setStartDateError({
-//         value: true,
-//         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
-//       });
-//       setEndDateError({
-//         value: true,
-//         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
-//       });
-//     }
-//     if (timeLimit < 5) {
-//       setTimeLimitError({
-//         value: true,
-//         errorMessage: "Quiz Time Limit cannot be less than 5 minutes!",
-//       });
-//     }
-//     if (maxAttempts < 1) {
-//       setMaxAttemptsError({
-//         value: true,
-//         errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
-//       });
-//     }
+    //     const dateComparisonBoolean = tempEndDate < tempStartDate;
+    //     if (dateComparisonBoolean) {
+    //       setStartDateError({
+    //         value: true,
+    //         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
+    //       });
+    //       setEndDateError({
+    //         value: true,
+    //         errorMessage: "Quiz End Date cannot be earlier than Start Date!",
+    //       });
+    //     }
+    //     if (timeLimit < 5) {
+    //       setTimeLimitError({
+    //         value: true,
+    //         errorMessage: "Quiz Time Limit cannot be less than 5 minutes!",
+    //       });
+    //     }
+    //     if (maxAttempts < 1) {
+    //       setMaxAttemptsError({
+    //         value: true,
+    //         errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
+    //       });
+    //     }
     if (validateQuizSettings()) {
       console.log("passedValidations");
       editQuizSettings(
         title,
         description
-//         maxScore,
-//         startDate,
-//         endDate,
-//         hasTimeLimit,
-//         timeLimit,
-//         hasMaxAttempts,
-//         maxAttempts,
-//         isAutoRelease
-       );
-       setEditSettings("false");
-     } else {
-       console.log("did not pass the vibe check");
-     }
+        //         maxScore,
+        //         startDate,
+        //         endDate,
+        //         hasTimeLimit,
+        //         timeLimit,
+        //         hasMaxAttempts,
+        //         maxAttempts,
+        //         isAutoRelease
+      );
+      setEditSettings("false");
+    } else {
+      console.log("did not pass the vibe check");
+    }
   }
-   function handleBackToSettings() {
-//     calculateMaxQuizScore();
-     setEditSettings("true");
-   }
+  function handleBackToSettings() {
+    //     calculateMaxQuizScore();
+    setEditSettings("true");
+  }
 
-//   function validateQuizSettings() {
-//     const tempStartDate = startDate;
-//     const tempEndDate = endDate;
-//     const dateComparisonBoolean = tempEndDate >= tempStartDate;
-//     if (hasTimeLimit == "true" || hasMaxAttempts == "true") {
-//       if (hasTimeLimit == "true" && hasMaxAttempts == "true") {
-//         // console.log("fail dis")
-//         return (
-//           title &&
-//           description &&
-//           maxScore &&
-//           dateComparisonBoolean &&
-//           timeLimit > 4 &&
-//           maxAttempts > 0
-//         );
-//       } else if (hasTimeLimit == "true") {
-//         // console.log("fail dat")
-//         return (
-//           title &&
-//           description &&
-//           maxScore &&
-//           dateComparisonBoolean &&
-//           timeLimit > 4
-//         );
-//       } else {
-//         // console.log("fail dat other one")
-//         return (
-//           title &&
-//           description &&
-//           maxScore &&
-//           dateComparisonBoolean &&
-//           maxAttempts > 0
-//         );
-//       }
-//     } else {
-//       return title && description && maxScore && dateComparisonBoolean;
-//     }
-//   }
-
+  //   function validateQuizSettings() {
+  //     const tempStartDate = startDate;
+  //     const tempEndDate = endDate;
+  //     const dateComparisonBoolean = tempEndDate >= tempStartDate;
+  //     if (hasTimeLimit == "true" || hasMaxAttempts == "true") {
+  //       if (hasTimeLimit == "true" && hasMaxAttempts == "true") {
+  //         // console.log("fail dis")
+  //         return (
+  //           title &&
+  //           description &&
+  //           maxScore &&
+  //           dateComparisonBoolean &&
+  //           timeLimit > 4 &&
+  //           maxAttempts > 0
+  //         );
+  //       } else if (hasTimeLimit == "true") {
+  //         // console.log("fail dat")
+  //         return (
+  //           title &&
+  //           description &&
+  //           maxScore &&
+  //           dateComparisonBoolean &&
+  //           timeLimit > 4
+  //         );
+  //       } else {
+  //         // console.log("fail dat other one")
+  //         return (
+  //           title &&
+  //           description &&
+  //           maxScore &&
+  //           dateComparisonBoolean &&
+  //           maxAttempts > 0
+  //         );
+  //       }
+  //     } else {
+  //       return title && description && maxScore && dateComparisonBoolean;
+  //     }
+  //   }
 
   function validateQuiz() {
-    setMaxScoreError({ value: false, errorMessage: "" })
+    setMaxScoreError({ value: false, errorMessage: "" });
     if (question.questionMaxPoints == "") {
-        setMaxScoreError({
-          value: true,
-          errorMessage:
-            "Max Points of question: " +
-            question.questionTitle +
-            " cannot be empty!",
-        });
-        return false;
+      setMaxScoreError({
+        value: true,
+        errorMessage:
+          "Max Points of question: " +
+          question.questionTitle +
+          " cannot be empty!",
+      });
+      return false;
     }
     return true;
   }
 
   function linkQuizQuestions() {
-
-    currentQuiz.questions[0] = question; 
-    console.log(currentQuiz); 
+    currentQuiz.questions[0] = question;
+    console.log(currentQuiz);
   }
 
   function editQuizSettings(
@@ -403,36 +425,43 @@ export default function EditInteractiveQuizPage() {
     setIsAutoRelease(isAutoRelease1);
   }
 
-function editQuestionTitle(localId, questionTitle) {
+  function editQuestionTitle(localId, questionTitle) {
     console.log("passing in: ", questionTitle)
+    if (question.questionTitle != questionTitle) {
     question.questionTitle = questionTitle;
-    setQuestion(question)
-    console.log(question); 
-    console.log("question title now: ", question.questionTitle)
+      setQuestion(question)
+      setTrigger(true); 
+      console.log(question); 
+      console.log("question title now: ", question.questionTitle)
+    }
   }
 
   function editQuestionType(localId, questionType) {
-    question.questionType = questionType; 
-    setQuestion(question); 
-    console.log("question type now: ", question.questionType)
+    if (question.questionType != questionType) {
+      question.questionType = questionType; 
+      setQuestion(question); 
+      setTrigger(true); 
+      console.log(question)
+      console.log("question type now: ", question.questionType)
+    }
   }
 
   function editQuestionContent(localId, questionContent) {
-    question.questionContent = questionContent; 
-    setQuestion(question); 
-    console.log("question content now: ", question.questionContent)
+    question.questionContent = questionContent;
+    setQuestion(question);
+    console.log("question content now: ", question.questionContent);
   }
 
   function editQuestionHint(localId, questionHint) {
-    question.questionHint = questionHint; 
-    setQuestion(question); 
-    console.log("question hint is now: ", question.questionHint)
+    question.questionHint = questionHint;
+    setQuestion(question);
+    console.log("question hint is now: ", question.questionHint);
   }
 
   function editQuestionMaxPoints(localId, questionMaxPoints) {
-    question.questionMaxPoints = questionMaxPoints; 
-    setQuestion(question); 
-    console.log("question max points is now", question.questionMaxPoints)
+    question.questionMaxPoints = questionMaxPoints;
+    setQuestion(question);
+    console.log("question max points is now", question.questionMaxPoints);
   }
 
   function addQuestionOption(localId, option) {
@@ -448,10 +477,7 @@ function editQuestionTitle(localId, questionTitle) {
     if (updatedOptions && updatedOptions != "") {
       question.options = updatedOptions;
     }
-    console.log(
-      "options after removal: ",
-      question.options
-    );
+    console.log("options after removal: ", question.options);
     console.log("supposed to assign this: ", updatedOptions);
   }
 
@@ -463,89 +489,112 @@ function editQuestionTitle(localId, questionTitle) {
     }
   }
 
+  //   const addQuestion = () => {
+  //     console.log("editQuiz questioncounter: ", questionCounter);
+  //     setQuestionCounter(questionCounter + 1);
+  //     currentQuiz.questionCounter = questionCounter;
+  //     const question = {
+  //       localid: "question" + questionCounter,
+  //       questionTitle: "Untitled Question",
+  //       questionType: "shortAnswer",
+  //       questionContent: "Type Question Body here...",
+  //       questionMaxPoints: "0.0 points",
+  //       options: [],
+  //       correctOption: "",
+  //     };
+  //     setFormQuestions([...formQuestions, question]);
+  //   };
 
-//   const addQuestion = () => {
-//     console.log("editQuiz questioncounter: ", questionCounter);
-//     setQuestionCounter(questionCounter + 1);
-//     currentQuiz.questionCounter = questionCounter;
-//     const question = {
-//       localid: "question" + questionCounter,
-//       questionTitle: "Untitled Question",
-//       questionType: "shortAnswer",
-//       questionContent: "Type Question Body here...",
-//       questionMaxPoints: "0.0 points",
-//       options: [],
-//       correctOption: "",
-//     };
-//     setFormQuestions([...formQuestions, question]);
-//   };
+  //   const removeQuestion = (questionId) => {
+  //     const questionIndex = formQuestions.findIndex(
+  //       (f) => f.localid == questionId
+  //     );
+  //     const tempFormQuestions = [...formQuestions];
+  //     if (questionIndex > -1) {
+  //       setFormQuestions(
+  //         tempFormQuestions.filter((question) => {
+  //           return question.localid !== questionId;
+  //         })
+  //       );
+  //     }
+  //     console.log("removed question: " + questionId);
+  //   };
 
-//   const removeQuestion = (questionId) => {
-//     const questionIndex = formQuestions.findIndex(
-//       (f) => f.localid == questionId
-//     );
-//     const tempFormQuestions = [...formQuestions];
-//     if (questionIndex > -1) {
-//       setFormQuestions(
-//         tempFormQuestions.filter((question) => {
-//           return question.localid !== questionId;
-//         })
-//       );
-//     }
-//     console.log("removed question: " + questionId);
-//   };
+  //   const handleQuizDateConversions = (quizObject) => {
+  //     const formattedStart = dayjs(quizObject.assessmentStartDate.d).format(
+  //       "YYYY-MM-DD"
+  //     );
+  //     const formattedEnd = dayjs(quizObject.assessmentEndDate.d).format(
+  //       "YYYY-MM-DD"
+  //     );
+  //     quizObject.assessmentStartDate = formattedStart;
+  //     quizObject.assessmentEndDate = formattedEnd;
+  //     return quizObject;
+  //   };
 
-//   const handleQuizDateConversions = (quizObject) => {
-//     const formattedStart = dayjs(quizObject.assessmentStartDate.d).format(
-//       "YYYY-MM-DD"
-//     );
-//     const formattedEnd = dayjs(quizObject.assessmentEndDate.d).format(
-//       "YYYY-MM-DD"
-//     );
-//     quizObject.assessmentStartDate = formattedStart;
-//     quizObject.assessmentEndDate = formattedEnd;
-//     return quizObject;
-//   };
-
-//   function calculateMaxQuizScore() {
-//     var tempMaxScore = 0;
-//     for (const question of formQuestions) {
-//       tempMaxScore = parseFloat(tempMaxScore) + parseFloat(question.questionMaxPoints);
-//     }
-//     setMaxScore(tempMaxScore);
-//     console.log("quiz max score: ", tempMaxScore);
-//   }
+  //   function calculateMaxQuizScore() {
+  //     var tempMaxScore = 0;
+  //     for (const question of formQuestions) {
+  //       tempMaxScore = parseFloat(tempMaxScore) + parseFloat(question.questionMaxPoints);
+  //     }
+  //     setMaxScore(tempMaxScore);
+  //     console.log("quiz max score: ", tempMaxScore);
+  //   }
 
   const handleSave = (e) => {
     e.preventDefault();
     //edit validatequiz to just make sure the mcq/ truefalse questions have a non-null questionGuide or somehting
     if (validateQuiz()) {
-       //const updatedQuiz = handleQuizDateConversions(currentQuiz);
+      //const updatedQuiz = handleQuizDateConversions(currentQuiz);
       linkQuizQuestions();
-      console.log(currentQuiz)
+      console.log(currentQuiz);
 
-    //   fetch("http://localhost:8080/quiz/createQuizForInteractivePage/" + 1, {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
+      //   fetch("http://localhost:8080/quiz/createQuizForInteractivePage/" + 1, {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
 
-    //     body: JSON.stringify(currentQuiz),
-    //   }).then((res) => res.json());
-    //   handleCancel();
-    // }
+      //     body: JSON.stringify(currentQuiz),
+      //   }).then((res) => res.json());
+      //   handleCancel();
+      // }
 
-    fetch(
-      "http://localhost:8080/quiz/updateQuizById/" + currentQuiz.assessmentId,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(currentQuiz),
-      }
-    )
-      .then((res) => res.json())
-      .then(console.log("saved: ", currentQuiz));
-    //handleCancel();
+      fetch(
+        "http://localhost:8080/quiz/updateQuizById/" + currentQuiz.assessmentId,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(currentQuiz),
+        }
+      )
+        .then((res) => res.json())
+        .then(console.log("saved: ", currentQuiz));
+      //handleCancel();
     }
   };
+
+  const handleRemoveQuiz = async (e) => {
+    e.preventDefault(); 
+    try {
+        const response = await fetch("http://localhost:8080/interactivePage/" + props.pageId + "/removeQuiz", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+        })
+        console.log(response);
+            if (response.ok == false) {
+                console.log("Error");
+                handleClickErrorSnackbar()
+            } else {
+                console.log("Quiz Removed Successfully!");
+                handleClickDeleteSnackbar()
+            }
+    }  catch (err) {
+      console.log(err);
+      handleClickErrorSnackbar()
+    }
+    props.setRefreshInteractivePage(true); 
+    handleClickDeleteSnackbar(); 
+
+  }
 
   const handleCancel = (e) => {
     // navigate(`${assessmentsPath}`);
@@ -553,8 +602,12 @@ function editQuestionTitle(localId, questionTitle) {
 
   return (
     <Grid container spacing={0}>
+       <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar} >
+          <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: "100%" }} >
+              Quiz Removed Succesfully!
+          </Alert>
+      </Snackbar>
       <Grid item xs={10}>
-
         {editSettings == "false" ? (
           <Grid item width={"80%"}>
             <Grid
@@ -563,24 +616,24 @@ function editQuestionTitle(localId, questionTitle) {
               justifyContent={"space-between"}
               style={{
                 marginTop: 30,
-                backgroundColor: "#1975D2",
+                // backgroundColor: "#1975D2",
                 paddingLeft: 10,
               }}
             >
-              <h1 style={{ color: "whitesmoke" }}>Interactive Question</h1>
+              {/* <h1 style={{ color: "whitesmoke" }}>Interactive Question</h1> */}
               <Button
                 aria-label="settings"
                 variant="contained"
-                style={{ backgroundColor: "#989898" }}
+                style={{ backgroundColor: "#fffacd", color: "black", top: "-28px", left: "-8px"}}
                 onClick={() => handleBackToSettings()}
               >
-                <SettingsIcon style={{ marginRight: 10 }} />
-                Back To Settings
+                <ArrowDropUpIcon  />
+                Minimise Quiz
               </Button>
             </Grid>
 
-            <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
-                <QuizQuestionComponent
+            <Paper elevation={3} style={{ padding: 49 , marginTop: -27, marginRight: -335, backgroundColor: "#fffacd"}}>
+              <QuizQuestionComponent
                 textFieldProp={textField}
                 setTextFieldProp={setTextField}
                 questionProp={question}
@@ -591,11 +644,9 @@ function editQuestionTitle(localId, questionTitle) {
                 selectCorrectOptionProp={selectCorrectQuestionOption}
                 editQuestionContentProp={editQuestionContent}
                 editQuestionHintProp={editQuestionHint}
-                // removeQuestionProp={removeQuestion}
-                editQuestionMaxPointsProp={ editQuestionMaxPoints}
-                />
+                editQuestionMaxPointsProp={editQuestionMaxPoints}
+              />
             </Paper>
-
 
             <Grid
               container
@@ -607,6 +658,10 @@ function editQuestionTitle(localId, questionTitle) {
                 <SaveIcon style={{ marginRight: "10" }} />
                 Save Quiz
               </Button>
+              <Button variant="contained" onClick={handleRemoveQuiz}>
+                <DeleteIcon style={{ marginRight: "10" }} />
+                Remove Quiz
+              </Button>
             </Grid>
           </Grid>
         ) : (
@@ -617,47 +672,20 @@ function editQuestionTitle(localId, questionTitle) {
               justifyContent={"space-between"}
               style={{
                 marginTop: 30,
-                backgroundColor: "#1975D2",
+                // backgroundColor: "#1975D2",
                 paddingLeft: 10,
               }}
             >
-              <h1 style={{ color: "whitesmoke" }}>Edit Quiz Settings</h1>
               <Button
                 aria-label="settings"
                 variant="contained"
-                style={{ backgroundColor: "#989898" }}
+                style={{ backgroundColor: "#fffacd", color: "black", top: "-28px", left: "-8px"}}
                 onClick={() => handleProceedQuestions()}
               >
-                Proceed to Questions
+                <ArrowDropDownIcon />
+                  Expand Quiz
               </Button>
             </Grid>
-            <Paper elevation={3} style={paperStyle}>
-              <p style={{ color: "grey" }}>Quiz Title</p>
-              <TextField
-                required
-                error={titleError.value}
-                helperText={titleError.errorMessage}
-                id="outlined-basic"
-                variant="outlined"
-                fullWidth
-                style={{ paddingBottom: "10px", marginBottom: "20px" }}
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-              <p style={{ color: "grey" }}>Quiz Description</p>
-              <TextField
-                multiline
-                required
-                error={descriptionError.value}
-                helperText={descriptionError.errorMessage}
-                id="outlined-basic"
-                variant="outlined"
-                fullWidth
-                style={{ paddingBottom: "10px", marginBottom: "20px" }}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </Paper>
           </Grid>
         )}
       </Grid>
