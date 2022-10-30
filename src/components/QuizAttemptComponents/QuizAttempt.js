@@ -91,20 +91,6 @@ export default function QuizAttempt(props) {
             }
           })
       );
-    //   .then(
-    //     fetch(
-    //       "http://localhost:8080/quizAttempt/getNumberQuizAttemptsByLearnerId/" +
-    //         quizId +
-    //         "/" +
-    //         learnerId
-    //     )
-    //       .then((res) => res.json())
-    //       .then((result) => {
-    //         console.log("no. attempts: ", result);
-    //         setNumberQuizAttempts(result);
-    //       })
-    //   )
-    //   .then(renderButton);
   }, []);
 
   function handleResumeQuiz() {
