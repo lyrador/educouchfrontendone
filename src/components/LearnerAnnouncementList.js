@@ -3,13 +3,13 @@ import * as React from "react";
 import { useLocation } from "react-router-dom";
 import {
   Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
+  List,
+  ListItem,
+  Divider,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Typography,
   FormGroup,
   FormControlLabel,
   Checkbox,
@@ -46,30 +46,7 @@ function LearnerAnnouncementList(props) {
       });
   }, [refreshPage]);
 
-  const renderEmptyRowMessage = () => {
-    if (announcements.length === 0) {
-      return (
-        <TableRow>
-          <TableCell colSpan={4} style={{ textAlign: "center" }}>
-            There are currently no announcements in this course!
-          </TableCell>
-        </TableRow>
-      );
-    }
-  };
-
   const [query, setQuery] = useState("");
-
-  function handleMarkAsRead(announcementId) {
-    fetch(
-      "http://localhost:8080/announcement/markAnnouncementAsRead/" +
-        announcementId,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      }
-    ).then();
-  }
 
   return (
     <div>
@@ -79,101 +56,93 @@ function LearnerAnnouncementList(props) {
         </Grid>
         <Grid item xs={10}>
           <div style={{ justifyContent: "center" }}>
-            <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
-              Announcements
-            </h1>
+            {announcements.length === 0 && (
+              <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
+                This course currently doesn't have any announcements!
+              </h1>
+            )}
           </div>
 
           <div className="search">
-            <input
-              type="text"
-              placeholder="Search..."
-              style={{
-                float: "right",
-                marginLeft: "auto",
-                height: "30px",
-                fontSize: "12pt",
-              }}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+            {announcements.length > 0 && (
+              <input
+                type="text"
+                placeholder="Search..."
+                style={{
+                  float: "right",
+                  marginLeft: "auto",
+                  height: "30px",
+                  fontSize: "12pt",
+                }}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            )}
           </div>
+
+          <div style={{ justifyContent: "center" }}>
+            {announcements.length > 0 && (
+              <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
+                List of Announcements
+              </h1>
+            )}
+          </div>
+
           <div style={{ padding: "3%" }}>
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead style={{ backgroundColor: "#B0C4DE" }}>
-                  <TableRow>
-                    <TableCell>
-                      <b>Announcement Title</b>
-                    </TableCell>
-                    <TableCell>
-                      <b>Announcement Content</b>
-                    </TableCell>
-                    <TableCell>
-                      <b>Created By</b>
-                    </TableCell>
-                    <TableCell>
-                      <b>Created On</b>
-                    </TableCell>
-                    <TableCell>
-                      <b>Actions</b>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {renderEmptyRowMessage()}
-                  {announcements
-                    .filter(
-                      (announcement) =>
-                        announcement.announcementTitle
-                          .toLowerCase()
-                          .includes(query) ||
-                        announcement.announcementBody
-                          .toLowerCase()
-                          .includes(query) ||
-                        announcement.createdByUserName
-                          .toLowerCase()
-                          .includes(query) ||
-                        announcement.createdDateTime
-                          .toLowerCase()
-                          .includes(query)
-                    )
-                    .map((announcement) => (
-                      <TableRow
-                        key={announcement.announcementId}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell>{announcement.announcementTitle}</TableCell>
-                        <TableCell>{announcement.announcementBody}</TableCell>
-                        <TableCell>{announcement.createdByUserName}</TableCell>
-                        <TableCell>{announcement.createdDateTime}</TableCell>
-                        <TableCell>
-                          {announcement.isRead == "READ" && (
-                            <FormGroup>
-                              <FormControlLabel
-                                control={<Checkbox defaultChecked disabled />}
-                                label="Read"
-                              />
-                            </FormGroup>
-                          )}
-                          {announcement.isRead == "UNREAD" && (
-                            <FormGroup>
-                              <FormControlLabel
-                                control={<Checkbox />}
-                                onChange={handleMarkAsRead(
-                                  announcement.announcementId
-                                )}
-                                label="Mark As Read"
-                              />
-                            </FormGroup>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            {announcements
+              .filter(
+                (announcement) =>
+                  announcement.announcementTitle
+                    .toLowerCase()
+                    .includes(query) ||
+                  announcement.announcementBody.toLowerCase().includes(query) ||
+                  announcement.createdByUserName
+                    .toLowerCase()
+                    .includes(query) ||
+                  announcement.createdDateTime.toLowerCase().includes(query)
+              )
+              .reverse()
+              .map((announcement) => (
+                <List sx={{ width: "100%", bgcolor: "#F0F8FF" }}>
+                  <ListItem
+                    key={announcement.announcementId}
+                    alignItems="flex-start"
+                  >
+                    <ListItemAvatar>
+                      <Avatar alt="avatar" src={user.profilePictureURL} />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Typography
+                          sx={{ display: "inline" }}
+                          component="span"
+                          variant="h6"
+                          color="text.primary"
+                        >
+                          {announcement.announcementTitle}
+                          <br />
+                        </Typography>
+                      }
+                      secondary={
+                        <React.Fragment>
+                          <Typography
+                            sx={{ whiteSpace: "pre-line", display: "inline" }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            {announcement.createdDateTime}
+                            <br />
+                            by {announcement.createdByUserName}
+                            <br /> <br />
+                            {announcement.announcementBody}
+                          </Typography>
+                        </React.Fragment>
+                      }
+                    />
+                  </ListItem>
+                  <Divider variant="inset" component="li" />
+                </List>
+              ))}
           </div>
         </Grid>
       </Grid>
