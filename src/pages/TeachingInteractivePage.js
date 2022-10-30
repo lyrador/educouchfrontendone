@@ -51,6 +51,7 @@ import Pagination from '@mui/material/Pagination';
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
 
 import PostAddIcon from '@mui/icons-material/PostAdd';
+import EditInteractiveQuizPage from "./EditInteractiveQuizPage";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -89,15 +90,6 @@ function TeachingInteractivePage(props) {
     //refresh view
     const [refreshInteractivePage, setRefreshInteractivePage] = useState("");
 
-    const [chapterEditRefreshPage2, setChapterEditRefreshPage2] = useState(false);
-
-    React.useEffect(() => {
-        if (chapterEditRefreshPage2 == true) {
-            props.setChapterEditRefreshPage(true)
-            setChapterEditRefreshPage2(false)
-        };
-    }, [chapterEditRefreshPage2]);
-
     //retrieve current page and page navigation
     const [currentPage, setCurrentPage] = useState([]);
     const [pageNumberPointer, setPageNumberPointer] = useState(1);
@@ -131,7 +123,8 @@ function TeachingInteractivePage(props) {
                 .then((res) => res.json())
                 .then((result) => {
                     setCurrentPage(result);
-                    console.log(result);
+                    console.log(result.pageQuiz);
+                    console.log(JSON.stringify(result.pageQuiz))
                 });
         };
     }, [refreshInteractivePage || props.chapterId]);
@@ -224,11 +217,6 @@ function TeachingInteractivePage(props) {
     //error handling
     const [pageDescriptionError, setPageDescriptionError] = useState({ value: false, errorMessage: "" });
 
-    //debug
-    const printStatement = () => {
-        console.log("Hello")
-    };
-
     const renderEmptyRowMessage = () => {
         console.log(props.chapterId)
         if (props.book.interactiveChapters) {
@@ -297,7 +285,7 @@ function TeachingInteractivePage(props) {
 
     const renderText = () => {
         var height = "100%"
-        if (currentPage.attachment && !currentPage.question) {
+        if (currentPage.attachment && !currentPage.pageQuiz) {
             height = "50%"
         }
         if (currentPage.pageDescription || currentPage.pageTitle) {
@@ -316,6 +304,23 @@ function TeachingInteractivePage(props) {
             );
         }
 
+    }
+
+    const renderQuiz = () => {
+        var height = "100%"
+        if (currentPage.pageDescription && !currentPage.attachment) {
+            height = '50%'
+        }
+        if (currentPage.pageDescription && currentPage.attachment) {
+            height = '33%'
+        }
+        if (currentPage.pageQuiz) {
+            return (
+                <div style={{height: height, width: '50%'}}>
+                    <EditInteractiveQuizPage></EditInteractiveQuizPage>
+                </div>
+            ); 
+        }
     }
 
     return (
@@ -370,6 +375,7 @@ function TeachingInteractivePage(props) {
                         {pages.length > 0 && <div style={{ width: "100%", height: "100%" }}>
                             {renderVideoImageHolder()}
                             {renderText()}
+                            {renderQuiz()}
                         </div>
                         }
                     </Paper>
@@ -385,8 +391,8 @@ function TeachingInteractivePage(props) {
                         setPageNumberPointer={setPageNumberPointer}
                         refreshPage={props.refreshPage} 
                         setRefreshPage={props.setRefreshPage}
-                        chapterEditRefreshPage2={chapterEditRefreshPage2}
-                        setChapterEditRefreshPage2={setChapterEditRefreshPage2}
+                        chapterEditRefreshPage={props.chapterEditRefreshPage}
+                        setChapterEditRefreshPage={props.setChapterEditRefreshPage}
                         >
                     </TeachingInteractivePageBar>
                 </div>

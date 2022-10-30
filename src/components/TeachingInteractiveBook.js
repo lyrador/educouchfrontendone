@@ -9,11 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 import { Link, useLocation, useParams } from "react-router-dom";
-import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
 import { Grid } from "@mui/material";
-
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import LinkMaterial from "@mui/material/Link";
 
 import { Button } from "@mui/material";
 
@@ -26,27 +22,15 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-import DeleteIcon from "@mui/icons-material/Delete";
-import IconButton, { IconButtonProps } from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-
 import { useAuth } from "../context/AuthProvider";
 import { render } from "@testing-library/react";
 
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
-import Divider from '@mui/material/Divider';
-
 import "../css/TeachingInteractiveBook.css";
-import InteractiveBookDrawer from "./InteractiveBookDrawer";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import AddIcon from '@mui/icons-material/Add';
 import TeachingInteractiveChaptersBar from "./TeachingInteractiveChaptersBar";
 import TeachingInteractivePage from "../pages/TeachingInteractivePage";
-import Stack from '@mui/material/Stack';
-
-import Pagination from '@mui/material/Pagination';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -82,9 +66,10 @@ function TeachingInteractiveBook(props) {
     const bookId = location.pathname.split("/")[4];
 
     const [refreshPage, setRefreshPage] = useState("");
+    const [refreshPageChild, setRefreshPageChild] = useState("");
 
     //retrieve book
-    const[book, setBook] = useState([]);
+    const [book, setBook] = useState([]);
 
     React.useEffect(() => {
         setRefreshPage(false);
@@ -110,9 +95,37 @@ function TeachingInteractiveBook(props) {
             });
     }, [refreshPage]);
 
-    function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
-        return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
-    }
+    //retrieve all chapters of the book
+    const [chapters, setChapters] = useState([]);
+    const [chaptersToBeReordered, setChaptersToBeReordered] = useState([]);
+
+    const setChaptersToBeReorderedMethod = (chapters) => {
+        const retrievedChaptersToBeReordered = new Array()
+        for (const retrievedChapter of chapters) {
+            var chapterId = retrievedChapter.interactiveChapterId
+            var chapterIndex = retrievedChapter.chapterIndex.toString()
+            var chapterTitle = retrievedChapter.chapterTitle
+            const tempChapter = { chapterId, chapterIndex, chapterTitle }
+            retrievedChaptersToBeReordered.push(tempChapter)
+            console.log(retrievedChapter);
+        }
+        setChaptersToBeReordered(retrievedChaptersToBeReordered)
+    };
+
+    const [chapterEditRefreshPage, setChapterEditRefreshPage] = React.useState(false);
+
+    React.useEffect(() => {
+        setRefreshPage(false);
+        setRefreshPageChild(false);
+        fetch("http://localhost:8080/interactiveChapter/interactiveBook/" + bookId + "/interactiveChapters")
+            .then((res) => res.json())
+            .then((result) => {
+                setChapters(result);
+                setChaptersToBeReorderedMethod(result)
+                setRefreshPage(true)
+            });
+        setChapterEditRefreshPage(false)
+    }, [refreshPageChild || chapterEditRefreshPage]);
 
     //create
     const [newChapterTitle, setNewChapterTitle] = useState("");
@@ -137,14 +150,6 @@ function TeachingInteractiveBook(props) {
     //browsing
     const [chapterIdToBrowse, setChapterIdToBrowse] = useState("");
     const [chapterIndexToBrowse, setChapterIndexToBrowse] = useState("");
-
-    const [refreshInteractivePageChild, setRefreshInteractivePageChild] = useState(false);
-
-    const [chapterEditRefreshPage, setChapterEditRefreshPage] = React.useState("");
-
-    React.useEffect(() => {
-        setChapterEditRefreshPage(false)
-    }, []);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -292,9 +297,21 @@ function TeachingInteractiveBook(props) {
                     <TeachingCoursesDrawer courseId={bookId}></TeachingCoursesDrawer>
                 </Grid> */}
                 <Grid item xs={2}>
-                    <TeachingInteractiveChaptersBar chapterIdToBrowse={chapterIdToBrowse} setChapterIdToBrowse={setChapterIdToBrowse} 
-                    chapterIndexToBrowse={chapterIndexToBrowse} setChapterIndexToBrowse={setChapterIndexToBrowse} refreshPage={refreshPage} setRefreshPage={setRefreshPage} 
-                    chapterEditRefreshPage={chapterEditRefreshPage} setChapterEditRefreshPage={setChapterEditRefreshPage}/>
+                    <TeachingInteractiveChaptersBar 
+                        chapterIdToBrowse={chapterIdToBrowse} 
+                        setChapterIdToBrowse={setChapterIdToBrowse}
+                        chapterIndexToBrowse={chapterIndexToBrowse} 
+                        setChapterIndexToBrowse={setChapterIndexToBrowse} 
+                        refreshPage={refreshPage} 
+                        setRefreshPage={setRefreshPage}
+                        chapterEditRefreshPage={chapterEditRefreshPage} 
+                        setChapterEditRefreshPage={setChapterEditRefreshPage} 
+                        chapters={chapters}
+                        setChapters={setChapters}
+                        chaptersToBeReordered={chaptersToBeReordered}
+                        setChaptersToBeReordered={setChaptersToBeReordered}
+                        refreshPageChild={refreshPageChild}
+                        setRefreshPageChild={setRefreshPageChild}/>
                 </Grid>
                 <Grid item xs={10}>
                     {/* {chapterIdToBrowse} */}
@@ -323,52 +340,17 @@ function TeachingInteractiveBook(props) {
                             Pages
                         </h1>
                     </div> */}
-                    <TeachingInteractivePage 
-                    chapterId={chapterIdToBrowse} 
-                    chapterIndex={chapterIndexToBrowse}
-                    book={book}
-                    refreshPage={refreshPage} 
-                    setRefreshPage={setRefreshPage}
-                    chapterEditRefreshPage={chapterEditRefreshPage} 
-                    setChapterEditRefreshPage={setChapterEditRefreshPage}
+                    <TeachingInteractivePage
+                        chapterId={chapterIdToBrowse}
+                        chapterIndex={chapterIndexToBrowse}
+                        book={book}
+                        refreshPage={refreshPage}
+                        setRefreshPage={setRefreshPage}
+                        chapterEditRefreshPage={chapterEditRefreshPage}
+                        setChapterEditRefreshPage={setChapterEditRefreshPage}
                     ></TeachingInteractivePage>
                 </Grid>
             </Grid>
-            {/* <div>
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Create New Interactive Book</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            id="outlined-basic"
-                            label="Interactive Book Title"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            style={{ margin: "6px 0" }}
-                            value={newChapterTitle}
-                            onChange={(e) => setNewChapterTitle(e.target.value)}
-                            error={chapterTitleError.value}
-                            helperText={chapterTitleError.errorMessage}
-                        />
-                        <TextField
-                            id="outlined-basic"
-                            label="Interactive Book Max Score"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            style={{ margin: "6px 0" }}
-                            value={newChapterDescription}
-                            onChange={(e) => setNewChapterDescription(e.target.value)}
-                            error={chapterDescriptionError.value}
-                            helperText={chapterDescriptionError.errorMessage}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={createNewChapter}>Create</Button>
-                    </DialogActions>
-                </Dialog>
-            </div> */}
             <div>
                 <Dialog
                     open={deleteDialogOpen}

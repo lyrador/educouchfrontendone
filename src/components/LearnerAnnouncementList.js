@@ -48,6 +48,19 @@ function LearnerAnnouncementList(props) {
 
   const [query, setQuery] = useState("");
 
+  const [creator, setCreator] = useState("");
+
+  function findAnnouncementCreator(userId) {
+    fetch("http://localhost:8080/educator/instructors/" + userId, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        setCreator(result);
+      });
+  }
+
   return (
     <div>
       <Grid container spacing={0}>
@@ -108,7 +121,8 @@ function LearnerAnnouncementList(props) {
                     alignItems="flex-start"
                   >
                     <ListItemAvatar>
-                      <Avatar alt="avatar" src={user.profilePictureURL} />
+                      {findAnnouncementCreator(announcement.createdByUserId)}
+                      <Avatar alt="avatar" src={creator.profilePictureURL} />
                     </ListItemAvatar>
                     <ListItemText
                       primary={

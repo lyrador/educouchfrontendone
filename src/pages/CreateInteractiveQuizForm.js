@@ -251,8 +251,8 @@ export default function CreateInteractiveQuizForm(props) {
     //edit validatequiz to just make sure the mcq/ truefalse questions have a non-null questionGuide or somehting
     if (validateQuiz()) {
        //const updatedQuiz = handleQuizDateConversions(currentQuiz);
-       //linkQuizQuestions();
-
+      linkQuizQuestions();
+      console.log(quiz1)
 
       fetch("http://localhost:8080/quiz/createQuizForInteractivePage/" + 1, {
         method: "POST",
