@@ -451,10 +451,10 @@ function Canvas({sendMessage, setRoomId, incomingDrawings, roomId, usersList, us
     return (
         <div 
             ref={canvasContainerRef}
-            style={{position: 'relative', zIndex: '1', width: '100vw', height: '100vh'}}
+            style={{position: 'relative', zIndex: '1', width: '100vw', height: '85vh', marginBottom: '3em'}}
         >
             {loading &&
-                <div style={{ background: '#15171A', position: 'absolute', zIndex: 99999999, width: '100vw', height: '100vh'}}>
+                <div style={{ background: '#15171A', position: 'absolute', zIndex: 99999999, width: '100vw', height: '85vh'}}>
                     <Spinner
                         color={'#fff'} 
                         loading={loading}
@@ -499,6 +499,8 @@ function Canvas({sendMessage, setRoomId, incomingDrawings, roomId, usersList, us
                 onMouseUp={onMouseUp}
                 onMouseLeave={onMouseUp}
                 onMouseMove={onMouseMove}
+                width = "100vh"
+                height = "80vh"
                 // onWheel={onMouseWheel}
             >Your browser does not support HTML5 canvas</canvas>
             {instrument === 'eraser'
