@@ -55,6 +55,13 @@ import TeachingInteractiveBooksList from "./components/TeachingInteractiveBooksL
 import TeachingInteractiveBook from "./components/TeachingInteractiveBook";
 import QuizAttempt from "./components/QuizAttemptComponents/QuizAttempt";
 import LearnerViewAssessments from "./pages/LearnerViewAssessments";
+import TeachingMarkerPage from "./pages/TeachingMarkerPage";
+import TeachingGradebook from "./pages/TeachingGradebook"
+import TeachingGradebookGrading from "./pages/TeachingGradebookGrading"
+import LearnerGradeBook from "./pages/LearnerGradeBook";
+import LearnerInteractiveBooksList from "./components/LearnerInteractiveBookList";
+import LearnerInteractiveBook from "./components/LearnerInteractiveBook";
+import FileSubmissionAttempt from "./components/FileSubmissionAttemptComponents/FileSubmissionAttempt";
 
 function App() {
   return (
@@ -159,7 +166,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerViewAssessments/>
+                  <LearnerViewAssessments />
                 </RequireAuth>
               }
             />
@@ -187,6 +194,16 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingAssessmentList />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/myTeachingCourse/:courseId/gradebook"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingGradebook />
                 </RequireAuth>
               }
             />
@@ -316,6 +333,25 @@ function App() {
                 </RequireAuth>
               }
             />
+                        <Route
+              path="/myTeachingCourse/:courseId/gradebook/:assessmentId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingGradebookGrading />
+                </RequireAuth>
+              }
+            />
+
+<Route
+              path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingMarkerPage />
+                </RequireAuth>
+              }
+            />
             <Route
               path="/myTeachingCourse/:courseId/forum/:forumId/:discussionId"
               element={
@@ -352,6 +388,7 @@ function App() {
                 </RequireAuth>
               }
             />
+
             <Route
               path="/myTeachingCourse/:courseId/files"
               element={
@@ -361,6 +398,8 @@ function App() {
                 </RequireAuth>
               }
             />
+
+            
             <Route
               path="/myTeachingCourse/:courseId/files/:folderId"
               element={
@@ -395,6 +434,18 @@ function App() {
                 </RequireAuth>
               }
             />
+
+<Route
+              path="/learnerCourseDetails/:courseId/gradebook"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerGradeBook />
+                </RequireAuth>
+              }
+            />
+
+
             <Route
               path="/myTeachingCourse/:moduleCode/files"
               element={
@@ -419,6 +470,24 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingInteractiveBook />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/learnerInteractiveBook"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerInteractiveBooksList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/learnerInteractiveBook/:bookId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerInteractiveBook />
                 </RequireAuth>
               }
             />
@@ -516,6 +585,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <QuizAttempt />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/fileSubmissionAttempt"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <FileSubmissionAttempt />
                 </RequireAuth>
               }
             />

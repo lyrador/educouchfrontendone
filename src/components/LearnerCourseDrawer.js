@@ -23,8 +23,7 @@ function LearnerCoursesDrawer({ courseId, learnerStatus }) {
     const location = useLocation();
     const coursePath = location.pathname.split('/').slice(0, 3).join('/');
 
-    
-    console.log('Course path is ' + coursePath);
+
     const drawer = (
         <div>
             <div className='drawerContainer'>
@@ -77,6 +76,13 @@ function LearnerCoursesDrawer({ courseId, learnerStatus }) {
                                     learnerStatusProp: learnerStatus,
                                     testingProp: 200
                                 }}>
+                            </Link>
+                            <Link to={`${coursePath}/learnerInteractiveBook`} style={{ textDecoration: 'none', color: 'black' }}>
+                                <ListItemButton>
+                                    <ListItemText primary="Interactive Books" />
+                                </ListItemButton>
+                            </Link>
+                            <Link to={`${coursePath}/assessments`} style={{ textDecoration: 'none', color: 'black' }}>
                                 <ListItemButton>
                                     <ListItemText primary="Assessments" />
                                 </ListItemButton>
