@@ -33,23 +33,41 @@ import { Construction } from "@mui/icons-material";
 
 export default function CreateInteractiveQuizForm(props) {
   const location = useLocation();
+  console.log(location)
+  //console.log(props.pageId); 
   const navigate = useNavigate();
   const courseId = location.pathname.split("/").slice(2, 3).join("/");
-  const assessmentsPath = location.state.assessmentsPathProp;
-  const createAssessmentPath = location.state.createAssessmentPathProp;
   const createQuizFormPath = location.pathname;
   const currentQuiz = location.state.newQuizProp;
-  const [question, setQuestion] = useState({
-    localid: "1",
-    questionTitle: "this is waryl",
-    questionType: "shortAnswer",
-    questionContent: "Type Question Body here...",
-    questionMaxPoints: 0.0,
-    options: [],
-    correctOption: "",
-  });
+  const [question, setQuestion] = useState({localid: "1",
+  questionTitle: "title",
+  questionType: "shortAnswer",
+  questionContent: "Type Question Body here...",
+  questionMaxPoints: 0.0,
+  options: [],
+  correctOption: ""}); 
+
+  const [quiz1, setQuiz1] = useState({
+    assessmentTitle: "dummy",
+    assessmentDescription: "dummy",
+    assessmentMaxScore: 100,
+    assessmentStartDate: new Date(),
+    assessmentEndDate: new Date(),
+    assessmentIsOpen: "false",
+    assessmentStatusEnum: "PENDING",
+    hasTimeLimit: "false",
+    timeLimit: 60,
+    hasMaxAttempts: "false",
+    maxAttempts: 0,
+    isAutoRelease: "false",
+    questions: [],
+    questionCounter: 0,
+  })
+  const [count, setCount] = useState(""); 
+  var x = 1; 
   // const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
+  const [questionList, setQuestionList] = useState([]); 
   // const [questionCounter, setQuestionCounter] = useState(0);
   const [openOptionErrorSnackbar, setOpenOptionErrorSnackbar] =
     React.useState(false);
@@ -77,9 +95,10 @@ export default function CreateInteractiveQuizForm(props) {
   };
 
   React.useEffect(() => {
-    // currentQuiz.questions = formQuestions;
+    x = 1; 
     console.log("heres the question: ", question);
-  }, []);
+    console.log("getting triggered"); 
+  }, [x]);
 
   const [open, setOpen] = React.useState(false);
   function handleOpenSettingsDialogue() {
@@ -87,142 +106,125 @@ export default function CreateInteractiveQuizForm(props) {
   }
 
   function validateQuiz() {
-    // setMaxPointsError({ value: false, errorMessage: "" });
-    // // for (const question of formQuestions) {
-    //   // if (question.questionMaxPoints == "") {
-    //   //   // setMaxPointsError({
-    //   //   //   value: true,
-    //   //   //   errorMessage:
-    //   //   //     "Max Points of question: " +
-    //   //   //     question.questionTitle +
-    //   //   //     " cannot be empty!",
-    //   //   // });
-    //   //   return false;
-    //   // }
-    //   if (question.questionType == "mcq" && question.correctOption == "") {
-    //     // setCorrectOptionError({
-    //     //   value: true,
-    //     //   errorMessage:
-    //     //     "Correct Option for question: " +
-    //     //     question.questionTitle +
-    //     //     " cannot be empty!",
-    //     // });
-    //     handleClickSnackbar();
-    //     return false;
-    //   }
-    // }
-    // return true;
+    setMaxPointsError({ value: false, errorMessage: "" });
+      if (question.questionMaxPoints == "") {
+        setMaxPointsError({
+          value: true,
+          errorMessage:
+            "Max Points of question: " +
+            question.questionTitle +
+            " cannot be empty!",
+        });
+        return false;
+      }
+      if (question.questionType == "mcq" && question.correctOption == "") {
+        setCorrectOptionError({
+          value: true,
+          errorMessage:
+            "Correct Option for question: " +
+            question.questionTitle +
+            " cannot be empty!",
+        });
+        handleClickSnackbar();
+        return false;
+      }
+    return true;
   }
 
-
-  function handleCloseSettingsDialogue(ed) {
-    setOpen(false);
-  }
-
-  //need function to link questions to quiz prop
-  // function linkQuizQuestions() {
-  //   currentQuiz.questions = formQuestions;
+  // function handleCloseSettingsDialogue(ed) {
+  //   setOpen(false);
   // }
-  function editQuizSettings(
-    title,
-    description,
-    maxScore,
-    startDate,
-    endDate,
-    hasTimeLimit,
-    timeLimit,
-    isAutoRelease
-  ) {
-    currentQuiz.assessmentTitle = title;
-    currentQuiz.assessmentDescription = description;
-    currentQuiz.assessmentMaxScore = maxScore;
-    currentQuiz.assessmentStartDate = startDate;
-    currentQuiz.assessmentEndDate = endDate;
-    currentQuiz.hasTimeLimit = hasTimeLimit;
-    currentQuiz.timeLimit = timeLimit;
-    currentQuiz.isAutoRelease = isAutoRelease;
+
+ //need function to link questions to quiz prop
+  function linkQuizQuestions() {    
+      // questionList.push(question)
+      // setQuestionList(questionList)
+      // console.log(questionList); 
+      quiz1.questions.push(question); 
+      console.log(quiz1)
   }
+  // function editQuizSettings(
+  //   title,
+  //   description,
+  //   maxScore,
+  //   startDate,
+  //   endDate,
+  //   hasTimeLimit,
+  //   timeLimit,
+  //   isAutoRelease, 
+  //   questions
+  // ) 
+  // {
+  //   currentQuiz.assessmentTitle = title;
+  //   currentQuiz.assessmentDescription = description;
+  //   currentQuiz.assessmentMaxScore = maxScore;
+  //   currentQuiz.assessmentStartDate = startDate;
+  //   currentQuiz.assessmentEndDate = endDate;
+  //   currentQuiz.hasTimeLimit = hasTimeLimit;
+  //   currentQuiz.timeLimit = timeLimit;
+  //   currentQuiz.isAutoRelease = isAutoRelease;
+  //   currentQuiz.questions = questions
+  // }
 
   function editQuestionTitle(localId, questionTitle) {
     console.log("passing in: ", questionTitle)
     question.questionTitle = questionTitle;
     setQuestion(question)
+    console.log(question); 
     console.log("question title now: ", question.questionTitle)
   }
 
-  // function editQuestionType(questionId, questionType) {
-  //   const tempFormQuestions = [...formQuestions];
-  //   const questionIndex = tempFormQuestions.findIndex(
-  //     (f) => f.localid == questionId
-  //   );
-  //   if (questionIndex > -1) {
-  //     tempFormQuestions[questionIndex].questionType = questionType;
-  //     setFormQuestions(tempFormQuestions);
-  //   }
-  // }
+  function editQuestionType(localId, questionType) {
+    question.questionType = questionType; 
+    setQuestion(question); 
+    console.log("question type now: ", question.questionType)
+  }
 
-  // function editQuestionContent(questionId, questionContent) {
-  //   const tempFormQuestions = [...formQuestions];
-  //   const questionIndex = tempFormQuestions.findIndex(
-  //     (f) => f.localid == questionId
-  //   );
-  //   if (questionIndex > -1) {
-  //     tempFormQuestions[questionIndex].questionContent = questionContent;
-  //     setFormQuestions(tempFormQuestions);
-  //   }
-  // }
+  function editQuestionContent(localId, questionContent) {
+    question.questionContent = questionContent; 
+    setQuestion(question); 
+    console.log("question content now: ", question.questionContent)
+  }
 
-  // function editQuestionMaxPoints(questionId, questionMaxPoints) {
-  //   const tempFormQuestions = [...formQuestions];
-  //   const questionIndex = tempFormQuestions.findIndex(
-  //     (f) => f.localid == questionId
-  //   );
-  //   if (questionIndex > -1) {
-  //     tempFormQuestions[questionIndex].questionMaxPoints = questionMaxPoints;
-  //     setFormQuestions(tempFormQuestions);
-  //     console.log("updated questionMaxPoints");
-  //   }
-  // }
+  function editQuestionHint(localId, questionHint) {
+    question.questionHint = questionHint; 
+    setQuestion(question); 
+    console.log("question hint is now: ", question.questionHint)
+  }
 
-  // function addQuestionOption(questionId, option) {
-  //   const tempFormQuestions = [...formQuestions];
-  //   const questionIndex = tempFormQuestions.findIndex(
-  //     (f) => f.localid == questionId
-  //   );
-  //   if (option && option != "") {
-  //     tempFormQuestions[questionIndex].options.push(option);
-  //     setFormQuestions(tempFormQuestions);
-  //     setTextField("");
-  //   }
-  // }
+  function editQuestionMaxPoints(localId, questionMaxPoints) {
+    question.questionMaxPoints = questionMaxPoints; 
+    setQuestion(question); 
+    console.log("question max points is now", question.questionMaxPoints)
+  }
 
-  // function removeQuestionOption(questionId, updatedOptions) {
-  //   console.log("remove option called");
-  //   const tempFormQuestions = [...formQuestions];
-  //   const questionIndex = tempFormQuestions.findIndex(
-  //     (f) => f.localid == questionId
-  //   );
-  //   if (updatedOptions && updatedOptions != "") {
-  //     tempFormQuestions[questionIndex].options = updatedOptions;
-  //   }
-  //   console.log(
-  //     "options after removal: ",
-  //     tempFormQuestions[questionIndex].options
-  //   );
-  //   console.log("supposed to assign this: ", updatedOptions);
-  // }
+  function addQuestionOption(localId, option) {
+    if (option && option != "") {
+      question.options.push(option);
+      setQuestion(question);
+      setTextField("");
+    }
+  }
 
-  // function selectCorrectQuestionOption(questionId, option) {
-  //   const tempFormQuestions = [...formQuestions];
-  //   const questionIndex = tempFormQuestions.findIndex(
-  //     (f) => f.localid == questionId
-  //   );
-  //   if (option && option != "") {
-  //     tempFormQuestions[questionIndex].correctOption = option;
-  //     setFormQuestions(tempFormQuestions);
-  //     console.log("correct option selected: ", option);
-  //   }
-  // }
+  function removeQuestionOption(localId, updatedOptions) {
+    console.log("remove option called");
+    if (updatedOptions && updatedOptions != "") {
+      question.options = updatedOptions;
+    }
+    console.log(
+      "options after removal: ",
+      question.options
+    );
+    console.log("supposed to assign this: ", updatedOptions);
+  }
+
+  function selectCorrectQuestionOption(localId, option) {
+    if (option && option != "") {
+      question.correctOption = option;
+      setQuestion(question);
+      console.log("correct option selected: ", option);
+    }
+  }
 
   // const handleQuizDateConversions = (quizObject) => {
   //   const formattedStart = dayjs(quizObject.assessmentStartDate.d).format(
@@ -248,15 +250,16 @@ export default function CreateInteractiveQuizForm(props) {
     e.preventDefault();
     //edit validatequiz to just make sure the mcq/ truefalse questions have a non-null questionGuide or somehting
     if (validateQuiz()) {
-      // const updatedQuiz = handleQuizDateConversions(currentQuiz);
-      // linkQuizQuestions();
+       //const updatedQuiz = handleQuizDateConversions(currentQuiz);
+       //linkQuizQuestions();
 
-      // fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
 
-      //   body: JSON.stringify(updatedQuiz),
-      // }).then((res) => res.json());
+      fetch("http://localhost:8080/quiz/createQuizForInteractivePage/" + 1, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+
+        body: JSON.stringify(quiz1),
+      }).then((res) => res.json());
       handleCancel();
     }
   };
@@ -282,9 +285,6 @@ export default function CreateInteractiveQuizForm(props) {
         </Alert>
       </Snackbar>
 
-      <Grid item xs={2}>
-        <TeachingCoursesDrawer></TeachingCoursesDrawer>
-      </Grid>
       <Grid item xs={10}>
         <Grid item width={"80%"}>
           <Grid
@@ -305,11 +305,13 @@ export default function CreateInteractiveQuizForm(props) {
               setTextFieldProp={setTextField}
               questionProp={question}
               editQuestionTitleProp={editQuestionTitle}
-              // editQuestionTypeProp={editQuestionType}
-              // selectCorrectOptionProp={selectCorrectQuestionOption}
-              // editQuestionContentProp={editQuestionContent}
-              // removeQuestionProp={removeQuestion}
-              // editQuestionMaxPointsProp={editQuestionMaxPoints}
+              editQuestionTypeProp={editQuestionType}
+              addQuestionOptionProp={addQuestionOption}
+              selectCorrectOptionProp={selectCorrectQuestionOption}
+              editQuestionContentProp={editQuestionContent}
+              removeQuestionOptionProp={removeQuestionOption}
+              editQuestionHintProp={ editQuestionHint}
+              editQuestionMaxPointsProp={editQuestionMaxPoints}
             />
           </Paper>
 

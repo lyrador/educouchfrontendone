@@ -78,24 +78,10 @@ function TeachingInteractiveBook(props) {
     //paths
     const location = useLocation();
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
-    // console.log(booksPath)
     const courseId = location.pathname.split("/")[2];
     const bookId = location.pathname.split("/")[4];
 
     const [refreshPage, setRefreshPage] = useState("");
-
-    // //retrieve all books by course id
-    // const [books, setBooks] = useState([]);
-
-    // React.useEffect(() => {
-    //      setRefreshPage(false);
-    //      fetch("http://localhost:8080/interactiveBook/course/" + courseId + "/interactiveBooks")
-    //          .then((res) => res.json())
-    //          .then((result) => {
-    //              setBooks(result);
-    //              console.log(result);
-    //          });
-    //  }, [refreshPage]);
 
     //retrieve book
     const[book, setBook] = useState([]);
@@ -107,22 +93,9 @@ function TeachingInteractiveBook(props) {
             .then((res) => res.json())
             .then((result) => {
                 setBook(result);
-                // setInitialChapter(result);
                 console.log(result);
             });
     }, [refreshPage]);
-
-    const setInitialChapter = (book) => {
-        if (book.interactiveChapters.length == 0) {
-            chapterIdToBrowse = undefined
-        } else {
-            for (const chapter of book.interactiveChapters) {
-                if (chapter.chapterIndex == 1) {
-                    setChapterIdToBrowse(chapter.interactiveChapterId)
-                }
-            }
-        }
-    }
 
     //retrieve pages
     const [pages, setPages] = useState([]);
@@ -140,11 +113,6 @@ function TeachingInteractiveBook(props) {
     function createData(interactiveChapterId, chapterIndex, chapterTitle, chapterDescription) {
         return { interactiveChapterId, chapterIndex, chapterTitle, chapterDescription };
     }
-
-    // const books = [
-    //     createData(1, 1, 'Plant Systems', "15/10/2022"),
-    //     createData(2, 2, 'Human Systems', "15/10/2022"),
-    // ]
 
     //create
     const [newChapterTitle, setNewChapterTitle] = useState("");
@@ -171,6 +139,12 @@ function TeachingInteractiveBook(props) {
     const [chapterIndexToBrowse, setChapterIndexToBrowse] = useState("");
 
     const [refreshInteractivePageChild, setRefreshInteractivePageChild] = useState(false);
+
+    const [chapterEditRefreshPage, setChapterEditRefreshPage] = React.useState("");
+
+    React.useEffect(() => {
+        setChapterEditRefreshPage(false)
+    }, []);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -311,43 +285,6 @@ function TeachingInteractiveBook(props) {
         };
     }
 
-    // const renderEmptyRowMessage = () => {
-    //     if (chapters.length === 0) {
-    //         return (
-    //             <TableRow>
-    //                 <TableCell colSpan={4} style={{ textAlign: "center" }}>
-    //                     There are currently no interactive chapters in this book!
-    //                 </TableCell>
-    //             </TableRow>
-    //         );
-    //     }
-    // };
-
-    const renderExtraActions = (
-        bookId,
-        bookTitle,
-        bookMaxScore
-    ) => {
-        return (
-            <div>
-                <IconButton
-                    aria-label="settings"
-                    onClick={(event) => handleClickDeleteDialogOpen(event, chapterIdToDelete)}
-                >
-                    <DeleteIcon />
-                </IconButton>
-                <IconButton
-                    aria-label="settings"
-                    onClick={(event) =>
-                        handleClickEditDialogOpen(event, chapterIdToEdit, editedChapterTitle, editedChapterDescription)
-                    }
-                >
-                    <EditIcon />
-                </IconButton>
-            </div>
-        );
-    };
-
     return (
         <div>
             <Grid container spacing={0}>
@@ -356,7 +293,8 @@ function TeachingInteractiveBook(props) {
                 </Grid> */}
                 <Grid item xs={2}>
                     <TeachingInteractiveChaptersBar chapterIdToBrowse={chapterIdToBrowse} setChapterIdToBrowse={setChapterIdToBrowse} 
-                    chapterIndexToBrowse={chapterIndexToBrowse} setChapterIndexToBrowse={setChapterIndexToBrowse} refreshPage={refreshPage} setRefreshPage={setRefreshPage} />
+                    chapterIndexToBrowse={chapterIndexToBrowse} setChapterIndexToBrowse={setChapterIndexToBrowse} refreshPage={refreshPage} setRefreshPage={setRefreshPage} 
+                    chapterEditRefreshPage={chapterEditRefreshPage} setChapterEditRefreshPage={setChapterEditRefreshPage}/>
                 </Grid>
                 <Grid item xs={10}>
                     {/* {chapterIdToBrowse} */}
@@ -389,6 +327,10 @@ function TeachingInteractiveBook(props) {
                     chapterId={chapterIdToBrowse} 
                     chapterIndex={chapterIndexToBrowse}
                     book={book}
+                    refreshPage={refreshPage} 
+                    setRefreshPage={setRefreshPage}
+                    chapterEditRefreshPage={chapterEditRefreshPage} 
+                    setChapterEditRefreshPage={setChapterEditRefreshPage}
                     ></TeachingInteractivePage>
                 </Grid>
             </Grid>

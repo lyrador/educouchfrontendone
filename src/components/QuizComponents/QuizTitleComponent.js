@@ -15,7 +15,7 @@ export default function QuizTitleComponent(props) {
         <input
           type="text"
           style={{ fontSize: 30 }}
-          value={props.questionTitleProp}
+          // value={props.questionTitleProp}
           onChange={(e) =>
             props.editQuestionTitleProp(props.questionIdProp, e.target.value)
           }
