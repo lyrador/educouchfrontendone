@@ -143,28 +143,28 @@ export default function CreateInteractiveQuizForm(props) {
       quiz1.questions.push(question); 
       console.log(quiz1)
   }
-  function editQuizSettings(
-    title,
-    description,
-    maxScore,
-    startDate,
-    endDate,
-    hasTimeLimit,
-    timeLimit,
-    isAutoRelease, 
-    questions
-  ) 
-  {
-    currentQuiz.assessmentTitle = title;
-    currentQuiz.assessmentDescription = description;
-    currentQuiz.assessmentMaxScore = maxScore;
-    currentQuiz.assessmentStartDate = startDate;
-    currentQuiz.assessmentEndDate = endDate;
-    currentQuiz.hasTimeLimit = hasTimeLimit;
-    currentQuiz.timeLimit = timeLimit;
-    currentQuiz.isAutoRelease = isAutoRelease;
-    currentQuiz.questions = questions
-  }
+  // function editQuizSettings(
+  //   title,
+  //   description,
+  //   maxScore,
+  //   startDate,
+  //   endDate,
+  //   hasTimeLimit,
+  //   timeLimit,
+  //   isAutoRelease, 
+  //   questions
+  // ) 
+  // {
+  //   currentQuiz.assessmentTitle = title;
+  //   currentQuiz.assessmentDescription = description;
+  //   currentQuiz.assessmentMaxScore = maxScore;
+  //   currentQuiz.assessmentStartDate = startDate;
+  //   currentQuiz.assessmentEndDate = endDate;
+  //   currentQuiz.hasTimeLimit = hasTimeLimit;
+  //   currentQuiz.timeLimit = timeLimit;
+  //   currentQuiz.isAutoRelease = isAutoRelease;
+  //   currentQuiz.questions = questions
+  // }
 
   function editQuestionTitle(localId, questionTitle) {
     console.log("passing in: ", questionTitle)

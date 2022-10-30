@@ -548,7 +548,7 @@ function editQuestionTitle(localId, questionTitle) {
   };
 
   const handleCancel = (e) => {
-    //navigate(`${assessmentsPath}`);
+    // navigate(`${assessmentsPath}`);
   };
 
   return (
