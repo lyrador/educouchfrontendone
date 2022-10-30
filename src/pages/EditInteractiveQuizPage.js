@@ -560,7 +560,7 @@ export default function EditInteractiveQuizPage() {
               }}
             >
               <h1 style={{ color: "whitesmoke" }}>Interactive Question</h1>
-              {/* <Button
+              <Button
                 aria-label="settings"
                 variant="contained"
                 style={{ backgroundColor: "#989898" }}
@@ -568,7 +568,7 @@ export default function EditInteractiveQuizPage() {
               >
                 <SettingsIcon style={{ marginRight: 10 }} />
                 Back To Settings
-              </Button> */}
+              </Button>
             </Grid>
 
             <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
@@ -616,7 +616,7 @@ export default function EditInteractiveQuizPage() {
                 aria-label="settings"
                 variant="contained"
                 style={{ backgroundColor: "#989898" }}
-                // onClick={() => handleProceedQuestions()}
+                onClick={() => handleProceedQuestions()}
               >
                 Proceed to Quiz
               </Button>
