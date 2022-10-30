@@ -72,6 +72,8 @@ import ReactPlayer from "react-player";
 import InfoIcon from '@mui/icons-material/Info';
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import EditInteractiveQuizPage from "../pages/EditInteractiveQuizPage";
+import EditQuizPage from "../pages/EditQuizPage";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -466,6 +468,40 @@ function TeachingInteractivePageBar(props) {
         handleClose();
     }
 
+    const addQuizToPage = (e) => {
+        //e.preventDefault(); 
+        props.setRefreshInteractivePage(true); 
+        handleCloseInteractiveQuizDialog();
+        // return (
+        //     <div>
+        //         <EditInteractiveQuizPage></EditInteractiveQuizPage>
+        //     </div>
+     
+        // ); 
+        
+       
+        // e.preventDefault(); 
+        // var pageId = props.pageId; 
+        // try {
+        //     const response = await fetch("http://localhost:8080/quiz/getQuizByInteractivePageId/" + pageId, {
+        //     method: "GET", 
+        //     headers: { "Content-Type": "application/json" },
+        //     })
+        //     console.log(response); 
+        //     if (response.ok == false) {
+        //         console.log("Error");
+        //         handleClickErrorSnackbar()
+        //     } else {
+        //         console.log("Quiz Added Successfully!");
+        //     }
+        // } catch (err) {
+        //     console.log(err);
+        //     handleClickErrorSnackbar()
+        // }
+
+
+    }
+
     const createNewFileItem = async (e) => {
         e.preventDefault();
         var attachmentId = uploadedAttachmentId
@@ -709,12 +745,11 @@ function TeachingInteractivePageBar(props) {
                 <Dialog open={openCreateInteractiveQuizDialog} onClose={handleCloseInteractiveQuizDialog}>
                     <DialogTitle>Add Quiz Question</DialogTitle>
                     <DialogContent>
-                        {/* <CreateAssessment></CreateAssessment> */}
                         <CreateInteractiveQuizForm></CreateInteractiveQuizForm>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleCloseInteractiveQuizDialog}>Cancel</Button>
-                        <Button onClick={addPageDescription}>Add</Button>
+                        <Button onClick={addQuizToPage}>Add</Button>
                     </DialogActions>
                 </Dialog>
             </div>
