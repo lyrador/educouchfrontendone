@@ -19,16 +19,13 @@ export default function ViewAllRoomPage() {
     const [refreshPage, setRefreshPage] = useState('');
 
     useEffect(() => {
-        // retrieve all rooms
         setRefreshPage(false);
-        getAllRooms()
-            .then((resp) => {
-                console.log('Rooms are ' + JSON.stringify(resp));
-                setRooms(JSON.stringify(resp));
-            })
-            .catch((err) => {
-                toast.error("Unable to retrieve the rooms...");
-            })
+        fetch("http://localhost:8080/api/v1/rooms/all")
+            .then((res) => res.json())
+            .then((result) => {
+                setRooms(result);
+                console.log('Rooms are ' + JSON.stringify(result));
+            });
     }, [refreshPage]);
 
     const renderEmptyRowMessage = () => {
@@ -60,8 +57,7 @@ export default function ViewAllRoomPage() {
                     <Divider></Divider>
                     <br />
                     <Typography variant="h6">Please refrain from entering any room unless invited.</Typography>
-                    <br />
-                    <div style={{ padding: "5%" }}>
+                    <div style={{ padding: "2%" }}>
                         <TableContainer component={Paper}>
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                 <TableHead>
@@ -69,7 +65,7 @@ export default function ViewAllRoomPage() {
                                         <TableCell>Room ID</TableCell>
                                         <TableCell>Room password</TableCell>
                                         <TableCell>Room name</TableCell>
-                                        <TableCell>Organizer</TableCell>
+                                        <TableCell>Creator</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -81,7 +77,8 @@ export default function ViewAllRoomPage() {
                                         >
                                             <TableCell>{room.roomId}</TableCell>
                                             <TableCell>{room.password}</TableCell>
-                                            <TableCell>{room.name}</TableCell>
+                                            <TableCell>{room.roomName}</TableCell>
+                                            <TableCell>{room.organizers[0]}</TableCell>
                                             {/* <TableCell>
                                                 <List dense={dense}>
                                                     {generate(
