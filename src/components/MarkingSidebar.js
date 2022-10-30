@@ -23,8 +23,11 @@ function MarkingSidebar(props) {
 <br></br>
 {isQuiz &&
 <div>
+  {mcqTotalScore !== 0 && 
+  <div>
 <h2>MCQ Score</h2>
 <h2>{mcqLearnerScore}/{mcqTotalScore}</h2>
+</div>}
 <br></br>
 <h2>Open Ended Score</h2>
 <h2>{openEndedLearnerScore}/{openEndedTotalScore}</h2>
