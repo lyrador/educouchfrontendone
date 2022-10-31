@@ -630,9 +630,17 @@ export default function EditInteractiveQuizPage(props) {
                 <ArrowDropUpIcon  />
                 Minimise Quiz
               </Button>
+              <Button variant="contained" style ={{top: "20px", left: "80px"}} onClick={handleSave}>
+                <SaveIcon style={{ marginRight: "10"}} />
+                Save Quiz
+              </Button>
+              <Button variant="contained" style ={{top: "20px"}} onClick={handleRemoveQuiz}>
+                <DeleteIcon style={{ marginRight: "10" }} />
+                Remove Quiz
+              </Button>
             </Grid>
 
-            <Paper elevation={3} style={{ padding: 18, marginTop: -27, marginRight: -335, backgroundColor: "#fffacd"}}>
+            <Paper elevation={3} style={{ padding: 20 , marginTop: -27, marginRight: -335, backgroundColor: "#fffacd"}}>
               <QuizQuestionComponent
                 textFieldProp={textField}
                 setTextFieldProp={setTextField}
@@ -654,14 +662,6 @@ export default function EditInteractiveQuizPage(props) {
               justifyContent={"center"}
               style={{ marginTop: "80px" }}
             >
-              <Button variant="contained" onClick={handleSave}>
-                <SaveIcon style={{ marginRight: "10" }} />
-                Save Quiz
-              </Button>
-              <Button variant="contained" onClick={handleRemoveQuiz}>
-                <DeleteIcon style={{ marginRight: "10" }} />
-                Remove Quiz
-              </Button>
             </Grid>
           </Grid>
         ) : (
