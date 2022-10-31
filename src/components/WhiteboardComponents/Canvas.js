@@ -63,10 +63,10 @@ function Canvas({sendMessage, setRoomId, incomingDrawings, roomId, usersList, us
         }
 
         // if the window changes size, redraw the canvas
-        window.addEventListener("resize", (event) => {
-            redrawCanvas();
-        });
-        redrawCanvas();
+        // window.addEventListener("resize", (event) => {
+        //     redrawCanvas();
+        // });
+        // redrawCanvas();
     }, [])
 
     useEffect(() => {
