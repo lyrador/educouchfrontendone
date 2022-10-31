@@ -75,7 +75,7 @@ function TeachingGradebook() {
                 >
                                             <Link
                           to={`${gradebookPath}/${params.row.assessmentId}`}
-                          state={{ title: params.row.title }}
+                          state={{ title: params.row.title, identifier : params.row.assessmentType === "Quiz" ? "1" : "2", isOpen : params.row.isOpen}}
                           style={{ textDecoration: "none" }}
                         >
                           Grade

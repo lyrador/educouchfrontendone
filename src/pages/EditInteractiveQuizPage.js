@@ -14,20 +14,38 @@ import {
   Select,
   MenuItem,
   InputLabel,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useState } from "react";
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
 import SettingsIcon from "@mui/icons-material/Settings";
-import AddIcon from "@mui/icons-material/Add";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete"; 
 import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsComponent";
 import EditSettingsComponent from "../components/QuizComponents/EditQuizSettingsComponent";
 import EditQuizSettingsComponent from "../components/QuizComponents/EditQuizSettingsComponent";
 import { CatchingPokemonSharp } from "@mui/icons-material";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import MuiAlert from "@mui/material/Alert";
 
-export default function EditInteractiveQuizPage() {
+// Alert = React.forwardRef(function Alert(props, ref) {
+//   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+// });
+
+export default function EditInteractiveQuizPage(props) {
+
+  const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
+    const handleClickErrorSnackbar = () => { setOpenErrorSnackbar(true) };
+    const handleCloseErrorSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenErrorSnackbar(false) };
+
+  const [openDeleteSnackbar, setOpenDeleteSnackbar] = React.useState(false);
+  const handleClickDeleteSnackbar = () => { setOpenDeleteSnackbar(true) };
+  const handleCloseDeleteSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenDeleteSnackbar(false) };
+
   const location = useLocation();
   const navigate = useNavigate();
   const courseId = location.pathname.split("/").slice(2, 3).join("/");
@@ -43,6 +61,7 @@ export default function EditInteractiveQuizPage() {
   const [title, setTitle] = useState();
   const [description, setDescription] = useState();
   const [maxScore, setMaxScore] = useState();
+  const [trigger, setTrigger] = useState(false); 
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [hasTimeLimit, setHasTimeLimit] = useState("true");
@@ -56,10 +75,11 @@ export default function EditInteractiveQuizPage() {
   var endDateString = "";
 
   React.useEffect(() => {
-    fetch("http://localhost:8080/quiz/getQuizByInteractivePageId/" + 1)
+    fetch("http://localhost:8080/quiz/getQuizByInteractivePageId/" + props.pageId)
       .then((res) => res.json())
       .then((result) => {
         console.log(result);
+        console.log("page id is " + props.pageId); 
         setCurrentQuiz(result);
         setQuestions(result.questions);
         setQuestion(result.questions[0]);
@@ -75,7 +95,12 @@ export default function EditInteractiveQuizPage() {
         setMaxAttempts(result.maxAttempts);
         setIsAutoRelease(result.isAutoRelease);
       });
-  }, []);
+  }, [props.pageId]);
+
+  React.useEffect(() => {
+    //currentQuiz.questions = questions
+    setTrigger(false); 
+  }, [trigger]); 
 
   const [openReleaseSnackbar, setOpenReleaseSnackbar] = React.useState(false);
 
@@ -401,17 +426,24 @@ export default function EditInteractiveQuizPage() {
   }
 
   function editQuestionTitle(localId, questionTitle) {
-    console.log("passing in: ", questionTitle);
+    console.log("passing in: ", questionTitle)
+    if (question.questionTitle != questionTitle) {
     question.questionTitle = questionTitle;
-    setQuestion(question);
-    console.log(question);
-    console.log("question title now: ", question.questionTitle);
+      setQuestion(question)
+      setTrigger(true); 
+      console.log(question); 
+      console.log("question title now: ", question.questionTitle)
+    }
   }
 
   function editQuestionType(localId, questionType) {
-    question.questionType = questionType;
-    setQuestion(question);
-    console.log("question type now: ", question.questionType);
+    if (question.questionType != questionType) {
+      question.questionType = questionType; 
+      setQuestion(question); 
+      setTrigger(true); 
+      console.log(question)
+      console.log("question type now: ", question.questionType)
+    }
   }
 
   function editQuestionContent(localId, questionContent) {
@@ -540,12 +572,41 @@ export default function EditInteractiveQuizPage() {
     }
   };
 
+  const handleRemoveQuiz = async (e) => {
+    e.preventDefault(); 
+    try {
+        const response = await fetch("http://localhost:8080/interactivePage/" + props.pageId + "/removeQuiz", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+        })
+        console.log(response);
+            if (response.ok == false) {
+                console.log("Error");
+                handleClickErrorSnackbar()
+            } else {
+                console.log("Quiz Removed Successfully!");
+                handleClickDeleteSnackbar()
+            }
+    }  catch (err) {
+      console.log(err);
+      handleClickErrorSnackbar()
+    }
+    props.setRefreshInteractivePage(true); 
+    handleClickDeleteSnackbar(); 
+
+  }
+
   const handleCancel = (e) => {
     // navigate(`${assessmentsPath}`);
   };
 
   return (
     <Grid container spacing={0}>
+       <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar} >
+          <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: "100%" }} >
+              Quiz Removed Succesfully!
+          </Alert>
+      </Snackbar>
       <Grid item xs={10}>
         {editSettings == "false" ? (
           <Grid item width={"80%"}>
@@ -555,23 +616,31 @@ export default function EditInteractiveQuizPage() {
               justifyContent={"space-between"}
               style={{
                 marginTop: 30,
-                backgroundColor: "#1975D2",
+                // backgroundColor: "#1975D2",
                 paddingLeft: 10,
               }}
             >
-              <h1 style={{ color: "whitesmoke" }}>Interactive Question</h1>
+              {/* <h1 style={{ color: "whitesmoke" }}>Interactive Question</h1> */}
               <Button
                 aria-label="settings"
                 variant="contained"
-                style={{ backgroundColor: "#989898" }}
+                style={{ backgroundColor: "#fffacd", color: "black", top: "-28px", left: "-8px"}}
                 onClick={() => handleBackToSettings()}
               >
-                <SettingsIcon style={{ marginRight: 10 }} />
-                Back To Settings
+                <ArrowDropUpIcon  />
+                Minimise Quiz
+              </Button>
+              <Button variant="contained" style ={{top: "20px", left: "80px"}} onClick={handleSave}>
+                <SaveIcon style={{ marginRight: "10"}} />
+                Save Quiz
+              </Button>
+              <Button variant="contained" style ={{top: "20px"}} onClick={handleRemoveQuiz}>
+                <DeleteIcon style={{ marginRight: "10" }} />
+                Remove Quiz
               </Button>
             </Grid>
 
-            <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
+            <Paper elevation={3} style={{ padding: 20 , marginTop: -27, marginRight: -335, backgroundColor: "#fffacd"}}>
               <QuizQuestionComponent
                 textFieldProp={textField}
                 setTextFieldProp={setTextField}
@@ -583,7 +652,6 @@ export default function EditInteractiveQuizPage() {
                 selectCorrectOptionProp={selectCorrectQuestionOption}
                 editQuestionContentProp={editQuestionContent}
                 editQuestionHintProp={editQuestionHint}
-                // removeQuestionProp={removeQuestion}
                 editQuestionMaxPointsProp={editQuestionMaxPoints}
               />
             </Paper>
@@ -594,10 +662,6 @@ export default function EditInteractiveQuizPage() {
               justifyContent={"center"}
               style={{ marginTop: "80px" }}
             >
-              <Button variant="contained" onClick={handleSave}>
-                <SaveIcon style={{ marginRight: "10" }} />
-                Save Quiz
-              </Button>
             </Grid>
           </Grid>
         ) : (
@@ -608,19 +672,19 @@ export default function EditInteractiveQuizPage() {
               justifyContent={"space-between"}
               style={{
                 marginTop: 30,
-                backgroundColor: "#1975D2",
+                // backgroundColor: "#1975D2",
                 paddingLeft: 10,
               }}
             >
               <Button
                 aria-label="settings"
                 variant="contained"
-                style={{ backgroundColor: "#989898" }}
+                style={{ backgroundColor: "#fffacd", color: "black", top: "-28px", left: "-8px"}}
                 onClick={() => handleProceedQuestions()}
               >
-                Proceed to Quiz
+                <ArrowDropDownIcon />
+                  Expand Quiz
               </Button>
-              <h1 style={{ color: "whitesmoke" }}>{title}</h1>
             </Grid>
           </Grid>
         )}

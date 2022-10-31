@@ -109,6 +109,7 @@ export default function QuizQuestionDisplayComponent(props) {
                     readOnly: true,
                   }}
                 />
+
               </Grid>
               {/* Learner Score*/}
 
@@ -120,6 +121,9 @@ export default function QuizQuestionDisplayComponent(props) {
                   style={{ fontSize: 20, width: "15%" }}
                   onChange={(e) => props.handleOnChange(e.target.value, index)}
                 />
+                  {props.questionProp.errorMessage.length > 0 && (
+                  <div style={{color: "red"}}>{props.questionProp.errorMessage}</div>
+                )}
               </Grid>
 
               {feedbackbool ? (

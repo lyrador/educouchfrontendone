@@ -49,7 +49,7 @@ function OnlineUsers({ usersList }) {
                 setUserNotInCallList(result);
             }
             )
-    }, []);
+    }, [usersList]);
 
     const refresh = () => {
         var url = "http://localhost:8080/api/v1/rooms/" + roomId + "/get-learner-not-participants";
