@@ -632,7 +632,7 @@ export default function EditInteractiveQuizPage(props) {
               </Button>
             </Grid>
 
-            <Paper elevation={3} style={{ padding: 49 , marginTop: -27, marginRight: -335, backgroundColor: "#fffacd"}}>
+            <Paper elevation={3} style={{ padding: 18, marginTop: -27, marginRight: -335, backgroundColor: "#fffacd"}}>
               <QuizQuestionComponent
                 textFieldProp={textField}
                 setTextFieldProp={setTextField}

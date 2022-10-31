@@ -625,6 +625,12 @@ function TeachingInteractivePageBar(props) {
                         <Divider />
                     </div>
                 </div>
+                {!props.chapterId && <div>
+                        <div style={{textAlign: 'center', marginTop: '10px'}}>
+                            Select a chapter to show.
+                        </div>        
+                </div>
+                }
                 <div style={{ width: "100%", justifyContent: 'center', textAlign: 'center' }}>
                     {props.chapterId && <Button
                         className="btn-upload"
@@ -646,6 +652,12 @@ function TeachingInteractivePageBar(props) {
                         <Divider />
                     </div>
                 </div>
+                {!props.pageId && <div>
+                        <div style={{textAlign: 'center', marginTop: '10px'}}>
+                            Select a page to show.
+                        </div>        
+                </div>
+                }
                 <div style={{ width: "100%", justifyContent: 'center', textAlign: 'center' }}>
                     {props.pageId && <Button
                         className="btn-upload"
