@@ -52,6 +52,7 @@ import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComp
 
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import EditInteractiveQuizPage from "./EditInteractiveQuizPage";
+import parse from 'html-react-parser'; 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -297,7 +298,7 @@ function TeachingInteractivePage(props) {
                             {currentPage.pageTitle}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            {currentPage.pageDescription}
+                            {parse(currentPage.pageDescription)}
                         </Typography>
                     </div>
                 </div>
@@ -309,7 +310,7 @@ function TeachingInteractivePage(props) {
     const renderQuiz = () => {
         var height = "100%"
         if (currentPage.pageDescription && !currentPage.attachment) {
-            height = '10%'
+            height = '50%'
         }
         if (currentPage.pageDescription && currentPage.attachment) {
             height = '33%'

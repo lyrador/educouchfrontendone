@@ -75,6 +75,11 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import EditInteractiveQuizPage from "../pages/EditInteractiveQuizPage";
 import EditQuizPage from "../pages/EditQuizPage";
 
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
+import parse from 'html-react-parser'; 
+
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -772,7 +777,7 @@ function TeachingInteractivePageBar(props) {
                         />
                     </DialogContent>
                     <DialogContent>
-                        <TextField
+                        {/* <TextField
                             id="outlined-multiline-static" multiline rows={6}
                             label="Text"
                             variant="outlined"
@@ -780,6 +785,31 @@ function TeachingInteractivePageBar(props) {
                             style={{ margin: "6px 0" }}
                             value={newTextItemWords}
                             onChange={(e) => setNewTextItemWords(e.target.value)}
+                        /> */}
+                         <CKEditor
+                            editor={ClassicEditor
+                            //     .create(document.querySelector(''), {
+                            //     fontSize: {
+                            //         options: [
+                            //             9, 
+                            //             11, 
+                            //             13, 
+                            //             'default', 
+                            //             17, 
+                            //             19, 
+                            //             21
+                            //         ]
+                            //     }, 
+                            //     toolbar: [
+                            //         'heading', 'bulletedList', 'numberedList', 'fontSize', 'undo', 'redo'
+                            //     ]
+                            // }) 
+                            }
+                            data={newTextItemWords}
+                            onChange={(event, editor) => {
+                                const data = editor.getData()
+                                setNewTextItemWords(data)
+                            }}
                         />
                     </DialogContent>
                     <DialogActions>
