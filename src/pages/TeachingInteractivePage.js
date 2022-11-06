@@ -285,7 +285,7 @@ function TeachingInteractivePage(props) {
 
     const renderText = () => {
         var height = "100%"
-        if (currentPage.attachment && !currentPage.pageQuiz) {
+        if (currentPage.attachment || currentPage.pageQuiz) {
             height = "50%"
         }
         if (currentPage.pageDescription || currentPage.pageTitle) {
@@ -309,15 +309,20 @@ function TeachingInteractivePage(props) {
     const renderQuiz = () => {
         var height = "100%"
         if (currentPage.pageDescription && !currentPage.attachment) {
-            height = '50%'
+            height = '10%'
         }
         if (currentPage.pageDescription && currentPage.attachment) {
             height = '33%'
         }
         if (currentPage.pageQuiz) {
             return (
-                <div style={{height: height, width: '50%'}}>
-                    <EditInteractiveQuizPage></EditInteractiveQuizPage>
+                <div style={{height: height, width: '100%'}}>
+                    <EditInteractiveQuizPage
+                        pageId={currentPage.interactivePageId}
+                        refreshInteractivePage={refreshInteractivePage}
+                        setRefreshInteractivePage={setRefreshInteractivePage}
+                        >
+                    </EditInteractiveQuizPage>
                 </div>
             ); 
         }
@@ -402,7 +407,7 @@ function TeachingInteractivePage(props) {
                     <Pagination count={pages.length} page={pageNumberPointer} onChange={handlePageChange} showFirstButton showLastButton />
                 </div>
                 <div>
-                    <Button
+                    {props.chapterId && <Button
                         className="btn-upload"
                         color="primary"
                         component="span"
@@ -413,6 +418,7 @@ function TeachingInteractivePage(props) {
                     >
                         <PostAddIcon />
                     </Button>
+                }
                 </div>
             </div>
             <div>

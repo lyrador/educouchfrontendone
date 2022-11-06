@@ -281,6 +281,7 @@ export default function CreateQuizForm(props) {
 
   const handleSave = (e) => {
     e.preventDefault();
+    calculateMaxQuizScore();
     if (validateQuiz()) {
       const updatedQuiz = handleQuizDateConversions(currentQuiz);
       linkQuizQuestions();

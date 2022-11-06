@@ -90,14 +90,6 @@ export default function QuizQuestionComponent(props) {
             questionMaxPointsProp={props.questionProp.questionMaxPoints}
             editQuestionMaxPointsProp={props.editQuestionMaxPointsProp}
           />
-          <Button
-            onClick={() => props.removeQuestionProp(props.questionProp.localid)}
-            color="secondary"
-            variant="contained"
-          >
-            <DeleteIcon style={{ marginRight: "10px" }} />
-            Remove Question
-          </Button>
         </Grid>
       </Grid>
     </Grid>

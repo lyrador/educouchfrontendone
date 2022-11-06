@@ -504,13 +504,13 @@ function TeachingAnnouncementList(props) {
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {"Delete this forum?"}
+            {"Delete this announcement?"}
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              These will delete all the discussions and comments inside the
-              forum. You will not be able to undo this action. Are you sure you
-              want to delete?
+              These will delete the announcement for both you and Learners
+              enrolled in this course. You will not be able to undo this action.
+              Are you sure you want to delete?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
