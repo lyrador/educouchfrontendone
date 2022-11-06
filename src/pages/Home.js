@@ -1,8 +1,11 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
+import { useAuth } from '../context/AuthProvider';
+import { AuthProvider } from '../context/AuthProvider';
+import WebPet from "web-pet";
 
 export default function Home() {
-
+  
   return (
     <>
       <div style={{ justifyContent: 'center', textAlign: 'center'}}>

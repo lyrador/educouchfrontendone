@@ -29,6 +29,7 @@ import TeachingCourseCalender from "./components/TeachingCourseCalender";
 import LearnerCourseCalender from "./pages/LearnerCourseCalendar";
 
 import { AuthProvider } from "./context/AuthProvider";
+import { useAuth } from "./context/AuthProvider";
 import { RequireAuth } from "./components/RequireAuth";
 import Login from "./components/Login";
 import AccountPage from "./pages/AccountPage";
@@ -66,9 +67,11 @@ import LearnerInteractiveBook from "./components/LearnerInteractiveBook";
 import FileSubmissionAttempt from "./components/FileSubmissionAttemptComponents/FileSubmissionAttempt";
 import CreateWhiteboardHomepage from "./pages/CreateWhiteboardHomepage";
 import ViewAllRoomPage from "./pages/ViewAllRoomPage";
+import WebPet from "web-pet";
 import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
 
 function App() {
+
   return (
     <div className="App">
       <AuthProvider>
@@ -363,8 +366,7 @@ function App() {
                   <TeachingGradebookGrading />
                 </RequireAuth>
               }
-            />
-            <Route
+            /><Route
               path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId"
               element={
                 <RequireAuth>

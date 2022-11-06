@@ -28,7 +28,8 @@ function WhiteboardDrawer(props) {
 
                     <Link to={'/whiteboardHomepage'} style={{ textDecoration: 'none', color: 'black' }}>
                         <ListItemButton>
-                            <ListItemText primary="Join existing room" />
+                            {(user.userEnum === "KID") && <ListItemText primary="📲 Join existing room" />}
+                            {!(user.userEnum === "KID") && <ListItemText primary="Join existing room" />}
                         </ListItemButton>
                     </Link>
                     {user.userType !== "LEARNER" &&
