@@ -71,7 +71,7 @@ import WebPet from "web-pet";
 import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
 
 function App() {
-  
+
   return (
     <div className="App">
       <AuthProvider>
