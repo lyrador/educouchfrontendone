@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { MenuItem } from "@mui/material";
 import { useState } from "react";
+import WebPet from "web-pet";
 
 function Copyright(props) {
   return (
@@ -44,6 +45,7 @@ export default function Login() {
 
   auth.logout()
   const handleSubmit = async (event) => {
+    
     event.preventDefault();
 
     setPasswordError({ value: false, errorMessage: '' })
@@ -74,14 +76,16 @@ export default function Login() {
         // set the state of the user
         // store the user in localStorage
 
-        const user = response.data
+        const user = response.data;
+        var firstPet = null;
         if (user.isActive === "false") {
           setPasswordError({ value: true, errorMessage: 'User is disabled!' })
           setUsernameError({ value: true, errorMessage: 'User is disabled!' })
         } else {
-          auth.login(response.data)
-          console.log(response.data)
-          navigate('/home')
+          auth.login(response.data);
+          console.log(response.data);
+          navigate('/home');
+          
         }
       } catch (error) {
         console.log(error.message)

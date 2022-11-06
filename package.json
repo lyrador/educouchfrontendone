@@ -51,6 +51,7 @@
     "sockjs": "^0.3.24",
     "sockjs-client": "^1.6.1",
     "stompjs": "^2.3.3",
+    "web-pet": "^0.1.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
