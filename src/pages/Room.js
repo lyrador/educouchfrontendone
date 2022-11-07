@@ -18,6 +18,7 @@ import FaceIcon from '@mui/icons-material/Face';
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import AddReactionIcon from '@mui/icons-material/AddReaction';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from '@mui/material/styles';
@@ -35,6 +36,9 @@ import BASE_URL from '../services/baseUrl';
 // username
 import { useAuth } from '../context/AuthProvider';
 import { Typography } from '@material-ui/core';
+
+// for emoji
+import EmojiPicker from 'emoji-picker-react';
 
 const SOCKET_URL = BASE_URL + '/ws-message';
 
@@ -203,7 +207,7 @@ export default function Room() {
 	}
 	// chat message
 	function showMessage(textMessage) {
-		toast('🦄 ' + textMessage.author + ": " + textMessage.message, {
+		toast(textMessage.author + ": " + textMessage.message, {
 			position: "top-right",
 			autoClose: 10000,
 			hideProgressBar: false,
@@ -246,6 +250,12 @@ export default function Room() {
 		stomp.current.send(`/app/send/${rid}/chat`, {}, JSON.stringify(textMessage));
 	}
 
+	//adding emoji characteristic
+	const addEmoji = (em) => {
+		var val_ = newMessage.current.value + em.emoji;
+		newMessage.current.value = val_;
+	}
+
 	// open chat window dialog
 	const [openChat, setOpenChat] = useState(false);
 
@@ -255,6 +265,17 @@ export default function Room() {
 
 	const closeChatWindowDialogBox = () => {
 		setOpenChat(false);
+	};
+
+	// dialog for emoji
+	const [openEmoji, setOpenEmoji] = useState(false);
+
+	const openEmojiDialogBox = () => {
+		setOpenEmoji(true);
+	};
+
+	const closeEmojiDialogBox = () => {
+		setOpenEmoji(false);
 	};
 
 	const setRoomId = (newId) => {
@@ -342,15 +363,16 @@ export default function Room() {
                 />
                 <ToastContainer /> */}
 				</div>
-				<div className="chat-input">
-					<Stack direction="row" spacing={1}>
+				<div className="chat-input" style = {{marginLeft: '1em'}}>
+					<Stack direction="row">
 						<TextField id="outlined-basic" label="Type your message here" variant="outlined" inputRef={newMessage} onKeyDown={(e) => {
 							if (e.key === "Enter") {
 								sendNewChat(e);
 							}
 						}}
 							fullWidth />
-						<Button variant="contained" endIcon={<SendIcon />} onClick={sendNewChat} style={{ marginRight: '1em' }}></Button>
+						<Button variant="contained" endIcon={<SendIcon />} onClick={sendNewChat} style={{ marginRight: '1em', marginLeft: '1em' }}></Button>
+						<Button variant="contained" endIcon={<AddReactionIcon />} onClick={openEmojiDialogBox} style={{ marginRight: '1em' }}></Button>
 						<Button variant="contained" endIcon={<OpenInNewIcon />} onClick={openChatWindowDialogBox} style={{ marginRight: '1em' }}>
 						</Button>
 					</Stack>
@@ -403,6 +425,14 @@ export default function Room() {
 				<DialogActions>
 					<Button onClick={closeChatWindowDialogBox}>Close</Button>
 				</DialogActions>
+			</Dialog>
+
+			<Dialog
+				open={openEmoji}
+				onClose={closeEmojiDialogBox}
+			>
+				<EmojiPicker onEmojiClick={(e) => addEmoji(e)} />
+
 			</Dialog>
 			{/* </ThemeProvider> */}
 		</div>
