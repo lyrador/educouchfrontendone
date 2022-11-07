@@ -6,6 +6,22 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import Stack from '@mui/material/Stack';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Card from '@mui/material/Card';
+import FaceIcon from '@mui/icons-material/Face';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import AddReactionIcon from '@mui/icons-material/AddReaction';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import DeleteIcon from "@mui/icons-material/Delete";
+import { styled } from '@mui/material/styles';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // components
@@ -19,9 +35,60 @@ import { getRoom } from '../services/getRoom';
 import BASE_URL from '../services/baseUrl';
 // username
 import { useAuth } from '../context/AuthProvider';
+import { Typography } from '@material-ui/core';
+
+// for emoji
+import EmojiPicker from 'emoji-picker-react';
 
 const SOCKET_URL = BASE_URL + '/ws-message';
 
+// for title
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+	'& .MuiDialogContent-root': {
+		padding: theme.spacing(2),
+	},
+	'& .MuiDialogActions-root': {
+		padding: theme.spacing(1),
+	},
+}));
+
+function BootstrapDialogTitle(props) {
+	const { children, onClose, ...other } = props;
+
+	return (
+		<DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+			{children}
+			{onClose ? (
+				<IconButton
+					aria-label="close"
+					onClick={onClose}
+					sx={{
+						position: 'absolute',
+						right: 8,
+						top: 8,
+						color: (theme) => theme.palette.grey[500],
+					}}
+				>
+					<CloseIcon />
+				</IconButton>
+			) : null}
+		</DialogTitle>
+	);
+};
+// for other user
+const MessageChat = styled(Paper)(() => ({
+	backgroundImage: "linear-gradient(to right, #545e75, #63adf2);",
+	padding: '0.5em',
+	textAlign: 'left',
+	color: 'white',
+}));
+// for my own
+const MyMessageChat = styled(Paper)(() => ({
+	backgroundImage: "linear-gradient(to left, #3D405B, #81B29A);",
+	padding: '0.5em',
+	textAlign: 'right',
+	color: 'white',
+}));
 export default function Room() {
 	const navigate = useNavigate();
 	var roomId = useParams();
@@ -41,6 +108,8 @@ export default function Room() {
 	// chat message
 	// const [newMessage, setNewMessage] = useState("");
 	const newMessage = useRef(null);
+	// structure [["username", "chat"], ["username", "chat"], ["username"]]
+	const [messageQueue, setMessageQueue] = useState([]);
 
 	const CONNECT_USER = 'CONNECT_USER';
 	const DISCONNECT_USER = 'DISCONNECT_USER';
@@ -138,7 +207,7 @@ export default function Room() {
 	}
 	// chat message
 	function showMessage(textMessage) {
-		toast('🦄 ' + textMessage.author + ": " + textMessage.message, {
+		toast(textMessage.author + ": " + textMessage.message, {
 			position: "top-right",
 			autoClose: 10000,
 			hideProgressBar: false,
@@ -148,6 +217,10 @@ export default function Room() {
 			progress: undefined,
 			theme: "light",
 		});
+		var messages = messageQueue;
+		messages.push([textMessage.author, textMessage.message]);
+		setMessageQueue(messages);
+		console.log("Current message queue is '+ " + messages);
 	};
 	const sendNewChat = (e) => {
 		e.preventDefault();
@@ -176,6 +249,34 @@ export default function Room() {
 		}
 		stomp.current.send(`/app/send/${rid}/chat`, {}, JSON.stringify(textMessage));
 	}
+
+	//adding emoji characteristic
+	const addEmoji = (em) => {
+		var val_ = newMessage.current.value + em.emoji;
+		newMessage.current.value = val_;
+	}
+
+	// open chat window dialog
+	const [openChat, setOpenChat] = useState(false);
+
+	const openChatWindowDialogBox = () => {
+		setOpenChat(true);
+	};
+
+	const closeChatWindowDialogBox = () => {
+		setOpenChat(false);
+	};
+
+	// dialog for emoji
+	const [openEmoji, setOpenEmoji] = useState(false);
+
+	const openEmojiDialogBox = () => {
+		setOpenEmoji(true);
+	};
+
+	const closeEmojiDialogBox = () => {
+		setOpenEmoji(false);
+	};
 
 	const setRoomId = (newId) => {
 		disconnect();
@@ -262,22 +363,77 @@ export default function Room() {
                 />
                 <ToastContainer /> */}
 				</div>
-				<div className="chat-input">
-					<Stack direction="row" spacing={2}>
+				<div className="chat-input" style = {{marginLeft: '1em'}}>
+					<Stack direction="row">
 						<TextField id="outlined-basic" label="Type your message here" variant="outlined" inputRef={newMessage} onKeyDown={(e) => {
 							if (e.key === "Enter") {
 								sendNewChat(e);
 							}
 						}}
-							fullWidth style={{ marginLeft: '2em' }} />
-						<Button variant="contained" endIcon={<SendIcon />} onClick={sendNewChat} style={{ marginRight: '2em' }}>
-							Send
+							fullWidth />
+						<Button variant="contained" endIcon={<SendIcon />} onClick={sendNewChat} style={{ marginRight: '1em', marginLeft: '1em' }}></Button>
+						<Button variant="contained" endIcon={<AddReactionIcon />} onClick={openEmojiDialogBox} style={{ marginRight: '1em' }}></Button>
+						<Button variant="contained" endIcon={<OpenInNewIcon />} onClick={openChatWindowDialogBox} style={{ marginRight: '1em' }}>
 						</Button>
 					</Stack>
 
 				</div>
 
 			</div>
+			<Dialog
+				open={openChat}
+				onClose={closeChatWindowDialogBox}
+				fullWidth="lg"
+			>
+				<BootstrapDialogTitle id="customized-dialog-title" onClose={closeChatWindowDialogBox}>
+					Chat History
+				</BootstrapDialogTitle>
+				<DialogContent dividers>
+					{messageQueue && messageQueue.length === 0 && <Typography>Currently, there's no chat history.</Typography>}
+					{messageQueue && messageQueue.map((message, index) => (
+
+						<div key={index}>
+							<Grid container spacing={2}>
+								<Grid item xs={6}>
+									{!(message[0] === username) &&
+										<>
+											<Chip icon={<FaceIcon />} label={message[0]} variant="outlined" style={{ marginBottom: "1em" }} />
+											<br />
+											<MessageChat>{message[1]}</MessageChat>
+										</>
+									}
+
+								</Grid>
+								<Grid item xs={6}>
+									<div style={{ textAlign: "right" }}>
+										{(message[0] === username) &&
+											<>
+												<Chip icon={<FaceIcon />} label={message[0]} variant="outlined" style={{ marginBottom: "1em" }} />
+												<br />
+												<MyMessageChat>{message[1]}</MyMessageChat>
+											</>
+										}
+									</div>
+
+								</Grid>
+							</Grid>
+							<br />
+						</div>
+
+					))}
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={closeChatWindowDialogBox}>Close</Button>
+				</DialogActions>
+			</Dialog>
+
+			<Dialog
+				open={openEmoji}
+				onClose={closeEmojiDialogBox}
+			>
+				<EmojiPicker onEmojiClick={(e) => addEmoji(e)} />
+
+			</Dialog>
 			{/* </ThemeProvider> */}
 		</div>
 	)
