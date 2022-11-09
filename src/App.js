@@ -52,6 +52,10 @@ import LearnerChildFileCover from "./components/LearnerChildFileCover";
 import QuizAttempt from "./components/QuizAttemptComponents/QuizAttempt";
 import LearnerViewAssessments from "./pages/LearnerViewAssessments";
 import FileSubmissionAttempt from "./components/FileSubmissionAttemptComponents/FileSubmissionAttempt";
+import CreateWhiteboardHomepage from "./pages/CreateWhiteboardHomepage";
+import ViewAllRoomPage from "./pages/ViewAllRoomPage";
+import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
+import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
 
 function App() {
   return (
@@ -488,6 +492,24 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <FileSubmissionAttempt />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/viewGradedQuizAttempt"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <ViewGradedQuizAttempt />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/previewQuiz"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <PreviewQuiz />
                 </RequireAuth>
               }
             />

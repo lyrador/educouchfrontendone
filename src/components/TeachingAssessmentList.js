@@ -41,6 +41,7 @@ import PublishIcon from "@mui/icons-material/Publish";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import { useAuth } from "../context/AuthProvider";
 import { render } from "@testing-library/react";
@@ -359,6 +360,55 @@ function TeachingAssessmentList(props) {
     });
   }
 
+  // function handlePreviewQuiz(quizId) {
+
+  //   const [quizAttempt, setQuizAttempt] = useState({})
+  //   const [questionAttempts, setQuestionAttempts] = useState([])
+  //   const [currentQuiz, setCurrentQuiz] = useState();
+
+  //   fetch("http://localhost:8080/quiz/getQuizById/" + quizId)
+  //   .then((res) => res.json())
+  //   .then((result) => {
+  //     setCurrentQuiz(result);
+  //     setQuizQuestions(result.questions);
+  //     console.log("retrieved quiz:", result);
+  //   }).then(
+  //     fetch(
+  //       "http://localhost:8080/quizAttempt/createQuizAttempt/" +
+  //         quizId +
+  //         "/" +
+  //         learnerId,
+  //       { method: "POST" }
+  //     )
+  //       .then((res) => res.json())
+  //       .then((result) => {
+  //         setQuestionAttempts(result.questionAttempts);
+  //         setQuizAttempt(result);
+  //       })
+  //   )
+    
+  //   navigate(`/previewQuiz`, {
+  //     state: {
+  //       courseIdProp: courseId,
+  //       quizProp: currentQuiz,
+  //       learnerIdProp: learnerId,
+  //       quizAttemptProp: quizAttempt,
+  //       questionAttemptsProp: questionAttempts,
+  //     },
+  //   });
+
+  //   // courseIdProp={courseId}
+  //   // learnerStatusProp={learnerStatus}
+  //   // currentQuizProp={currentQuiz}
+  //   // currentQuizAttemptProp={quizAttempt}
+  //   // quizIdProp={quizId}
+  //   // questionsProp={quizQuestions}
+  //   // hasTimeLimitProp={hasTimeLimit}
+  //   // timeLimitProp={timeLimit}
+  //   // quizStatusEnumProp={quizStatusEnum}
+  //   // questionAttemptsProp={questionAttempts}
+  // }
+
   function handleReleaseAssessment(assessmentId) {
     // call some API to release assessment
     fetch(
@@ -556,6 +606,12 @@ function TeachingAssessmentList(props) {
                           >
                             <DeleteIcon />
                           </IconButton>
+                          {/* <IconButton
+                            aria-label="settings"
+                            onClick={handlePreviewQuiz}
+                          >
+                            <VisibilityIcon />
+                          </IconButton> */}
                           {assessment.open !== "true" && (
                             <IconButton
                               aria-label="settings"
