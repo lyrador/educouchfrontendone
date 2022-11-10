@@ -15,7 +15,7 @@ import { Grid } from "@mui/material";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
 
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 
 import { useState } from "react";
 
@@ -33,7 +33,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useAuth } from "../context/AuthProvider";
 import { render } from "@testing-library/react";
 
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 function CourseExplorerPage(props) {
 
@@ -110,12 +110,12 @@ function CourseExplorerPage(props) {
         }
     };
 
+
     return (
         <div>
             <div style={{ justifyContent: "center" }}>
-                <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
-                    List of Published Courses
-                </h1>
+                <center><Typography variant="h4">List of Published Courses</Typography></center>
+
                 {/* <Button
                     className="btn-upload"
                     color="primary"
@@ -166,12 +166,20 @@ function CourseExplorerPage(props) {
                     </Table>
                 </TableContainer>
             </div> */}
-            <div style={{ height: 400, width: '100%', padding: '5% 5%' }}>
+            <div style={{ height: '80vh', width: '100%', padding: '5% 5%' }}>
                 <DataGrid getRowId={(row) => row.courseId}
                     rows={courses}
                     columns={columns}
                     pageSize={5}
                     rowsPerPageOptions={[5]}
+                    components={{ Toolbar: GridToolbar }}
+                    componentsProps={{
+                        toolbar: {
+                            showQuickFilter: true,
+                            quickFilterProps: { debounceMs: 500 },
+                        },
+                    }}
+
                 />
             </div>
         </div>

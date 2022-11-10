@@ -31,7 +31,9 @@ export default function TeachingCoursesList() {
       <div>
         <Grid container>
           <Grid item>
-            <h1 style={{textAlign: 'left', padding: '0 4rem'}}>List of Courses</h1>
+            <center>
+              <Typography variant = "h4" style = {{marginLeft: "3em", marginRight: "1em"}}>List of Courses</Typography>
+            </center>
           </Grid>
           <Grid item alignItems="stretch" style={{ display: "flex" }}>
           {user.userType != "LEARNER" && user.userEnum == "HEAD_INSTRUCTOR" &&(

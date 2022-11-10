@@ -198,7 +198,9 @@ function TeachingDiscussion(props) {
                             </Link>
                         </Breadcrumbs>
                         <div style={{justifyContent: 'center'}}>
-                            <h1 style={{justifySelf: 'center', marginLeft: 'auto'}}>List of Comments</h1>
+                            <center>
+                                <Typography variant = "h4">List of Comments</Typography>
+                            </center>
                         </div>
                         <div style={{paddingTop: '4%', paddingBottom: '1%', minHeight: '40vh'}}>
                             <Container>

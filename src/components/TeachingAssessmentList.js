@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 
 import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
-import { Grid, Modal } from "@mui/material";
+import { Grid, Modal, Typography } from "@mui/material";
 
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
@@ -500,9 +500,9 @@ function TeachingAssessmentList(props) {
           </Breadcrumbs>
 
           <div style={{ justifyContent: "center" }}>
-            <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
-              List of Assessments
-            </h1>
+            <center>
+              <Typography variant = "h4">List of Assessments</Typography>
+            </center>
             <Grid
               style={{
                 display: "flex",
