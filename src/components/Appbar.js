@@ -257,7 +257,7 @@ export default function Appbar() {
       <>
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
-          <AppBar position="fixed" open={open}
+          <AppBar position="fixed" open={open} style = {{backgroundImage: "linear-gradient(to right, #413C58, #A3C4BC)"}}
           >
             <Toolbar>
               <Typography

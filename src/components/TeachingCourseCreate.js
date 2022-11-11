@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import {
     Container, Paper, Button, MenuItem, Stack,
-    InputLabel, OutlinedInput, InputAdornment
+    InputLabel, OutlinedInput, InputAdornment, Typography
 } from '@mui/material';
 import { useAuth } from "../context/AuthProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
@@ -198,7 +198,8 @@ export default function TeachingCourseCreate() {
                     </Alert>
                 </Snackbar>
                 <Paper elevation={3} style={paperStyle}>
-                    <h1 style={{ color: "blue" }}> Create New Course </h1>
+                    <center><Typography variant = "h4">Create New Course</Typography></center>
+                    <br/>
                     <Box
                         component="form"
                         sx={{
