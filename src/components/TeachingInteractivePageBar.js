@@ -450,7 +450,9 @@ function TeachingInteractivePageBar(props) {
         var pageDescription = newTextItemWords
         var pageNumber = props.pageNumber
         var pageTitle = title
-        const editedPage = { pageDescription, pageNumber, pageTitle }
+        var textBoxHeight = props.textBoxHeight
+        var textBoxWidth = props.textBoxWidth
+        const editedPage = { pageDescription, pageNumber, pageTitle, textBoxHeight, textBoxWidth }
         try {
             const response = await fetch("http://localhost:8080/interactivePage/interactivePages/" + props.pageId, {
                 method: "PUT",
