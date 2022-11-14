@@ -1,24 +1,26 @@
 import { createContext, useContext, useState } from "react";
+import WebPet from "web-pet";
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({children}) => {
-    const [user, setUser] = useState(null)
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
 
     const login = (user) => {
-        setUser(user)
+        setUser(user);
+        
     }
 
     const logout = (user) => {
-        setUser(null)
+        setUser(null);
     }
     return (
-        <AuthContext.Provider value={{user, login, logout}}>
+        <AuthContext.Provider value={{ user, login, logout }}>
             {children}
         </AuthContext.Provider>
     )
 }
 
-export const useAuth= () => {
+export const useAuth = () => {
     return useContext(AuthContext)
 }

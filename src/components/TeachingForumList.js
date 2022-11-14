@@ -10,7 +10,7 @@ import Paper from "@mui/material/Paper";
 
 import { Link, useLocation, useParams } from "react-router-dom";
 import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
@@ -25,7 +25,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-
+import Chip from '@mui/material/Chip';
+import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
@@ -306,9 +307,9 @@ function TeachingForumList(props) {
             </LinkMaterial>
           </Breadcrumbs>
           <div style={{ justifyContent: "center" }}>
-            <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
-              List of Forums
-            </h1>
+            <center>
+              <Typography variant = "h4">List of Forums</Typography>
+            </center>
             <Button
               className="btn-upload"
               color="primary"

@@ -158,19 +158,20 @@ export default function LearnerViewAssessments(props) {
                     )}
                   </TableCell>
                   <TableCell align="right">
-                    <Button
-                      className="btn-choose"
-                      variant="outlined"
-                      type="submit"
-                      onClick={() =>
-                        handleViewAssessment(
-                          assessment.assessmentId,
-                          assessment.assessmentType
-                        )
-                      }
-                    >
-                      View Details 
-                    </Button>
+                    {assessment.isExpired === "false" && (
+                      <Button
+                        className="btn-choose"
+                        variant="outlined"
+                        type="submit"
+                        onClick={() =>
+                          handleViewAssessment(
+                            assessment.assessmentId,
+                            assessment.assessmentType
+                          )
+                        }
+                      >
+                        View Details
+                      </Button>)}
                   </TableCell>
                 </TableRow>
               ))}

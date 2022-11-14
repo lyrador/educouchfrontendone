@@ -1,0 +1,10 @@
+.whiteboard-container {
+    text-align: center;
+}
+.whiteboard-illustration img{
+    max-height: 50vh;
+}
+.whiteboard-form {
+    margin-right: 2em;
+}
+

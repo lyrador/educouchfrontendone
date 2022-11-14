@@ -13,6 +13,8 @@ import TeachingCoursesList from "./pages/TeachingCoursesList";
 import TeachingCourse from "./pages/TeachingCourse";
 import TeachingCourseNew from "./pages/TeachingCourseNew";
 import TeachingAssessmentList from "./components/TeachingAssessmentList";
+import TeachingAnnouncementList from "./components/TeachingAnnouncementList";
+import LearnerAnnouncementList from "./components/LearnerAnnouncementList";
 import FileSubmission from "./components/FileSubmission";
 import TeachingForumList from "./components/TeachingForumList";
 import TeachingDiscussion from "./components/TeachingDiscussion";
@@ -27,6 +29,7 @@ import TeachingCourseCalender from "./components/TeachingCourseCalender";
 import LearnerCourseCalender from "./pages/LearnerCourseCalendar";
 
 import { AuthProvider } from "./context/AuthProvider";
+import { useAuth } from "./context/AuthProvider";
 import { RequireAuth } from "./components/RequireAuth";
 import Login from "./components/Login";
 import AccountPage from "./pages/AccountPage";
@@ -49,15 +52,28 @@ import ClassRunListPage from "./pages/ClassRunListPage";
 import CourseApprovalPage from "./pages/CourseApprovalPage";
 import LearnerCourseFolder from "./pages/LearnerCourseFolder";
 import LearnerChildFileCover from "./components/LearnerChildFileCover";
+import WhiteboardHomepage from "./pages/WhiteboardHomepage";
+import Room from "./pages/Room";
+import TeachingInteractiveBooksList from "./components/TeachingInteractiveBooksList";
+import TeachingInteractiveBook from "./components/TeachingInteractiveBook";
 import QuizAttempt from "./components/QuizAttemptComponents/QuizAttempt";
 import LearnerViewAssessments from "./pages/LearnerViewAssessments";
+import TeachingMarkerPage from "./pages/TeachingMarkerPage";
+import TeachingGradebook from "./pages/TeachingGradebook";
+import TeachingGradebookGrading from "./pages/TeachingGradebookGrading";
+import LearnerGradeBook from "./pages/LearnerGradeBook";
+import LearnerInteractiveBooksList from "./components/LearnerInteractiveBookList";
+import LearnerInteractiveBook from "./components/LearnerInteractiveBook";
 import FileSubmissionAttempt from "./components/FileSubmissionAttemptComponents/FileSubmissionAttempt";
 import CreateWhiteboardHomepage from "./pages/CreateWhiteboardHomepage";
 import ViewAllRoomPage from "./pages/ViewAllRoomPage";
 import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
 import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
+import WebPet from "web-pet";
+import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
 
 function App() {
+
   return (
     <div className="App">
       <AuthProvider>
@@ -183,11 +199,29 @@ function App() {
               }
             />
             <Route
+              path="/myTeachingCourse/:courseId/announcements"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingAnnouncementList />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/myTeachingCourse/:courseId/assessments"
               element={
                 <RequireAuth>
                   <Appbar />
                   <TeachingAssessmentList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/gradebook"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingGradebook />
                 </RequireAuth>
               }
             />
@@ -233,6 +267,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <LearnerCourseDetails />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/announcements"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerAnnouncementList />
                 </RequireAuth>
               }
             />
@@ -318,6 +361,23 @@ function App() {
               }
             />
             <Route
+              path="/myTeachingCourse/:courseId/gradebook/:assessmentId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingGradebookGrading />
+                </RequireAuth>
+              }
+            /><Route
+              path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingMarkerPage />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/myTeachingCourse/:courseId/forum/:forumId/:discussionId"
               element={
                 <RequireAuth>
@@ -372,6 +432,41 @@ function App() {
               }
             />
             <Route
+              path="/whiteboardHomepage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <WhiteboardHomepage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/createWhiteboardHomepage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateWhiteboardHomepage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/viewAllRoomPage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <ViewAllRoomPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/room/:roomId"
+              element={
+                <RequireAuth>
+                  <Room />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/learnerCourseDetails/:courseId/files/:folderId"
               element={
                 <RequireAuth>
@@ -381,11 +476,56 @@ function App() {
               }
             />
             <Route
+              path="/learnerCourseDetails/:courseId/gradebook"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerGradeBook />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/myTeachingCourse/:moduleCode/files"
               element={
                 <RequireAuth>
                   <Appbar />
                   <TeachingFileList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/interactiveBook"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingInteractiveBooksList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/interactiveBook/:bookId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingInteractiveBook />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/learnerInteractiveBook"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerInteractiveBooksList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerCourseDetails/:courseId/learnerInteractiveBook/:bookId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerInteractiveBook />
                 </RequireAuth>
               }
             />
@@ -501,15 +641,6 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <ViewGradedQuizAttempt />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/previewQuiz"
-              element={
-                <RequireAuth>
-                  <Appbar />
-                  <PreviewQuiz />
                 </RequireAuth>
               }
             />

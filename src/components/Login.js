@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { MenuItem } from "@mui/material";
 import { useState } from "react";
+import WebPet from "web-pet";
 
 function Copyright(props) {
   return (
@@ -38,21 +39,17 @@ export default function Login() {
   const navigate = useNavigate()
   const [username, setUsername] = React.useState("")
   const [password, setPassword] = React.useState("")
-  const [userType, setUserType] = React.useState("")
-
-  const userGroup = [{ value: 'LEARNER' }, , { value: 'INSTRUCTOR' }, { value: 'ORG_ADMIN' }];
 
   const [usernameError, setUsernameError] = useState({ value: false, errorMessage: '' })
   const [passwordError, setPasswordError] = useState({ value: false, errorMessage: '' })
-  const [userTypeError, setUserTypeError] = useState({ value: false, errorMessage: '' })
 
   auth.logout()
   const handleSubmit = async (event) => {
+    
     event.preventDefault();
 
     setPasswordError({ value: false, errorMessage: '' })
     setUsernameError({ value: false, errorMessage: '' })
-    setUserTypeError({ value: false, errorMessage: '' })
 
     if (password == '') {
       setPasswordError({ value: true, errorMessage: 'You must enter a password' })
@@ -60,14 +57,8 @@ export default function Login() {
     if (username == '') {
       setUsernameError({ value: true, errorMessage: 'You must enter a username' })
     }
-    if (userType == '') {
-      setUserTypeError({ value: true, errorMessage: 'You must select a user type' })
-    }
 
-    // console.log(event)
-    // console.log(username, password)
-    // const data = new FormData(event.currentTarget);
-    if (password && username && userType) {
+    if (password && username) {
       try {
         const response = await axios({
           method: 'post',
@@ -76,7 +67,6 @@ export default function Login() {
           data: {
             username: username,
             password: password,
-            userType: userType
           }
         });
         // axios.post(
@@ -86,22 +76,21 @@ export default function Login() {
         // set the state of the user
         // store the user in localStorage
 
-        const user = response.data
+        const user = response.data;
+        var firstPet = null;
         if (user.isActive === "false") {
           setPasswordError({ value: true, errorMessage: 'User is disabled!' })
           setUsernameError({ value: true, errorMessage: 'User is disabled!' })
-          setUserTypeError({ value: true, errorMessage: 'User is disabled!' })
         } else {
-          auth.login(response.data)
-          console.log(response.data)
-          navigate('/home')
+          auth.login(response.data);
+          console.log(response.data);
+          navigate('/home');
+          
         }
       } catch (error) {
-        // Handle error here
         console.log(error.message)
         setPasswordError({ value: true, errorMessage: 'User does not exist or password does not match' })
         setUsernameError({ value: true, errorMessage: 'User does not exist or password does not match' })
-        setUserTypeError({ value: true, errorMessage: 'User does not exist or password does not match' })
       }
     }
 
@@ -161,22 +150,6 @@ export default function Login() {
                 error={passwordError.value}
                 helperText={passwordError.errorMessage}
               />
-              <TextField margin="normal" required fullWidth select
-                id="UserType"
-                label="UserType"
-                name="userType"
-                value={userType}
-                onChange={(e) => setUserType(e.target.value)}
-                autoFocus
-                error={userTypeError.value}
-                helperText={userTypeError.errorMessage}
-              >
-                {userGroup.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.value}
-                  </MenuItem>
-                ))}
-              </TextField>
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
