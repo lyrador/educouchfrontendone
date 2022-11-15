@@ -1,4 +1,12 @@
-import { Grid, Paper } from "@mui/material";
+import {
+  Checkbox,
+  Grid,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { Button } from "@mui/material";
 import React, { useState } from "react";
 import McqBodyComponent from "../QuizComponents/McqBodyComponent";
@@ -12,28 +20,50 @@ import QuestionAttemptContentComponent from "../QuizAttemptComponents/QuestionAt
 import QuestionAttemptShortAnswerComponent from "../QuizAttemptComponents/QuestionAttemptShortAnswerComponent";
 import QuestionAttemptTrueFalseComponent from "../QuizAttemptComponents/QuestionAttemptTrueFalseComponent";
 import QuizAttemptMCQComponent from "../QuizAttemptComponents/QuizAttemptMCQComponent";
-import { Content } from "rsuite";
+import { Content, List } from "rsuite";
+import ClearIcon from "@mui/icons-material/Clear";
+import DoneIcon from "@mui/icons-material/Done";
+
 export default function GradedQuizQuestionComponent(props) {
-  const [questionAttempt, setQuestionAttempt] = React.useState();
   const [question, setQuestion] = React.useState();
+  const [questionType, setQuestionType] = React.useState();
+  const [questionTitle, setQuestionTitle] = React.useState();
   const [questionContent, setQuestionContent] = React.useState();
+  const [questionOptions, setQuestionOptions] = React.useState([]);
+  const [correctOption, setCorrectOption] = React.useState();
+  const [questionHint, setQuestionHint] = React.useState();
+  const [questionMaxScore, setQuestionMaxScore] = React.useState();
+
+  const [questionAttempt, setQuestionAttempt] = React.useState();
   const [shortAnswerResponse, setShortAnswerResponse] = useState("");
-  const [optionSelected, setOptionSelected] = useState(
-    // props.questionAttemptProp.optionSelected
-  );
+  const [optionSelected, setOptionSelected] = useState();
+  const [questionAttemptScore, setQuestionAttemptScore] = React.useState();
+  const [questionFeedback, setQuestionFeedback] = React.useState();
   const [index, setIndex] = useState(props.indexProp);
+  var trueFalseOptions = ["true", "false"];
 
   React.useEffect(() => {
     console.log("gradedQuizQuestionComponent useEffect called");
-    console.log("questionAttemptProp: ", props.questionAttemptProp)
-    console.log("optionSelectedProp: ", props.questionAttemptProp.optionSelected)
-    console.log("question: ", props.questionAttemptProp.questionAttempted)
-    console.log("questionContent: ", props.questionAttemptProp.questionAttempted.questionContent)
+    // console.log("questionAttemptProp: ", props.questionAttemptProp)
+    // console.log("question: ", props.questionAttemptProp.questionAttempted)
+    setQuestion(props.questionAttemptProp.questionAttempted);
+    setQuestionType(props.questionAttemptProp.questionAttempted.questionType);
+    setQuestionTitle(props.questionAttemptProp.questionAttempted.questionTitle);
+    setQuestionOptions(props.questionAttemptProp.questionAttempted.options);
+    setCorrectOption(props.questionAttemptProp.questionAttempted.correctOption);
+    setQuestionContent(
+      props.questionAttemptProp.questionAttempted.questionContent
+    );
+    setQuestionHint(props.questionAttemptProp.questionAttempted.questionHint);
+    setQuestionMaxScore(
+      props.questionAttemptProp.questionAttempted.questionMaxPoints
+    );
 
-    setQuestionAttempt(props.questionAttemptProp)
-    setOptionSelected(props.questionAttemptProp.optionSelected)
-    setQuestion(props.questionAttemptProp.questionAttempted)
-    setQuestionContent(props.questionAttemptProp.questionAttempted.questionContent)
+    setQuestionAttempt(props.questionAttemptProp);
+    setShortAnswerResponse(props.questionAttemptProp.shortAnswerResponse);
+    setOptionSelected(props.questionAttemptProp.optionSelected);
+    setQuestionFeedback(props.questionAttemptProp.feedback);
+    setQuestionAttemptScore(props.questionAttemptProp.questionAttemptScore);
   }, []);
 
   return (
@@ -43,8 +73,7 @@ export default function GradedQuizQuestionComponent(props) {
       direction="row"
       justifyContent={"space-between"}
     >
-
-      {questionContent}
+      <p style={{ fontSize: 30 }}> {questionTitle}</p>
       <Paper
         elevation={1}
         style={{
@@ -63,28 +92,167 @@ export default function GradedQuizQuestionComponent(props) {
       </Paper>
       <Grid container direction="column">
         <Grid>
-          <p>question content</p>
+          <p style={{ fontSize: 20, width: "70%", marginTop: "10px" }}>
+            {questionContent}
+          </p>
         </Grid>
         <Grid item>
-          {/* {props.questionProp.questionType == "shortAnswer" && (
+          {questionType == "shortAnswer" && (
             <div>
-              <p>short answer response</p>
-              <p>feedback for short answer</p>
+              <Paper
+                style={{ paddingTop: 10, paddingBottom: 30, paddingLeft: 10 }}
+              >
+                <p>
+                  <b>Your Answer: </b>
+                </p>
+                {shortAnswerResponse}
+              </Paper>
+              <Paper
+                style={{
+                  paddingTop: 10,
+                  paddingBottom: 30,
+                  paddingLeft: 10,
+                  marginTop: 10,
+                  backgroundColor: "#CCCCFF",
+                }}
+              >
+                <p>
+                  <b>Instructor Feedback:</b>
+                </p>
+                <br />
+                {questionFeedback}
+              </Paper>
             </div>
           )}
-          {props.questionProp.questionType == "mcq" && (
+          {questionType == "mcq" && (
             <div>
-              <p>mcq options</p>
-              <p>mcq answer response</p>
+              <Paper
+                style={{
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  marginBottom: 10,
+                }}
+              >
+                {optionSelected == correctOption ? (
+                  <div>
+                    <p>
+                      <b>You Selected</b>
+                    </p>
+                    <p style={{ color: "#228B22" }}>{optionSelected}</p>
+                  </div>
+                ) : (
+                  <div>
+                    <p>
+                      <b>You Selected</b>
+                    </p>
+                    <p style={{ color: "#DC143C" }}>{optionSelected}</p>
+                  </div>
+                )}
+                <br />
+                <p>
+                  <b>MCQ Answer</b>
+                </p>
+                {questionOptions.map((option) => {
+                  return (
+                    <ListItem>
+                      <ListItemIcon>
+                        <Checkbox
+                          edge="start"
+                          checked={option === correctOption}
+                          tabIndex={-1}
+                          disableRipple
+                        />
+                      </ListItemIcon>
+                      <ListItemText primary={option} />
+                    </ListItem>
+                  );
+                })}
+              </Paper>
 
-              {props.quizStatusEnumProp == "GRADED" && <p>mcq guide</p>}
+              {questionHint && (
+                <Paper
+                  style={{
+                    backgroundColor: "#CCCCFF",
+                    paddingTop: 10,
+                    paddingBottom: 30,
+                    paddingLeft: 10,
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <p>
+                    <b>Question Guide:</b>
+                  </p>
+                  <br />
+                  {questionHint}
+                </Paper>
+              )}
             </div>
           )}
-          {props.questionProp.questionType == "trueFalse" && (
+          {questionType == "trueFalse" && (
             <div>
-              <p>truefalse answer response</p>
-
-              {props.quizStatusEnumProp == "GRADED" && <p>trueFalse guide</p>}
+              <Paper
+                style={{
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  marginBottom: 10,
+                }}
+              >
+                {optionSelected == correctOption ? (
+                  <div>
+                    <p>
+                      <b>You Selected</b>
+                    </p>
+                    <p style={{ color: "#228B22" }}>{optionSelected}</p>
+                  </div>
+                ) : (
+                  <div>
+                    <p>
+                      <b>You Selected</b>
+                    </p>
+                    <p style={{ color: "#DC143C" }}>{optionSelected}</p>
+                  </div>
+                )}
+                <br />
+                <p>
+                  <b>Correct Answer</b>
+                </p>
+                {trueFalseOptions.map((option) => {
+                  return (
+                    <ListItem>
+                      <ListItemIcon>
+                        <Checkbox
+                          edge="start"
+                          checked={option === correctOption}
+                          tabIndex={-1}
+                          disableRipple
+                        />
+                      </ListItemIcon>
+                      <ListItemText primary={option} />
+                    </ListItem>
+                  );
+                })}
+              </Paper>
+              {questionHint && (
+                <Paper
+                  style={{
+                    backgroundColor: "#CCCCFF",
+                    paddingTop: 10,
+                    paddingBottom: 30,
+                    paddingLeft: 10,
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <p>
+                    <b>Question Guide:</b>
+                  </p>
+                  <br />
+                  {questionHint}
+                </Paper>
+              )}
             </div>
           )}
         </Grid>
@@ -97,7 +265,7 @@ export default function GradedQuizQuestionComponent(props) {
               paddingRight: "13px",
               paddingTop: "4px",
               paddingBottom: "4px",
-              width: 110,
+              width: 230,
             }}
           >
             <p
@@ -106,9 +274,9 @@ export default function GradedQuizQuestionComponent(props) {
                 fontFamily: "sans-serif",
               }}
             >
-              obtained marks
+              Obtained marks: {questionAttemptScore}/{questionMaxScore}
             </p>
-          </Paper> */}
+          </Paper>
         </Grid>
       </Grid>
     </Grid>
