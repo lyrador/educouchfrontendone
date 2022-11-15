@@ -69,6 +69,7 @@ import CreateWhiteboardHomepage from "./pages/CreateWhiteboardHomepage";
 import ViewAllRoomPage from "./pages/ViewAllRoomPage";
 import WebPet from "web-pet";
 import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
+import TeachingFileSubMarkerPage from "./pages/TeachingFileSubMarkerPage";
 
 function App() {
 
@@ -366,12 +367,22 @@ function App() {
                   <TeachingGradebookGrading />
                 </RequireAuth>
               }
-            /><Route
-              path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId"
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId/quiz"
               element={
                 <RequireAuth>
                   <Appbar />
                   <TeachingMarkerPage />
+                </RequireAuth>
+              }
+            />
+             <Route
+              path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId/fileSubmission"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingFileSubMarkerPage />
                 </RequireAuth>
               }
             />
