@@ -41,7 +41,7 @@ import PublishIcon from "@mui/icons-material/Publish";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import { useAuth } from "../context/AuthProvider";
 import { render } from "@testing-library/react";
@@ -360,54 +360,33 @@ function TeachingAssessmentList(props) {
     });
   }
 
-  // function handlePreviewQuiz(quizId) {
+  function handlePreviewQuiz(event, quizId) {
+    //   const [quizAttempt, setQuizAttempt] = useState({})
+    //   const [questionAttempts, setQuestionAttempts] = useState([])
+    //   const [currentQuiz, setCurrentQuiz] = useState();
 
-  //   const [quizAttempt, setQuizAttempt] = useState({})
-  //   const [questionAttempts, setQuestionAttempts] = useState([])
-  //   const [currentQuiz, setCurrentQuiz] = useState();
-
-  //   fetch("http://localhost:8080/quiz/getQuizById/" + quizId)
-  //   .then((res) => res.json())
-  //   .then((result) => {
-  //     setCurrentQuiz(result);
-  //     setQuizQuestions(result.questions);
-  //     console.log("retrieved quiz:", result);
-  //   }).then(
-  //     fetch(
-  //       "http://localhost:8080/quizAttempt/createQuizAttempt/" +
-  //         quizId +
-  //         "/" +
-  //         learnerId,
-  //       { method: "POST" }
-  //     )
-  //       .then((res) => res.json())
-  //       .then((result) => {
-  //         setQuestionAttempts(result.questionAttempts);
-  //         setQuizAttempt(result);
-  //       })
-  //   )
-    
-  //   navigate(`/previewQuiz`, {
-  //     state: {
-  //       courseIdProp: courseId,
-  //       quizProp: currentQuiz,
-  //       learnerIdProp: learnerId,
-  //       quizAttemptProp: quizAttempt,
-  //       questionAttemptsProp: questionAttempts,
-  //     },
-  //   });
-
-  //   // courseIdProp={courseId}
-  //   // learnerStatusProp={learnerStatus}
-  //   // currentQuizProp={currentQuiz}
-  //   // currentQuizAttemptProp={quizAttempt}
-  //   // quizIdProp={quizId}
-  //   // questionsProp={quizQuestions}
-  //   // hasTimeLimitProp={hasTimeLimit}
-  //   // timeLimitProp={timeLimit}
-  //   // quizStatusEnumProp={quizStatusEnum}
-  //   // questionAttemptsProp={questionAttempts}
-  // }
+    // courseIdProp={courseId}
+    // learnerStatusProp={learnerStatus}
+    // currentQuizProp={currentQuiz}
+    // currentQuizAttemptProp={quizAttempt}
+    // quizIdProp={quizId}
+    // questionsProp={quizQuestions}
+    // hasTimeLimitProp={hasTimeLimit}
+    // timeLimitProp={timeLimit}
+    // quizStatusEnumProp={quizStatusEnum}
+    // questionAttemptsProp={questionAttempts}
+    navigate(`/previewQuiz`, {
+      state: {
+        courseIdProp: courseId,
+        quizIdProp: quizId,
+        assessmentsPathProp: assessmentsPath,
+        // quizProp: currentQuiz,
+        // learnerIdProp: learnerId,
+        // quizAttemptProp: quizAttempt,
+        // questionAttemptsProp: questionAttempts,
+      },
+    });
+  }
 
   function handleReleaseAssessment(assessmentId) {
     // call some API to release assessment
@@ -551,7 +530,7 @@ function TeachingAssessmentList(props) {
 
           <div style={{ justifyContent: "center" }}>
             <center>
-              <Typography variant = "h4">List of Assessments</Typography>
+              <Typography variant="h4">List of Assessments</Typography>
             </center>
             <Grid
               style={{
@@ -572,7 +551,6 @@ function TeachingAssessmentList(props) {
                     <TableCell>Max Score</TableCell>
                     <TableCell>Start Date</TableCell>
                     <TableCell>End Date</TableCell>
-                    {/* <TableCell>Assessment Status</TableCell> */}
                     <TableCell>Assessment Type</TableCell>
                     <TableCell>Assessment Release</TableCell>
                     <TableCell>Actions</TableCell>
@@ -597,21 +575,10 @@ function TeachingAssessmentList(props) {
                         <div>
                           <IconButton
                             aria-label="settings"
-                            onClick={(event) =>
-                              handleClickDeleteDialogOpen(
-                                event,
-                                assessment.assessmentId
-                              )
-                            }
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                          {/* <IconButton
-                            aria-label="settings"
-                            onClick={handlePreviewQuiz}
+                            onClick={(event) => {handlePreviewQuiz(event, assessment.assessmentId)}}
                           >
                             <VisibilityIcon />
-                          </IconButton> */}
+                          </IconButton>
                           {assessment.open !== "true" && (
                             <IconButton
                               aria-label="settings"
@@ -622,6 +589,17 @@ function TeachingAssessmentList(props) {
                               <EditIcon />
                             </IconButton>
                           )}
+                          <IconButton
+                            aria-label="settings"
+                            onClick={(event) =>
+                              handleClickDeleteDialogOpen(
+                                event,
+                                assessment.assessmentId
+                              )
+                            }
+                          >
+                            <DeleteIcon />
+                          </IconButton>
                           {assessment.open !== "true" && (
                             <IconButton
                               aria-label="publish"

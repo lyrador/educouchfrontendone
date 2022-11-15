@@ -5,6 +5,7 @@ import LearnerCoursesDrawer from "../LearnerCourseDrawer";
 import QuizAttemptDisplay from "./QuizAttemptDisplay";
 import QuizInformation from "./QuizInformation";
 import { useAuth } from "../../context/AuthProvider";
+import QuestionAttemptTrueFalseComponent from "./QuestionAttemptTrueFalseComponent";
 
 export default function QuizAttempt(props) {
   const navigate = useNavigate();
@@ -80,53 +81,6 @@ export default function QuizAttempt(props) {
     console.log("questionAttempts fetched: ", questionAttempts);
   }
 
-  // function renderButton() {
-  //   console.log("renderButtonCalled");
-  //   if (currentQuiz.isExpired == "true") {
-  //     console.log("quizExpired");
-  //     setButtonRendered("quizExpired");
-  //   } else {
-  //     //quiz not expired
-  //     console.log("quizNotExpired");
-  //     if (hasMaxAttempts == "true") {
-  //       //has max attempts
-  //       console.log("hasMaxAttempts");
-  //       if (numberQuizAttempts > maxAttempts) {
-  //         console.log("noAttemptsLeft");
-  //         setButtonRendered("noAttemptsLeft");
-  //       } else {
-  //         console.log("hasAttemptsLeft");
-  //         //numberQuizAttempts <= maxAttempts, still has attempts left
-  //         if (!hasPreviousAttempt) {
-  //           //no existing attempts
-  //           console.log("startQuiz");
-  //           setButtonRendered("startQuiz");
-  //         } else {
-  //           //has existing attempts
-  //           if (quizAttempt.assessmentAttemptStatusEnum == "SUBMITTED") {
-  //             console.log("startQuiz");
-  //             setButtonRendered("startQuiz");
-  //           } else if (
-  //             quizAttempt.assessmentAttemptStatusEnum == "INCOMPLETE"
-  //           ) {
-  //             console.log("resumeQuiz");
-  //             setButtonRendered("resumeQuiz");
-  //           }
-  //         }
-  //       }
-  //     } else {
-  //       //no max attempts
-  //       if (quizAttempt.assessmentAttemptStatusEnum == "SUBMITTED") {
-  //         console.log("startQuiz");
-  //         setButtonRendered("startQuiz");
-  //       } else if (quizAttempt.assessmentAttemptStatusEnum == "INCOMPLETE") {
-  //         console.log("resumeQuiz");
-  //         setButtonRendered("resumeQuiz");
-  //       }
-  //     }
-  //   }
-  // }
-
   function handleStartQuiz() {
     console.log("clicked handleStartQuiz");
     fetch(
@@ -194,7 +148,10 @@ export default function QuizAttempt(props) {
                 <>
                   {" "}
                   {quizAttempt.assessmentAttemptStatusEnum === "GRADED" ? (
-                    <Button onClick={handleViewGradedQuizAttempt} variant="contained">
+                    <Button
+                      onClick={handleViewGradedQuizAttempt}
+                      variant="contained"
+                    >
                       View Graded Attempt
                     </Button>
                   ) : (
@@ -223,6 +180,8 @@ export default function QuizAttempt(props) {
       ) : (
         <Grid>
           <QuizAttemptDisplay
+            isPreviewProp={false}
+            assessmentsPathProp=""
             courseIdProp={courseId}
             learnerStatusProp={learnerStatus}
             currentQuizProp={currentQuiz}

@@ -70,10 +70,8 @@ import ViewAllRoomPage from "./pages/ViewAllRoomPage";
 import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
 import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
 import WebPet from "web-pet";
-import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
 
 function App() {
-
   return (
     <div className="App">
       <AuthProvider>
@@ -368,7 +366,8 @@ function App() {
                   <TeachingGradebookGrading />
                 </RequireAuth>
               }
-            /><Route
+            />
+            <Route
               path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId"
               element={
                 <RequireAuth>
@@ -623,6 +622,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <QuizAttempt />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/previewQuiz"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <PreviewQuiz />
                 </RequireAuth>
               }
             />
