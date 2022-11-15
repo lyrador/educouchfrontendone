@@ -28,7 +28,7 @@ import { CatchingPokemonSharp } from "@mui/icons-material";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import LearnerCoursesDrawer from "../components/LearnerCourseDrawer";
 import QuizQuestionAttemptComponent from "../components/QuizAttemptComponents/QuizQuestionAttemptComponent";
-import GradedQuizQuestionComponent from "../components/QuizAttemptComponents/GradedQuizQuestionComponent";
+import GradedQuizQuestionComponent from "../components/GradedQuizComponents/GradedQuizQuestionComponent";
 
 export default function ViewGradedQuizAttempt(props) {
   var location = useLocation(props);
@@ -43,6 +43,7 @@ export default function ViewGradedQuizAttempt(props) {
 
   React.useEffect(() => {
     console.log("quizattempt prop: ", location.state.quizAttemptProp);
+    // console.log("questionAttempts prop: ", location.state.questionAttemptsProp)
     setQuizId(location.state.quizIdProp);
     setLearnerId(location.state.learnerIdProp);
     setQuizAttempt(location.state.quizAttemptProp);
@@ -65,7 +66,11 @@ export default function ViewGradedQuizAttempt(props) {
             return (
               <Grid width={"auto"}>
                 <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
-                  <GradedQuizQuestionComponent indexProp={index + 1} />
+                  <GradedQuizQuestionComponent
+                    indexProp={index + 1}
+                    questionAttemptProp={questionAttempts[index]}
+                    questionAttemptsProp={questionAttempts}
+                  />
                 </Paper>
               </Grid>
             );

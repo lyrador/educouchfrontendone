@@ -8,12 +8,15 @@ import QuizContentComponent from "../QuizComponents/QuizContentComponent";
 import QuizTitleComponent from "../QuizComponents/QuizTitleComponent";
 import ShortAnswerComponent from "../QuizComponents/ShortAnswerComponent";
 import TrueFalseComponent from "../QuizComponents/TrueFalseComponent";
-import QuestionAttemptContentComponent from "./QuestionAttemptContentComponent";
-import QuestionAttemptShortAnswerComponent from "./QuestionAttemptShortAnswerComponent";
-import QuestionAttemptTrueFalseComponent from "./QuestionAttemptTrueFalseComponent";
-import QuizAttemptMCQComponent from "./QuizAttemptMCQComponent";
+import QuestionAttemptContentComponent from "../QuizAttemptComponents/QuestionAttemptContentComponent";
+import QuestionAttemptShortAnswerComponent from "../QuizAttemptComponents/QuestionAttemptShortAnswerComponent";
+import QuestionAttemptTrueFalseComponent from "../QuizAttemptComponents/QuestionAttemptTrueFalseComponent";
+import QuizAttemptMCQComponent from "../QuizAttemptComponents/QuizAttemptMCQComponent";
+import { Content } from "rsuite";
 export default function GradedQuizQuestionComponent(props) {
   const [questionAttempt, setQuestionAttempt] = React.useState();
+  const [question, setQuestion] = React.useState();
+  const [questionContent, setQuestionContent] = React.useState();
   const [shortAnswerResponse, setShortAnswerResponse] = useState("");
   const [optionSelected, setOptionSelected] = useState(
     // props.questionAttemptProp.optionSelected
@@ -21,11 +24,16 @@ export default function GradedQuizQuestionComponent(props) {
   const [index, setIndex] = useState(props.indexProp);
 
   React.useEffect(() => {
-    console.log("quizQuestionAttempt useEffect called");
-    // console.log("questionAttempt: ", props.questionAttemptProp);
-    // console.log("questionAttempts: ", props.questionAttemptsProp);
-    // setShortAnswerResponse(props.questionAttemptProp.shortAnswerResponse);
-    // setOptionSelected(props.questionAttemptProp.optionSelected);
+    console.log("gradedQuizQuestionComponent useEffect called");
+    console.log("questionAttemptProp: ", props.questionAttemptProp)
+    console.log("optionSelectedProp: ", props.questionAttemptProp.optionSelected)
+    console.log("question: ", props.questionAttemptProp.questionAttempted)
+    console.log("questionContent: ", props.questionAttemptProp.questionAttempted.questionContent)
+
+    setQuestionAttempt(props.questionAttemptProp)
+    setOptionSelected(props.questionAttemptProp.optionSelected)
+    setQuestion(props.questionAttemptProp.questionAttempted)
+    setQuestionContent(props.questionAttemptProp.questionAttempted.questionContent)
   }, []);
 
   return (
@@ -35,8 +43,8 @@ export default function GradedQuizQuestionComponent(props) {
       direction="row"
       justifyContent={"space-between"}
     >
-      <p>question title</p>
 
+      {questionContent}
       <Paper
         elevation={1}
         style={{
