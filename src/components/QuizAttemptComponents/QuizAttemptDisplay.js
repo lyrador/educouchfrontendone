@@ -239,7 +239,7 @@ export default function QuizAttemptDisplay(props) {
             <ListItemText primary ="Exit Preview Quiz" />
           </ListItemButton>
         </Link>
-      )}
+      )} //display if its a preview
 
       <Grid container width={"60%"} flexDirection={"column"}>
         {quizQuestions.map((question, index) => {

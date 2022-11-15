@@ -59,19 +59,18 @@ export default function ViewGradedQuizAttempt(props) {
       <Grid item xs={10} paddingLeft={10} paddingRight={10}>
         <h1>Quiz Graded Attempt</h1>
       </Grid>
-
-      <Grid container width={"60%"} flexDirection={"column"}>
-        {questionAttempts.map((questionAttempt, index) => {
-          return (
-            <Grid width={"auto"}>
-              <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
-                <GradedQuizQuestionComponent
-                  indexProp={index + 1}
-                />
-              </Paper>
-            </Grid>
-          );
-        })}
+      <Grid container spacing={0} direction={"column"} alignContent={"center"}>
+        <Grid container width={"60%"} flexDirection={"column"}>
+          {questionAttempts.map((questionAttempt, index) => {
+            return (
+              <Grid width={"auto"}>
+                <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
+                  <GradedQuizQuestionComponent indexProp={index + 1} />
+                </Paper>
+              </Grid>
+            );
+          })}
+        </Grid>
       </Grid>
     </Grid>
   );
