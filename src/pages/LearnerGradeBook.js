@@ -72,7 +72,7 @@ function LearnerGradeBook() {
         <div>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                <LearnerCoursesDrawer></LearnerCoursesDrawer>
+                <LearnerCoursesDrawer courseId = {courseId} learnerStatus = {true}></LearnerCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
                     <Typography variant="h5">
