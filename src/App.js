@@ -68,6 +68,7 @@ import FileSubmissionAttempt from "./components/FileSubmissionAttemptComponents/
 import CreateWhiteboardHomepage from "./pages/CreateWhiteboardHomepage";
 import ViewAllRoomPage from "./pages/ViewAllRoomPage";
 import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
+import LearnerHome from "./pages/LearnerHome";
 import TeachingFileSubMarkerPage from "./pages/TeachingFileSubMarkerPage";
 import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
 import WebPet from "web-pet";
@@ -89,6 +90,17 @@ function App() {
                 </RequireAuth>
               }
             />
+            <Route
+              path="/learnerHome"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerHome />
+                </RequireAuth>
+              }
+            />
+
+            
             <Route
               path="/account"
               element={
