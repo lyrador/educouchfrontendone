@@ -69,6 +69,7 @@ import CreateWhiteboardHomepage from "./pages/CreateWhiteboardHomepage";
 import ViewAllRoomPage from "./pages/ViewAllRoomPage";
 import WebPet from "web-pet";
 import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
+import LearnerHome from "./pages/LearnerHome";
 
 function App() {
 
@@ -88,6 +89,17 @@ function App() {
                 </RequireAuth>
               }
             />
+            <Route
+              path="/learnerHome"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerHome />
+                </RequireAuth>
+              }
+            />
+
+            
             <Route
               path="/account"
               element={
