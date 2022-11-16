@@ -26,6 +26,25 @@ const LearnerCourseCalender = (props) => {
     const [refreshPage, setRefreshPage] = useState('')
     const courseId = location.pathname.split('/')[2];
 
+    const [learnerStatus, setLearnerStatus] = useState('');
+
+    React.useEffect(() => {
+        setRefreshPage(false);
+        var checkStatusUrl = "http://localhost:8080/course/enquiryCourseEnrolment?learnerId=" + user.userId + "&courseId=" + courseId;
+        fetch(checkStatusUrl)
+            .then(res => res.json())
+            .then((result) => {
+                setLearnerStatus(result.enrolled);
+                console.log('Learner status is ' + learnerStatus);
+
+            }
+            )
+            .catch((err) => {
+                console.log(err);
+            });
+    }, [refreshPage]);
+
+
     //to get the classRuns of the instructor
     React.useEffect(() => {
         fetch("http://localhost:8080/classRun/getClassRunsFromInstructorId/" + user.userId)
@@ -61,7 +80,7 @@ const LearnerCourseCalender = (props) => {
         <div>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <LearnerCoursesDrawer courseId={courseId}></LearnerCoursesDrawer>
+                    <LearnerCoursesDrawer courseId={courseId} learnerStatus={learnerStatus}></LearnerCoursesDrawer>
                 </Grid>
                 <Grid item xs={10}>
                     <div id="calender">
