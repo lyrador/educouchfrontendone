@@ -2,24 +2,23 @@ import { Button, Grid } from "@mui/material";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LearnerCoursesDrawer from "../LearnerCourseDrawer";
-import QuizAttemptDisplay from "./QuizAttemptDisplay";
-import QuizInformation from "./QuizInformation";
+import QuizAttemptDisplay from "../QuizAttemptComponents/QuizAttemptDisplay";
 import { useAuth } from "../../context/AuthProvider";
-import QuestionAttemptTrueFalseComponent from "./QuestionAttemptTrueFalseComponent";
 
-export default function QuizAttempt(props) {
+export default function PreviewQuiz(props) {
   const navigate = useNavigate();
   var location = useLocation(props);
+  //need to pass these things from previous page (assessments list)
   var courseId = location.state.courseIdProp;
-  var learnerStatus = location.state.learnerStatusProp;
   var quizId = location.state.quizIdProp;
+  var assessmentsPath = location.state.assessmentsPathProp;
+  var learnerStatus = "ENROLLED";
   var auth = useAuth();
   var user = auth.user;
-  var learnerId = user.userId;
   const [numberQuizAttempts, setNumberQuizAttempts] = useState(0);
   const [currentQuiz, setCurrentQuiz] = useState();
   const [quizQuestions, setQuizQuestions] = useState([]);
-  const [startQuiz, setStartQuiz] = useState("");
+  const [startQuiz, setStartQuiz] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState();
   const [maxScore, setMaxScore] = useState();
@@ -32,14 +31,14 @@ export default function QuizAttempt(props) {
   const [quizStatusEnum, setQuizStatusEnum] = useState();
   const [questionAttempts, setQuestionAttempts] = useState([]);
   const [quizAttempt, setQuizAttempt] = useState({});
-  const [hasPreviousAttempt, setHasPreviousAttempt] = useState(false);
   const [quizExpired, setQuizExpired] = useState("false");
-  const [buttonRendered, setButtonRendered] = useState("");
+
   React.useEffect(() => {
+    setStartQuiz(false);
     fetch("http://localhost:8080/quiz/getQuizById/" + quizId)
       .then((res) => res.json())
       .then((result) => {
-        setStartQuiz("false");
+        setStartQuiz(false);
         setCurrentQuiz(result);
         setQuizQuestions(result.questions);
         setTitle(result.assessmentTitle);
@@ -56,66 +55,25 @@ export default function QuizAttempt(props) {
         console.log("retrieved quiz:", result);
       })
       .then(
-        fetch(
-          "http://localhost:8080/quizAttempt/getMostRecentQuizAttemptByLearnerId/" +
-            quizId +
-            "/" +
-            learnerId
-        )
+        fetch("http://localhost:8080/quizAttempt/createQuizPreview/" + quizId)
           .then((res) => res.json())
           .then((result) => {
-            console.log("most recent attempt: ", result);
-            if (result.quizAttemptId == null) {
-              setHasPreviousAttempt(false);
-            } else {
-              setHasPreviousAttempt(true);
-              setQuizAttempt(result);
-              setQuestionAttempts(result.questionAttempts);
-            }
+            setQuestionAttempts(result.questionAttempts);
+            setQuizAttempt(result);
+            console.log("retrieved quizPreview:", result);
           })
       );
   }, []);
 
-  function handleResumeQuiz() {
-    setStartQuiz("true");
-    console.log("questionAttempts fetched: ", questionAttempts);
-  }
-
-  function handleStartQuiz() {
-    console.log("clicked handleStartQuiz");
-    fetch(
-      "http://localhost:8080/quizAttempt/createQuizAttempt/" +
-        quizId +
-        "/" +
-        learnerId,
-      { method: "POST" }
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        setQuestionAttempts(result.questionAttempts);
-        setQuizAttempt(result);
-        setStartQuiz("true");
-        // console.log("questionAttempts fetched: ", result.questionAttempts);
-      });
-  }
-
-  function handleViewGradedQuizAttempt() {
-    navigate(`/viewGradedQuizAttempt`, {
-      state: {
-        courseIdProp: courseId,
-        learnerStatusProp: learnerStatus,
-        quizIdProp: quizId,
-        learnerIdProp: learnerId,
-        quizAttemptProp: quizAttempt,
-        questionAttemptsProp: questionAttempts,
-      },
-    });
+  function handlePreviewQuiz() {
+    console.log("clicked handlePreviewQuiz");
+    setStartQuiz(true);
   }
 
   return (
     <Grid container direction={"column"}>
       <h1>{title}</h1>
-      {startQuiz == "false" ? (
+      {!startQuiz ? (
         <Grid
           container
           direction={"column"}
@@ -138,51 +96,16 @@ export default function QuizAttempt(props) {
             <Grid item>No Time Limit</Grid>
           )}
 
-          {hasPreviousAttempt ? (
-            <>
-              {quizAttempt.assessmentAttemptStatusEnum === "INCOMPLETE" ? (
-                <Button variant="contained" onClick={handleResumeQuiz}>
-                  Resume Quiz
-                </Button>
-              ) : (
-                <>
-                  {" "}
-                  {quizAttempt.assessmentAttemptStatusEnum === "GRADED" ? (
-                    <Button
-                      onClick={handleViewGradedQuizAttempt}
-                      variant="contained"
-                    >
-                      View Graded Attempt
-                    </Button>
-                  ) : (
-                    <Grid
-                      marginTop={"20px"}
-                      style={{
-                        backgroundColor: "#1975D2",
-                        padding: "7px",
-                        borderRadius: "6px",
-                      }}
-                    >
-                      <p style={{ color: "white" }}>
-                        Your attempt has been submitted!
-                      </p>
-                    </Grid>
-                  )}
-                </>
-              )}
-            </>
-          ) : (
-            <Button onClick={handleStartQuiz} variant="contained">
-              Start Quiz
-            </Button>
-          )}
+          <Button onClick={handlePreviewQuiz} variant="contained">
+            Start Quiz
+          </Button>
         </Grid>
       ) : (
         <Grid>
           <QuizAttemptDisplay
-            isPreviewProp={false}
-            assessmentsPathProp=""
+            isPreviewProp={true}
             courseIdProp={courseId}
+            assessmentsPathProp={assessmentsPath}
             learnerStatusProp={learnerStatus}
             currentQuizProp={currentQuiz}
             currentQuizAttemptProp={quizAttempt}

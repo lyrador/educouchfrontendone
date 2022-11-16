@@ -17,18 +17,20 @@ import { Padding, SettingsOutlined } from "@mui/icons-material";
 import dayjs from "dayjs";
 
 export default function QuizSettingsComponents(props) {
+  let currentDate = new Date()
+  const offset = currentDate.getTimezoneOffset();
+  currentDate = new Date(currentDate.getTime() + (offset * 60 * 1000));
+
   const paperStyle = { padding: "50px 20px", width: 1200, margin: "20px auto" };
   const quizSettings = props.quizSettingsProp;
   const [questions, setQuestions] = useState();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [maxScore, setMaxScore] = useState("");
-  const [startDate, setStartDate] = useState(dayjs());
-  const [endDate, setEndDate] = useState(dayjs());
+  const [startDate, setStartDate] = useState(dayjs(currentDate.toISOString().split('T')[0]));
+  const [endDate, setEndDate] = useState(dayjs(currentDate.toISOString().split('T')[0]));
   const [hasTimeLimit, setHasTimeLimit] = useState("");
   const [timeLimit, setTimeLimit] = useState();
-  const [hasMaxAttempts, setHasMaxAttempts] = useState("");
-  const [maxAttempts, setMaxAttempts] = useState();
 
   const [isAutoRelease, setIsAutoRelease] = useState("");
   var startDateString = "";
@@ -63,28 +65,30 @@ export default function QuizSettingsComponents(props) {
     errorMessage: "",
   });
 
+  var utc = require("dayjs/plugin/utc");
+  var timezone = require("dayjs/plugin/timezone"); // dependent on utc plugin
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+
   React.useEffect(() => {
+    console.log("received startDate: ", props.startDateProp);
+    console.log("received endDate: ", props.endDateProp);
     setQuestions(quizSettings.questions);
     setTitle(quizSettings.assessmentTitle);
     setDescription(quizSettings.assessmentDescription);
-    // setMaxScore(quizSettings.assessmentMaxScore);
     props.calculateMaxQuizScoreProp();
     setMaxScore(quizSettings.assessmentMaxScore);
-    setStartDate(quizSettings.assessmentStartDate);
-    setEndDate(quizSettings.assessmentEndDate);
     setHasTimeLimit(quizSettings.hasTimeLimit);
     setTimeLimit(quizSettings.timeLimit);
-    setHasMaxAttempts(quizSettings.hasMaxAttempts);
-    setMaxAttempts(quizSettings.maxAttempts);
     setIsAutoRelease(quizSettings.isAutoRelease);
-    startDateString = dayjs(startDate.d).format("YYYY/MM/DD");
-    endDateString = dayjs(endDate.d).format("YYYY/MM/DD");
+
+    setStartDate(dayjs(quizSettings.assessmentStartDate).local().format());
+    setEndDate(dayjs(quizSettings.assessmentEndDate).local().format());
   }, []);
 
   function handleCancel() {
     props.closeQuizSettingsProp();
   }
-
   function editQuizSettings(
     title,
     description,
@@ -92,8 +96,6 @@ export default function QuizSettingsComponents(props) {
     endDate,
     hasTimeLimit,
     timeLimit,
-    hasMaxAttempts,
-    maxAttempts,
     isAutoRelease
   ) {
     props.editQuizSettingsProp(
@@ -103,8 +105,6 @@ export default function QuizSettingsComponents(props) {
       endDate,
       hasTimeLimit,
       timeLimit,
-      hasMaxAttempts,
-      maxAttempts,
       isAutoRelease
     );
   }
@@ -112,40 +112,17 @@ export default function QuizSettingsComponents(props) {
   function validateQuizSettings() {
     const tempStartDate = startDate;
     const tempEndDate = endDate;
-    const dateComparisonBoolean = tempEndDate >= tempStartDate;
-    if (hasTimeLimit == "true" || hasMaxAttempts == "true") {
-      if (hasTimeLimit == "true" && hasMaxAttempts == "true") {
-        console.log("fail dis");
-        return (
-          title &&
-          description &&
-          maxScore &&
-          dateComparisonBoolean &&
-          timeLimit > 4 &&
-          maxAttempts > 0
-        );
-      } else if (hasTimeLimit == "true") {
-        console.log("fail dat");
-        return (
-          title &&
-          description &&
-          maxScore &&
-          dateComparisonBoolean &&
-          timeLimit > 4
-        );
-      } else {
-        console.log("fail dat other one");
+    console.log("validate startDate: ", tempStartDate);
+    console.log("validate endDate: ", tempEndDate);
 
-        return (
-          title &&
-          description &&
-          maxScore &&
-          dateComparisonBoolean &&
-          maxAttempts > 0
-        );
-      }
+    const dateComparisonBoolean = tempEndDate >= tempStartDate;
+    console.log("pass date comparison: ", dateComparisonBoolean);
+    if (hasTimeLimit == "true") {
+      console.log("has time limit");
+      return title && description && dateComparisonBoolean && timeLimit > 4;
     } else {
-      return title && description && maxScore && dateComparisonBoolean;
+      console.log("no time limit");
+      return title && description && dateComparisonBoolean;
     }
   }
 
@@ -179,6 +156,8 @@ export default function QuizSettingsComponents(props) {
       });
     }
     const dateComparisonBoolean = tempEndDate < tempStartDate;
+    console.log("startDate: ", tempStartDate);
+    console.log("endDate: ", tempEndDate);
     if (dateComparisonBoolean) {
       setStartDateError({
         value: true,
@@ -195,25 +174,23 @@ export default function QuizSettingsComponents(props) {
         errorMessage: "Quiz Time Limit cannot be less than 5 minutes!",
       });
     }
-    if (maxAttempts < 1) {
-      setMaxAttemptsError({
-        value: true,
-        errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
-      });
-    }
+    // if (maxAttempts < 1) {
+    //   setMaxAttemptsError({
+    //     value: true,
+    //     errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
+    //   });
+    // }
     if (validateQuizSettings()) {
       console.log("passedValidations");
+      console.log("passing in startDate: ", startDate);
       editQuizSettings(
         title,
         description,
-        maxScore,
         startDate,
         endDate,
         hasTimeLimit,
         timeLimit,
-        isAutoRelease,
-        hasMaxAttempts,
-        maxAttempts
+        isAutoRelease
       );
       handleCancel();
     } else {
@@ -222,12 +199,12 @@ export default function QuizSettingsComponents(props) {
   };
 
   const handleStartDateChange = (newDate) => {
-    setStartDate(newDate);
+    setStartDate(dayjs(newDate).local().format());
     console.log("new start date: ", startDate);
   };
 
   const handleEndDateChange = (newDate) => {
-    setEndDate(newDate);
+    setEndDate(dayjs(newDate).local().format());
   };
 
   return (
@@ -270,9 +247,12 @@ export default function QuizSettingsComponents(props) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <Paper elevation={1} style={{ padding: "10px", marginBottom: "20px"}}>
+          <Paper
+            elevation={1}
+            style={{ padding: "10px", marginBottom: "20px" }}
+          >
             <p style={{ color: "grey" }}>Quiz Max Score (Auto-Generated)</p>
-            <br/>
+            <br />
             <p style={{ color: "grey" }}>{maxScore}</p>
           </Paper>
           <Stack
@@ -283,7 +263,6 @@ export default function QuizSettingsComponents(props) {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
                 label="Start Date"
-                inputFormat="MM/DD/YYYY"
                 value={startDate}
                 onChange={handleStartDateChange}
                 renderInput={(params) => (
@@ -300,7 +279,6 @@ export default function QuizSettingsComponents(props) {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
                 label="End Date"
-                inputFormat="MM/DD/YYYY"
                 value={endDate}
                 onChange={handleEndDateChange}
                 renderInput={(params) => (
@@ -349,40 +327,6 @@ export default function QuizSettingsComponents(props) {
               onChange={(e) => setTimeLimit(e.target.value)}
             />
           )}
-          {/* <Stack
-            spacing={1}
-            style={{ paddingBottom: "10px", marginTop: "20px" }}
-          >
-            <p style={{ color: "grey" }}>Quiz Has Max Attempts</p>
-            <Select
-              id="select-trueFalse"
-              value={hasMaxAttempts}
-              onChange={(e) => setHasMaxAttempts(e.target.value)}
-              defaultValue={hasMaxAttempts}
-            >
-              <MenuItem value="true">True</MenuItem>
-              <MenuItem value="false">False</MenuItem>
-            </Select>
-
-            {hasMaxAttempts == "true" && (
-              <TextField
-                error={maxAttemptsError.value}
-                helperText={maxAttemptsError.errorMessage}
-                id="outlined-basic"
-                label="Maximum Attempts Allowed"
-                variant="outlined"
-                fullWidth
-                style={{
-                  paddingBottom: "10px",
-                  marginTop: "20px",
-                  marginBottom: "20px",
-                }}
-                value={maxAttempts}
-                defaultValue={maxAttempts}
-                onChange={(e) => setMaxAttempts(e.target.value)}
-              />
-            )}
-          </Stack> */}
 
           <Stack spacing={1}>
             <InputLabel id="select-autoReleaseResults-trueFalse">

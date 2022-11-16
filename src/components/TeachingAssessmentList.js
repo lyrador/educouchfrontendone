@@ -41,6 +41,7 @@ import PublishIcon from "@mui/icons-material/Publish";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import { useAuth } from "../context/AuthProvider";
 import { render } from "@testing-library/react";
@@ -359,6 +360,34 @@ function TeachingAssessmentList(props) {
     });
   }
 
+  function handlePreviewQuiz(event, quizId) {
+    //   const [quizAttempt, setQuizAttempt] = useState({})
+    //   const [questionAttempts, setQuestionAttempts] = useState([])
+    //   const [currentQuiz, setCurrentQuiz] = useState();
+
+    // courseIdProp={courseId}
+    // learnerStatusProp={learnerStatus}
+    // currentQuizProp={currentQuiz}
+    // currentQuizAttemptProp={quizAttempt}
+    // quizIdProp={quizId}
+    // questionsProp={quizQuestions}
+    // hasTimeLimitProp={hasTimeLimit}
+    // timeLimitProp={timeLimit}
+    // quizStatusEnumProp={quizStatusEnum}
+    // questionAttemptsProp={questionAttempts}
+    navigate(`/previewQuiz`, {
+      state: {
+        courseIdProp: courseId,
+        quizIdProp: quizId,
+        assessmentsPathProp: assessmentsPath,
+        // quizProp: currentQuiz,
+        // learnerIdProp: learnerId,
+        // quizAttemptProp: quizAttempt,
+        // questionAttemptsProp: questionAttempts,
+      },
+    });
+  }
+
   function handleReleaseAssessment(assessmentId) {
     // call some API to release assessment
     fetch(
@@ -501,7 +530,7 @@ function TeachingAssessmentList(props) {
 
           <div style={{ justifyContent: "center" }}>
             <center>
-              <Typography variant = "h4">List of Assessments</Typography>
+              <Typography variant="h4">List of Assessments</Typography>
             </center>
             <Grid
               style={{
@@ -522,7 +551,6 @@ function TeachingAssessmentList(props) {
                     <TableCell>Max Score</TableCell>
                     <TableCell>Start Date</TableCell>
                     <TableCell>End Date</TableCell>
-                    {/* <TableCell>Assessment Status</TableCell> */}
                     <TableCell>Assessment Type</TableCell>
                     <TableCell>Assessment Release</TableCell>
                     <TableCell>Actions</TableCell>
@@ -547,14 +575,9 @@ function TeachingAssessmentList(props) {
                         <div>
                           <IconButton
                             aria-label="settings"
-                            onClick={(event) =>
-                              handleClickDeleteDialogOpen(
-                                event,
-                                assessment.assessmentId
-                              )
-                            }
+                            onClick={(event) => {handlePreviewQuiz(event, assessment.assessmentId)}}
                           >
-                            <DeleteIcon />
+                            <VisibilityIcon />
                           </IconButton>
                           {assessment.open !== "true" && (
                             <IconButton
@@ -566,6 +589,17 @@ function TeachingAssessmentList(props) {
                               <EditIcon />
                             </IconButton>
                           )}
+                          <IconButton
+                            aria-label="settings"
+                            onClick={(event) =>
+                              handleClickDeleteDialogOpen(
+                                event,
+                                assessment.assessmentId
+                              )
+                            }
+                          >
+                            <DeleteIcon />
+                          </IconButton>
                           {assessment.open !== "true" && (
                             <IconButton
                               aria-label="publish"

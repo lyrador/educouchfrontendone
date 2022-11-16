@@ -119,10 +119,11 @@ export default function CreateQuizForm(props) {
     endDate,
     hasTimeLimit,
     timeLimit,
-    isAutoRelease,
-    hasMaxAttempts,
-    maxAttempts
+    isAutoRelease
   ) {
+    console.log("editQuizSettings :: received startDate: ", startDate);
+    console.log("editQuizSettings :: received endDate: ", endDate);
+
     currentQuiz.assessmentTitle = title;
     currentQuiz.assessmentDescription = description;
     currentQuiz.assessmentStartDate = startDate;
@@ -130,8 +131,6 @@ export default function CreateQuizForm(props) {
     currentQuiz.hasTimeLimit = hasTimeLimit;
     currentQuiz.timeLimit = timeLimit;
     currentQuiz.isAutoRelease = isAutoRelease;
-    currentQuiz.hasMaxAttempts = hasMaxAttempts;
-    currentQuiz.maxAttempts = maxAttempts;
   }
 
   function editQuestionTitle(questionId, questionTitle) {
@@ -211,21 +210,23 @@ export default function CreateQuizForm(props) {
     if (updatedOptions && updatedOptions != "") {
       tempFormQuestions[questionIndex].options = updatedOptions;
     }
-    console.log("options after removal: ", tempFormQuestions[questionIndex].options)
-    console.log("supposed to assign this: ", updatedOptions)
+    console.log(
+      "options after removal: ",
+      tempFormQuestions[questionIndex].options
+    );
+    console.log("supposed to assign this: ", updatedOptions);
   }
 
   function selectCorrectQuestionOption(questionId, option) {
-    console.log("correct option selected: ", option)
+    console.log("correct option selected: ", option);
     const tempFormQuestions = [...formQuestions];
     const questionIndex = tempFormQuestions.findIndex(
       (f) => f.localid == questionId
     );
-    console.log("here agaz")
+    console.log("here agaz");
     tempFormQuestions[questionIndex].correctOption = option;
     setFormQuestions(tempFormQuestions);
   }
-
 
   const addQuestion = () => {
     setQuestionCounter(questionCounter + 1);
@@ -259,14 +260,6 @@ export default function CreateQuizForm(props) {
   };
 
   const handleQuizDateConversions = (quizObject) => {
-    const formattedStart = dayjs(quizObject.assessmentStartDate.d).format(
-      "YYYY-MM-DD"
-    );
-    const formattedEnd = dayjs(quizObject.assessmentEndDate.d).format(
-      "YYYY-MM-DD"
-    );
-    quizObject.assessmentStartDate = formattedStart;
-    quizObject.assessmentEndDate = formattedEnd;
     return quizObject;
   };
 
@@ -285,6 +278,7 @@ export default function CreateQuizForm(props) {
     if (validateQuiz()) {
       const updatedQuiz = handleQuizDateConversions(currentQuiz);
       linkQuizQuestions();
+      console.log("quiz going to save: ", updatedQuiz);
 
       fetch("http://localhost:8080/quiz/createQuiz/" + courseId, {
         method: "POST",
@@ -292,7 +286,7 @@ export default function CreateQuizForm(props) {
 
         body: JSON.stringify(updatedQuiz),
       }).then((res) => res.json());
-      console.log("created Quiz: ", updatedQuiz)
+      console.log("created Quiz: ", updatedQuiz);
       handleCancel();
     }
   };
@@ -388,6 +382,8 @@ export default function CreateQuizForm(props) {
             >
               <QuizSettingsComponents
                 quizSettingsProp={currentQuiz}
+                startDateProp={currentQuiz.assessmentStartDate}
+                endDateProp={currentQuiz.assessmentEndDate}
                 editQuizSettingsProp={editQuizSettings}
                 closeQuizSettingsProp={handleCloseSettingsDialogue}
                 calculateMaxQuizScoreProp={calculateMaxQuizScore}
