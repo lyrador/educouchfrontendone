@@ -171,7 +171,8 @@ function LearnerAnnouncementList(props) {
                   announcement.createdByUserName
                     .toLowerCase()
                     .includes(query) ||
-                  announcement.createdDateTime.toLowerCase().includes(query)
+                  announcement.createdDateTime.toLowerCase().includes(query) ||
+                  announcement.isRead.toLowerCase().includes(query)
               )
               .reverse()
               .map((announcement) => (
@@ -227,6 +228,13 @@ function LearnerAnnouncementList(props) {
                       >
                         <MarkChatReadIcon />
                         <div style={{ fontSize: "18px" }}>Mark As Read</div>
+                      </IconButton>
+                    )}
+
+                    {announcement.isRead === "READ" && (
+                      <IconButton edge="end" aria-label="delete">
+                        <MarkChatReadIcon />
+                        <div style={{ fontSize: "18px" }}>Read</div>
                       </IconButton>
                     )}
                   </ListItem>
