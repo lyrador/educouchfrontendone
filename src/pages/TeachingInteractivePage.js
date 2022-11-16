@@ -737,7 +737,7 @@ function TeachingInteractivePage(props) {
                     <Pagination count={pages.length} page={pageNumberPointer} onChange={handlePageChange} showFirstButton showLastButton />
                 </div>
                 <div>
-                    <Button
+                    {props.chapterId && <Button
                         className="btn-upload"
                         color="primary"
                         component="span"
@@ -748,6 +748,7 @@ function TeachingInteractivePage(props) {
                     >
                         <PostAddIcon />
                     </Button>
+                }
                 </div>
             </div>
             

@@ -34,13 +34,16 @@ import LinkMaterial from "@mui/material/Link";
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 import QuizQuestionDisplayComponent from "../components/QuizComponents/QuizQuestionDisplayComponent";
 import MarkingSidebar from "../components/MarkingSidebar";
+import FileSubmissionDisplayComponent from "../components/QuizComponents/FileSubmissionDisplayComponent"
+import MarkingFileSubSidebar from "../components/MarkingFileSubSidebar";
 import axios from "axios";
 
-function TeachingMarkerPage() {
-  // list of gradebook entries
-  const [questions, setQuestions] = useState([]);
-  const [totalOpenEndedScore, setTotalOpenEndedScore] = useState(0);
-  const [totalLearnerOpenEnded, setTotalLearnerOpenEnded] = useState(0);
+
+function TeachingFileSubMarkerPage() {
+  // fileSubmissionAttemptDto 
+  const [fileSubmission, setFileSubmission] = useState();
+  const [attachment, setAttachment] = useState({});
+  const [obtainedScore, setObtainedScore] = useState(0);
 
   //paths
   const navigate = useNavigate();
@@ -56,11 +59,10 @@ function TeachingMarkerPage() {
   const title = location.state.title;
   const assessmentTotal = location.state.assessmentTotal;
   const isGraded = location.state.isGraded;
-  const mcqScore = location.state.mcqScore;
   const learnerScore = location.state.learnerScore;
-  const isQuiz = location.state.isQuiz;
   const identifier = location.state.identifier;
   const isOpen = location.state.isOpen;
+
 
   const [refresh, setRefresh] = useState(false);
 
@@ -68,7 +70,7 @@ function TeachingMarkerPage() {
     setRefresh(!refresh);
   };
 
-  const handleOnChange = (val, index) => {
+  const handleOnChange = (val) => {
     let valInt = 0;
     if (val.length > 0) {
       valInt = parseInt(val);
@@ -81,42 +83,36 @@ function TeachingMarkerPage() {
 
     // Send an error message to the user and dont update the score
     const questionMax =
-      questions[index]["questionAttempted"]["questionMaxPoints"];
+      assessmentTotal;
     if (valInt > questionMax) {
-      const newArr = [...questions];
-      newArr[index][
+      const newObj = {...fileSubmission}
+      newObj[
         "errorMessage"
       ] = `Please enter a value that is at most ${questionMax}`;
-      setQuestions(newArr);
+      setFileSubmission(newObj);
       return;
     }
 
-    const newArr = [...questions];
-    newArr[index]["questionAttemptScore"] = valInt;
-    newArr[index]["errorMessage"] = "";
-    setQuestions(newArr);
-    const newTotal = newArr.reduce(
-      (total, curr) => total + curr.questionAttemptScore,
-      0
-    );
-    // console.log(newTotal)
-    setTotalLearnerOpenEnded(newTotal);
+    const newObj = {...fileSubmission};
+    newObj["obtainedScore"] = valInt;
+    newObj["errorMessage"] = "";
+    setFileSubmission(newObj);
+
   };
 
-  const handleOnChangeFeedback = (val, index) => {
-    const newArr = [...questions];
-    newArr[index]["feedback"] = val;
-    setQuestions(newArr);
+  const handleOnChangeFeedback = (val) => {
+    const newObj = {...fileSubmission};
+    newObj["feedback"] = val;
+    console.log(newObj)
+    setFileSubmission(newObj);
   };
 
   const handleOnCompleteGrading = async () => {
+    console.log(fileSubmission)
     try {
       const response = await axios.post(
-        "http://localhost:8080/gradeBookEntry/updateOpenEndedQuestions?learnerId=" +
-          learnerId +
-          "&assessmentId=" +
-          assessmentId,
-        questions
+        "http://localhost:8080/gradeBookEntry/updateFileSubmission",
+        fileSubmission
       );
       // set the state of the user
       // store the user in localStorage
@@ -132,30 +128,18 @@ function TeachingMarkerPage() {
   };
 
   React.useEffect(() => {
+    // TODO: Use axios instead
     fetch(
-      "http://localhost:8080/gradeBookEntry/getOpenEndedQuestions?learnerId=" +
-        learnerId +
-        "&assessmentId=" +
-        assessmentId
+      "http://localhost:8080/fileSubmissionAttempt/getFileSubmissionAttemptByAssessmentId/" +
+        assessmentId +
+        "/" +
+        learnerId
     )
       .then((res) => res.json())
       .then((result) => {
-        let totalOE = totalOpenEndedScore;
-        let totalLearnerOE = totalLearnerOpenEnded;
-        for (let i = 0; i < result.length; i++) {
-          // console.log(result[i].questionAttempted.questionMaxPoints)
-          const questionAttempted = result[i].questionAttempted;
-          const maxPtsInt = parseInt(questionAttempted.questionMaxPoints);
-
-          totalOE += parseInt(maxPtsInt);
-          totalLearnerOE += parseInt(result[i].questionAttemptScore);
-          questionAttempted.questionMaxPoints = maxPtsInt;
-          result[i].errorMessage = "";
-        }
-        setQuestions(result);
-        console.log(result);
-        setTotalOpenEndedScore(totalOE);
-        setTotalLearnerOpenEnded(totalLearnerOE);
+        console.log(result)
+        setFileSubmission(result)
+        setAttachment(result.attachment)
       })
       .catch((err) => {
         console.log(err.message);
@@ -200,41 +184,29 @@ function TeachingMarkerPage() {
           <Typography variant="h5">Marking Script</Typography>
           <divider></divider>
           <br />
-          {questions.map((question, index) => {
-            return (
+
               <Paper
                 elevation={3}
                 style={{ padding: 30, marginTop: 20 }}
-                key={question.questionAttemptId}
+                // key={fileSubmission.fileSubmissionAttemptId}
               >
-                <QuizQuestionDisplayComponent
-                  isQuiz={isQuiz}
-                  isGraded={isGraded}
-                  // handleOnChangeMaxPt={handleOnChangeMaxPt}
-                  handleOnChangeFeedback={handleOnChangeFeedback}
-                  handleOnChange={handleOnChange}
-                  questionProp={question}
-                  indexProp={index}
-                />
+            {fileSubmission && <FileSubmissionDisplayComponent
+              isGraded={isGraded}
+              assessmentTotal={assessmentTotal}
+              fileSubmissionProp={fileSubmission}
+              attachmentProp={attachment}
+              handleOnCompleteGrading={handleOnCompleteGrading}
+              handleOnChangeFeedback={handleOnChangeFeedback}
+              handleOnChange={handleOnChange}
+
+            />}
               </Paper>
-            );
-          })}
+          
         </Grid>
-        <Grid item xs={2} style={{ padding: "10px" }}>
-          <MarkingSidebar
-            isQuiz={isQuiz}
-            isGraded={isGraded}
-            mcqScore={mcqScore}
-            handleOnCompleteGrading={handleOnCompleteGrading}
-            assessmentTotal={assessmentTotal}
-            learnerScore={learnerScore}
-            openEndedTotalScore={totalOpenEndedScore}
-            openEndedLearnerScore={totalLearnerOpenEnded}
-          ></MarkingSidebar>
-        </Grid>
+
       </Grid>
     </div>
   );
 }
 
-export default TeachingMarkerPage;
+export default TeachingFileSubMarkerPage;

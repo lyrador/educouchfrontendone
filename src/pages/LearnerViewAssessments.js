@@ -48,7 +48,6 @@ export default function LearnerViewAssessments(props) {
 
   const renderEmptyRowMessage = () => {
     if (assessments.length === 0) {
-      console.log("assessment list is empty");
       return (
         <TableRow>
           <TableCell style={{ textAlign: "left" }}>
@@ -66,7 +65,6 @@ export default function LearnerViewAssessments(props) {
       .then((res) => res.json())
       .then((result) => {
         setAssessments(result);
-        console.log("released assessments under this course: ", result);
       });
   }, []);
 
@@ -158,19 +156,20 @@ export default function LearnerViewAssessments(props) {
                     )}
                   </TableCell>
                   <TableCell align="right">
-                    <Button
-                      className="btn-choose"
-                      variant="outlined"
-                      type="submit"
-                      onClick={() =>
-                        handleViewAssessment(
-                          assessment.assessmentId,
-                          assessment.assessmentType
-                        )
-                      }
-                    >
-                      View Assessment
-                    </Button>
+                    {assessment.isExpired === "false" && (
+                      <Button
+                        className="btn-choose"
+                        variant="outlined"
+                        type="submit"
+                        onClick={() =>
+                          handleViewAssessment(
+                            assessment.assessmentId,
+                            assessment.assessmentType
+                          )
+                        }
+                      >
+                        View Details
+                      </Button>)}
                   </TableCell>
                 </TableRow>
               ))}

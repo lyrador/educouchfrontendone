@@ -7,15 +7,20 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import {
+  Grid,
+  Button,
+  List,
+  ListItem,
+  Divider,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Typography,
+} from "@mui/material";
 
 import { Link, useLocation, useParams } from "react-router-dom";
 import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
-import { Grid } from "@mui/material";
-
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import LinkMaterial from "@mui/material/Link";
-
-import { Button } from "@mui/material";
 
 import { useState } from "react";
 
@@ -262,18 +267,6 @@ function TeachingAnnouncementList(props) {
     }
   };
 
-  const renderEmptyRowMessage = () => {
-    if (announcements.length === 0) {
-      return (
-        <TableRow>
-          <TableCell colSpan={4} style={{ textAlign: "center" }}>
-            There are currently no announcements in this course!
-          </TableCell>
-        </TableRow>
-      );
-    }
-  };
-
   const renderExtraActions = (
     announcementId,
     announcementTitle,
@@ -358,100 +351,111 @@ function TeachingAnnouncementList(props) {
             </Alert>
           </Snackbar>
 
-          <div className="search">
-            <input
-              type="text"
-              placeholder="Search..."
-              style={{
-                float: "right",
-                marginLeft: "auto",
-                height: "30px",
-                fontSize: "12pt",
-              }}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
           <div style={{ justifyContent: "center" }}>
-            <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
-              List of Announcements
-            </h1>
-            <Button
-              className="btn-upload"
-              color="primary"
-              variant="contained"
-              component="span"
-              onClick={handleClickOpen}
-              style={{ float: "right", marginLeft: "auto" }}
-            >
-              Create New Announcement
-            </Button>
+            {announcements.length === 0 && (
+              <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
+                This course currently doesn't have any announcements!
+              </h1>
+            )}
           </div>
+
+          <div className="search">
+            {announcements.length > 0 && (
+              <input
+                type="text"
+                placeholder="Search..."
+                style={{
+                  float: "right",
+                  marginLeft: "auto",
+                  height: "30px",
+                  fontSize: "12pt",
+                }}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            )}
+          </div>
+
+          <div style={{ justifyContent: "center" }}>
+            {announcements.length > 0 && (
+              <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
+                List of Announcements
+              </h1>
+            )}
+          </div>
+
+          <Button
+            className="btn-upload"
+            color="primary"
+            variant="contained"
+            component="span"
+            onClick={handleClickOpen}
+            style={{ float: "right", marginLeft: "auto" }}
+          >
+            Create New Announcement
+          </Button>
+
           <div style={{ padding: "5%" }}>
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead style={{ backgroundColor: "#B0C4DE" }}>
-                  <TableRow>
-                    <TableCell>
-                      <b>Announcement Title</b>
-                    </TableCell>
-                    <TableCell>
-                      <b>Announcement Content</b>
-                    </TableCell>
-                    <TableCell>
-                      <b>Created By</b>
-                    </TableCell>
-                    <TableCell>
-                      <b>Created On</b>
-                    </TableCell>
-                    <TableCell>
-                      <b>Actions</b>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {renderEmptyRowMessage()}
-                  {announcements
-                    .filter(
-                      (announcement) =>
-                        announcement.announcementTitle
-                          .toLowerCase()
-                          .includes(query) ||
-                        announcement.announcementBody
-                          .toLowerCase()
-                          .includes(query) ||
-                        announcement.createdByUserName
-                          .toLowerCase()
-                          .includes(query) ||
-                        announcement.createdDateTime
-                          .toLowerCase()
-                          .includes(query)
-                    )
-                    .map((announcement) => (
-                      <TableRow
-                        key={announcement.announcementId}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell>{announcement.announcementTitle}</TableCell>
-                        <TableCell>{announcement.announcementBody}</TableCell>
-                        <TableCell>{announcement.createdByUserName}</TableCell>
-                        <TableCell>{announcement.createdDateTime}</TableCell>
-                        <TableCell>
-                          <div>
-                            {renderExtraActions(
-                              announcement.announcementId,
-                              announcement.announcementTitle,
-                              announcement.announcementBody,
-                              announcement.createdByUserId
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            {announcements
+              .filter(
+                (announcement) =>
+                  announcement.announcementTitle
+                    .toLowerCase()
+                    .includes(query) ||
+                  announcement.announcementBody.toLowerCase().includes(query) ||
+                  announcement.createdByUserName
+                    .toLowerCase()
+                    .includes(query) ||
+                  announcement.createdDateTime.toLowerCase().includes(query)
+              )
+              .reverse()
+              .map((announcement) => (
+                <List sx={{ width: "100%", bgcolor: "#F0F8FF" }}>
+                  <ListItem
+                    key={announcement.announcementId}
+                    alignItems="flex-start"
+                  >
+                    <ListItemAvatar>
+                      <Avatar alt="avatar" src={user.profilePictureURL} />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Typography
+                          sx={{ display: "inline" }}
+                          component="span"
+                          variant="h6"
+                          color="text.primary"
+                        >
+                          {announcement.announcementTitle}
+                          <br />
+                        </Typography>
+                      }
+                      secondary={
+                        <React.Fragment>
+                          <Typography
+                            sx={{ whiteSpace: "pre-line", display: "inline" }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            {announcement.createdDateTime}
+                            <br />
+                            by {announcement.createdByUserName}
+                            <br /> <br />
+                            {announcement.announcementBody}
+                          </Typography>
+                        </React.Fragment>
+                      }
+                    />
+                    {renderExtraActions(
+                      announcement.announcementId,
+                      announcement.announcementTitle,
+                      announcement.announcementBody,
+                      announcement.createdByUserId
+                    )}
+                  </ListItem>
+                  <Divider variant="inset" component="li" />
+                </List>
+              ))}
           </div>
         </Grid>
       </Grid>
@@ -478,7 +482,7 @@ function TeachingAnnouncementList(props) {
               fullWidth
               required
               multiline
-              maxRows={10}
+              maxRows={100}
               style={{ margin: "6px 0" }}
               value={announcementBody}
               onChange={(e) => setAnnouncementBody(e.target.value)}
@@ -500,13 +504,13 @@ function TeachingAnnouncementList(props) {
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {"Delete this forum?"}
+            {"Delete this announcement?"}
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              These will delete all the discussions and comments inside the
-              forum. You will not be able to undo this action. Are you sure you
-              want to delete?
+              These will delete the announcement for both you and Learners
+              enrolled in this course. You will not be able to undo this action.
+              Are you sure you want to delete?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -548,7 +552,7 @@ function TeachingAnnouncementList(props) {
               variant="outlined"
               fullWidth
               multiline
-              maxRows={10}
+              maxRows={100}
               style={{ margin: "6px 0" }}
               value={editAnnouncementBody}
               onChange={(e) => setEditAnnouncementBody(e.target.value)}
