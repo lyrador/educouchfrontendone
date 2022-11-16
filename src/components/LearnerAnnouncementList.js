@@ -19,6 +19,7 @@ import { useState } from "react";
 
 import { useAuth } from "../context/AuthProvider";
 import TeachingCoursesDrawer from "./TeachingCoursesDrawer";
+import LearnerCoursesDrawer from "./LearnerCourseDrawer";
 
 function LearnerAnnouncementList(props) {
   const auth = useAuth();
@@ -65,7 +66,7 @@ function LearnerAnnouncementList(props) {
     <div>
       <Grid container spacing={0}>
         <Grid item xs={2}>
-          <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
+          <LearnerCoursesDrawer courseId = {courseId} learnerStatus = {true}/>
         </Grid>
         <Grid item xs={10}>
           <div style={{ justifyContent: "center" }}>
