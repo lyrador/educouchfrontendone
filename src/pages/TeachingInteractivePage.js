@@ -167,6 +167,7 @@ function TeachingInteractivePage(props) {
       x = event.clientX;
       width = width + dx;
       resizeableEle.style.width = `${width}px`;
+      setNewTextBoxWidth(resizeableEle.style.width); 
     };
 
     const onMouseUpRightResize = (event) => {
@@ -177,7 +178,6 @@ function TeachingInteractivePage(props) {
       x = event.clientX;
       resizeableEle.style.left = styles.left;
       resizeableEle.style.right = null;
-      setNewTextBoxWidth(resizeableEle.style.width); 
       document.addEventListener("mousemove", onMouseMoveRightResize);
       document.addEventListener("mouseup", onMouseUpRightResize);
     };
@@ -188,6 +188,7 @@ function TeachingInteractivePage(props) {
       height = height - dy;
       y = event.clientY;
       resizeableEle.style.height = `${height}px`;
+      setNewTextBoxHeight(resizeableEle.style.height);
     };
 
     const onMouseUpTopResize = (event) => {
@@ -199,7 +200,6 @@ function TeachingInteractivePage(props) {
       const styles = window.getComputedStyle(resizeableEle);
       resizeableEle.style.bottom = styles.bottom;
       resizeableEle.style.top = null;
-      setNewTextBoxHeight(resizeableEle.style.height);
       document.addEventListener("mousemove", onMouseMoveTopResize);
       document.addEventListener("mouseup", onMouseUpTopResize);
     };
@@ -210,6 +210,8 @@ function TeachingInteractivePage(props) {
       height = height + dy;
       y = event.clientY;
       resizeableEle.style.height = `${height}px`;
+      console.log(resizeableEle.style.height); 
+      setNewTextBoxHeight(resizeableEle.style.height); 
     };
 
     const onMouseUpBottomResize = (event) => {
@@ -221,8 +223,6 @@ function TeachingInteractivePage(props) {
       const styles = window.getComputedStyle(resizeableEle);
       resizeableEle.style.top = styles.top;
       resizeableEle.style.bottom = null;
-      console.log(resizeableEle.style.height); 
-      setNewTextBoxHeight(resizeableEle.style.height); 
       document.addEventListener("mousemove", onMouseMoveBottomResize);
       document.addEventListener("mouseup", onMouseUpBottomResize);
     };
@@ -233,6 +233,7 @@ function TeachingInteractivePage(props) {
       x = event.clientX;
       width = width - dx;
       resizeableEle.style.width = `${width}px`;
+      setNewTextBoxWidth(resizeableEle.style.width); 
     };
 
     const onMouseUpLeftResize = (event) => {
@@ -243,7 +244,6 @@ function TeachingInteractivePage(props) {
       x = event.clientX;
       resizeableEle.style.right = styles.right;
       resizeableEle.style.left = null;
-      setNewTextBoxWidth(resizeableEle.style.width); 
       document.addEventListener("mousemove", onMouseMoveLeftResize);
       document.addEventListener("mouseup", onMouseUpLeftResize);
     };
@@ -434,8 +434,8 @@ function TeachingInteractivePage(props) {
     // }, []); 
 
 
-    console.log(currentPage.pageNumber)
-    console.log(currentPage.textBoxHeight)
+    // console.log(currentPage.pageNumber)
+    // console.log(currentPage.textBoxHeight)
 
     const createNewPage = async (e) => {
         e.preventDefault();
@@ -526,7 +526,7 @@ function TeachingInteractivePage(props) {
         if (props.book.interactiveChapters) {
             if (props.book.interactiveChapters.length == 0) {
                 return (
-                    <div style={{ height: '100%', width: '100%', backgroundColor: 'lightgray', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ height: '100%', width: '100%', backgroundColor: '#eae6e4', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <div style={{ fontSize: 24, lineHeight: '200px' }}>
                             There are currently no interactive chapters in this book! Add a Chapter to Continue.
                         </div>
@@ -534,7 +534,7 @@ function TeachingInteractivePage(props) {
                 );
             } else if (!props.chapterId) {
                 return (
-                    <div style={{ height: '100%', width: '100%', backgroundColor: 'lightgray', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ height: '100%', width: '100%', backgroundColor: '#eae6e4', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <div style={{ fontSize: 24, lineHeight: '200px' }}>
                             Please select an interactive chapter to continue.
                         </div>
@@ -543,7 +543,7 @@ function TeachingInteractivePage(props) {
             }
             else if (props.chapterId && pages.length === 0) {
                 return (
-                    <div style={{ height: '100%', width: '100%', backgroundColor: 'lightgray', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ height: '100%', width: '100%', backgroundColor: '#eae6e4', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <div style={{ fontSize: 24, lineHeight: '200px' }}>
                             There are currently no interactive pages in this chapter! Add a Page to Continue.
                         </div>
@@ -586,7 +586,7 @@ function TeachingInteractivePage(props) {
                 );
             }
         }
-        //setImageTrigger(true);
+        // setImageTrigger(true);
     };
 
     const renderText = () => {
@@ -610,7 +610,7 @@ function TeachingInteractivePage(props) {
                 </div>
             );
         }
-        //setTextTrigger(true);
+        // setTextTrigger(true);
     }
 
     const renderQuiz = () => {
@@ -636,10 +636,6 @@ function TeachingInteractivePage(props) {
         }
         //setImageTrigger(true);
     }
-
-    // setNewTextBoxHeight(currentPage.textBoxHeight); 
-    // setNewTextBoxWidth(currentPage.textBoxWidth); 
-    // console.log(currentPage.textBoxHeight); 
 
     return (
        
@@ -682,39 +678,41 @@ function TeachingInteractivePage(props) {
                     }
                 </Breadcrumbs>
             </div>
-            {/* <div id="editor"> */}
             <div style={{justifyContent: "center", display: 'flex' }}>
-            <div className="container">
-            <div ref={ref} class="resizeable" style={{height:`${currentPage.textBoxHeight}px !important`, width:`${currentPage.textBoxWidth}px !important`}}>
-                    <Paper elevation={3} style={{ width: "100%", height: "100%" }}>
+                <div className="container"> 
+                    <div>
                         {renderEmptyRowMessage()}
-                        {pages.length > 0 && <div style={{ width: "100%", height: "100%" }}>
-                            {renderText()}
-                        </div>
-                        }
-                    </Paper>
-                    <div ref={refLeft} className="resizer resizer-l"></div>
-                    <div ref={refTop} className="resizer resizer-t"></div>
-                    <div ref={refRight} className="resizer resizer-r"></div>
-                    <div ref={refBottom} className="resizer resizer-b"></div>
-            </div> 
-            <div ref={ref1} className="resizeable1">
-                    <Paper elevation={3} style={{ width: "100%", height: "100%" }}>
-                        {renderEmptyRowMessage()}
-                        {pages.length > 0 && <div style={{ width: "100%", height: "100%" }}>
-                            {/* {renderText()} */}
-                            {renderVideoImageHolder()}
-                            {renderQuiz()}
-                            
-                        </div>
-                        }
-                    </Paper>
-                    <div ref={refLeft1} className="resizer resizer-l"></div>
-                    <div ref={refTop1} className="resizer resizer-t"></div>
-                    <div ref={refRight1} className="resizer resizer-r"></div>
-                    <div ref={refBottom1} className="resizer resizer-b"></div>
-            </div>
-            </div>
+                    </div>
+                    {<div ref={ref} class="resizeable" style={{height:`${currentPage.textBoxHeight}px !important`, width:`${currentPage.textBoxWidth}px !important`}}>
+                        <Paper elevation={3} style={{ width: "100%", height: "100%" }}>
+                            {/* {renderEmptyRowMessage()} */}
+                            {pages.length > 0 && <div style={{ width: "100%", height: "100%" }}>
+                                {renderText()}
+                            </div>
+                            }
+                        </Paper>
+                        <div ref={refLeft} className="resizer resizer-l"></div>
+                        <div ref={refTop} className="resizer resizer-t"></div>
+                        <div ref={refRight} className="resizer resizer-r"></div>
+                        <div ref={refBottom} className="resizer resizer-b"></div>
+                    </div>}
+                    <div ref={ref1} className="resizeable1">
+                        <Paper elevation={3} style={{ width: "100%", height: "100%" }}>
+                            {/* {renderEmptyRowMessage()} */}
+                            {pages.length > 0 && <div style={{ width: "100%", height: "100%" }}>
+                                {/* {renderText()} */}
+                                {renderVideoImageHolder()}
+                                {renderQuiz()}
+                                
+                            </div>
+                            }
+                        </Paper>
+                        <div ref={refLeft1} className="resizer resizer-l"></div>
+                        <div ref={refTop1} className="resizer resizer-t"></div>
+                        <div ref={refRight1} className="resizer resizer-r"></div>
+                        <div ref={refBottom1} className="resizer resizer-b"></div>
+                    </div>
+                </div>
                 <div style={{ width: "20%", height: "100%" }}>
                     <TeachingInteractivePageBar
                         pageId={currentPage.interactivePageId}

@@ -1,16 +1,15 @@
 .container {
     border-radius: 5px;
     width: 100vw;
-    height: 100vh;
-    background: #FFBC97;
+    height: 71vh;
+    background: #eae6e4;
     position: relative;
+    left: 120 px;
   }
 
 .resizeable {
-    position: absolute;
+    position: relative;
     border: 2px solid #d01010;
-    /* width: 100px; */
-    /* height: 100px; */
     border-radius: 3px;
     display: flex;
     justify-content: center;
