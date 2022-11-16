@@ -26,12 +26,52 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
 
 export default function PartialCreateAssessment(props) {
+  React.useEffect(() => {
+    setAssessmentStartDate(dayjs(currentDate.toISOString().split("T")[0]));
+    setAssessmentEndDate(dayjs(currentDate.toISOString().split("T")[0]));
+  }, []);
+
+
+  var utc = require("dayjs/plugin/utc");
+  var timezone = require("dayjs/plugin/timezone"); // dependent on utc plugin
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+  let currentDate = new Date();
+  const offset = currentDate.getTimezoneOffset();
+  currentDate = new Date(currentDate.getTime() + offset * 60 * 1000);
+  
   const navigate = useNavigate();
   const location = useLocation();
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
 
   const courseId = location.pathname.split("/")[2];
+
+  const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
+  console.log(assessmentsPath);
+  const createAssessmentPath = location.pathname;
+
+
+  const [assessments, setAssessments] = useState([]);
+  const [assessmentTitle, setAssessmentTitle] = useState("");
+  const [assessmentDescription, setAssessmentDescription] = useState("");
+  const [assessmentMaxScore, setAssessmentMaxScore] = useState("");
+  const [assessmentStartDate, setAssessmentStartDate] = useState(
+    dayjs(currentDate.toISOString().split("T")[0])
+  );
+  const [assessmentEndDate, setAssessmentEndDate] = useState(
+    dayjs(currentDate.toISOString().split("T")[0])
+  );
+  const [newFileSub, setNewFileSub] = useState();
+  const [newQuiz, setNewQuiz] = useState("emptyQuiz");
+
+  const handleStartDateChange = (newAssessmentStartDate) => {
+    setAssessmentStartDate(dayjs(newAssessmentStartDate).local().format());
+  };
+
+  const handleEndDateChange = (newAssessmentEndDate) => {
+    setAssessmentEndDate(dayjs(newAssessmentEndDate).local().format());
+  };
 
   const handleClickSnackbar = () => {
     setOpenSnackbar(true);
@@ -53,27 +93,6 @@ export default function PartialCreateAssessment(props) {
       return;
     }
     setOpenErrorSnackbar(false);
-  };
-
-  const assessmentsPath = location.pathname.split("/").slice(0, 4).join("/");
-  console.log(assessmentsPath);
-  const createAssessmentPath = location.pathname;
-
-  const [assessments, setAssessments] = useState([]);
-  const [assessmentTitle, setAssessmentTitle] = useState("");
-  const [assessmentDescription, setAssessmentDescription] = useState("");
-  const [assessmentMaxScore, setAssessmentMaxScore] = useState("");
-  const [assessmentStartDate, setAssessmentStartDate] = useState(dayjs());
-  const [assessmentEndDate, setAssessmentEndDate] = useState(dayjs());
-  const [newFileSub, setNewFileSub] = useState();
-  const [newQuiz, setNewQuiz] = useState("emptyQuiz");
-
-  const handleStartDateChange = (newAssessmentStartDate) => {
-    setAssessmentStartDate(newAssessmentStartDate);
-  };
-
-  const handleEndDateChange = (newAssessmentEndDate) => {
-    setAssessmentEndDate(newAssessmentEndDate);
   };
 
   const [assessmentTitleError, setAssessmentTitleError] = useState({

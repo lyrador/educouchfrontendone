@@ -84,7 +84,12 @@ export default function Login() {
         } else {
           auth.login(response.data);
           console.log(response.data);
-          navigate('/home');
+          if(user.userType === "LEARNER") {
+            navigate("/learnerHome")
+          } else {
+            navigate('/home');
+          }
+          
           
         }
       } catch (error) {
