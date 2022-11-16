@@ -30,6 +30,16 @@ import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 export default function EditQuizPage() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  var utc = require("dayjs/plugin/utc");
+  var timezone = require("dayjs/plugin/timezone"); // dependent on utc plugin
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+ 
+  let currentDate = new Date();
+  const offset = currentDate.getTimezoneOffset();
+  currentDate = new Date(currentDate.getTime() + offset * 60 * 1000);
+
   const courseId = location.pathname.split("/").slice(2, 3).join("/");
   const assessmentsPath = location.state.assessmentPathProp;
   const editQuizPath = location.pathname;
@@ -42,8 +52,8 @@ export default function EditQuizPage() {
   const [title, setTitle] = useState();
   const [description, setDescription] = useState();
   const [maxScore, setMaxScore] = useState();
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
+  const [startDate, setStartDate] = useState(dayjs(currentDate.toISOString().split('T')[0]));
+  const [endDate, setEndDate] = useState(dayjs(currentDate.toISOString().split('T')[0]));
   const [hasTimeLimit, setHasTimeLimit] = useState("true");
   const [timeLimit, setTimeLimit] = useState();
   const [isAutoRelease, setIsAutoRelease] = useState("false");
@@ -67,8 +77,8 @@ export default function EditQuizPage() {
         setTitle(result.assessmentTitle);
         setDescription(result.assessmentDescription);
         setMaxScore(result.assessmentMaxScore);
-        setStartDate(result.assessmentStartDate);
-        setEndDate(result.assessmentEndDate);
+        setStartDate(dayjs(result.assessmentStartDate).local().format());
+        setEndDate(dayjs(result.assessmentEndDate).local().format());
         setHasTimeLimit(result.hasTimeLimit);
         setTimeLimit(result.timeLimit);
         setHasMaxAttempts(result.hasMaxAttempts);
@@ -122,40 +132,16 @@ export default function EditQuizPage() {
   function validateQuizSettings() {
     const tempStartDate = startDate;
     const tempEndDate = endDate;
+    console.log("validate startDate: ", tempStartDate);
+    console.log("validate endDate: ", tempEndDate);
     const dateComparisonBoolean = tempEndDate >= tempStartDate;
-    if (hasTimeLimit == "true" || hasMaxAttempts == "true") {
-      if (hasTimeLimit == "true" && hasMaxAttempts == "true") {
-        console.log("fail dis");
-        return (
-          title &&
-          description &&
-          maxScore &&
-          dateComparisonBoolean &&
-          timeLimit > 4 &&
-          maxAttempts > 0
-        );
-      } else if (hasTimeLimit == "true") {
-        console.log("fail dat");
-        return (
-          title &&
-          description &&
-          maxScore &&
-          dateComparisonBoolean &&
-          timeLimit > 4
-        );
-      } else {
-        console.log("fail dat other one");
-
-        return (
-          title &&
-          description &&
-          maxScore &&
-          dateComparisonBoolean &&
-          maxAttempts > 0
-        );
-      }
+    console.log("pass date comparison: ", dateComparisonBoolean);
+    if (hasTimeLimit == "true") {
+      console.log("has time limit");
+      return title && description && dateComparisonBoolean && timeLimit > 4;
     } else {
-      return title && description && maxScore && dateComparisonBoolean;
+      console.log("no time limit");
+      return title && description && dateComparisonBoolean;
     }
   }
 
@@ -183,20 +169,8 @@ export default function EditQuizPage() {
         errorMessage: "Description Field cannot be left empty!",
       });
     }
-    if (maxScore == "") {
-      setMaxScoreError({
-        value: true,
-        errorMessage: "Max Score Field cannot be left empty!",
-      });
-    }
-    if (maxAttempts < 1) {
-      setMaxAttemptsError({
-        value: true,
-        errorMessage: "Maximum Quiz Attempts Allowed must be more than 0!",
-      });
-    }
-
     const dateComparisonBoolean = tempEndDate < tempStartDate;
+    console.log("dateComparison pass: ", dateComparisonBoolean);
     if (dateComparisonBoolean) {
       setStartDateError({
         value: true,
@@ -217,13 +191,10 @@ export default function EditQuizPage() {
       editQuizSettings(
         title,
         description,
-        maxScore,
         startDate,
         endDate,
         hasTimeLimit,
         timeLimit,
-        hasMaxAttempts,
-        maxAttempts,
         isAutoRelease
       );
       console.log("passedValidations");
@@ -234,12 +205,12 @@ export default function EditQuizPage() {
   };
 
   const handleStartDateChange = (newDate) => {
-    setStartDate(newDate);
+    setStartDate(dayjs(newDate).local().format());
     console.log("new start date: ", startDate);
   };
 
   const handleEndDateChange = (newDate) => {
-    setEndDate(newDate);
+    setEndDate(dayjs(newDate).local().format());
   };
 
   function handleProceedQuestions() {
@@ -318,45 +289,6 @@ export default function EditQuizPage() {
     setEditSettings("true");
   }
 
-  function validateQuizSettings() {
-    const tempStartDate = startDate;
-    const tempEndDate = endDate;
-    const dateComparisonBoolean = tempEndDate >= tempStartDate;
-    if (hasTimeLimit == "true" || hasMaxAttempts == "true") {
-      if (hasTimeLimit == "true" && hasMaxAttempts == "true") {
-        // console.log("fail dis")
-        return (
-          title &&
-          description &&
-          maxScore &&
-          dateComparisonBoolean &&
-          timeLimit > 4 &&
-          maxAttempts > 0
-        );
-      } else if (hasTimeLimit == "true") {
-        // console.log("fail dat")
-        return (
-          title &&
-          description &&
-          maxScore &&
-          dateComparisonBoolean &&
-          timeLimit > 4
-        );
-      } else {
-        // console.log("fail dat other one")
-        return (
-          title &&
-          description &&
-          maxScore &&
-          dateComparisonBoolean &&
-          maxAttempts > 0
-        );
-      }
-    } else {
-      return title && description && maxScore && dateComparisonBoolean;
-    }
-  }
-
   function validateQuiz() {
     setMaxScoreError({ value: false, errorMessage: "" });
     for (const question of formQuestions) {
@@ -386,8 +318,6 @@ export default function EditQuizPage() {
     endDate1,
     hasTimeLimit1,
     timeLimit1,
-    hasMaxAttempts1,
-    maxAttempts1,
     isAutoRelease1
   ) {
     setTitle(title1);
@@ -397,8 +327,6 @@ export default function EditQuizPage() {
     setEndDate(endDate1);
     setHasTimeLimit(hasTimeLimit1);
     setTimeLimit(timeLimit1);
-    setHasMaxAttempts(hasMaxAttempts1);
-    setMaxAttempts(maxAttempts1);
     setIsAutoRelease(isAutoRelease1);
   }
 
@@ -530,21 +458,22 @@ export default function EditQuizPage() {
   };
 
   const handleQuizDateConversions = (quizObject) => {
-    const formattedStart = dayjs(quizObject.assessmentStartDate.d).format(
-      "YYYY-MM-DD"
-    );
-    const formattedEnd = dayjs(quizObject.assessmentEndDate.d).format(
-      "YYYY-MM-DD"
-    );
-    quizObject.assessmentStartDate = formattedStart;
-    quizObject.assessmentEndDate = formattedEnd;
+    // const formattedStart = dayjs(quizObject.assessmentStartDate.d).format(
+    //   "YYYY-MM-DD"
+    // );
+    // const formattedEnd = dayjs(quizObject.assessmentEndDate.d).format(
+    //   "YYYY-MM-DD"
+    // );
+    // quizObject.assessmentStartDate = formattedStart;
+    // quizObject.assessmentEndDate = formattedEnd;
     return quizObject;
   };
 
   function calculateMaxQuizScore() {
     var tempMaxScore = 0;
     for (const question of formQuestions) {
-      tempMaxScore = parseFloat(tempMaxScore) + parseFloat(question.questionMaxPoints);
+      tempMaxScore =
+        parseFloat(tempMaxScore) + parseFloat(question.questionMaxPoints);
     }
     setMaxScore(tempMaxScore);
     console.log("quiz max score: ", tempMaxScore);
@@ -657,7 +586,7 @@ export default function EditQuizPage() {
                     editQuestionContentProp={editQuestionContent}
                     editQuestionHintProp={editQuestionHint}
                     removeQuestionProp={removeQuestion}
-                    editQuestionMaxPointsProp={ editQuestionMaxPoints}
+                    editQuestionMaxPointsProp={editQuestionMaxPoints}
                   />
                 </Paper>
               );
@@ -755,7 +684,6 @@ export default function EditQuizPage() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DesktopDatePicker
                     label={startDateString}
-                    inputFormat="YYYY/MM/DD"
                     value={startDate}
                     onChange={handleStartDateChange}
                     renderInput={(params) => (
@@ -772,7 +700,6 @@ export default function EditQuizPage() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DesktopDatePicker
                     label={endDateString}
-                    inputFormat="YYYY/MM/DD"
                     value={endDate}
                     onChange={handleEndDateChange}
                     renderInput={(params) => (
@@ -819,42 +746,6 @@ export default function EditQuizPage() {
                   onChange={(e) => setTimeLimit(e.target.value)}
                 />
               )}
-
-              <Stack
-                spacing={1}
-                style={{ paddingBottom: "10px", marginTop: "20px" }}
-              >
-                <p style={{ color: "grey" }}>Quiz Has Max Attempts</p>
-                <Select
-                  id="select-trueFalse"
-                  value={hasMaxAttempts}
-                  onChange={(e) => setHasMaxAttempts(e.target.value)}
-                  defaultValue={hasMaxAttempts}
-                >
-                  <MenuItem value="true">True</MenuItem>
-                  <MenuItem value="false">False</MenuItem>
-                </Select>
-
-                {hasMaxAttempts == "true" && (
-                  <TextField
-                    error={maxAttemptsError.value}
-                    helperText={maxAttemptsError.errorMessage}
-                    id="outlined-basic"
-                    label="Maximum Attempts Allowed"
-                    variant="outlined"
-                    fullWidth
-                    style={{
-                      paddingBottom: "10px",
-                      marginTop: "20px",
-                      marginBottom: "20px",
-                    }}
-                    value={maxAttempts}
-                    defaultValue={maxAttempts}
-                    onChange={(e) => setMaxAttempts(e.target.value)}
-                  />
-                )}
-              </Stack>
-
               <Stack spacing={1}>
                 <InputLabel id="select-autoReleaseResults-trueFalse">
                   Auto Release Quiz Results

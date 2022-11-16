@@ -48,7 +48,6 @@ export default function LearnerViewAssessments(props) {
 
   const renderEmptyRowMessage = () => {
     if (assessments.length === 0) {
-      console.log("assessment list is empty");
       return (
         <TableRow>
           <TableCell style={{ textAlign: "left" }}>
@@ -66,7 +65,6 @@ export default function LearnerViewAssessments(props) {
       .then((res) => res.json())
       .then((result) => {
         setAssessments(result);
-        console.log("released assessments under this course: ", result);
       });
   }, []);
 

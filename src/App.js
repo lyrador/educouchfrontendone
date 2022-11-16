@@ -67,12 +67,13 @@ import LearnerInteractiveBook from "./components/LearnerInteractiveBook";
 import FileSubmissionAttempt from "./components/FileSubmissionAttemptComponents/FileSubmissionAttempt";
 import CreateWhiteboardHomepage from "./pages/CreateWhiteboardHomepage";
 import ViewAllRoomPage from "./pages/ViewAllRoomPage";
-import WebPet from "web-pet";
 import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
 import LearnerHome from "./pages/LearnerHome";
+import TeachingFileSubMarkerPage from "./pages/TeachingFileSubMarkerPage";
+import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
+import WebPet from "web-pet";
 
 function App() {
-
   return (
     <div className="App">
       <AuthProvider>
@@ -378,12 +379,22 @@ function App() {
                   <TeachingGradebookGrading />
                 </RequireAuth>
               }
-            /><Route
-              path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId"
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId/quiz"
               element={
                 <RequireAuth>
                   <Appbar />
                   <TeachingMarkerPage />
+                </RequireAuth>
+              }
+            />
+             <Route
+              path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId/fileSubmission"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TeachingFileSubMarkerPage />
                 </RequireAuth>
               }
             />
@@ -633,6 +644,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <QuizAttempt />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/previewQuiz"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <PreviewQuiz />
                 </RequireAuth>
               }
             />
