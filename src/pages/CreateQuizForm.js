@@ -39,6 +39,7 @@ export default function CreateQuizForm(props) {
   const createAssessmentPath = location.state.createAssessmentPathProp;
   const createQuizFormPath = location.pathname;
   const currentQuiz = location.state.newQuizProp;
+  const maxAssessmentDiscountPoints = location.state.maxAssessmentDiscountPointsProp;
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
   const [questionCounter, setQuestionCounter] = useState(0);
@@ -115,6 +116,8 @@ export default function CreateQuizForm(props) {
   function editQuizSettings(
     title,
     description,
+    discountPointForAssessment,
+    discountPointToTopPercent,
     startDate,
     endDate,
     hasTimeLimit,
@@ -126,6 +129,8 @@ export default function CreateQuizForm(props) {
 
     currentQuiz.assessmentTitle = title;
     currentQuiz.assessmentDescription = description;
+    currentQuiz.discountPointForAssessment = discountPointForAssessment;
+    currentQuiz.discountPointToTopPercent = discountPointToTopPercent;
     currentQuiz.assessmentStartDate = startDate;
     currentQuiz.assessmentEndDate = endDate;
     currentQuiz.hasTimeLimit = hasTimeLimit;
@@ -382,6 +387,7 @@ export default function CreateQuizForm(props) {
             >
               <QuizSettingsComponents
                 quizSettingsProp={currentQuiz}
+                maxAssessmentDiscountPointsProp={maxAssessmentDiscountPoints}
                 startDateProp={currentQuiz.assessmentStartDate}
                 endDateProp={currentQuiz.assessmentEndDate}
                 editQuizSettingsProp={editQuizSettings}

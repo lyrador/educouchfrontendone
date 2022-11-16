@@ -16,6 +16,8 @@ import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 export default function CreateAssessment(props) {
   const location = useLocation();
   const assessmentsPath = location.state.assessmentsPathProp;
+  const maxAssessmentDiscountPoints = location.state.maxAssessmentDiscountPointsProp;
+
   const createAssessmentPath = location.pathname
     .split("/")
     .slice(0, 5)
@@ -76,6 +78,7 @@ export default function CreateAssessment(props) {
           assessmentPathProp={assessmentsPath}
           createAssessmentPathProp={createAssessmentPath}
           courseIdProp={courseId}
+          maxAssessmentDiscountPointsProp={maxAssessmentDiscountPoints}
         />
       </Grid>
     </Grid>

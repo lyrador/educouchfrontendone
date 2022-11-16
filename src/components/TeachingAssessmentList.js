@@ -133,61 +133,9 @@ function TeachingAssessmentList(props) {
   const courseId = location.pathname.split("/")[2];
 
   const [assessments, setAssessments] = useState([]);
-  const [assessmentTitle, setAssessmentTitle] = useState("");
-  const [assessmentDescription, setAssessmentDescription] = useState("");
-  const [assessmentMaxScore, setAssessmentMaxScore] = useState("");
-  const [assessmentStartDate, setAssessmentStartDate] = useState(dayjs());
-  const [assessmentEndDate, setAssessmentEndDate] = useState(dayjs());
-  const [assessmentFileSubmissionEnum, setAssessmentFileSubmissionEnum] =
-    useState("");
-  const [assessmentIsOpen, setAssessmentIsOpen] = useState("");
-  const [assessmentStatusEnum, setAssessmentStatusEnum] = useState("");
+  const [maxAssessmentDiscountPoints, setMaxAssessmentDiscountPoints] = useState();
   const [assessmentIdToDelete, setAssessmentIdToDelete] = useState("");
 
-  const handleStartDateChange = (newAssessmentStartDate) => {
-    setAssessmentStartDate(newAssessmentStartDate);
-  };
-
-  const handleEndDateChange = (newAssessmentEndDate) => {
-    setAssessmentEndDate(newAssessmentEndDate);
-  };
-
-  const [assessmentTitleError, setAssessmentTitleError] = useState({
-    value: false,
-    errorMessage: "",
-  });
-  const [assessmentDescriptionError, setAssessmentDescriptionError] = useState({
-    value: false,
-    errorMessage: "",
-  });
-  const [assessmentMaxScoreError, setAssessmentMaxScoreError] = useState({
-    value: false,
-    errorMessage: "",
-  });
-  const [assessmentStartDateError, setAssessmentStartDateError] = useState({
-    value: false,
-    errorMessage: "",
-  });
-  const [assessmentEndDateError, setAssessmentEndDateError] = useState({
-    value: false,
-    errorMessage: "",
-  });
-  const [
-    assessmentFileSubmissionEnumError,
-    setAssessmentFileSubmissionEnumError,
-  ] = useState({ value: false, errorMessage: "" });
-  const [assessmentIsOpenError, setAssessmentIsOpenError] = useState({
-    value: false,
-    errorMessage: "",
-  });
-  const [assessmentStatusEnumError, setAssessmentStatusEnumError] = useState({
-    value: false,
-    errorMessage: "",
-  });
-  const [assessmentIdToDeleteError, setAssessmentIdToDeleteError] = useState({
-    value: false,
-    errorMessage: "",
-  });
 
   const [refreshPage, setRefreshPage] = useState(false);
   const refreshFunction = () => {
@@ -199,35 +147,22 @@ function TeachingAssessmentList(props) {
 
   // get all assessments here
   React.useEffect(() => {
-    setRefreshPage(false);
     fetch(
-      "http://localhost:8080/assessment/getAllAssessmentsByCourseId?courseId=" +
+      "http://localhost:8080/assessment/getAllAssessmentsByCourseIdWithDiscountPoint?courseId=" +
         courseId
     )
       .then((res) => res.json())
       .then((result) => {
-        setAssessments(result);
+        setAssessments(result.listOfAssessments);
+        setMaxAssessmentDiscountPoints(result.maxAssignmentPoints)
       });
-  }, [refreshFunction]);
+  }, [courseId, refreshPage]);
 
   const [open, setOpen] = React.useState(false);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [editDialogOpen, setEditDialogOpen] = React.useState(false);
   const [releaseDialogueOpen, setReleaseDialogueOpen] = React.useState(false);
-  const [editAssessmentTitle, setEditAssessmentTitle] = useState("");
-  const [editAssessmentDescription, setEditAssessmentDescription] =
-    useState("");
-  const [editAssessmentMaxScore, setEditAssessmentMaxScore] = useState("");
-  const [editAssessmentStartDate, setEditAssessmentStartDate] = useState(
-    dayjs()
-  );
-  const [editAssessmentEndDate, setEditAssessmentEndDate] = useState(dayjs());
-  const [
-    editAssessmentFileSubmissionEnum,
-    setEditAssessmentFileSubmissionEnum,
-  ] = useState("");
-  const [assessmentIdToEdit, setAssessmentIdToEdit] = useState("");
   const [assessmentIdToRelease, setAssessmentIdToRelease] = useState("");
 
   const handleClickOpen = () => {
@@ -255,18 +190,6 @@ function TeachingAssessmentList(props) {
     setReleaseDialogueOpen(false);
   };
 
-  const handleEditDialogClose = () => {
-    setEditDialogOpen(false);
-  };
-
-  const handleEditStartDateChange = (newAssessmentStartDate) => {
-    setEditAssessmentStartDate(newAssessmentStartDate);
-  };
-
-  const handleEditEndDateChange = (newAssessmentEndDate) => {
-    setEditAssessmentEndDate(newAssessmentEndDate);
-  };
-
   const deleteAssessment = (e) => {
     e.preventDefault();
     fetch(
@@ -287,61 +210,6 @@ function TeachingAssessmentList(props) {
     });
   };
 
-  const editFileSubmission = () => {
-    setAssessmentStartDateError({ value: false, errorMessage: "" });
-    setAssessmentEndDateError({ value: false, errorMessage: "" });
-
-    const editStartDate = editAssessmentStartDate;
-    const editEndDate = editAssessmentEndDate;
-
-    const editDateComparisonBoolean = editEndDate < editStartDate;
-
-    if (editDateComparisonBoolean) {
-      setAssessmentEndDateError({
-        value: true,
-        errorMessage: "Assessment End Date cannot be earlier than Start Date!",
-      });
-      setAssessmentStartDateError({
-        value: true,
-        errorMessage: "Assessment End Date cannot be earlier than Start Date!",
-      });
-    }
-    if (!editDateComparisonBoolean) {
-      var assessmentTitle = editAssessmentTitle;
-      var assessmentDescription = editAssessmentDescription;
-      var assessmentMaxScore = editAssessmentMaxScore;
-      var assessmentStartDate = editAssessmentStartDate;
-      var assessmentEndDate = editAssessmentEndDate;
-      var assessmentIsOpen = "false";
-      var assessmentStatusEnum = "PENDING";
-      var assessmentFileSubmissionEnum = editAssessmentFileSubmissionEnum;
-      const newEditedAssessment = {
-        assessmentTitle,
-        assessmentDescription,
-        assessmentMaxScore,
-        assessmentStartDate,
-        assessmentEndDate,
-        assessmentFileSubmissionEnum,
-        assessmentIsOpen,
-        assessmentStatusEnum,
-      };
-      fetch(
-        "http://localhost:8080/assessment/updateFileSubmission/" +
-          assessmentIdToEdit,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newEditedAssessment),
-        }
-      ).then(() => {
-        console.log("Assessment Edited Successfully!");
-        setRefreshPage(true);
-        handleEditDialogClose();
-        handleClickEditSnackbar();
-      });
-    }
-  };
-
   function handleEditAssessment(e, assessment) {
     if (assessment.assessmentType == "Quiz") {
       handleEditQuiz(assessment);
@@ -355,6 +223,7 @@ function TeachingAssessmentList(props) {
     navigate(`${assessmentsPath}/editQuiz/${assessmentId}`, {
       state: {
         assessmentPathProp: assessmentsPath,
+        maxAssessmentDiscountPointsProp : maxAssessmentDiscountPoints,
         assessmentIdProp: assessmentId,
       },
     });
@@ -413,6 +282,7 @@ function TeachingAssessmentList(props) {
   function continueAsPartialAssessment() {
     navigate(`${assessmentsPath}/createAssessment`, {
       state: {
+        maxAssessmentDiscountPointsProp: maxAssessmentDiscountPoints,
         assessmentsPathProp: assessmentsPath,
         // refreshFunctionProp: { refreshFunction },
       },
@@ -424,6 +294,7 @@ function TeachingAssessmentList(props) {
       navigate(`${assessmentsPath}/${currAssessment.assessmentId}`, {
         state: {
           assessmentsPathProp: assessmentsPath,
+          maxAssessmentDiscountPointsProp : maxAssessmentDiscountPoints,
           createAssessmentPathProp: createAssessmentPath,
           newFileSubProp: currAssessment,
         },
@@ -684,106 +555,7 @@ function TeachingAssessmentList(props) {
         </Dialog>
       </div>
       <div>
-        <Dialog
-          open={editDialogOpen}
-          onClose={handleEditDialogClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {"You are editing this assessment"}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Enter the new assessment details
-            </DialogContentText>
-            <TextField
-              id="outlined-basic"
-              label="New Assessment Title"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={editAssessmentTitle}
-              onChange={(e) => setEditAssessmentTitle(e.target.value)}
-            />
-            <TextField
-              id="outlined-basic"
-              label="New Assessment Description"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={editAssessmentDescription}
-              onChange={(e) => setEditAssessmentDescription(e.target.value)}
-            />
-            <TextField
-              id="outlined-basic"
-              label="New Assessment Max Score"
-              variant="outlined"
-              fullWidth
-              style={{ margin: "6px 0" }}
-              value={editAssessmentMaxScore}
-              onChange={(e) => setEditAssessmentMaxScore(e.target.value)}
-            />
-            <Stack spacing={1}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DesktopDatePicker
-                  label="New Assessment Start Date"
-                  inputFormat="MM/DD/YYYY"
-                  value={editAssessmentStartDate}
-                  onChange={handleEditStartDateChange}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      sx={{ width: "100%" }}
-                      error={assessmentStartDateError.value}
-                      helperText={assessmentStartDateError.errorMessage}
-                    />
-                  )}
-                />
-              </LocalizationProvider>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DesktopDatePicker
-                  label="New Assessment End Date"
-                  inputFormat="MM/DD/YYYY"
-                  value={editAssessmentEndDate}
-                  onChange={handleEditEndDateChange}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      sx={{ width: "100%" }}
-                      error={assessmentEndDateError.value}
-                      helperText={assessmentEndDateError.errorMessage}
-                    />
-                  )}
-                />
-              </LocalizationProvider>
-            </Stack>
-            <TextField
-              id="outlined-basic"
-              label="New Assessment File Submission Type"
-              variant="outlined"
-              fullWidth
-              select
-              style={{ margin: "6px 0" }}
-              value={editAssessmentFileSubmissionEnum}
-              onChange={(e) =>
-                setEditAssessmentFileSubmissionEnum(e.target.value)
-              }
-            >
-              {enumGroup.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.value}
-                </MenuItem>
-              ))}
-            </TextField>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleEditDialogClose}>Cancel</Button>
-            <Button onClick={editFileSubmission} autoFocus>
-              Edit
-            </Button>
-          </DialogActions>
-        </Dialog>
+
       </div>
     </div>
   );

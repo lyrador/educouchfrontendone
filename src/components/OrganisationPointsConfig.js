@@ -36,6 +36,7 @@ import { useAuth } from '../context/AuthProvider';
 
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import { padding } from '@mui/system';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -77,6 +78,7 @@ function OrganisationPointsConfig(props) {
                 setOrganisation(result)
                 setEditRewardPointsConversionNumber(result.rewardPointsConversionNumber)
                 setEditCurrencyConversionNumber(result.currencyConversionNumber)
+                setEditMaxAssignmentPoints(result.maxAssignmentPoints)
             }
             )
     }, [refreshPage])
@@ -85,9 +87,12 @@ function OrganisationPointsConfig(props) {
 
     const [editRewardPointsConversionNumber, setEditRewardPointsConversionNumber] = useState(organisation.rewardPointsConversionNumber)
     const [editCurrencyConversionNumber, setEditCurrencyConversionNumber] = useState(organisation.currencyConversionNumber)
+    const [editMaxAssignmentPoints, setEditMaxAssignmentPoints] = useState(organisation.maxAssignmentPoints)
 
     const [editRewardPointsConversionNumberError, setEditRewardPointsConversionNumberError] = useState({ value: false, errorMessage: '' })
     const [editCurrencyConversionNumberError, setEditCurrencyConversionNumberError] = useState({ value: false, errorMessage: '' })
+    const [editMaxAssignmentPointsError, setEditMaxAssignmentPointsError] = useState({ value: false, errorMessage: '' })
+
 
     const handleClickEditDialogOpen = () => {
         setEditDialogOpen(true)
@@ -101,6 +106,7 @@ function OrganisationPointsConfig(props) {
         e.preventDefault()
         setEditRewardPointsConversionNumberError({ value: false, errorMessage: '' })
         setEditCurrencyConversionNumberError({ value: false, errorMessage: '' })
+        setEditMaxAssignmentPointsError({ value: false, errorMessage: '' })
         if (editRewardPointsConversionNumber == '' && editRewardPointsConversionNumber != 0) {
             console.log(editRewardPointsConversionNumber)
             setEditRewardPointsConversionNumberError({ value: true, errorMessage: 'Reward points to be converted from cannot be empty!' })
@@ -115,10 +121,14 @@ function OrganisationPointsConfig(props) {
         if (editCurrencyConversionNumber <= 0) {
             setEditCurrencyConversionNumberError({ value: true, errorMessage: 'Currency to be converted to cannot be zero or a negative number!' })
         }
-        if (editRewardPointsConversionNumber && editCurrencyConversionNumber && editRewardPointsConversionNumber > 0 && editCurrencyConversionNumber > 0) {
+        if (editMaxAssignmentPoints <= 0) {
+            setEditMaxAssignmentPointsError({ value: true, errorMessage: 'Max Discount Points Per Assessment cannot be zero or a negative number!' })
+        }
+        if (editRewardPointsConversionNumber && editCurrencyConversionNumber && editMaxAssignmentPoints && editRewardPointsConversionNumber > 0 && editCurrencyConversionNumber > 0) {
             var rewardPointsConversionNumber = editRewardPointsConversionNumber;
             var currencyConversionNumber = editCurrencyConversionNumber;
-            const newEditedOrganisationRequest = { rewardPointsConversionNumber, currencyConversionNumber }
+            var maxAssignmentPoints = editMaxAssignmentPoints;
+            const newEditedOrganisationRequest = { rewardPointsConversionNumber, currencyConversionNumber,maxAssignmentPoints }
             try {
                 const response = await fetch("http://localhost:8080/organisation/put/" + user.organisationId, {
                     method: "PUT",
@@ -186,7 +196,27 @@ function OrganisationPointsConfig(props) {
                         </Table>
                     </TableContainer>
                 </div>
+            <br></br>
+            <br></br>
+            <br></br>
+
+                <div >
+                <div style={{ padding: '0 25%' }}>
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell align="center">Max Assessment Discount Point :</TableCell>
+                                    <TableCell align="center"></TableCell>
+                                    <TableCell align="center">{organisation.maxAssignmentPoints}</TableCell>
+                                </TableRow>
+                            </TableHead>
+                        </Table>
+                    </TableContainer>
+                </div>
             </div>
+            </div>
+
             <div>
                 <Dialog
                     open={editDialogOpen}
@@ -216,6 +246,19 @@ function OrganisationPointsConfig(props) {
                             onChange={(e) => setEditCurrencyConversionNumber(e.target.value)}
                             error={editCurrencyConversionNumberError.value}
                             helperText={editCurrencyConversionNumberError.errorMessage}
+
+                            required
+                        />
+<br></br>
+<br></br>
+
+                            <TextField
+                            id="filled-multiline-static" label="Maximum Point Allocation Per Assesssment" variant="outlined" fullWidth
+                            style={{ margin: '6px 0'}}
+                            value={editMaxAssignmentPoints}
+                            onChange={(e) => setEditMaxAssignmentPoints(e.target.value)}
+                            error={editMaxAssignmentPointsError.value}
+                            helperText={editMaxAssignmentPointsError.errorMessage}
                             required
                         />
                     </DialogContent>

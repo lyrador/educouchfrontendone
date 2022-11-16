@@ -26,6 +26,7 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import LinkMaterial from "@mui/material/Link";
 
 export default function PartialCreateAssessment(props) {
+  const maxAssessmentDiscountPoints = props.maxAssessmentDiscountPointsProp;
   React.useEffect(() => {
     setAssessmentStartDate(dayjs(currentDate.toISOString().split("T")[0]));
     setAssessmentEndDate(dayjs(currentDate.toISOString().split("T")[0]));
@@ -55,6 +56,8 @@ export default function PartialCreateAssessment(props) {
   const [assessments, setAssessments] = useState([]);
   const [assessmentTitle, setAssessmentTitle] = useState("");
   const [assessmentDescription, setAssessmentDescription] = useState("");
+  const [discountPointForAssessment, setDiscountPointForAssessment] = useState("")
+  const [discountPointToTopPercent, setDiscountPointToTopPercent] = useState("")
   const [assessmentMaxScore, setAssessmentMaxScore] = useState("");
   const [assessmentStartDate, setAssessmentStartDate] = useState(
     dayjs(currentDate.toISOString().split("T")[0])
@@ -99,6 +102,14 @@ export default function PartialCreateAssessment(props) {
     value: false,
     errorMessage: "",
   });
+  const [discountPointForAssessmentError, setDiscountPointForAssessmentError] = useState({
+    value: false,
+    errorMessage: "",
+  });  
+  const [discountPointToTopPercentError, setDiscountPointToTopPercentError] = useState({
+    value: false,
+    errorMessage: "",
+  });
   const [assessmentDescriptionError, setAssessmentDescriptionError] = useState({
     value: false,
     errorMessage: "",
@@ -138,6 +149,8 @@ export default function PartialCreateAssessment(props) {
     setAssessmentStartDateError({ value: false, errorMessage: "" });
     setAssessmentEndDateError({ value: false, errorMessage: "" });
     setAssessmentFileSubmissionEnumError({ value: false, errorMessage: "" });
+    setDiscountPointForAssessmentError({ value: false, errorMessage: "" });
+    setDiscountPointToTopPercentError({ value: false, errorMessage: "" });
 
     if (assessmentTitle == "") {
       setAssessmentTitleError({
@@ -161,6 +174,37 @@ export default function PartialCreateAssessment(props) {
       setAssessmentMaxScoreError({
         value: true,
         errorMessage: "Assessment MaxScore cannot be empty!",
+      });
+    }
+    if(discountPointForAssessment=="") {
+      setDiscountPointForAssessmentError({
+        value: true,
+        errorMessage: "Discount Points cannot be empty!",
+      });
+    }
+    if(discountPointForAssessment > maxAssessmentDiscountPoints) {
+      setDiscountPointForAssessmentError({
+        value: true,
+        errorMessage: "Discount Points cannot be more than " + maxAssessmentDiscountPoints,
+      });
+    }
+    if(discountPointToTopPercent === "") {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage of learners to give discount points cannot be empty!",
+      });
+    }
+
+    if(Number(discountPointToTopPercent) < 0 || Number(discountPointToTopPercent) > 100) {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage needs to be between 0 to 100",
+      });
+    }
+    if(String(discountPointToTopPercent).includes(".")) {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage needs to be an integer value",
       });
     }
     if (assessmentStartDate == "") {
@@ -194,10 +238,16 @@ export default function PartialCreateAssessment(props) {
       assessmentTitle &&
       assessmentDescription &&
       assessmentMaxScore &&
+      discountPointForAssessment &&
+      discountPointToTopPercent &&
       assessmentStartDate &&
       assessmentEndDate &&
       !isNaN(assessmentMaxScore) &&
-      !dateComparisonBoolean
+      !dateComparisonBoolean &&
+      !(discountPointForAssessment > maxAssessmentDiscountPoints) &&
+      !(Number(discountPointToTopPercent) < 0 || Number(discountPointToTopPercent) > 100) &&
+      !(String(discountPointToTopPercent).includes("."))
+
     ) {
       return true;
     }
@@ -209,6 +259,8 @@ export default function PartialCreateAssessment(props) {
         assessmentTitle: assessmentTitle,
         assessmentDescription: assessmentDescription,
         assessmentMaxScore: assessmentMaxScore,
+        discountPointForAssessment : discountPointForAssessment,
+        discountPointToTopPercent : discountPointToTopPercent,
         assessmentStartDate: assessmentStartDate,
         assessmentEndDate: assessmentEndDate,
         assessmentIsOpen: "false",
@@ -243,6 +295,8 @@ export default function PartialCreateAssessment(props) {
         assessmentTitle: assessmentTitle,
         assessmentDescription: assessmentDescription,
         assessmentMaxScore: assessmentMaxScore,
+        discountPointForAssessment : discountPointForAssessment,
+        discountPointToTopPercent : discountPointToTopPercent,
         assessmentStartDate: assessmentStartDate,
         assessmentEndDate: assessmentEndDate,
         assessmentIsOpen: "false",
@@ -261,6 +315,7 @@ export default function PartialCreateAssessment(props) {
         state: {
           assessmentsPathProp: assessmentsPath,
           createAssessmentPathProp: createAssessmentPath,
+          maxAssessmentDiscountPointsProp : maxAssessmentDiscountPoints,
           newQuizProp: newQuiz,
         },
       });
@@ -324,6 +379,30 @@ export default function PartialCreateAssessment(props) {
           style={{ margin: "6px 0" }}
           value={assessmentMaxScore}
           onChange={(e) => setAssessmentMaxScore(e.target.value)}
+        />
+          <TextField
+          required
+          error={discountPointForAssessmentError.value}
+          helperText={discountPointForAssessmentError.errorMessage}
+          id="outlined-basic"
+          label="Discount Points to Distribute this Assessment"
+          variant="outlined"
+          fullWidth
+          style={{ margin: "6px 0" }}
+          value={discountPointForAssessment}
+          onChange={(e) => setDiscountPointForAssessment(e.target.value)}
+        />
+          <TextField
+          required
+          error={discountPointToTopPercentError.value}
+          helperText={discountPointToTopPercentError.errorMessage}
+          id="outlined-basic"
+          label="Points Given To Top(%)"
+          variant="outlined"
+          fullWidth
+          style={{ margin: "6px 0" }}
+          value={discountPointToTopPercent}
+          onChange={(e) => setDiscountPointToTopPercent(e.target.value)}
         />
         <Stack spacing={1}>
           <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
