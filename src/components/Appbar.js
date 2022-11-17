@@ -182,7 +182,7 @@ export default function Appbar() {
               <div className="navbar-container">
                 <ul className={"nav-menu"}>
                   <li className="nav-item">
-                    <Link to="/home" className="nav-links">
+                    <Link to="/learnerHome" className="nav-links">
                     📰 Dashboard
 
                     </Link>
