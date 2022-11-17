@@ -10,19 +10,33 @@ import PacmanLoader from "react-spinners/PacmanLoader";
 import grass from "../../assets/Grass.png";
 import Item from './Item';
 import Square from './Square';
+import ImaginaryItem from './ImaginaryItem';
+import GardenSquare from './GardenSquare';
 
 const SQUARE_SIZE = 5;
-function renderSquare(i, [itemX, itemY], link) {
+function renderSquare(i, [itemX, itemY], link, isImaginary) {
     const x = i % SQUARE_SIZE;
     const y = Math.floor(i / SQUARE_SIZE);
-    const isItemHere = (x === itemX && y === itemY);
-    const piece = isItemHere ? <Item link={link} /> : <Item />;
 
     return (
         <div key={i} style={{ width: '20%', height: '20%' }}>
-            <Square>{piece}</Square>
+            <GardenSquare x = {x} y = {y}>
+                {renderPiece(x, y, [itemX, itemY], link, isImaginary)}
+            </GardenSquare>
         </div>
     )
+}
+
+function renderPiece(x, y, [itemX, itemY], link, isImaginary) {
+    if(x === itemX && y === itemY) {
+        if(isImaginary == true) {
+            return <ImaginaryItem link = {link}/>
+        } else if(isImaginary == false) {
+            return <Item link = {link}/>
+        } else {
+            return <Item/>
+        }
+    }
 }
 
 function HomepageGarden({ imaginaryItem }) {
@@ -80,7 +94,6 @@ function HomepageGarden({ imaginaryItem }) {
         // handle the imaginary item first
         if (imaginaryItem && imaginaryItem != "") {
             item_list_copy.push(imaginaryItem);
-            console.log("push imaginary item")
         }
         for (let i = 0; i < SQUARE_SIZE * SQUARE_SIZE; i++) {
             var itemX = undefined;
@@ -91,16 +104,23 @@ function HomepageGarden({ imaginaryItem }) {
                 var xCoor = item_list_copy[j].positionX;
                 var yCoor = item_list_copy[j].positionY;
                 var itemLink = item_list_copy[j].item.imageUrl;
-
+                var isImaginary = undefined;
                 if (i % SQUARE_SIZE === xCoor && Math.floor(i / SQUARE_SIZE) === yCoor) {
+
                     itemX = xCoor;
                     itemY = yCoor;
                     itemUrl = itemLink;
+
+                    if(j == item_list_copy.length - 1) {
+                        isImaginary = true;
+                    } else {
+                        isImaginary = false;
+                    }
                     break;
 
                 }
             }
-            squares_copy.push(renderSquare(i, [itemX, itemY], itemUrl));
+            squares_copy.push(renderSquare(i, [itemX, itemY], itemUrl, isImaginary));
 
 
         }
