@@ -18,8 +18,25 @@ function TeachingGradebook() {
 
     // list of gradebook entries
     const [assessments, setAssessments] = useState([]);
+    const [openDialog, setOpenDialog] = useState(false)
+    const [eventStorage, setEventStorage] = useState()
+    const [paramsStorage, setParamsStorage] = useState()
 
+    const handleOpenDialog = (e,params) => {
+      setOpenDialog(true)
+      setEventStorage(e)
+      setParamsStorage(params)
 
+    }
+
+    const handleCloseDialog = () => {
+      setOpenDialog(false)
+    }
+
+    const handleDialogPublish = () => {
+      handleOnClickPublish(eventStorage,paramsStorage)
+      handleCloseDialog()
+    }
   //paths
   const location = useLocation();
   const gradebookPath = location.pathname.split("/").slice(0, 4).join("/");
@@ -85,9 +102,7 @@ function TeachingGradebook() {
                 variant="contained"
                 size="small"
                 tabIndex={params.hasFocus ? 0 : -1}
-                onClick={(event) => {
-                  handleOnClickPublish(event,params);
-                }}
+                onClick={(e)=>params.pointsAllocation ? handleOnClickPublish(e,params) : handleOpenDialog(e,params)}
               >
                 {params.row.published? "Unpublish" : "Publish"}
               </Button>
@@ -154,7 +169,29 @@ function TeachingGradebook() {
                 </Grid>
             </Grid>
 
-
+            <div>
+        <Dialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Are you sure you want to publish?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+                Due to the nature of the discount points distribution, the points distributed upon the first publish cannot be undone. Subsequent publish/unpublish will only affect the visibility of scoring to learners. Do you still want to proceed?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog}>Cancel</Button>
+            <Button onClick={handleDialogPublish} autoFocus>
+              Publish
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
 
 
         </div>

@@ -27,10 +27,10 @@ import LinkMaterial from "@mui/material/Link";
 
 export default function PartialCreateAssessment(props) {
   const maxAssessmentDiscountPoints = props.maxAssessmentDiscountPointsProp;
-  React.useEffect(() => {
-    setAssessmentStartDate(dayjs(currentDate.toISOString().split("T")[0]));
-    setAssessmentEndDate(dayjs(currentDate.toISOString().split("T")[0]));
-  }, []);
+  // React.useEffect(() => {
+  //   setAssessmentStartDate(dayjs(currentDate.toISOString().split("T")[0]));
+  //   setAssessmentEndDate(dayjs(currentDate.toISOString().split("T")[0]));
+  // }, []);
 
 
   var utc = require("dayjs/plugin/utc");
@@ -53,6 +53,8 @@ export default function PartialCreateAssessment(props) {
   const createAssessmentPath = location.pathname;
 
 
+    // console.log("Start Date: ",dayjs(currentDate.toISOString().split("T")[0])) 
+    console.log("Corrected Date: ", currentDate.toISOString()) 
   const [assessments, setAssessments] = useState([]);
   const [assessmentTitle, setAssessmentTitle] = useState("");
   const [assessmentDescription, setAssessmentDescription] = useState("");
@@ -60,10 +62,12 @@ export default function PartialCreateAssessment(props) {
   const [discountPointToTopPercent, setDiscountPointToTopPercent] = useState("")
   const [assessmentMaxScore, setAssessmentMaxScore] = useState("");
   const [assessmentStartDate, setAssessmentStartDate] = useState(
-    dayjs(currentDate.toISOString().split("T")[0])
+  dayjs(currentDate).startOf().local().format()
+    // dayjs(currentDate.toISOString().split("T")[0])
   );
   const [assessmentEndDate, setAssessmentEndDate] = useState(
-    dayjs(currentDate.toISOString().split("T")[0])
+  dayjs(currentDate).startOf().local().format()
+    // dayjs(currentDate.toISOString().split("T")[0])
   );
   const [newFileSub, setNewFileSub] = useState();
   const [newQuiz, setNewQuiz] = useState("emptyQuiz");
@@ -283,9 +287,9 @@ export default function PartialCreateAssessment(props) {
         .then((response) => {
           cleanupFields();
           handleClickSnackbar();
+          navigate(`${assessmentsPath}`);
         });
 
-      navigate(`${assessmentsPath}`);
     }
   }
 

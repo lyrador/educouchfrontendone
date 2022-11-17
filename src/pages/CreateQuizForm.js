@@ -39,6 +39,7 @@ export default function CreateQuizForm(props) {
   const createAssessmentPath = location.state.createAssessmentPathProp;
   const createQuizFormPath = location.pathname;
   const currentQuiz = location.state.newQuizProp;
+  console.log("Current quiz", currentQuiz)
   const maxAssessmentDiscountPoints = location.state.maxAssessmentDiscountPointsProp;
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
@@ -281,6 +282,7 @@ export default function CreateQuizForm(props) {
     e.preventDefault();
     calculateMaxQuizScore();
     if (validateQuiz()) {
+      console.log(currentQuiz)
       const updatedQuiz = handleQuizDateConversions(currentQuiz);
       linkQuizQuestions();
       console.log("quiz going to save: ", updatedQuiz);
@@ -290,9 +292,8 @@ export default function CreateQuizForm(props) {
         headers: { "Content-Type": "application/json" },
 
         body: JSON.stringify(updatedQuiz),
-      }).then((res) => res.json());
+      }).then((res) => res.json()).then(() => handleCancel() );
       console.log("created Quiz: ", updatedQuiz);
-      handleCancel();
     }
   };
 
