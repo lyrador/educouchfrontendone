@@ -104,6 +104,7 @@ function ItemsCatalogue({sendImaginaryItem}) {
 
             }
         }
+        closeItemDialogBox();
 
     }
 
