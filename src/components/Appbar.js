@@ -402,11 +402,14 @@ export default function Appbar() {
                     </li>
                   }
                   
-                  <li className="nav-item">
-                    <Link to="/home" className="nav-links">
-                      Social Media
-                    </Link>
-                  </li>
+                  {user.userType === "LEARNER" &&
+                    <li className="nav-item">
+                      <Link to="/learnerReels" className="nav-links">
+                        Social Media
+                      </Link>
+                    </li>
+                  }
+
                   {user.userType === "ORG_ADMIN" && (
                     <li className="nav-item">
                       <Link to="/adminDrawer" className="nav-links">
