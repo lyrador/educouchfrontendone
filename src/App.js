@@ -74,11 +74,13 @@ import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
 import WebPet from "web-pet";
 import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
+import InstructorReelsPage from "./pages/InstructorReelsPage";
+import LearnerReelsPage from "./pages/LearnerReelsPage";
 
 function App() {
   return (
     <div className="App">
-      <AuthProvider> 
+      <AuthProvider>
         <Router>
           <Routes>
             {/* <Route path = "/" element={<Home />} /> */}
@@ -92,7 +94,7 @@ function App() {
                 </RequireAuth>
               }
             />
-              <Route
+            <Route
               path="/dashboardAnnouncements"
               element={
                 <RequireAuth>
@@ -101,7 +103,7 @@ function App() {
                 </RequireAuth>
               }
             />
-              <Route
+            <Route
               path="/myPoints"
               element={
                 <RequireAuth>
@@ -119,8 +121,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
-            
             <Route
               path="/account"
               element={
@@ -409,7 +409,7 @@ function App() {
                 </RequireAuth>
               }
             />
-             <Route
+            <Route
               path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId/fileSubmission"
               element={
                 <RequireAuth>
@@ -691,6 +691,24 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <ViewGradedQuizAttempt />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/instructorReels"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InstructorReelsPage />
+                </RequireAuth>
+              }
+            />
+                        <Route
+              path="/learnerReels"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerReelsPage/>
                 </RequireAuth>
               }
             />
