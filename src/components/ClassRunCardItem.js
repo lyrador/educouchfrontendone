@@ -31,6 +31,23 @@ function ClassRunCardItem({
   classRunStartTime,
   classRunEndTime,
 }) {
+  const [unreadAnnouncements, setUnreadAnnouncements] = useState([]);
+  const [refreshPage, setRefreshPage] = useState(false);
+  const refreshFunction = () => {
+    setRefreshPage(!refreshPage);
+  };
+
+  React.useEffect(() => {
+    setRefreshPage(false);
+    fetch(
+      "http://localhost:8080/announcement/getAllUnreadAnnouncementsByCourseId/" +
+        courseId
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        setUnreadAnnouncements(result);
+      });
+  }, [refreshFunction]);
   return (
     <>
       <div className="card-flex-item">
@@ -67,7 +84,7 @@ function ClassRunCardItem({
             <br />
 
             {isEnrolled && (
-              <Badge badgeContent={courseAnnouncements.length} color="primary">
+              <Badge badgeContent={unreadAnnouncements.length} color="primary">
                 <Link
                   to={"/learnerCourseDetails/" + courseId + "/announcements"}
                 >

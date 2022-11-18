@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { useLocation } from "react-router-dom";
 import {
+  Button,
   Grid,
   List,
   ListItem,
@@ -10,10 +11,17 @@ import {
   ListItemAvatar,
   Avatar,
   Typography,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+  Snackbar,
+  Alert,
 } from "@mui/material";
+
+import MarkChatReadIcon from "@mui/icons-material/MarkChatRead";
 
 import { useState } from "react";
 
@@ -31,6 +39,7 @@ function LearnerAnnouncementList(props) {
   const courseId = location.pathname.split("/")[2];
 
   const [announcements, setAnnouncements] = useState([]);
+  const [announcementIdToRead, setAnnouncementIdToRead] = useState("");
 
   const [refreshPage, setRefreshPage] = useState("");
 
@@ -47,6 +56,8 @@ function LearnerAnnouncementList(props) {
       });
   }, [refreshPage]);
 
+  const [readDialogueOpen, setReadDialogueOpen] = React.useState(false);
+
   const [query, setQuery] = useState("");
 
   const [creator, setCreator] = useState("");
@@ -62,6 +73,42 @@ function LearnerAnnouncementList(props) {
       });
   }
 
+  const [openReadSnackbar, setOpenReadSnackbar] = React.useState(false);
+
+  const handleClickReadSnackbar = () => {
+    setOpenReadSnackbar(true);
+  };
+
+  const handleCloseReadSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenReadSnackbar(false);
+  };
+
+  function handleClickReadAnnouncement(event, announcementId) {
+    setAnnouncementIdToRead(announcementId);
+    setReadDialogueOpen(true);
+  }
+
+  const handleReadDialogueClose = () => {
+    setReadDialogueOpen(false);
+  };
+
+  function handleReadAnnouncement(announcementId) {
+    fetch(
+      "http://localhost:8080/annoucement/readAnnouncement/" + announcementId,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    ).then((res) => res.json());
+    // then close dialogue
+    handleReadDialogueClose();
+    // then open snackbar for successful release
+    handleClickReadSnackbar();
+  }
+
   return (
     <div>
       <Grid container spacing={0}>
@@ -69,6 +116,19 @@ function LearnerAnnouncementList(props) {
           <LearnerCoursesDrawer courseId = {courseId} learnerStatus = {true}/>
         </Grid>
         <Grid item xs={10}>
+          <Snackbar
+            open={openReadSnackbar}
+            autoHideDuration={5000}
+            onClose={handleCloseReadSnackbar}
+          >
+            <Alert
+              onClose={handleCloseReadSnackbar}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
+              Announcement marked as Read!
+            </Alert>
+          </Snackbar>
           <div style={{ justifyContent: "center" }}>
             {announcements.length === 0 && (
               <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
@@ -112,7 +172,8 @@ function LearnerAnnouncementList(props) {
                   announcement.createdByUserName
                     .toLowerCase()
                     .includes(query) ||
-                  announcement.createdDateTime.toLowerCase().includes(query)
+                  announcement.createdDateTime.toLowerCase().includes(query) ||
+                  announcement.isRead.toLowerCase().includes(query)
               )
               .reverse()
               .map((announcement) => (
@@ -154,6 +215,29 @@ function LearnerAnnouncementList(props) {
                         </React.Fragment>
                       }
                     />
+
+                    {announcement.isRead === "UNREAD" && (
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={(event) =>
+                          handleClickReadAnnouncement(
+                            event,
+                            announcement.announcementId
+                          )
+                        }
+                      >
+                        <MarkChatReadIcon />
+                        <div style={{ fontSize: "18px" }}>Mark As Read</div>
+                      </IconButton>
+                    )}
+
+                    {announcement.isRead === "READ" && (
+                      <IconButton edge="end" aria-label="delete">
+                        <MarkChatReadIcon />
+                        <div style={{ fontSize: "18px" }}>Read</div>
+                      </IconButton>
+                    )}
                   </ListItem>
                   <Divider variant="inset" component="li" />
                 </List>
@@ -161,6 +245,27 @@ function LearnerAnnouncementList(props) {
           </div>
         </Grid>
       </Grid>
+      <div>
+        <Dialog
+          open={readDialogueOpen}
+          onClose={handleReadDialogueClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Mark this announcement as read?"}
+          </DialogTitle>
+          <DialogActions>
+            <Button onClick={handleReadDialogueClose}>Cancel</Button>
+            <Button
+              onClick={() => handleReadAnnouncement(announcementIdToRead)}
+              autoFocus
+            >
+              Mark as Read
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
     </div>
   );
 }

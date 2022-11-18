@@ -64,6 +64,8 @@ function FileSubmission(props) {
   const navigate = useNavigate();
 
   const assessmentsPath = location.state.assessmentsPathProp;
+  const maxAssessmentDiscountPoints = location.state.maxAssessmentDiscountPointsProp;
+
   const createAssessmentPath = location.state.createAssessmentPathProp;
   const fileSubmissionId = location.pathname.split("/")[4];
 
@@ -139,6 +141,14 @@ function FileSubmission(props) {
     value: false,
     errorMessage: "",
   });
+  const [discountPointForAssessmentError, setDiscountPointForAssessmentError] = useState({
+    value: false,
+    errorMessage: "",
+  });  
+  const [discountPointToTopPercentError, setDiscountPointToTopPercentError] = useState({
+    value: false,
+    errorMessage: "",
+  });
   const [assessmentStartDateError, setAssessmentStartDateError] = useState({
     value: false,
     errorMessage: "",
@@ -154,6 +164,8 @@ function FileSubmission(props) {
   const [editAssessmentDescription, setEditAssessmentDescription] =
     useState("");
   const [editAssessmentMaxScore, setEditAssessmentMaxScore] = useState("");
+  const [editDiscountPointForAssessment, setEditDiscountPointForAssessment] = useState("")
+  const [editDiscountPointToTopPercent, setEditDiscountPointToTopPercent] = useState("")
   const [editAssessmentStartDate, setEditAssessmentStartDate] = useState(
     dayjs()
   );
@@ -181,6 +193,8 @@ function FileSubmission(props) {
     assessmentTitle,
     assessmentDescription,
     assessmentMaxScore,
+    discountPointForAssessment,
+    discountPointToTopPercent,
     assessmentStartDate,
     assessmentEndDate,
     assessmentFileSubmissionEnum
@@ -188,6 +202,8 @@ function FileSubmission(props) {
     setEditAssessmentTitle(assessmentTitle);
     setEditAssessmentDescription(assessmentDescription);
     setEditAssessmentMaxScore(assessmentMaxScore);
+    setEditDiscountPointForAssessment(discountPointForAssessment);
+    setEditDiscountPointToTopPercent(discountPointToTopPercent);
     setEditAssessmentStartDate(assessmentStartDate);
     setEditAssessmentEndDate(assessmentEndDate);
     setEditAssessmentFileSubmissionEnum(assessmentFileSubmissionEnum);
@@ -205,7 +221,8 @@ function FileSubmission(props) {
     setAssessmentMaxScoreError({ value: false, errorMessage: "" });
     setAssessmentStartDateError({ value: false, errorMessage: "" });
     setAssessmentEndDateError({ value: false, errorMessage: "" });
-
+    setDiscountPointForAssessmentError({ value: false, errorMessage: "" });
+    setDiscountPointToTopPercentError({ value: false, errorMessage: "" })
     if (editAssessmentTitle == "") {
       setAssessmentTitleError({
         value: true,
@@ -222,6 +239,37 @@ function FileSubmission(props) {
       setAssessmentMaxScoreError({
         value: true,
         errorMessage: "Please enter a valid score!",
+      });
+    }
+    if(editDiscountPointForAssessment=="") {
+      setDiscountPointForAssessmentError({
+        value: true,
+        errorMessage: "Discount Points cannot be empty!",
+      });
+    }
+    if(editDiscountPointForAssessment > maxAssessmentDiscountPoints) {
+      setDiscountPointForAssessmentError({
+        value: true,
+        errorMessage: "Discount Points cannot be more than " + maxAssessmentDiscountPoints,
+      });
+    }
+    if(editDiscountPointToTopPercent === "") {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage of learners to give discount points cannot be empty!",
+      });
+    }
+
+    if(Number(editDiscountPointToTopPercent) < 0 || Number(editDiscountPointToTopPercent) > 100) {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage needs to be between 0 to 100",
+      });
+    }
+    if(String(editDiscountPointToTopPercent).includes(".")) {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage needs to be an integer value",
       });
     }
 
@@ -245,11 +293,16 @@ function FileSubmission(props) {
       editAssessmentDescription &&
       !isNaN(editAssessmentMaxScore) &&
       editAssessmentMaxScore &&
-      !editDateComparisonBoolean
+      !editDateComparisonBoolean &&
+      !(editDiscountPointForAssessment > maxAssessmentDiscountPoints) &&
+      !(Number(editDiscountPointToTopPercent) < 0 || Number(editDiscountPointToTopPercent) > 100) &&
+      !(String(editDiscountPointToTopPercent).includes("."))
     ) {
       var assessmentTitle = editAssessmentTitle;
       var assessmentDescription = editAssessmentDescription;
       var assessmentMaxScore = editAssessmentMaxScore;
+      var discountPointForAssessment = editDiscountPointForAssessment;
+      var discountPointToTopPercent = editDiscountPointToTopPercent;
       var assessmentStartDate = editAssessmentStartDate;
       var assessmentEndDate = editAssessmentEndDate;
       var assessmentIsOpen = "false";
@@ -259,6 +312,8 @@ function FileSubmission(props) {
         assessmentTitle,
         assessmentDescription,
         assessmentMaxScore,
+        discountPointForAssessment,
+        discountPointToTopPercent,
         assessmentStartDate,
         assessmentEndDate,
         assessmentFileSubmissionEnum,
@@ -395,6 +450,8 @@ function FileSubmission(props) {
                   currentFileSubmission.title,
                   currentFileSubmission.description,
                   currentFileSubmission.maxScore,
+                  currentFileSubmission.discountPointForAssessment,
+                  currentFileSubmission.discountPointToTopPercent,
                   currentFileSubmission.startDate,
                   currentFileSubmission.endDate,
                   currentFileSubmission.fileSubmissionEnum
@@ -577,6 +634,28 @@ function FileSubmission(props) {
             onChange={(e) => setEditAssessmentMaxScore(e.target.value)}
             error={assessmentMaxScoreError.value}
             helperText={assessmentMaxScoreError.errorMessage}
+          />
+                    <TextField
+            id="outlined-basic"
+            label="New Discount Point Allocation"
+            variant="outlined"
+            fullWidth
+            style={{ margin: "6px 0" }}
+            value={editDiscountPointForAssessment}
+            onChange={(e) => setEditDiscountPointForAssessment(e.target.value)}
+            error={discountPointForAssessmentError.value}
+            helperText={discountPointForAssessmentError.errorMessage}
+          />
+                    <TextField
+            id="outlined-basic"
+            label="New Percentage of Top Learners To Allocate Points"
+            variant="outlined"
+            fullWidth
+            style={{ margin: "6px 0" }}
+            value={editDiscountPointToTopPercent}
+            onChange={(e) => setEditDiscountPointToTopPercent(e.target.value)}
+            error={discountPointToTopPercentError.value}
+            helperText={discountPointToTopPercentError.errorMessage}
           />
           <Stack spacing={1}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>

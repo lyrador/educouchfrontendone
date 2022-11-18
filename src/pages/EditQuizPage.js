@@ -26,6 +26,7 @@ import EditSettingsComponent from "../components/QuizComponents/EditQuizSettings
 import EditQuizSettingsComponent from "../components/QuizComponents/EditQuizSettingsComponent";
 import { CatchingPokemonSharp } from "@mui/icons-material";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { set } from "date-fns";
 
 export default function EditQuizPage() {
   const location = useLocation();
@@ -42,6 +43,7 @@ export default function EditQuizPage() {
 
   const courseId = location.pathname.split("/").slice(2, 3).join("/");
   const assessmentsPath = location.state.assessmentPathProp;
+  const maxAssessmentDiscountPoints = location.state.maxAssessmentDiscountPointsProp;
   const editQuizPath = location.pathname;
   const assessmentId = location.state.assessmentIdProp;
   const [currentQuiz, setCurrentQuiz] = useState();
@@ -52,6 +54,8 @@ export default function EditQuizPage() {
   const [title, setTitle] = useState();
   const [description, setDescription] = useState();
   const [maxScore, setMaxScore] = useState();
+  const [discountPointForAssessment, setDiscountPointForAssessment] = useState("")
+  const [discountPointToTopPercent, setDiscountPointToTopPercent] = useState("")
   const [startDate, setStartDate] = useState(dayjs(currentDate.toISOString().split('T')[0]));
   const [endDate, setEndDate] = useState(dayjs(currentDate.toISOString().split('T')[0]));
   const [hasTimeLimit, setHasTimeLimit] = useState("true");
@@ -77,6 +81,8 @@ export default function EditQuizPage() {
         setTitle(result.assessmentTitle);
         setDescription(result.assessmentDescription);
         setMaxScore(result.assessmentMaxScore);
+        setDiscountPointForAssessment(result.discountPointForAssessment);
+        setDiscountPointToTopPercent(result.discountPointToTopPercent);
         setStartDate(dayjs(result.assessmentStartDate).local().format());
         setEndDate(dayjs(result.assessmentEndDate).local().format());
         setHasTimeLimit(result.hasTimeLimit);
@@ -109,6 +115,14 @@ export default function EditQuizPage() {
     errorMessage: "",
   });
   const [maxScoreError, setMaxScoreError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [discountPointForAssessmentError, setDiscountPointForAssessmentError] = useState({
+    value: false,
+    errorMessage: "",
+  });  
+  const [discountPointToTopPercentError, setDiscountPointToTopPercentError] = useState({
     value: false,
     errorMessage: "",
   });
@@ -152,6 +166,8 @@ export default function EditQuizPage() {
     setTitleError({ value: false, errorMessage: "" });
     setDescriptionError({ value: false, errorMessage: "" });
     setMaxScoreError({ value: false, errorMessage: "" });
+    setDiscountPointForAssessmentError({ value: false, errorMessage: "" });
+    setDiscountPointToTopPercentError({ value: false, errorMessage: "" });
     setStartDateError({ value: false, errorMessage: "" });
     setEndDateError({ value: false, errorMessage: "" });
     setTimeLimitError({ value: false, errorMessage: "" });
@@ -167,6 +183,37 @@ export default function EditQuizPage() {
       setDescriptionError({
         value: true,
         errorMessage: "Description Field cannot be left empty!",
+      });
+    }
+    if(discountPointForAssessment=="") {
+      setDiscountPointForAssessmentError({
+        value: true,
+        errorMessage: "Discount Points cannot be empty!",
+      });
+    }
+    if(discountPointForAssessment > maxAssessmentDiscountPoints) {
+      setDiscountPointForAssessmentError({
+        value: true,
+        errorMessage: "Discount Points cannot be more than " + maxAssessmentDiscountPoints,
+      });
+    }
+    if(discountPointToTopPercent === "") {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage of learners to give discount points cannot be empty!",
+      });
+    }
+
+    if(Number(discountPointToTopPercent) < 0 || Number(discountPointToTopPercent) > 100) {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage needs to be between 0 to 100",
+      });
+    }
+    if(String(discountPointToTopPercent).includes(".")) {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage needs to be an integer value",
       });
     }
     const dateComparisonBoolean = tempEndDate < tempStartDate;
@@ -191,6 +238,8 @@ export default function EditQuizPage() {
       editQuizSettings(
         title,
         description,
+        discountPointForAssessment,
+        discountPointToTopPercent,
         startDate,
         endDate,
         hasTimeLimit,
@@ -220,6 +269,8 @@ export default function EditQuizPage() {
     setTitleError({ value: false, errorMessage: "" });
     setDescriptionError({ value: false, errorMessage: "" });
     setMaxScoreError({ value: false, errorMessage: "" });
+    setDiscountPointForAssessmentError({ value: false, errorMessage: "" });
+    setDiscountPointToTopPercentError({ value: false, errorMessage: "" });
     setStartDateError({ value: false, errorMessage: "" });
     setEndDateError({ value: false, errorMessage: "" });
     setTimeLimitError({ value: false, errorMessage: "" });
@@ -240,6 +291,37 @@ export default function EditQuizPage() {
       setMaxScoreError({
         value: true,
         errorMessage: "Max Score Field cannot be left empty!",
+      });
+    }
+    if(discountPointForAssessment=="") {
+      setDiscountPointForAssessmentError({
+        value: true,
+        errorMessage: "Discount Points cannot be empty!",
+      });
+    }
+    if(discountPointForAssessment > maxAssessmentDiscountPoints) {
+      setDiscountPointForAssessmentError({
+        value: true,
+        errorMessage: "Discount Points cannot be more than " + maxAssessmentDiscountPoints,
+      });
+    }
+    if(discountPointToTopPercent === "") {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage of learners to give discount points cannot be empty!",
+      });
+    }
+
+    if(Number(discountPointToTopPercent) < 0 || Number(discountPointToTopPercent) > 100) {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage needs to be between 0 to 100",
+      });
+    }
+    if(String(discountPointToTopPercent).includes(".")) {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage needs to be an integer value",
       });
     }
     const dateComparisonBoolean = tempEndDate < tempStartDate;
@@ -271,6 +353,8 @@ export default function EditQuizPage() {
         title,
         description,
         maxScore,
+        discountPointForAssessment,
+        discountPointToTopPercent,
         startDate,
         endDate,
         hasTimeLimit,
@@ -314,6 +398,8 @@ export default function EditQuizPage() {
     title1,
     description1,
     maxScore1,
+    discountPointForAssessment1,
+    discountPointToTopPercent1,
     startDate1,
     endDate1,
     hasTimeLimit1,
@@ -323,6 +409,8 @@ export default function EditQuizPage() {
     setTitle(title1);
     setDescription(description1);
     setMaxScore(maxScore1);
+    setDiscountPointForAssessment(discountPointForAssessment1)
+    setDiscountPointToTopPercent(discountPointToTopPercent1)
     setStartDate(startDate1);
     setEndDate(endDate1);
     setHasTimeLimit(hasTimeLimit1);
@@ -486,6 +574,8 @@ export default function EditQuizPage() {
     currentQuiz.assessmentTitle = title;
     currentQuiz.assessmentDescription = description;
     currentQuiz.assessmentMaxScore = maxScore;
+    currentQuiz.discountPointForAssessment = discountPointForAssessment;
+    currentQuiz.discountPointToTopPercent = discountPointToTopPercent;
     currentQuiz.assessmentStartDate = startDate;
     currentQuiz.assessmentEndDate = endDate;
     currentQuiz.hasTimeLimit = hasTimeLimit;
@@ -676,6 +766,30 @@ export default function EditQuizPage() {
                 <br />
                 <p style={{ color: "grey" }}>{maxScore}</p>
               </Paper>
+              <p style={{ color: "grey" }}>Discount Points to Distribute this Assessment</p>
+              <TextField
+                required
+                error={discountPointForAssessmentError.value}
+                helperText={discountPointForAssessmentError.errorMessage}
+                id="outlined-basic"
+                variant="outlined"
+                fullWidth
+                style={{ paddingBottom: "10px", marginBottom: "20px" }}
+                value={discountPointForAssessment}
+                onChange={(e) => setDiscountPointForAssessment(e.target.value)}
+              />
+                            <p style={{ color: "grey" }}>Points Given To Top(%)</p>
+              <TextField
+                required
+                error={discountPointToTopPercentError.value}
+                helperText={discountPointToTopPercentError.errorMessage}
+                id="outlined-basic"
+                variant="outlined"
+                fullWidth
+                style={{ paddingBottom: "10px", marginBottom: "20px" }}
+                value={discountPointToTopPercent}
+                onChange={(e) => setDiscountPointToTopPercent(e.target.value)}
+              />
               <Stack
                 spacing={1}
                 style={{ paddingBottom: "10px", marginBottom: "20px" }}
