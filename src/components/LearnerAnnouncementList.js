@@ -38,6 +38,10 @@ function LearnerAnnouncementList(props) {
   const courseId = location.pathname.split("/")[2];
 
   const [announcements, setAnnouncements] = useState([]);
+  const [announcementTitle, setAnnouncementTitle] = useState("");
+  const [announcementBody, setAnnouncementBody] = useState("");
+  const [editAnnouncementTitle, setEditAnnouncementTitle] = useState("");
+  const [editAnnouncementBody, setEditAnnouncementBody] = useState("");
   const [announcementIdToRead, setAnnouncementIdToRead] = useState("");
 
   const [refreshPage, setRefreshPage] = useState("");
@@ -59,19 +63,6 @@ function LearnerAnnouncementList(props) {
 
   const [query, setQuery] = useState("");
 
-  const [creator, setCreator] = useState("");
-
-  function findAnnouncementCreator(userId) {
-    fetch("http://localhost:8080/educator/instructors/" + userId, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => res.json())
-      .then((result) => {
-        setCreator(result);
-      });
-  }
-
   const [openReadSnackbar, setOpenReadSnackbar] = React.useState(false);
 
   const handleClickReadSnackbar = () => {
@@ -85,7 +76,14 @@ function LearnerAnnouncementList(props) {
     setOpenReadSnackbar(false);
   };
 
-  function handleClickReadAnnouncement(event, announcementId) {
+  function handleClickReadAnnouncement(
+    event,
+    announcementId,
+    announcementTitle,
+    announcementBody
+  ) {
+    setEditAnnouncementTitle(announcementTitle);
+    setEditAnnouncementBody(announcementBody);
     setAnnouncementIdToRead(announcementId);
     setReadDialogueOpen(true);
   }
@@ -94,19 +92,70 @@ function LearnerAnnouncementList(props) {
     setReadDialogueOpen(false);
   };
 
-  function handleReadAnnouncement(announcementId) {
+  const readAnnouncement = (e) => {
+    e.preventDefault();
+    var announcementTitle = editAnnouncementTitle;
+    var announcementBody = editAnnouncementBody;
+    var isRead = "READ";
+    const newEditedAnnouncement = {
+      announcementTitle,
+      announcementBody,
+      isRead,
+    };
     fetch(
-      "http://localhost:8080/annoucement/readAnnouncement/" + announcementId,
+      "http://localhost:8080/announcement/updateAnnouncementById/" +
+        announcementIdToRead,
       {
-        method: "GET",
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newEditedAnnouncement),
       }
     ).then((res) => res.json());
+    setRefreshPage(true);
     // then close dialogue
     handleReadDialogueClose();
     // then open snackbar for successful release
     handleClickReadSnackbar();
-  }
+  };
+
+  const renderExtraActions = (
+    announcementId,
+    announcementTitle,
+    announcementBody,
+    isRead
+  ) => {
+    if (isRead === "UNREAD") {
+      return (
+        <div>
+          <IconButton
+            edge="end"
+            aria-label="delete"
+            onClick={(event) =>
+              handleClickReadAnnouncement(
+                event,
+                announcementId,
+                announcementTitle,
+                announcementBody
+              )
+            }
+          >
+            <MarkChatReadIcon />
+            <div style={{ fontSize: "18px" }}>Mark As Read</div>
+          </IconButton>
+        </div>
+      );
+    }
+    if (isRead === "READ") {
+      return (
+        <div>
+          <IconButton edge="end" aria-label="delete">
+            <MarkChatReadIcon />
+            <div style={{ fontSize: "18px" }}>Read</div>
+          </IconButton>
+        </div>
+      );
+    }
+  };
 
   return (
     <div>
@@ -182,8 +231,10 @@ function LearnerAnnouncementList(props) {
                     alignItems="flex-start"
                   >
                     <ListItemAvatar>
-                      {findAnnouncementCreator(announcement.createdByUserId)}
-                      <Avatar alt="avatar" src={creator.profilePictureURL} />
+                      <Avatar
+                        alt="avatar"
+                        src={announcement.profilePictureURL}
+                      />
                     </ListItemAvatar>
                     <ListItemText
                       primary={
@@ -214,28 +265,11 @@ function LearnerAnnouncementList(props) {
                         </React.Fragment>
                       }
                     />
-
-                    {announcement.isRead === "UNREAD" && (
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={(event) =>
-                          handleClickReadAnnouncement(
-                            event,
-                            announcement.announcementId
-                          )
-                        }
-                      >
-                        <MarkChatReadIcon />
-                        <div style={{ fontSize: "18px" }}>Mark As Read</div>
-                      </IconButton>
-                    )}
-
-                    {announcement.isRead === "READ" && (
-                      <IconButton edge="end" aria-label="delete">
-                        <MarkChatReadIcon />
-                        <div style={{ fontSize: "18px" }}>Read</div>
-                      </IconButton>
+                    {renderExtraActions(
+                      announcement.announcementId,
+                      announcement.announcementTitle,
+                      announcement.announcementBody,
+                      announcement.isRead
                     )}
                   </ListItem>
                   <Divider variant="inset" component="li" />
@@ -256,10 +290,7 @@ function LearnerAnnouncementList(props) {
           </DialogTitle>
           <DialogActions>
             <Button onClick={handleReadDialogueClose}>Cancel</Button>
-            <Button
-              onClick={() => handleReadAnnouncement(announcementIdToRead)}
-              autoFocus
-            >
+            <Button onClick={readAnnouncement} autoFocus>
               Mark as Read
             </Button>
           </DialogActions>
