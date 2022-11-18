@@ -74,11 +74,13 @@ import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
 import WebPet from "web-pet";
 import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
+import InClassGamesList from "./components/InClassGamesList";
+import TriviaCreation from "./components/TriviaCreation";
 
 function App() {
   return (
     <div className="App">
-      <AuthProvider> 
+      <AuthProvider>
         <Router>
           <Routes>
             {/* <Route path = "/" element={<Home />} /> */}
@@ -92,7 +94,7 @@ function App() {
                 </RequireAuth>
               }
             />
-              <Route
+            <Route
               path="/dashboardAnnouncements"
               element={
                 <RequireAuth>
@@ -101,7 +103,7 @@ function App() {
                 </RequireAuth>
               }
             />
-              <Route
+            <Route
               path="/myPoints"
               element={
                 <RequireAuth>
@@ -120,7 +122,7 @@ function App() {
               }
             />
 
-            
+
             <Route
               path="/account"
               element={
@@ -409,7 +411,7 @@ function App() {
                 </RequireAuth>
               }
             />
-             <Route
+            <Route
               path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId/fileSubmission"
               element={
                 <RequireAuth>
@@ -549,6 +551,33 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingInteractiveBook />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/inClass"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InClassGamesList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/inClass/trivia/:triviaId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TriviaCreation />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/inClass/poll/:pollId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InClassGamesList />
                 </RequireAuth>
               }
             />
