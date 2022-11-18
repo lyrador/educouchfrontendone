@@ -71,13 +71,27 @@ function ShoppingToolbox({ imaginaryItem, handleMove }) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(transferObject)
-        }).then(() => {
+        }).then(async response => {
+            const isJson = response.headers.get('content-type')?.includes('application/json');
+            const data = isJson ? await response.json() : null;
+
             setPurchaseLoading(true);
             navigate('/learnerHome');
             setPurchaseLoading(false);
 
+            if (!response.ok) {
+                const error = (data && data.message) || response.status;
+                console.log('Error is '+ error);
+                return Promise.reject(error);
+            }
+
         }).catch((error) => {
-            toast.error(error.message);
+            // console.log(error);
+            // toast.error(error.message);
+            alert("Unable to purchase item: location occupied or not enough balance!");
+            
+            closeItemDialogBox();
+
 
         })
     }
@@ -134,7 +148,7 @@ function ShoppingToolbox({ imaginaryItem, handleMove }) {
                             Agree
                         </Button>
                     }
-                    <ClimbingBoxLoader loading={purchaseLoading}/>
+                    <ClimbingBoxLoader loading={purchaseLoading} />
                 </DialogActions>
             </Dialog>
         </div>

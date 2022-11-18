@@ -27,7 +27,7 @@ function TreePoint() {
 
 
     return (
-        <Button variant = "contained" endIcon = {<ForestIcon/>} disabledElevation>{treePoint + " tree points"}</Button>
+        <Button variant = "contained" endIcon = {<ForestIcon/>}>{treePoint + " tree points"}</Button>
     )
 }
 

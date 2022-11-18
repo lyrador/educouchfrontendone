@@ -5,10 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { Button, Typography, TableRow, TableCell, Dialog, DialogContent, Divider, DialogActions } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import ForestIcon from '@mui/icons-material/Forest';
 import { useAuth } from "../../context/AuthProvider";
 
-function ItemsCatalogue({sendImaginaryItem}) {
+function MyItemList({sendSelectedItem}) {
 
     const navigate = useNavigate();
     const auth = useAuth();
@@ -18,16 +17,8 @@ function ItemsCatalogue({sendImaginaryItem}) {
         navigate('/learnerHome');
     }
 
-    const [listOfItems, setListOfItems] = useState([]);
     const [listOfOwnedItems, setListOfOwnedItems] = useState([]);
-
-    useEffect(() => {
-        fetch("http://localhost:8080/treePoints/getAllItems")
-            .then((res) => res.json())
-            .then((result) => {
-                setListOfItems(result);
-            })
-    }, []);
+    const [listOfAlteredItems, setListOfAlteredItems] = useState([]);
 
     useEffect(() => {
         var retrievalUrl = "http://localhost:8080/treePoints/retrieveItemOwnedByLearnerId?learnerId=" + user.userId;
@@ -39,13 +30,31 @@ function ItemsCatalogue({sendImaginaryItem}) {
             );
     }, []);
 
+    useEffect(() => {
+        var item_list = []
+        listOfOwnedItems.map((x) => {
+            var indiv_item = {}
+            indiv_item.itemOwnedId = x.itemOwnedId;
+            indiv_item.imageUrl = x.item.imageUrl;
+            indiv_item.itemName = x.item.itemName;
+            indiv_item.positionX = x.positionX;
+            indiv_item.positionY = x.positionY;
+            indiv_item.itemDescription = x.item.itemDescription;
+            indiv_item.visibility = x.hidden ? "Not Visible" : "Visible";
+            indiv_item.size = x.size;
+            item_list.push(indiv_item);
+        });
+        setListOfAlteredItems(item_list);
+    }, [listOfOwnedItems]);
+
     const columns = [
         {
             field: 'imageUrl', headerName: 'Image', width: 300,
             renderCell: (params) => <img src={params.value} style={{ width: "75px" }} />
         },
         { field: 'itemName', headerName: 'Item Name', width: 150 },
-        { field: 'price', headerName: 'Item Price', width: 150 },
+        { field: 'visibility', headerName: 'Visibility', width: 150 },
+        { field: 'size', headerName: 'Size', width: 150 },
         {
             headerName: '',
             width: 100,
@@ -83,27 +92,8 @@ function ItemsCatalogue({sendImaginaryItem}) {
     }
 
     const viewDemo = () => {
-        var occupied;
-        for (let potentialX = 0; potentialX < 5; potentialX++) {
-            for (let potentialY = 0; potentialY < 5; potentialY++) {
-                occupied = false;
-                for (let j = 0; j < listOfOwnedItems.length; j++) {
-                    var xCoor = listOfOwnedItems[j].positionX;
-                    var yCoor = listOfOwnedItems[j].positionY;
-                    if(xCoor == potentialX && yCoor == potentialY) {
-                        occupied = true;
-                    }
-                }
-
-                if(!false) {
-                    sendImaginaryItem(selectedItem, potentialX, potentialY);
-                    break;
-                }
-
-
-
-            }
-        }
+        
+        sendSelectedItem(selectedItem);
         closeItemDialogBox();
 
     }
@@ -111,8 +101,8 @@ function ItemsCatalogue({sendImaginaryItem}) {
     return (
         <>
             <div style={{ height: '80vh', width: '100%', marginLeft: "2em", paddingRight: "2em" }}>
-                <DataGrid getRowId={(row) => row.itemId}
-                    rows={listOfItems}
+                <DataGrid getRowId={(row) => row.itemOwnedId}
+                    rows={listOfAlteredItems}
                     columns={columns}
                     pageSize={5}
                     rowsPerPageOptions={[5]}
@@ -139,11 +129,9 @@ function ItemsCatalogue({sendImaginaryItem}) {
 
                     <br />
                     <Typography>{selectedItem.itemDescription}</Typography>
-                    <br />
-                    <Button variant="contained" endIcon={<ForestIcon />}>{selectedItem.price + " tree points"}</Button>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={viewDemo}>Place</Button>
+                    <Button onClick={viewDemo}>Confirm Selection</Button>
                     <Button onClick={closeItemDialogBox}>Cancel</Button>
                 </DialogActions>
             </Dialog>
@@ -151,4 +139,4 @@ function ItemsCatalogue({sendImaginaryItem}) {
     )
 }
 
-export default ItemsCatalogue;
+export default MyItemList;

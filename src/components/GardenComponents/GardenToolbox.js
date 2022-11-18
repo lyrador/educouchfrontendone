@@ -20,6 +20,10 @@ function GardenToolbox() {
         navigate('/rewardShoppingPage');
     }
 
+    const navigateToArrangementPage = () => {
+        navigate('/rewardArrangementPage');
+    }
+
 
 
     return (
@@ -28,7 +32,7 @@ function GardenToolbox() {
                 <Grid item xs={8}>
                     <Stack direction="row" spacing={2}>
                         <Button variant="contained" startIcon={<ShoppingCartIcon />} onClick={navigateToShoppingPage}>Shop</Button>
-                        <Button variant="contained" startIcon={<FlipToBackIcon />}>Rearrange</Button>
+                        <Button variant="contained" startIcon={<FlipToBackIcon />} onClick = {navigateToArrangementPage}>Rearrange</Button>
                         <Button variant="contained" startIcon={<AutoFixHighIcon />}>Enhance</Button>
                     </Stack>
                 </Grid>

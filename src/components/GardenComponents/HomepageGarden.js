@@ -14,32 +14,50 @@ import ImaginaryItem from './ImaginaryItem';
 import GardenSquare from './GardenSquare';
 
 const SQUARE_SIZE = 5;
-function renderSquare(i, [itemX, itemY], link, isImaginary) {
+function renderSquare(i, [itemX, itemY], link, isImaginary, isSelected, isHidden) {
     const x = i % SQUARE_SIZE;
     const y = Math.floor(i / SQUARE_SIZE);
 
-    return (
-        <div key={i} style={{ width: '20%', height: '20%' }}>
-            <GardenSquare x = {x} y = {y}>
-                {renderPiece(x, y, [itemX, itemY], link, isImaginary)}
-            </GardenSquare>
-        </div>
-    )
+    if (isSelected === true) {
+        return (
+            <div key={i} style={{ width: '20%', height: '20%', backgroundColor: "yellowgreen" }}>
+                <GardenSquare x={x} y={y}>
+                    <center>
+                        {renderPiece(x, y, [itemX, itemY], link, isImaginary, isHidden)}
+                    </center>
+
+                </GardenSquare>
+            </div>
+        );
+    } else {
+        return (
+            <div key={i} style={{ width: '20%', height: '20%' }}>
+                <GardenSquare x={x} y={y}>
+                    <center>
+                        {renderPiece(x, y, [itemX, itemY], link, isImaginary, isHidden)}
+                    </center>
+
+                </GardenSquare>
+            </div>
+        );
+    };
+
+
 }
 
-function renderPiece(x, y, [itemX, itemY], link, isImaginary) {
-    if(x === itemX && y === itemY) {
-        if(isImaginary == true) {
-            return <ImaginaryItem link = {link}/>
-        } else if(isImaginary == false) {
-            return <Item link = {link}/>
+function renderPiece(x, y, [itemX, itemY], link, isImaginary, isHidden) {
+    if (x === itemX && y === itemY && !isHidden) {
+        if (isImaginary == true) {
+            return <ImaginaryItem link={link} />
+        } else if (isImaginary == false && !isHidden) {
+            return <Item link={link} />
         } else {
-            return <Item/>
+            return <Item />
         }
     }
 }
 
-function HomepageGarden({ imaginaryItem }) {
+function HomepageGarden({ imaginaryItem, selectedItem }) {
 
     const auth = useAuth();
     const user = auth.user;
@@ -100,10 +118,14 @@ function HomepageGarden({ imaginaryItem }) {
             var itemY = undefined;
             var itemUrl = undefined;
             for (let j = 0; j < item_list_copy.length; j++) {
-                
+                console.log(JSON.stringify(item_list_copy[j]));
                 var xCoor = item_list_copy[j].positionX;
                 var yCoor = item_list_copy[j].positionY;
                 var itemLink = item_list_copy[j].item.imageUrl;
+                var itemOwnedId = item_list_copy[j].itemOwnedId;
+                var isHidden = item_list_copy[j].hidden;
+                
+                var isSelected = undefined;
                 var isImaginary = undefined;
                 if (i % SQUARE_SIZE === xCoor && Math.floor(i / SQUARE_SIZE) === yCoor) {
 
@@ -111,21 +133,30 @@ function HomepageGarden({ imaginaryItem }) {
                     itemY = yCoor;
                     itemUrl = itemLink;
 
-                    if(j == item_list_copy.length - 1) {
+                    if (j == item_list_copy.length - 1) {
                         isImaginary = true;
                     } else {
                         isImaginary = false;
                     }
+
+
+                    if (selectedItem && selectedItem != "" &&  selectedItem.itemOwnedId === itemOwnedId) {
+                        isSelected = true;
+                    } else {
+                        isSelected = false;
+                    }
+
                     break;
 
                 }
+
             }
-            squares_copy.push(renderSquare(i, [itemX, itemY], itemUrl, isImaginary));
+            squares_copy.push(renderSquare(i, [itemX, itemY], itemUrl, isImaginary, isSelected, isHidden));
 
 
         }
         setSquares(squares_copy);
-    }, [itemList, imaginaryItem]);
+    }, [itemList, imaginaryItem, selectedItem]);
 
 
 

@@ -73,6 +73,7 @@ import TeachingFileSubMarkerPage from "./pages/TeachingFileSubMarkerPage";
 import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
 import WebPet from "web-pet";
 import RewardShoppingPage from "./pages/RewardShoppingPage";
+import RewardsArrangementPage from "./pages/RewardsArrangementPage";
 
 function App() {
   return (
@@ -681,7 +682,17 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <RewardShoppingPage/>
+                  <RewardShoppingPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/rewardArrangementPage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <RewardsArrangementPage />
                 </RequireAuth>
               }
             />
