@@ -1,17 +1,21 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import { useAuth } from "../context/AuthProvider";
-import { Button, Tabs, Typography } from "@mui/material";
+import { Breadcrumbs, Button, Tabs, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { TabPanel } from "@material-ui/lab";
 import ReelCardItem from "../components/ReelCardItem";
+import { Link, useNavigate } from "react-router-dom";
+import LinkMaterial from "@mui/material/Link";
 
 export default function InstructorReelsPage(props) {
   const auth = useAuth();
   const user = auth.user;
   const instructorId = user.userId;
+  const navigate = useNavigate();
   const [reels, setReels] = React.useState([]);
   const [value, setValue] = React.useState(0);
+  const [courseId, setCourseId] = React.useState(1);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -50,6 +54,29 @@ export default function InstructorReelsPage(props) {
     };
   }
 
+  //not tested
+  function handleCreateReel() {
+    fetch("http://localhost:8080/reel/createReel", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reelTitle: " ",
+        reelCaption: " ",
+        courseId: courseId,
+        instructorId: instructorId,
+      }),
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        console.log("created Reel: ", result);
+        navigate(`/createReel`, {
+          state: {
+            reelId: result.reelId,
+          },
+        });
+      });
+  }
+
   React.useEffect(() => {
     console.log(user);
     fetch(
@@ -64,42 +91,57 @@ export default function InstructorReelsPage(props) {
 
   return (
     <>
-      <h1> instructor reels</h1>
-      <Button variant="contained" >Create Reel</Button>
+      <h1>Instructor Reels</h1>
 
       <div className="cards">
-        <div className="cards-container">
-          <Box sx={{ width: "100%" }}>
-            <div style={{ paddingLeft: "3%" }}>
-              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                <Tabs
-                  value={value}
-                  onChange={handleChange}
-                  aria-label="basic tabs example"
-                ></Tabs>
-              </Box>
+        <Box sx={{ width: "100%" }}>
+          <div style={{ paddingLeft: "3%" }}>
+            <Breadcrumbs aria-label="breadcrumb">
+              <Link
+                to={`/instructorReels`}
+                state={{
+                  viewAllReelsPath: "/instructorReels",
+                }}
+                style={{ textDecoration: "none", color: "grey" }}
+              >
+                <LinkMaterial underline="hover" color="inherit">
+                  View All Reels
+                </LinkMaterial>
+              </Link>
+            </Breadcrumbs>
+            <Box
+              sx={{ borderBottom: 1, borderColor: "divider", marginBottom: 5 }}
+            >
+              <Tabs
+                value={value}
+                // onChange={handleChange}
+                aria-label="basic tabs example"
+              ></Tabs>
+            </Box>
+            <Button variant="contained" onClick={handleCreateReel}>
+              Create Reel
+            </Button>
+          </div>
+          <TabPanel value={value} index={0}>
+            <div className="cards-wrapper">
+              <ul className="cards-items">
+                {reels.length == 0 ? (
+                  <p>no reels avail</p>
+                ) : (
+                  reels.map((reel) => (
+                    <ReelCardItem
+                      src="images/computing.jpg"
+                      reelTitle={reel.reelTitle}
+                      reelStatusEnum={reel.reelApprovalStatusEnum}
+                      reelNumLikes={reel.numLikes}
+                      reelNumViews={reel.numViews}
+                    />
+                  ))
+                )}
+              </ul>
             </div>
-            <TabPanel value={value} index={0}>
-              <div className="cards-wrapper">
-                <ul className="cards-items">
-                  {reels.length == 0 ? (
-                    <p>no reels avail</p>
-                  ) : (
-                    reels.map((reel) => (
-                      <ReelCardItem
-                        src="images/computing.jpg"
-                        reelTitle={reel.reelTitle}
-                        reelStatusEnum={reel.reelApprovalStatusEnum}
-                        reelNumLikes={reel.numLikes}
-                        reelNumViews={reel.numViews}
-                      />
-                    ))
-                  )}
-                </ul>
-              </div>
-            </TabPanel>
-          </Box>
-        </div>
+          </TabPanel>
+        </Box>
       </div>
     </>
   );

@@ -76,6 +76,7 @@ import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
 import InstructorReelsPage from "./pages/InstructorReelsPage";
 import LearnerReelsPage from "./pages/LearnerReelsPage";
+import CreateReelPage from "./pages/CreateReelPage";
 
 function App() {
   return (
@@ -703,12 +704,21 @@ function App() {
                 </RequireAuth>
               }
             />
-                        <Route
+            <Route
               path="/learnerReels"
               element={
                 <RequireAuth>
                   <Appbar />
-                  <LearnerReelsPage/>
+                  <LearnerReelsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/createReel"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateReelPage />
                 </RequireAuth>
               }
             />
