@@ -334,7 +334,7 @@ export default function InClassGamesList(props) {
       return (
         <TableRow>
           <TableCell colSpan={12} style={{ textAlign: "center" }}>
-            There are currently games in this classrun!
+            There are currently no games in this classrun!
           </TableCell>
         </TableRow>
       );

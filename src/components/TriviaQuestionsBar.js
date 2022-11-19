@@ -65,11 +65,16 @@ import Checkbox from "@mui/material/Checkbox";
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
+import tick from "../assets/accept.png";
+import warning from "../assets/warning.png";
+
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 export default function TriviaQuestionBar(props) {
+
+    const questionTypeEnums = [{ value: "Four Options" }, { value: "True or False" }];
 
     //snackbar
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
@@ -131,6 +136,10 @@ export default function TriviaQuestionBar(props) {
     const [newQuestionTitle, setNewQuestionTitle] = useState("");
     const [newQuestionHasTimeLimit, setNewQuestionHasTimeLimit] = useState(false);
     const [newQuestionTimeLimit, setNewQuestionTimeLimit] = useState("");
+    const [newQuestionType, setNewQuestionType] = useState("Four Options");
+    const handleChangeNewQuestionType = (event) => {
+        setNewQuestionType(event.target.value);
+    };
 
     const [questionTitleError, setQuestionTitleError] = useState({ value: false, errorMessage: "" });
     const [questionTimeLimitError, setQuestionTimeLimitError] = useState({ value: false, errorMessage: "" });
@@ -226,9 +235,23 @@ export default function TriviaQuestionBar(props) {
         setOpenSettings(false);
     };
 
+    //changes was made dialog
+    const [changesWasMadeDialogOpen, setChangesWasMadeDialogOpen] = React.useState(false);
+    const openChangesWasMadeDialog = () => {
+        setChangesWasMadeDialogOpen(true);
+    };
+
+    const closeChangesWasMadeDialog = () => {
+        setChangesWasMadeDialogOpen(false);
+    };
+
     const handleQuestionChange = (event, questionId, questionNumber) => {
+        // props.setCheckForChanges(true)
+        // if (props.changesToQuestionWasMade || props.questionIdToBrowse == "") {
         props.setQuestionIdToBrowse(questionId)
         props.setQuestionNumberToBrowse(questionNumber)
+        // }
+        // props.setCheckForChanges(false)
     };
 
     const createNewQuestion = async (e) => {
@@ -245,7 +268,8 @@ export default function TriviaQuestionBar(props) {
             var questionTitle = newQuestionTitle
             var hasTimeLimit = newQuestionHasTimeLimit
             var questionTimeLimit = newQuestionTimeLimit
-            const newQuestion = { questionTitle, hasTimeLimit, questionTimeLimit }
+            var triviaQuestionType = newQuestionType
+            const newQuestion = { questionTitle, hasTimeLimit, questionTimeLimit, triviaQuestionType }
             console.log(newQuestion);
             try {
                 const response = await fetch("http://localhost:8080/triviaQuestion/" + triviaQuizId + "/triviaQuestions", {
@@ -478,8 +502,19 @@ export default function TriviaQuestionBar(props) {
                     <div style={{ height: "75%", maxHeight: "75%", overflow: "auto" }}>
                         {props.questions.map((question) => (
                             <div>
-                                <Button onClick={(event) => handleQuestionChange(event, question.triviaQuestionId, question.questionNumber)} fullWidth style={{ justifyContent: "flex-start", textTransform: 'none' }}>
-                                    <div className="chapterLine">Q{question.questionNumber} - {question.questionTitle}</div>
+                                <Button onClick={(event) => handleQuestionChange(event, question.triviaQuestionId, question.questionNumber)} fullWidth
+                                    style={{ justifyContent: "flex-start", textTransform: 'none', backgroundColor: props.questionIdToBrowse == question.triviaQuestionId ? "#e5e5e5" : "" }}>
+                                    <div className="chapterLine" style={{ width: "90%", textAlign: "left" }}>Q{question.questionNumber} - {question.questionTitle}</div>
+                                    {question.questionIsValid &&
+                                        <div style={{ float: "right", textAlign: "right" }}>
+                                            <img src={tick} style={{ height: "20px", width: "20px", objectFit: "contain", marginTop: "6px" }} />
+                                        </div>
+                                    }
+                                    {!question.questionIsValid &&
+                                        <div style={{ float: "right", textAlign: "right" }}>
+                                            <img src={warning} style={{ height: "20px", width: "20px", objectFit: "contain", marginTop: "6px" }} />
+                                        </div>
+                                    }
                                 </Button>
                                 <Divider />
                             </div>
@@ -595,6 +630,18 @@ export default function TriviaQuestionBar(props) {
                             error={questionTitleError.value}
                             helperText={questionTitleError.errorMessage}
                         />
+                        <TextField id="outlined-select-age" select label="Question Type" fullWidth
+                            style={{ margin: '6px 0' }}
+                            value={newQuestionType}
+                            onChange={handleChangeNewQuestionType}
+                            required
+                        >
+                            {questionTypeEnums.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.value}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                         <FormControl>
                             <FormLabel id="controlled-radio-buttons-group">Has Time Limit</FormLabel>
                             <RadioGroup
@@ -840,6 +887,29 @@ export default function TriviaQuestionBar(props) {
                         <Button onClick={handleReorderDialogClose}>Cancel</Button>
                         <Button onClick={reorderQuestions} autoFocus>
                             Reorder
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog
+                    open={changesWasMadeDialogOpen}
+                    onClose={closeChangesWasMadeDialog}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Prompt: Unsaved Changes"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            There are unsaved changes. Would you like to save the changes?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeChangesWasMadeDialog}>Cancel</Button>
+                        <Button onClick={closeChangesWasMadeDialog} autoFocus>
+                            Save
                         </Button>
                     </DialogActions>
                 </Dialog>
