@@ -45,38 +45,6 @@ export default function InstructorViewReel(props) {
   const navigate = useNavigate();
   const REELTITLE_LIMIT = 30;
   const REELCAPTION_LIMIT = 400;
-
-  useEffect(() => {
-    fetch("http://localhost:8080/reel/getReel/" + location.state.reelId)
-      .then((res) => res.json())
-      .then((result) => {
-        setCurrentPage(result);
-        console.log("setcurrentPage as: ", result);
-        setReelId(location.state.reelId);
-        if (!result.reelTitle) {
-          setReelTitle({
-            name: result.reelTitle,
-          });
-        } else {
-          setReelTitle({
-            name: "",
-          });
-        }
-        if (!result.reelCaption) {
-          setReelCaption({
-            name: result.reelCaption,
-          });
-        } else {
-          setReelCaption({
-            name: "",
-          });
-        }
-
-        setReelStatusEnum(result.reelStatusEnum);
-        setVideo(result.video);
-        setReelCreator(result.reelCreator);
-      });
-  }, [refresh]);
   const [currentPage, setCurrentPage] = useState([]);
   const [openDeleteSnackbar, setOpenDeleteSnackbar] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -92,6 +60,39 @@ export default function InstructorViewReel(props) {
   const [isUploaded, setIsUploaded] = useState(false);
   const [uploadedAttachmentId, setUploadedAttachmentId] = useState("");
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/reel/getReel/" + location.state.reelId)
+      .then((res) => res.json())
+      .then((result) => {
+        setCurrentPage(result);
+        console.log("setcurrentPage as: ", result);
+        setReelId(location.state.reelId);
+        if (!result.reelTitle) {
+          setReelTitle({
+            name: "",
+          });
+        } else {
+          setReelTitle({
+            name: result.reelTitle,
+          });
+        }
+        if (!result.reelCaption) {
+          setReelCaption({
+            name: "",
+          });
+        } else {
+          setReelCaption({
+            name: result.reelCaption,
+          });
+        }
+
+        setReelStatusEnum(result.reelStatusEnum);
+        setVideo(result.video);
+        setReelCreator(result.reelCreator);
+      });
+  }, [refresh]);
+
   const handleClickErrorSnackbar = () => {
     setOpenErrorSnackbar(true);
   };
@@ -112,12 +113,33 @@ export default function InstructorViewReel(props) {
   const handleMissingVideoSnackbar = () => {
     setMissingVideoError(true);
   };
-
   const handleCloseMissingVideo = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
     setMissingVideoError(false);
+  };
+
+  const [missingTitleError, setMissingTitleError] = useState(false);
+  const handleMissingTitleSnackbar = () => {
+    setMissingTitleError(true);
+  };
+  const handleCloseMissingTitle = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setMissingTitleError(false);
+  };
+
+  const [missingCaptionError, setMissingCaptionError] = useState(false);
+  const handleMissingCaptionSnackbar = () => {
+    setMissingCaptionError(true);
+  };
+  const handleCloseMissingCaption = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setMissingCaptionError(false);
   };
 
   const theme = createTheme({
@@ -279,26 +301,47 @@ export default function InstructorViewReel(props) {
   };
 
   function handleSaveReel() {
-    if (currentPage.video) {
-      const incompleteDTO = {
-        reelTitle: reelTitle.name,
-        reelCaption: reelCaption.name,
-        courseId: "",
-        instructorId: "",
-      };
-      console.log("body: ", incompleteDTO);
-      fetch("http://localhost:8080/reel/updateReel/" + reelId, {
+    const incompleteDTO = {
+      reelTitle: reelTitle.name,
+      reelCaption: reelCaption.name,
+      courseId: "",
+      instructorId: "",
+    };
+    console.log("body: ", incompleteDTO);
+    fetch("http://localhost:8080/reel/updateReel/" + reelId, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(incompleteDTO),
+    }).then(() => navigate(`/instructorReels`));
+    //       .then((response) => response.json())
+    //       .then((res) => {
+    //         console.log("called uploadVideoToReel: ", res);
+    //       });
+  }
+
+  function handleSubmitReel() {
+    if (video && reelCaption.name && reelTitle.name) {
+      //do submit stuff
+      fetch("http://localhost:8080/reel/submitReel/" + reelId, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(incompleteDTO),
-      }).then(() => navigate(`/instructorReels`));
-      //       .then((response) => response.json())
-      //       .then((res) => {
-      //         console.log("called uploadVideoToReel: ", res);
-      //       });
+      })
+        // .then((res) => res.json())
+        // .then((result) => {
+        //   console.log("successfully saved reel: ", result);
+        // })
+        .then(() => navigate(`/instructorReels`));
     } else {
       console.log("handleSaveReel validation failed");
-      setMissingVideoError(true);
+      if (!video) {
+        setMissingVideoError(true);
+      }
+      if (!reelTitle.name) {
+        setMissingTitleError(true);
+      }
+      if (!reelCaption.name) {
+        setMissingCaptionError(true);
+      }
     }
   }
 
@@ -360,6 +403,32 @@ export default function InstructorViewReel(props) {
                 sx={{ width: "100%" }}
               >
                 Please Upload a Video!
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={missingTitleError}
+              autoHideDuration={3000}
+              onClose={handleCloseMissingTitle}
+            >
+              <Alert
+                onClose={handleCloseMissingTitle}
+                severity="error"
+                sx={{ width: "100%" }}
+              >
+                Please write a title!
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={missingCaptionError}
+              autoHideDuration={3000}
+              onClose={handleCloseMissingCaption}
+            >
+              <Alert
+                onClose={handleCloseMissingCaption}
+                severity="error"
+                sx={{ width: "100%" }}
+              >
+                Please write a caption!
               </Alert>
             </Snackbar>
             <Box
@@ -437,6 +506,20 @@ export default function InstructorViewReel(props) {
                   }}
                 >
                   Save Reel
+                </Button>
+                <Button
+                  className="btn-upload"
+                  color="blue"
+                  component="span"
+                  variant="contained"
+                  onClick={handleSubmitReel}
+                  style={{
+                    width: "80%",
+                    marginTop: "10px",
+                    marginBottom: "20px",
+                  }}
+                >
+                  Submit Reel For Approval
                 </Button>
                 <Dialog
                   open={openUploadDialog}
@@ -542,7 +625,6 @@ export default function InstructorViewReel(props) {
                   </DialogActions>
                 </Dialog>
               </Grid>
-
             </Grid>
           </div>
         </Box>

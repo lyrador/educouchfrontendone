@@ -52,7 +52,6 @@ export default function CreateReelPage(props) {
   const [reelCaption, setReelCaption] = React.useState({
     name: "",
   });
-
   //upload video stuff
   const theme = createTheme({
     components: {
@@ -74,10 +73,6 @@ export default function CreateReelPage(props) {
     },
   });
   const [currentPage, setCurrentPage] = useState([]);
-  const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
-  const handleOpenUploadDialog = () => {
-    setOpenUploadDialog(true);
-  };
   const [currentFile, setCurrentFile] = React.useState(undefined);
   const [previewImage, setPreviewImage] = React.useState(
     "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg"
@@ -88,6 +83,17 @@ export default function CreateReelPage(props) {
   const [isUploaded, setIsUploaded] = useState(false);
   const [uploadedAttachmentId, setUploadedAttachmentId] = useState("");
   const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
+
+  React.useEffect(() => {
+    fetch("http://localhost:8080/reel/getReel/" + reelId)
+      .then((res) => res.json())
+      .then((result) => {
+        setCurrentPage(result);
+        console.log("setcurrentPage as: ", result);
+        //console.log(JSON.stringify(result.pageQuiz))
+      });
+  }, [refresh]);
+
   const handleClickErrorSnackbar = () => {
     setOpenErrorSnackbar(true);
   };
@@ -99,26 +105,42 @@ export default function CreateReelPage(props) {
   const handleMissingVideoSnackbar = () => {
     setMissingVideoError(true);
   };
-
   const handleCloseMissingVideo = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
     setMissingVideoError(false);
   };
+
+  const [missingTitleError, setMissingTitleError] = useState(false);
+  const handleMissingTitleSnackbar = () => {
+    setMissingTitleError(true);
+  };
+  const handleCloseMissingTitle = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setMissingTitleError(false);
+  };
+
+  const [missingCaptionError, setMissingCaptionError] = useState(false);
+  const handleMissingCaptionSnackbar = () => {
+    setMissingCaptionError(true);
+  };
+  const handleCloseMissingCaption = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setMissingCaptionError(false);
+  };
+
+  const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
+  const handleOpenUploadDialog = () => {
+    setOpenUploadDialog(true);
+  };
   const handleCloseUploadDialog = () => {
     setOpenUploadDialog(false);
   };
-
-  React.useEffect(() => {
-    fetch("http://localhost:8080/reel/getReel/" + reelId)
-      .then((res) => res.json())
-      .then((result) => {
-        setCurrentPage(result);
-        console.log("setcurrentPage as: ", result);
-        //console.log(JSON.stringify(result.pageQuiz))
-      });
-  }, [refresh]);
 
   const renderVideoImageHolder = () => {
     if (currentPage && currentPage.video) {
@@ -212,36 +234,6 @@ export default function CreateReelPage(props) {
     handleCloseUploadDialog();
   };
 
-  //need to change out API
-  //   const removeFileItem = async (e) => {
-  //     e.preventDefault();
-  //     try {
-  //       const response = await fetch(
-  //         "http://localhost:8080/interactivePage/" +
-  //           props.pageId +
-  //           "/removeFileItem",
-  //         {
-  //           method: "PUT",
-  //           headers: { "Content-Type": "application/json" },
-  //         }
-  //       );
-  //       console.log(response);
-  //       if (response.ok == false) {
-  //         console.log("Error");
-  //         handleClickErrorSnackbar();
-  //       } else {
-  //         console.log("File Item Removed Successfully!");
-  //         handleClickSnackbar();
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //       handleClickErrorSnackbar();
-  //     }
-  //     //setRefreshToolbar(true)
-  //     props.setRefreshInteractivePage(true);
-  //     handleCloseUploadDialog();
-  //   };
-
   const handleChange = (name) => (event) => {
     setReelTitle({ ...reelTitle, [name]: event.target.value });
   };
@@ -251,7 +243,6 @@ export default function CreateReelPage(props) {
   };
 
   function handleSaveReel() {
-    if ((currentPage && currentPage.video)) {
       const incompleteDTO = {
         reelTitle: reelTitle.name,
         reelCaption: reelCaption.name,
@@ -268,9 +259,34 @@ export default function CreateReelPage(props) {
       //       .then((res) => {
       //         console.log("called uploadVideoToReel: ", res);
       //       });
+   
+  }
+
+  function handleSubmitReel() {
+    if (
+      currentPage &&
+      currentPage.video &&
+      reelTitle.name &&
+      reelCaption.name
+    ) {
+      //do submit stuff
+      fetch("http://localhost:8080/reel/submitReel/" + reelId, {
+      }).then((res) => res.json())
+      .then((result) => {
+        console.log("successfully saved reel: ", result);
+        //console.log(JSON.stringify(result.pageQuiz))
+      }).then(() => navigate(`/instructorReels`));
     } else {
-        console.log("handleSaveReel validation failed");
+      console.log("handleSaveReel validation failed");
+      if (!currentPage.video) {
         setMissingVideoError(true);
+      }
+      if (!reelTitle.name) {
+        setMissingTitleError(true);
+      }
+      if (!reelCaption.name) {
+        setMissingCaptionError(true);
+      }
     }
   }
 
@@ -291,6 +307,32 @@ export default function CreateReelPage(props) {
                 sx={{ width: "100%" }}
               >
                 Please Upload a Video!
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={missingTitleError}
+              autoHideDuration={3000}
+              onClose={handleCloseMissingTitle}
+            >
+              <Alert
+                onClose={handleCloseMissingTitle}
+                severity="error"
+                sx={{ width: "100%" }}
+              >
+                Please write a title!
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={missingCaptionError}
+              autoHideDuration={3000}
+              onClose={handleCloseMissingCaption}
+            >
+              <Alert
+                onClose={handleCloseMissingCaption}
+                severity="error"
+                sx={{ width: "100%" }}
+              >
+                Please write a caption!
               </Alert>
             </Snackbar>
             <Breadcrumbs aria-label="breadcrumb">
@@ -392,6 +434,20 @@ export default function CreateReelPage(props) {
                   }}
                 >
                   Save Reel
+                </Button>
+                <Button
+                  className="btn-upload"
+                  color="success"
+                  component="span"
+                  variant="contained"
+                  onClick={handleSubmitReel}
+                  style={{
+                    width: "70%",
+                    marginTop: "10px",
+                    marginBottom: "20px",
+                  }}
+                >
+                  Submit Reel For Approval
                 </Button>
                 <Dialog
                   open={openUploadDialog}
@@ -497,7 +553,6 @@ export default function CreateReelPage(props) {
                   </DialogActions>
                 </Dialog>
               </Grid>
-
             </Grid>
           </div>
         </Box>
