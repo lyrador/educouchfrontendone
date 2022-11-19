@@ -23,10 +23,13 @@ export default function QuizSettingsComponents(props) {
 
   const paperStyle = { padding: "50px 20px", width: 1200, margin: "20px auto" };
   const quizSettings = props.quizSettingsProp;
+  const maxAssessmentDiscountPoints = props.maxAssessmentDiscountPointsProp;
   const [questions, setQuestions] = useState();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [maxScore, setMaxScore] = useState("");
+  const [discountPointForAssessment, setDiscountPointForAssessment] = useState("")
+  const [discountPointToTopPercent, setDiscountPointToTopPercent] = useState("")
   const [startDate, setStartDate] = useState(dayjs(currentDate.toISOString().split('T')[0]));
   const [endDate, setEndDate] = useState(dayjs(currentDate.toISOString().split('T')[0]));
   const [hasTimeLimit, setHasTimeLimit] = useState("");
@@ -45,6 +48,14 @@ export default function QuizSettingsComponents(props) {
     errorMessage: "",
   });
   const [maxScoreError, setMaxScoreError] = useState({
+    value: false,
+    errorMessage: "",
+  });
+  const [discountPointForAssessmentError, setDiscountPointForAssessmentError] = useState({
+    value: false,
+    errorMessage: "",
+  });  
+  const [discountPointToTopPercentError, setDiscountPointToTopPercentError] = useState({
     value: false,
     errorMessage: "",
   });
@@ -78,6 +89,8 @@ export default function QuizSettingsComponents(props) {
     setDescription(quizSettings.assessmentDescription);
     props.calculateMaxQuizScoreProp();
     setMaxScore(quizSettings.assessmentMaxScore);
+    setDiscountPointForAssessment(quizSettings.discountPointForAssessment);
+    setDiscountPointToTopPercent(quizSettings.discountPointToTopPercent)
     setHasTimeLimit(quizSettings.hasTimeLimit);
     setTimeLimit(quizSettings.timeLimit);
     setIsAutoRelease(quizSettings.isAutoRelease);
@@ -92,6 +105,8 @@ export default function QuizSettingsComponents(props) {
   function editQuizSettings(
     title,
     description,
+    discountPointForAssessment,
+    discountPointToTopPercent,
     startDate,
     endDate,
     hasTimeLimit,
@@ -101,6 +116,8 @@ export default function QuizSettingsComponents(props) {
     props.editQuizSettingsProp(
       title,
       description,
+      discountPointForAssessment,
+      discountPointToTopPercent,
       startDate,
       endDate,
       hasTimeLimit,
@@ -119,10 +136,16 @@ export default function QuizSettingsComponents(props) {
     console.log("pass date comparison: ", dateComparisonBoolean);
     if (hasTimeLimit == "true") {
       console.log("has time limit");
-      return title && description && dateComparisonBoolean && timeLimit > 4;
+      return title && description && dateComparisonBoolean && 
+      !(discountPointForAssessment > maxAssessmentDiscountPoints) &&
+      !(Number(discountPointToTopPercent) < 0 || Number(discountPointToTopPercent) > 100) &&
+      !(String(discountPointToTopPercent).includes(".")) && timeLimit > 4;
     } else {
       console.log("no time limit");
-      return title && description && dateComparisonBoolean;
+      return title && description && dateComparisonBoolean && 
+      !(discountPointForAssessment > maxAssessmentDiscountPoints) &&
+      !(Number(discountPointToTopPercent) < 0 || Number(discountPointToTopPercent) > 100) &&
+      !(String(discountPointToTopPercent).includes("."));
     }
   }
 
@@ -137,6 +160,8 @@ export default function QuizSettingsComponents(props) {
     setEndDateError({ value: false, errorMessage: "" });
     setTimeLimitError({ value: false, errorMessage: "" });
     setMaxAttemptsError({ value: false, errorMessage: "" });
+    setDiscountPointForAssessmentError({ value: false, errorMessage: "" });
+    setDiscountPointToTopPercentError({ value: false, errorMessage: "" })
     if (title == "") {
       setTitleError({
         value: true,
@@ -155,6 +180,38 @@ export default function QuizSettingsComponents(props) {
         errorMessage: "Max Score Field cannot be left empty!",
       });
     }
+    if(discountPointForAssessment=="") {
+      setDiscountPointForAssessmentError({
+        value: true,
+        errorMessage: "Discount Points cannot be empty!",
+      });
+    }
+    if(discountPointForAssessment > maxAssessmentDiscountPoints) {
+      setDiscountPointForAssessmentError({
+        value: true,
+        errorMessage: "Discount Points cannot be more than " + maxAssessmentDiscountPoints,
+      });
+    }
+    if(discountPointToTopPercent === "") {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage of learners to give discount points cannot be empty!",
+      });
+    }
+
+    if(Number(discountPointToTopPercent) < 0 || Number(discountPointToTopPercent) > 100) {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage needs to be between 0 to 100",
+      });
+    }
+    if(String(discountPointToTopPercent).includes(".")) {
+      setDiscountPointToTopPercentError({
+        value: true,
+        errorMessage: "Percentage needs to be an integer value",
+      });
+    }
+
     const dateComparisonBoolean = tempEndDate < tempStartDate;
     console.log("startDate: ", tempStartDate);
     console.log("endDate: ", tempEndDate);
@@ -186,6 +243,8 @@ export default function QuizSettingsComponents(props) {
       editQuizSettings(
         title,
         description,
+        discountPointForAssessment,
+        discountPointToTopPercent,
         startDate,
         endDate,
         hasTimeLimit,
@@ -250,15 +309,40 @@ export default function QuizSettingsComponents(props) {
           <Paper
             elevation={1}
             style={{ padding: "10px", marginBottom: "20px" }}
-          >
+          >                  
             <p style={{ color: "grey" }}>Quiz Max Score (Auto-Generated)</p>
             <br />
             <p style={{ color: "grey" }}>{maxScore}</p>
           </Paper>
+          
           <Stack
             spacing={1}
             style={{ paddingBottom: "10px", marginBottom: "20px" }}
           >
+                      <p style={{ color: "grey" }}>Discount Points to Distribute this Assessment</p>
+          <TextField
+            required
+            error={discountPointForAssessmentError.value}
+            helperText={discountPointForAssessmentError.errorMessage}
+            id="outlined-basic"
+            variant="outlined"
+            fullWidth
+            style={{ paddingBottom: "10px", marginBottom: "20px" }}
+            value={discountPointForAssessment}
+            onChange={(e) => setDiscountPointForAssessment(e.target.value)}
+          />
+          <p style={{ color: "grey" }}>Points Given To Top(%)</p>
+          <TextField
+            required
+            error={discountPointToTopPercentError.value}
+            helperText={discountPointToTopPercentError.errorMessage}
+            id="outlined-basic"
+            variant="outlined"
+            fullWidth
+            style={{ paddingBottom: "10px", marginBottom: "20px" }}
+            value={discountPointToTopPercent}
+            onChange={(e) => setDiscountPointToTopPercent(e.target.value)}
+          />    
             <p style={{ color: "grey" }}>Quiz Start Date</p>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker

@@ -26,6 +26,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import LinkMaterial from "@mui/material/Link";
 import TeachingCoursesDrawer from "../components/TeachingCoursesDrawer";
 import { PanoramaSharp } from "@mui/icons-material";
+import { type } from "@testing-library/user-event/dist/type";
 
 function TeachingGradebookGrading() {
   // list of gradebook entries
@@ -42,11 +43,17 @@ function TeachingGradebookGrading() {
   const identifier = location.state.identifier;
   const isOpen = location.state.isOpen;
 
+  console.log(isOpen)
   const [refreshPage, setRefreshPage] = useState("");
+
+  function getGraded(params) {
+    return params.row.openEnded ? params.graded : true;
+  }
 
   const columns = [
     { field: "learnerName", headerName: "Learner Name", width: 250 },
-    { field: "didAttempt", headerName: "Attempt", width: 250 },
+    { field: "didAttempt", headerName: "Attempt", width: 250, type : 'boolean',
+  },
     {
       field: "quizMax",
       headerName: "Assessment Max",
@@ -61,18 +68,20 @@ function TeachingGradebookGrading() {
       field: "graded",
       headerName: "Graded",
       width: 250,
+      valueGetter: getGraded,
+      type : 'boolean',
     },
     {
       headerName: "Action",
       width: 200,
       renderCell: (params) => {
-        console.log(!isOpen || !params.row.didAttempt);
+        console.log(!params.row.openEnded || !params.row.didAttempt);
         return (
           <Button
             variant="contained"
             size="small"
             tabIndex={params.hasFocus ? 0 : -1}
-            disabled={identifier==="1" && (!isOpen || !params.row.didAttempt)}
+            disabled={identifier==="1" && (!params.row.openEnded || !params.row.didAttempt)}
           >
             {identifier === "1" ? (
               <Link

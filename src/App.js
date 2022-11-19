@@ -72,11 +72,13 @@ import LearnerHome from "./pages/LearnerHome";
 import TeachingFileSubMarkerPage from "./pages/TeachingFileSubMarkerPage";
 import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
 import WebPet from "web-pet";
+import DashboardAnnouncements from "./pages/DashboardAnnouncements";
+import MyPoints from "./pages/MyPoints";
 
 function App() {
   return (
     <div className="App">
-      <AuthProvider>
+      <AuthProvider> 
         <Router>
           <Routes>
             {/* <Route path = "/" element={<Home />} /> */}
@@ -87,6 +89,24 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <Home />
+                </RequireAuth>
+              }
+            />
+              <Route
+              path="/dashboardAnnouncements"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <DashboardAnnouncements />
+                </RequireAuth>
+              }
+            />
+              <Route
+              path="/myPoints"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <MyPoints />
                 </RequireAuth>
               }
             />
