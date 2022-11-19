@@ -8,7 +8,7 @@
   }
 
 .resizeable {
-    position: relative;
+    position: absolute;
     border: 2px solid #d01010;
     border-radius: 3px;
     display: flex;
