@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthProvider";
 import { Breadcrumbs, Button, Tabs, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { TabPanel } from "@material-ui/lab";
-import ReelCardItem from "../components/ReelCardItem";
+import ReelCardItem from "../components/ReelComponents/ReelCardItem";
 import { Link, useNavigate } from "react-router-dom";
 import LinkMaterial from "@mui/material/Link";
 
@@ -131,10 +131,14 @@ export default function InstructorReelsPage(props) {
                   reels.map((reel) => (
                     <ReelCardItem
                       src="images/computing.jpg"
+                      reelId={reel.reelId}
                       reelTitle={reel.reelTitle}
+                      reelCaption={reel.reelCaption}
                       reelStatusEnum={reel.reelApprovalStatusEnum}
                       reelNumLikes={reel.numLikes}
                       reelNumViews={reel.numViews}
+                      video={reel.video}
+                      reelCreator={reel.reelCreator.name}
                     />
                   ))
                 )}

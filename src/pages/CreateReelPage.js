@@ -23,7 +23,7 @@ import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 
 import PropTypes from "prop-types";
 import { TabPanel } from "@material-ui/lab";
-import ReelCardItem from "../components/ReelCardItem";
+import ReelCardItem from "../components/ReelComponents/ReelCardItem";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import LinkMaterial from "@mui/material/Link";
 import { useState } from "react";

@@ -77,6 +77,7 @@ import MyPoints from "./pages/MyPoints";
 import InstructorReelsPage from "./pages/InstructorReelsPage";
 import LearnerReelsPage from "./pages/LearnerReelsPage";
 import CreateReelPage from "./pages/CreateReelPage";
+import InstructorViewReel from "./components/ReelComponents/InstructorViewReel";
 
 function App() {
   return (
@@ -719,6 +720,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <CreateReelPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/instructorViewReel"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InstructorViewReel />
                 </RequireAuth>
               }
             />

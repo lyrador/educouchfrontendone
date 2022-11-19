@@ -1,19 +1,30 @@
 import React from "react";
-import "../App.css";
-import "../css/CardItem.css";
+import "../../App.css";
+import "../../css/CardItem.css";
 import { Link } from "react-router-dom";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Divider } from "@mui/material";
+
 function ReelCardItem(props) {
   return (
     <>
       <div className="card-flex-item">
         <Link
-          to={`/myTeachingCourse/${props.courseId}/courseSettings`}
+          to={`/instructorViewReel`}
           className="cards-item-link"
+          state={{
+            reelId: props.reelId,
+            reelTitle: props.reelTitle,
+            reelCaption: props.reelCaption,
+            reelStatusEnum: props.reelApprovalStatusEnum,
+            reelNumLikes: props.reelNumLikes,
+            reelNumViews: props.reelNumViews,
+            video: props.video,
+            reelCreator: props.reelCreator
+          }}
         >
           <figure
             className="cards-item-pic-wrap"
@@ -41,7 +52,8 @@ function ReelCardItem(props) {
                 }}
                 className="cards-item-text"
               >
-                <FavoriteIcon style={{ color: "red" }} /> {props.reelNumLikes} likes
+                <FavoriteIcon style={{ color: "red" }} /> {props.reelNumLikes}{" "}
+                likes
               </p>
               <p
                 style={{
@@ -51,7 +63,7 @@ function ReelCardItem(props) {
                 }}
                 className="cards-item-text"
               >
-             <VisibilityIcon /> {props.reelNumViews} views
+                <VisibilityIcon /> {props.reelNumViews} views
               </p>
             </div>
           </div>
