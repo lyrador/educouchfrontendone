@@ -12,29 +12,36 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ArrangeToolbox from '../components/GardenComponents/ArrangeToolbox';
 import MyItemList from '../components/GardenComponents/MyItemList';
+import { GirlRounded } from '@mui/icons-material';
 
 export default function RewardsArrangementPage() {
-
-    const [imaginaryItem, setImaginaryItem] = useState("");
     const [selectedItem, setSelectedItem] = useState("");
+    const [destinationGrid, setDestinationGrid] = useState(undefined);
 
     const sendSelectedItem = (x) => {
-        console.log('ItemOwned ' + x);
         setSelectedItem(x);
     }
 
-    // const handleMove = (xIncrement, yIncrement) => {
-    //     var newPositionX = imaginaryItem.positionX + xIncrement;
-    //     var newPositionY = imaginaryItem.positionY + yIncrement;
-    //     if (newPositionX >= 0 && newPositionX < 5 && newPositionY >= 0 && newPositionY < 5) {
-    //         sendImaginaryItem(imaginaryItem.item, newPositionX, newPositionY);
-    //     } else {
-    //         toast.warn("Item has to be placed somewhere inside your garden area.");
-    //     }
+    const sendDestinationGrid = (x) => {
+        console.log('Destination grid: ' + JSON.stringify(x));
+        setDestinationGrid(x);
+    }
+
+    const handleMove = (xIncrement, yIncrement) => {
+        var newPositionX = destinationGrid.positionX + xIncrement;
+        var newPositionY = destinationGrid.positionY + yIncrement;
+        if (newPositionX >= 0 && newPositionX < 5 && newPositionY >= 0 && newPositionY < 5) {
+            var grid = {}
+            grid.positionX = newPositionX;
+            grid.positionY = newPositionY;
+            sendDestinationGrid(grid);
+        } else {
+            toast.warn("Item has to be placed somewhere inside your garden area.");
+        }
 
 
 
-    // }
+    }
 
 
 
@@ -43,12 +50,12 @@ export default function RewardsArrangementPage() {
             <Grid container spacing={2}>
                 <Grid item xs={5.8}>
                     <ToastContainer position = "top-center"></ToastContainer>
-                    <ArrangeToolbox selectedItem={selectedItem} />
+                    <ArrangeToolbox selectedItem={selectedItem} handleMove = {handleMove} destinationGrid = {destinationGrid}/>
                     <br />
-                    <HomepageGarden imaginaryItem={imaginaryItem} selectedItem = {selectedItem}/>
+                    <HomepageGarden selectedItem = {selectedItem} destinationGrid = {destinationGrid}/>
                 </Grid>
                 <Grid item xs={5.8}>
-                    <MyItemList sendSelectedItem = {sendSelectedItem}/>
+                    <MyItemList sendSelectedItem = {sendSelectedItem} sendDestinationGrid = {sendDestinationGrid}/>
                 </Grid>
             </Grid>
         </>

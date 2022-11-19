@@ -9,7 +9,7 @@ export default function Item({link}) {
     } else {
         return(
             // <div style = {{width: '5em', height: '5em'}}></div>
-            <img/>
+            <img style = {{width: '5em', height: '5em'}}/>
         )
     }
     

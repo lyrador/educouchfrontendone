@@ -7,7 +7,7 @@ import { Button, Typography, TableRow, TableCell, Dialog, DialogContent, Divider
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { useAuth } from "../../context/AuthProvider";
 
-function MyItemList({sendSelectedItem}) {
+function MyItemList({sendSelectedItem, sendDestinationGrid}) {
 
     const navigate = useNavigate();
     const auth = useAuth();
@@ -94,6 +94,16 @@ function MyItemList({sendSelectedItem}) {
     const viewDemo = () => {
         
         sendSelectedItem(selectedItem);
+        // what will destination grid has? Basically the x and y, because the rest has already been stored by selectedItem
+        // but now the x and y must be the first up or down or anywhere that can be seen
+        // let's calculate the i, then generate the next i
+
+
+        var coordinates = {}
+        coordinates.positionX = selectedItem.positionX;
+        coordinates.positionY = selectedItem.positionY;
+
+        sendDestinationGrid(coordinates);
         closeItemDialogBox();
 
     }

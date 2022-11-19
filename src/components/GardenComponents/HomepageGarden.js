@@ -12,13 +12,25 @@ import Item from './Item';
 import Square from './Square';
 import ImaginaryItem from './ImaginaryItem';
 import GardenSquare from './GardenSquare';
+import { set } from 'date-fns';
 
 const SQUARE_SIZE = 5;
-function renderSquare(i, [itemX, itemY], link, isImaginary, isSelected, isHidden) {
+function renderSquare(i, [itemX, itemY], link, isImaginary, isSelected, isHidden, asDestination) {
     const x = i % SQUARE_SIZE;
     const y = Math.floor(i / SQUARE_SIZE);
-
     if (isSelected === true) {
+        return (
+            <div key={i} style={{ width: '20%', height: '20%', backgroundColor: "yellowgreen" }}>
+                <GardenSquare x={x} y={y}>
+                    <center>
+                        {renderPiece(x, y, [itemX, itemY], link, isImaginary, isHidden)}
+                    </center>
+
+                </GardenSquare>
+            </div>
+        );
+    } else if(asDestination && asDestination === true) {
+        console.log('This should be green');
         return (
             <div key={i} style={{ width: '20%', height: '20%', backgroundColor: "yellowgreen" }}>
                 <GardenSquare x={x} y={y}>
@@ -48,16 +60,19 @@ function renderSquare(i, [itemX, itemY], link, isImaginary, isSelected, isHidden
 function renderPiece(x, y, [itemX, itemY], link, isImaginary, isHidden) {
     if (x === itemX && y === itemY && !isHidden) {
         if (isImaginary == true) {
+            
             return <ImaginaryItem link={link} />
         } else if (isImaginary == false && !isHidden) {
             return <Item link={link} />
         } else {
             return <Item />
         }
+    } else {
+        return <Item/>
     }
 }
 
-function HomepageGarden({ imaginaryItem, selectedItem }) {
+function HomepageGarden({ imaginaryItem, selectedItem, destinationGrid }) {
 
     const auth = useAuth();
     const user = auth.user;
@@ -106,6 +121,9 @@ function HomepageGarden({ imaginaryItem, selectedItem }) {
     //     setSquares(squares_copy);
     // }, [itemList]);
 
+    const [guardTrue, setGuardTrue] = useState("");
+
+
     useEffect(() => {
         var squares_copy = []
         var item_list_copy = [...itemList]
@@ -118,13 +136,12 @@ function HomepageGarden({ imaginaryItem, selectedItem }) {
             var itemY = undefined;
             var itemUrl = undefined;
             for (let j = 0; j < item_list_copy.length; j++) {
-                console.log(JSON.stringify(item_list_copy[j]));
                 var xCoor = item_list_copy[j].positionX;
                 var yCoor = item_list_copy[j].positionY;
                 var itemLink = item_list_copy[j].item.imageUrl;
                 var itemOwnedId = item_list_copy[j].itemOwnedId;
                 var isHidden = item_list_copy[j].hidden;
-                
+
                 var isSelected = undefined;
                 var isImaginary = undefined;
                 if (i % SQUARE_SIZE === xCoor && Math.floor(i / SQUARE_SIZE) === yCoor) {
@@ -140,7 +157,7 @@ function HomepageGarden({ imaginaryItem, selectedItem }) {
                     }
 
 
-                    if (selectedItem && selectedItem != "" &&  selectedItem.itemOwnedId === itemOwnedId) {
+                    if (selectedItem && selectedItem != "" && selectedItem.itemOwnedId === itemOwnedId) {
                         isSelected = true;
                     } else {
                         isSelected = false;
@@ -151,12 +168,45 @@ function HomepageGarden({ imaginaryItem, selectedItem }) {
                 }
 
             }
-            squares_copy.push(renderSquare(i, [itemX, itemY], itemUrl, isImaginary, isSelected, isHidden));
+
+            if(destinationGrid) {
+                var compare_i = (destinationGrid.positionX) + (destinationGrid.positionY * 5);
+                if(guardTrue !== compare_i) {
+                    setGuardTrue("");
+                }
+            }
+
+            var asDestination = undefined;
+            if(guardTrue != "") {
+                if(i == guardTrue) {
+                    asDestination = true;
+                } else {
+                    asDestination = false;
+                }
+
+            } else {
+                if (destinationGrid) {
+                
+                    var compare_i = (destinationGrid.positionX) + (destinationGrid.positionY * 5);
+                    if (compare_i === i) {
+                        asDestination = true;
+                        setGuardTrue(i);
+                    } else {
+                        asDestination = false;
+                    }
+                 
+                    
+                }
+            }
+
+            squares_copy.push(renderSquare(i, [itemX, itemY], itemUrl, isImaginary, isSelected, isHidden, asDestination));
 
 
         }
         setSquares(squares_copy);
-    }, [itemList, imaginaryItem, selectedItem]);
+    }, [itemList, imaginaryItem, selectedItem, destinationGrid]);
+
+    
 
 
 
