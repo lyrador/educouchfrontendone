@@ -16,17 +16,20 @@ import {
   LinearProgress,
   DialogActions,
   Paper,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 
 import PropTypes from "prop-types";
 import { TabPanel } from "@material-ui/lab";
 import ReelCardItem from "../components/ReelCardItem";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import LinkMaterial from "@mui/material/Link";
 import { useState } from "react";
 import ReactPlayer from "react-player";
 import UploadService from "../services/UploadFilesService";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 export default function CreateReelPage(props) {
   const auth = useAuth();
@@ -35,6 +38,7 @@ export default function CreateReelPage(props) {
 
   const location = useLocation();
   const reelId = location.state.reelId;
+  const navigate = useNavigate();
 
   const REELTITLE_LIMIT = 30;
   const REELCAPTION_LIMIT = 100;
@@ -91,6 +95,17 @@ export default function CreateReelPage(props) {
   const handleClickSnackbar = () => {
     setOpenSnackbar(true);
   };
+  const [missingVideoError, setMissingVideoError] = useState(false);
+  const handleMissingVideoSnackbar = () => {
+    setMissingVideoError(true);
+  };
+
+  const handleCloseMissingVideo = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setMissingVideoError(false);
+  };
   const handleCloseUploadDialog = () => {
     setOpenUploadDialog(false);
   };
@@ -127,32 +142,9 @@ export default function CreateReelPage(props) {
     }
   };
 
-  //   const renderFileRemovalButton = () => {
-  //     if (currentPage.video) {
-  //       return (
-  //         <div
-  //           style={{
-  //             display: "flex",
-  //             alignItems: "center",
-  //             justifyContent: "center",
-  //           }}
-  //         >
-  //           <Button
-  //             className="btn-upload"
-  //             color="primary"
-  //             variant="contained"
-  //             component="span"
-  //             onClick={removeFileItem}
-  //           >
-  //             Remove File
-  //           </Button>
-  //         </div>
-  //       );
-  //     }
-  //   };
-
   const selectFile = (event) => {
     setCurrentFile(event.target.files[0]);
+    console.log("selected file: ", event.target.files[0]);
     setPreviewImage(URL.createObjectURL(event.target.files[0]));
     setProgress(0);
     setMessage("");
@@ -258,12 +250,49 @@ export default function CreateReelPage(props) {
     setReelCaption({ ...reelCaption, [name]: event.target.value });
   };
 
+  function handleSaveReel() {
+    if ((currentPage && currentPage.video)) {
+      const incompleteDTO = {
+        reelTitle: reelTitle.name,
+        reelCaption: reelCaption.name,
+        courseId: "",
+        instructorId: "",
+      };
+      console.log("body: ", incompleteDTO);
+      fetch("http://localhost:8080/reel/updateReel/" + reelId, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(incompleteDTO),
+      }).then(() => navigate(`/instructorReels`));
+      //       .then((response) => response.json())
+      //       .then((res) => {
+      //         console.log("called uploadVideoToReel: ", res);
+      //       });
+    } else {
+        console.log("handleSaveReel validation failed");
+        setMissingVideoError(true);
+    }
+  }
+
   return (
     <>
       <h1>Create Reel</h1>
       <div className="cards">
         <Box sx={{ width: "100%" }}>
           <div style={{ paddingLeft: "3%" }}>
+            <Snackbar
+              open={missingVideoError}
+              autoHideDuration={3000}
+              onClose={handleCloseMissingVideo}
+            >
+              <Alert
+                onClose={handleCloseMissingVideo}
+                severity="error"
+                sx={{ width: "100%" }}
+              >
+                Please Upload a Video!
+              </Alert>
+            </Snackbar>
             <Breadcrumbs aria-label="breadcrumb">
               <Link
                 to={`/instructorReels`}
@@ -335,7 +364,11 @@ export default function CreateReelPage(props) {
                   component="span"
                   variant="contained"
                   onClick={handleOpenUploadDialog}
-                  style={{ width: "80%", marginTop: "10px" }}
+                  style={{
+                    width: "80%",
+                    marginTop: "10px",
+                    marginBottom: "20px",
+                  }}
                   startIcon={<InsertPhotoIcon />}
                 >
                   Upload Video
@@ -346,6 +379,20 @@ export default function CreateReelPage(props) {
                   </div>
                 </Paper>
 
+                <Button
+                  className="btn-upload"
+                  color="primary"
+                  component="span"
+                  variant="contained"
+                  onClick={handleSaveReel}
+                  style={{
+                    width: "80%",
+                    marginTop: "10px",
+                    marginBottom: "20px",
+                  }}
+                >
+                  Save Reel
+                </Button>
                 <Dialog
                   open={openUploadDialog}
                   onClose={handleCloseUploadDialog}
@@ -354,7 +401,6 @@ export default function CreateReelPage(props) {
                   <DialogContent>
                     <h3 style={{ fontWeight: "normal" }}>Current File</h3>
                     {renderVideoImageHolder()}
-                    {/* {renderFileRemovalButton()} */}
                     <br></br>
                     <h3 style={{ fontWeight: "normal" }}>New File</h3>
                     <div>
