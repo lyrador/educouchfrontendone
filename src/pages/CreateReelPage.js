@@ -41,7 +41,7 @@ export default function CreateReelPage(props) {
   const navigate = useNavigate();
 
   const REELTITLE_LIMIT = 30;
-  const REELCAPTION_LIMIT = 100;
+  const REELCAPTION_LIMIT = 400;
 
   const [reels, setReels] = React.useState([]);
   const [value, setValue] = React.useState(0);
@@ -349,7 +349,7 @@ export default function CreateReelPage(props) {
                 <TextField
                   multiline
                   inputProps={{
-                    maxLength: REELTITLE_LIMIT,
+                    maxLength: REELCAPTION_LIMIT,
                   }}
                   type="text"
                   placeholder="Reel Caption"
@@ -365,7 +365,7 @@ export default function CreateReelPage(props) {
                   variant="contained"
                   onClick={handleOpenUploadDialog}
                   style={{
-                    width: "80%",
+                    width: "70%",
                     marginTop: "10px",
                     marginBottom: "20px",
                   }}
@@ -373,7 +373,7 @@ export default function CreateReelPage(props) {
                 >
                   Upload Video
                 </Button>
-                <Paper elevation={3} style={{ width: "100%", height: "100%" }}>
+                <Paper elevation={3} style={{ width: "70%", height: "100%" }}>
                   <div style={{ width: "100%", height: "100%" }}>
                     {renderVideoImageHolder()}
                   </div>
@@ -386,7 +386,7 @@ export default function CreateReelPage(props) {
                   variant="contained"
                   onClick={handleSaveReel}
                   style={{
-                    width: "80%",
+                    width: "70%",
                     marginTop: "10px",
                     marginBottom: "20px",
                   }}
@@ -497,14 +497,7 @@ export default function CreateReelPage(props) {
                   </DialogActions>
                 </Dialog>
               </Grid>
-              <Grid
-                style={{
-                  backgroundColor: "orange",
-                  flex: 1,
-                }}
-              >
-                do the preview here (maybe)
-              </Grid>
+
             </Grid>
           </div>
         </Box>

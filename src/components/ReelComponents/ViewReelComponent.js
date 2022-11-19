@@ -10,6 +10,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export default function ViewReelComponent(props) {
   const location = useLocation();
+  
   const renderVideoImageHolder = () => {
     return (
       <div style={{ height: "500px" }}>
@@ -44,7 +45,7 @@ export default function ViewReelComponent(props) {
     >
       <h1
         style={{
-          backgroundImage: "linear-gradient(to right, #A3C4BC, #413C58)",
+          backgroundImage: "linear-gradient(to right, #FF8300, #A3C4BC)",
           color: "white",
           padding: "5px",
           width: "60%",
@@ -55,73 +56,77 @@ export default function ViewReelComponent(props) {
         View Reel
       </h1>
 
-      <Box sx={{ width: "100%" }}>
-        <div style={{ paddingLeft: "3%" }}>
-          <Grid
-            container
-            style={{
-              direction: "flex",
-              flexDirection: "column",
-              justifyItems: "center",
-              alignItems: "center",
-            }}
-          >
-            <Paper
-              elevation={3}
+      {props.video ? (
+        <Box sx={{ width: "100%" }}>
+          <div style={{ paddingLeft: "3%" }}>
+            <Grid
+              container
               style={{
-                justifySelf: "center",
-                width: "1000px",
-                height: "800px",
+                direction: "flex",
+                flexDirection: "column",
+                justifyItems: "center",
+                alignItems: "center",
               }}
             >
-              {renderVideoImageHolder()}
-              <div
+              <Paper
+                elevation={3}
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  justifySelf: "center",
+                  width: "1000px",
+                  height: "1000px",
                 }}
               >
-                <p
+                {renderVideoImageHolder()}
+                <div
                   style={{
-                    fontSize: "20px",
-                    paddingBottom: "5px",
-                    paddingTop: "5px",
-                    marginLeft: "20px",
-                    marginTop: "20px",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
                   }}
-                  className="cards-item-text"
                 >
-                  <FavoriteIcon style={{ color: "red" }} /> {props.reelNumLikes}{" "}
-                  likes
-                </p>
-                <p
-                  style={{
-                    fontSize: "20px",
-                    paddingBottom: "5px",
-                    paddingTop: "5px",
-                    marginRight: "20px",
-                    marginTop: "20px",
-                  }}
-                  className="cards-item-text"
-                >
-                  <VisibilityIcon /> {props.reelNumViews} views
-                </p>
-              </div>
+                  <p
+                    style={{
+                      fontSize: "20px",
+                      paddingBottom: "5px",
+                      paddingTop: "5px",
+                      marginLeft: "20px",
+                      marginTop: "20px",
+                    }}
+                    className="cards-item-text"
+                  >
+                    <FavoriteIcon style={{ color: "red" }} /> {props.reelNumLikes}{" "}
+                    likes
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "20px",
+                      paddingBottom: "5px",
+                      paddingTop: "5px",
+                      marginRight: "20px",
+                      marginTop: "20px",
+                    }}
+                    className="cards-item-text"
+                  >
+                    <VisibilityIcon /> {props.reelNumViews} views
+                  </p>
+                </div>
 
-              <Divider style={{ marginTop: "20px" }}></Divider>
-              <Grid style={{ padding: "20px" }}>
-                <p>
-                  <b style={{ color: "#296d98" }}>{props.reelCreator} </b>
-                  <u>{props.reelTitle}</u>
-                </p>
-                <br></br>
-                <p>{props.reelCaption}</p>
-              </Grid>
-            </Paper>
-          </Grid>
-        </div>
-      </Box>
+                <Divider style={{ marginTop: "20px" }}></Divider>
+                <Grid style={{ padding: "20px" }}>
+                  <p>
+                    <b style={{ color: "#296d98" }}>{props.reelCreator} </b>
+                    <u>{props.reelTitle}</u>
+                  </p>
+                  <br></br>
+                  <p>{props.reelCaption}</p>
+                </Grid>
+              </Paper>
+            </Grid>
+          </div>
+        </Box>
+      ) : (
+        <p>no video here lol</p>
+      )}
     </Grid>
   );
 }

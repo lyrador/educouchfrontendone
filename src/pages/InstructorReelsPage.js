@@ -72,6 +72,7 @@ export default function InstructorReelsPage(props) {
         navigate(`/createReel`, {
           state: {
             reelId: result.reelId,
+            courseId: courseId
           },
         });
       });
@@ -126,7 +127,19 @@ export default function InstructorReelsPage(props) {
             <div className="cards-wrapper">
               <ul className="cards-items">
                 {reels.length == 0 ? (
-                  <p>no reels avail</p>
+                  <h3
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(to right, #FF8300, #A3C4BC)",
+                      color: "white",
+                      padding: "20px",
+                      width: "60%",
+                      borderRadius: "10px",
+                      marginLeft:"30px"
+                    }}
+                  >
+                    No Reels Yet!
+                  </h3>
                 ) : (
                   reels.map((reel) => (
                     <ReelCardItem
