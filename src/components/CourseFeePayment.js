@@ -144,6 +144,8 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
         if (num_to_pay != 0) {
             if (discount) {
                 setAmountToPay(num_to_pay - discount);
+            } else {
+                setAmountToPay(num_to_pay);
             }
 
             var url = "http://localhost:8080/payment/checkout?amount=" + (num_to_pay - discount);
