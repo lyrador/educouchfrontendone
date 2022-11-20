@@ -31,6 +31,7 @@ import EditQuizSettingsComponent from "../components/QuizComponents/EditQuizSett
 import { CatchingPokemonSharp } from "@mui/icons-material";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import MuiAlert from "@mui/material/Alert";
+import InteractiveQuizQuestionComponent from "../components/QuizComponents/InteractiveQuizQuestionComponent";
 
 // Alert = React.forwardRef(function Alert(props, ref) {
 //   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -641,7 +642,7 @@ export default function EditInteractiveQuizPage(props) {
             </Grid>
 
             <Paper elevation={3} style={{ padding: 20 , marginTop: -27, marginRight: -335, backgroundColor: "#fffacd"}}>
-              <QuizQuestionComponent
+              <InteractiveQuizQuestionComponent
                 textFieldProp={textField}
                 setTextFieldProp={setTextField}
                 questionProp={question}
