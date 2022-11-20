@@ -378,7 +378,7 @@ export default function InstructorViewReel(props) {
           Delete this reel
         </Button>
       </div>
-      {props.video ? (
+      { !(currentPage.reelApprovalStatusEnum == "INCOMPLETE")? (
         <ViewReelComponent
           reelId={reelId}
           reelTitle={location.state.reelTitle}
