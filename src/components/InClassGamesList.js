@@ -45,6 +45,7 @@ import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 import AddIcon from "@mui/icons-material/Add";
+import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
 
 //dayjs
 import dayjs from "dayjs";
@@ -184,9 +185,9 @@ export default function InClassGamesList(props) {
       e.preventDefault();
       if (newGameType == "TRIVIA") {
         try {
-          var gameTitle = newGameTitle;
+          var triviaQuizTitle = newGameTitle;
           var triviaQuizDescription = newGameDescription;
-          var newTrivia = { gameTitle, triviaQuizDescription };
+          var newTrivia = { triviaQuizTitle, triviaQuizDescription };
           const response = await fetch(
             "http://localhost:8080/triviaQuiz/classRun/" + selectedClassRun.id + "/triviaQuiz/",
             {
@@ -430,7 +431,7 @@ export default function InClassGamesList(props) {
                           state={{ classRunName: row.classRunName }}
                           style={{ textDecoration: "none" }}
                         >
-                          Title
+                          {row.gameTitle}
                         </Link>
                       </TableCell>
                       <TableCell align="right">{row.gameDescription}</TableCell>
@@ -454,6 +455,16 @@ export default function InClassGamesList(props) {
                           >
                             <EditIcon />
                           </IconButton>
+                          <Link
+                            to={`${inClassPath}/${row.gameType.toLowerCase()}/${row.gameId}/triviaHosting`}
+                            style={{ textDecoration: "none" }}
+                          >
+                            <IconButton
+                              aria-label="settings"
+                            >
+                              <PlayCircleFilledWhiteIcon />
+                            </IconButton>
+                          </Link>
                         </div>
                       </TableCell>
                     </TableRow>

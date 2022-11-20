@@ -76,6 +76,7 @@ import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
 import InClassGamesList from "./components/InClassGamesList";
 import TriviaCreation from "./components/TriviaCreation";
+import TriviaHosting from "./components/TriviaHosting";
 
 function App() {
   return (
@@ -570,6 +571,12 @@ function App() {
                   <Appbar />
                   <TriviaCreation />
                 </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/inClass/trivia/:triviaId/triviaHosting"
+              element={
+                <TriviaHosting />
               }
             />
             <Route
