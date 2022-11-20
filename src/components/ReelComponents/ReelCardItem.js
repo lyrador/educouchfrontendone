@@ -19,7 +19,7 @@ function ReelCardItem(props) {
             reelId: props.reelId,
             reelTitle: props.reelTitle,
             reelCaption: props.reelCaption,
-            reelStatusEnum: props.reelApprovalStatusEnum,
+            reelApprovalStatusEnum: props.reelApprovalStatusEnum,
             reelNumLikes: props.reelNumLikes,
             reelNumViews: props.reelNumViews,
             video: props.video,
@@ -28,7 +28,7 @@ function ReelCardItem(props) {
         >
           <figure
             className="cards-item-pic-wrap"
-            data-category={props.reelStatusEnum}
+            data-category={props.reelApprovalStatusEnum}
           >
             <img src={props.src} alt="picture" className="cards-item-img" />
           </figure>

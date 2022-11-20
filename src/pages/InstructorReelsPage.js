@@ -191,7 +191,7 @@ export default function InstructorReelsPage(props) {
                         reelId={reel.reelId}
                         reelTitle={reel.reelTitle}
                         reelCaption={reel.reelCaption}
-                        reelStatusEnum={reel.reelApprovalStatusEnum}
+                        reelApprovalStatusEnum={reel.reelApprovalStatusEnum}
                         reelNumLikes={reel.numLikes}
                         reelNumViews={reel.numViews}
                         video={reel.video}

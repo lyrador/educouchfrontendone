@@ -70,7 +70,7 @@ export default function InstructorViewReel(props) {
         setReelId(location.state.reelId);
         if (!result.reelTitle) {
           setReelTitle({
-            name: "",
+            name: " ",
           });
         } else {
           setReelTitle({
@@ -79,7 +79,7 @@ export default function InstructorViewReel(props) {
         }
         if (!result.reelCaption) {
           setReelCaption({
-            name: "",
+            name: " ",
           });
         } else {
           setReelCaption({
