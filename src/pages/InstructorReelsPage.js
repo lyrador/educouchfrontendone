@@ -154,7 +154,7 @@ export default function InstructorReelsPage(props) {
                         fontSize: "16pt",
                         paddingLeft: "9px",
                       }}
-                      onChange={(e) => queryFunction(e.target.value)}
+                      onChange={(e) => setQuery(e.target.value)}
                     />
                   )}
                 </div>
@@ -196,6 +196,7 @@ export default function InstructorReelsPage(props) {
                         reelNumViews={reel.numViews}
                         video={reel.video}
                         reelCreator={reel.reelCreator.name}
+                        rejectionReason={reel.rejectionReason}
                       />
                     ))
                 )}

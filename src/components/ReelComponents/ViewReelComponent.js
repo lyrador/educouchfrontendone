@@ -1,4 +1,4 @@
-import { Button, Divider, Paper } from "@material-ui/core";
+import { Button, Divider, Paper, TextField } from "@material-ui/core";
 import { Breadcrumbs, Grid, Link } from "@mui/material";
 import { useEffect } from "react";
 import ReactPlayer from "react-player";
@@ -127,6 +127,16 @@ export default function ViewReelComponent(props) {
                 <br></br>
                 <p>{props.reelCaption}</p>
               </Grid>
+              {props.rejectionReason && (
+                <>
+                  <Divider
+                    style={{ marginTop: "20px", marginBottom: "20px" }}
+                  ></Divider>
+                  <p style={{ marginLeft: "20px", color: "black" }}>
+                    <b>Reason for rejection:</b> {props.rejectionReason}
+                  </p>
+                </>
+              )}
             </Paper>
           </Grid>
         </div>

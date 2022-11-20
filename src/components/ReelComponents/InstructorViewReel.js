@@ -67,6 +67,7 @@ export default function InstructorViewReel(props) {
       .then((result) => {
         setCurrentPage(result);
         console.log("setcurrentPage as: ", result);
+        console.log("fileURl: ", result.video.fileURL)
         setReelId(location.state.reelId);
         if (!result.reelTitle) {
           setReelTitle({
@@ -388,6 +389,7 @@ export default function InstructorViewReel(props) {
           reelNumViews={location.state.reelNumViews}
           video={location.state.video}
           reelCreator={location.state.reelCreator}
+          rejectionReason={location.state.rejectionReason}
         ></ViewReelComponent>
       ) : (
         <Box sx={{ width: "100%" }}>

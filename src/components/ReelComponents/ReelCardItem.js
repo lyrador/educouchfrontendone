@@ -23,7 +23,8 @@ function ReelCardItem(props) {
             reelNumLikes: props.reelNumLikes,
             reelNumViews: props.reelNumViews,
             video: props.video,
-            reelCreator: props.reelCreator
+            reelCreator: props.reelCreator,
+            rejectionReason: props.rejectionReason
           }}
         >
           <figure
