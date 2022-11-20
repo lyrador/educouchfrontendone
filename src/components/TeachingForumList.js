@@ -36,6 +36,7 @@ import { render } from "@testing-library/react";
 
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import LearnerCoursesDrawer from "./LearnerCourseDrawer";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -255,7 +256,8 @@ function TeachingForumList(props) {
     <div>
       <Grid container spacing={0}>
         <Grid item xs={2}>
-          <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
+          {user.userType === "LEARNER" && <LearnerCoursesDrawer courseId = {courseId} learnerStatus = {true}/>}
+          {user.userType !== "LEARNER" && <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>}
         </Grid>
         <Grid item xs={10}>
           <Snackbar

@@ -9,6 +9,11 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+
+import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import "../css/Appbar.css";
 import "../css/KidsAppbar.scss";
@@ -165,14 +170,27 @@ export default function Appbar() {
                         style={{ textDecoration: "none", color: "black" }}
                         onClick={handleCloseUserMenu}
                       >
-                        <MenuItem style={{ justifyContent: "center" }}>
+                        <MenuItem style={{ justifyContent: "left" }}>
                           <AccountCircleIcon color="disabled" />
                           &nbsp;
                           <Typography>Profile</Typography>
                         </MenuItem>
                       </Link>
+                      {user.userEnum === "KID" && (
+                        <Link
+                          to="/myPoints"
+                          style={{ textDecoration: "none", color: "black" }}
+                          onClick={handleCloseUserMenu}
+                        >
+                          <MenuItem style={{ justifyContent: "left" }}>
+                            <AccountBalanceWalletIcon color="disabled" />
+                            &nbsp;
+                            <Typography>My Wallet</Typography>
+                          </MenuItem>
+                        </Link>
+                      )}
                       <MenuItem
-                        style={{ justifyContent: "center" }}
+                        style={{ justifyContent: "left" }}
                         onClick={handleLogout}
                       >
                         <LogoutIcon color="disabled" />
@@ -188,7 +206,7 @@ export default function Appbar() {
               <div className="navbar-container">
                 <ul className={"nav-menu"}>
                   <li className="nav-item">
-                    <Link to="/home" className="nav-links">
+                    <Link to="/learnerHome" className="nav-links">
                       📰 Dashboard
                     </Link>
                   </li>
@@ -338,7 +356,7 @@ export default function Appbar() {
                         style={{ textDecoration: "none", color: "black" }}
                         onClick={handleCloseUserMenu}
                       >
-                        <MenuItem style={{ justifyContent: "center" }}>
+                        <MenuItem style={{ justifyContent: "left" }}>
                           <AccountCircleIcon color="disabled" />
                           &nbsp;
                           <Typography>Profile</Typography>
@@ -355,8 +373,21 @@ export default function Appbar() {
                           <Typography>Report</Typography>
                         </MenuItem>
                       </Link>
+                      {user.userEnum === "KID" && (
+                        <Link
+                          to="/myPoints"
+                          style={{ textDecoration: "none", color: "black" }}
+                          onClick={handleCloseUserMenu}
+                        >
+                          <MenuItem style={{ justifyContent: "left" }}>
+                            <AccountBalanceWalletIcon color="disabled" />
+                            &nbsp;
+                            <Typography>My Wallet</Typography>
+                          </MenuItem>
+                        </Link>
+                      )}
                       <MenuItem
-                        style={{ justifyContent: "center" }}
+                        style={{ justifyContent: "left" }}
                         onClick={handleLogout}
                       >
                         <LogoutIcon color="disabled" />
@@ -372,7 +403,7 @@ export default function Appbar() {
               <div className="navbar-container">
                 <ul className={"nav-menu"}>
                   <li className="nav-item">
-                    <Link to="/home" className="nav-links">
+                    <Link to="/learnerHome" className="nav-links">
                       Dashboard
                     </Link>
                   </li>
@@ -414,11 +445,23 @@ export default function Appbar() {
                       </Link>
                     </li>
                   )}
-                  <li className="nav-item">
-                    <Link to="/home" className="nav-links">
-                      Social Media
-                    </Link>
-                  </li>
+
+                  {user.userType === "INSTRUCTOR" && (
+                    <li className="nav-item">
+                      <Link to="/instructorReels" className="nav-links">
+                        Social Media
+                      </Link>
+                    </li>
+                  )}
+
+                  {user.userType === "LEARNER" && (
+                    <li className="nav-item">
+                      <Link to="/learnerReels" className="nav-links">
+                        Social Media
+                      </Link>
+                    </li>
+                  )}
+
                   {user.userType === "ORG_ADMIN" && (
                     <li className="nav-item">
                       <Link to="/adminDrawer" className="nav-links">

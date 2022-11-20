@@ -75,6 +75,14 @@ import TechnicalSupport from "./components/TechnicalSupport";
 import TechnicalSupportList from "./components/TechnicalSupportList";
 import CreateTechnicalSupportRequest from "./components/CreateTechnicalSupportRequest";
 import WebPet from "web-pet";
+import RewardShoppingPage from "./pages/RewardShoppingPage";
+import RewardsArrangementPage from "./pages/RewardsArrangementPage";
+import DashboardAnnouncements from "./pages/DashboardAnnouncements";
+import MyPoints from "./pages/MyPoints";
+import InstructorReelsPage from "./pages/InstructorReelsPage";
+import LearnerReelsPage from "./pages/LearnerReelsPage";
+import CreateReelPage from "./pages/CreateReelPage";
+import InstructorViewReel from "./components/ReelComponents/InstructorViewReel";
 
 function App() {
   return (
@@ -90,6 +98,24 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <Home />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/dashboardAnnouncements"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <DashboardAnnouncements />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myPoints"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <MyPoints />
                 </RequireAuth>
               }
             />
@@ -699,6 +725,60 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <ViewGradedQuizAttempt />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/rewardShoppingPage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <RewardShoppingPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/rewardArrangementPage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <RewardsArrangementPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/instructorReels"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InstructorReelsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerReels"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerReelsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/createReel"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateReelPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/instructorViewReel"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InstructorViewReel />
                 </RequireAuth>
               }
             />
