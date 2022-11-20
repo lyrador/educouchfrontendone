@@ -1,12 +1,20 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import { useAuth } from "../context/AuthProvider";
-import { Breadcrumbs, Button, Tabs, Typography } from "@mui/material";
+import {
+  Breadcrumbs,
+  Button,
+  Grid,
+  Tabs,
+  TextField,
+  Typography,
+} from "@mui/material";
 import PropTypes from "prop-types";
 import { TabPanel } from "@material-ui/lab";
 import ReelCardItem from "../components/ReelComponents/ReelCardItem";
 import { Link, useNavigate } from "react-router-dom";
 import LinkMaterial from "@mui/material/Link";
+
 
 export default function InstructorReelsPage(props) {
   const auth = useAuth();
@@ -16,6 +24,7 @@ export default function InstructorReelsPage(props) {
   const [reels, setReels] = React.useState([]);
   const [value, setValue] = React.useState(0);
   const [courseId, setCourseId] = React.useState(1);
+  const [refresh, setRefresh] = React.useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -72,10 +81,15 @@ export default function InstructorReelsPage(props) {
         navigate(`/createReel`, {
           state: {
             reelId: result.reelId,
-            courseId: courseId
+            courseId: courseId,
           },
         });
       });
+  }
+
+  const [query, setQuery] = React.useState("");
+  function queryFunction(text) {
+    setQuery(text);
   }
 
   React.useEffect(() => {
@@ -125,6 +139,26 @@ export default function InstructorReelsPage(props) {
           </div>
           <TabPanel value={value} index={0}>
             <div className="cards-wrapper">
+              <Grid>
+                <div className="search">
+                  {reels.length > 0 && (
+                    <TextField
+                      type="text"
+                      variant="outlined"
+                      placeholder="Search..."
+                      value={query}
+                      style={{
+                        float: "left",
+                        marginLeft: "22px",
+                        height: "50px",
+                        fontSize: "16pt",
+                        paddingLeft: "9px",
+                      }}
+                      onChange={(e) => queryFunction(e.target.value)}
+                    />
+                  )}
+                </div>
+              </Grid>
               <ul className="cards-items">
                 {reels.length == 0 ? (
                   <h3
@@ -135,25 +169,35 @@ export default function InstructorReelsPage(props) {
                       padding: "20px",
                       width: "60%",
                       borderRadius: "10px",
-                      marginLeft:"30px"
+                      marginLeft: "30px",
                     }}
                   >
                     No Reels Yet!
                   </h3>
                 ) : (
-                  reels.map((reel) => (
-                    <ReelCardItem
-                      src="images/computing.jpg"
-                      reelId={reel.reelId}
-                      reelTitle={reel.reelTitle}
-                      reelCaption={reel.reelCaption}
-                      reelStatusEnum={reel.reelApprovalStatusEnum}
-                      reelNumLikes={reel.numLikes}
-                      reelNumViews={reel.numViews}
-                      video={reel.video}
-                      reelCreator={reel.reelCreator.name}
-                    />
-                  ))
+                  reels
+                    .filter(
+                      (reel) =>
+                        reel.reelApprovalStatusEnum
+                          .toLowerCase()
+                          .includes(query) ||
+                        reel.reelTitle.toLowerCase().includes(query) ||
+                        reel.reelCaption.toLowerCase().includes(query)
+                    )
+                    .reverse()
+                    .map((reel) => (
+                      <ReelCardItem
+                        src="images/computing.jpg"
+                        reelId={reel.reelId}
+                        reelTitle={reel.reelTitle}
+                        reelCaption={reel.reelCaption}
+                        reelStatusEnum={reel.reelApprovalStatusEnum}
+                        reelNumLikes={reel.numLikes}
+                        reelNumViews={reel.numViews}
+                        video={reel.video}
+                        reelCreator={reel.reelCreator.name}
+                      />
+                    ))
                 )}
               </ul>
             </div>
