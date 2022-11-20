@@ -71,6 +71,9 @@ import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
 import LearnerHome from "./pages/LearnerHome";
 import TeachingFileSubMarkerPage from "./pages/TeachingFileSubMarkerPage";
 import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
+import TechnicalSupport from "./components/TechnicalSupport";
+import TechnicalSupportList from "./components/TechnicalSupportList";
+import CreateTechnicalSupportRequest from "./components/CreateTechnicalSupportRequest";
 import WebPet from "web-pet";
 
 function App() {
@@ -99,8 +102,33 @@ function App() {
                 </RequireAuth>
               }
             />
-
-            
+            <Route
+              path="/technicalSupport"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TechnicalSupport />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/technicalSupport/myRequests"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TechnicalSupportList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/technicalSupport/createRequest"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateTechnicalSupportRequest />
+                </RequireAuth>
+              }
+            />
             <Route
               path="/account"
               element={
@@ -389,7 +417,7 @@ function App() {
                 </RequireAuth>
               }
             />
-             <Route
+            <Route
               path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId/fileSubmission"
               element={
                 <RequireAuth>
