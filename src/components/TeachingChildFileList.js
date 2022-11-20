@@ -21,8 +21,8 @@ import TeachingFileComponent from "./TeachingFileComponent";
 import AttachmentComponent from "./AttachmentComponent";
 import { useState } from "react";
 
-import InstantErrorMessage from "./InstantErrorMessage";
-import InstantSuccessMessage from "./InstantSuccessMessage";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
@@ -78,8 +78,6 @@ function TeachingChildFileList() {
         console.log(JSON.stringify(fol));
         setFolderList(fol.childFolders);
         setAttachmentList(fol.attachments);
-        console.log("Length of folder is " + folderList.length);
-        console.log("Length of attachment is " + attachmentList.length);
       })
       .catch((err) => {
         console.log(err.message);
@@ -124,16 +122,13 @@ function TeachingChildFileList() {
   // create new folder form
   const [folderName, setFolderName] = useState("");
 
-  // notification
-  const [message, setMessage] = useState("");
-  const [isError, setError] = useState(false);
-  const [isSuccess, setSuccess] = useState(false);
+
 
   const createNewFolder = (e) => {
     e.preventDefault();
 
     if (folderName.length === 0) {
-      setError(true);
+      toast.error("Length of folder name must be more than 0!");
     }
 
     const childFolder = {
@@ -148,23 +143,29 @@ function TeachingChildFileList() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(childFolder),
     })
-      .then(() => {
+      .then(async response => {
         setOpen(false);
 
-        //notification
-        setMessage("Folder is successfully created!");
-        setError(false);
-        setSuccess(true);
-        refresh();
+        const isJson = response.headers.get('content-type')?.includes('application/json');
+        const data = isJson ? await response.json() : null;
+
+        if (!response.ok) {
+          const error = (data && data.message) || response.status;
+          console.log('Error is ' + error);
+          return Promise.reject(error);
+        } else {
+          //notification
+          toast.success("Folder is successfully created!");
+          refresh();
+        }
+
+        
       })
       .catch((error) => {
         setOpen(false);
 
         //notification
-        setMessage("Could not create folder.");
-        setError(true);
-        setSuccess(false);
-        console.log(error);
+        toast.error(error);
       });
   };
 
@@ -172,17 +173,13 @@ function TeachingChildFileList() {
   const handleRefreshDelete = () => {
     refresh();
     //notification
-    setMessage("Item is successfully deleted!");
-    setError(false);
-    setSuccess(true);
+    toast.success("Item is successfully deleted!");
   };
 
   const handleRefreshUpdate = () => {
     refresh();
     //notification
-    setMessage("Item is successfully updated!");
-    setError(false);
-    setSuccess(true);
+    toast.success("Item is successfully updated!");
   };
 
   // uploading function
@@ -192,7 +189,7 @@ function TeachingChildFileList() {
   const selectFile = (event) => {
     setCurrentFile(event.target.files[0]);
     setProgress(0);
-    setMessage("");
+    
   };
 
   const uploadAttachment = () => {
@@ -201,15 +198,12 @@ function TeachingChildFileList() {
       setProgress(Math.round((100 * event.loaded) / event.total));
     })
       .then((response) => {
-        setMessage("Succesfully Uploaded!");
-        setError(false);
-        console.log(response);
+        toast.success("Succesfully Uploaded!");
         closeUploadDialogBox();
         refresh();
       })
-      .catch((err) => {
-        setMessage("Could not upload the image!");
-        setError(true);
+      .catch((error) => {
+        toast.error("Could not upload the file!");
         setProgress(0);
         setCurrentFile(undefined);
       });
@@ -243,12 +237,7 @@ function TeachingChildFileList() {
           <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
         </Grid>
         <Grid item xs={10}>
-          {message && isError && (
-            <InstantErrorMessage message={message}></InstantErrorMessage>
-          )}
-          {message && isSuccess && (
-            <InstantSuccessMessage message={message}></InstantSuccessMessage>
-          )}
+        <ToastContainer position = "bottom-left"></ToastContainer>
           <Typography variant="h5">Content Files Uploading</Typography>
           <divider></divider>
           <br />
