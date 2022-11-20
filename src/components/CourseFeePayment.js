@@ -22,6 +22,7 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
+import DialogActions from '@mui/material/DialogActions';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
@@ -31,6 +32,8 @@ import CheckoutForm from './CheckoutForm';
 import SuccessEnrolment from './SuccessEnrolment';
 import { useAuth } from '../context/AuthProvider';
 import LearnerCoursesDrawer from './LearnerCourseDrawer';
+import Slide from '@mui/material/Slide';
+import InfoIcon from '@mui/icons-material/Info';
 
 
 const steps = ['Course Enrolment Status', 'Payment', 'Completed'];
@@ -47,6 +50,10 @@ weekday[3] = "Wednesday";
 weekday[4] = "Thursday";
 weekday[5] = "Friday";
 weekday[6] = "Saturday";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function CourseFeePayment({ courseId, classRunRegistered }) {
     // user
@@ -67,6 +74,10 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
         setActiveStep(0);
     };
 
+    // discount-related
+    const [discount, setDiscount] = useState(0);
+    const [learnerPoints, setLearnerPoints] = useState("");
+    const [conversionRate, setConversionRate] = useState("");
 
 
     // course details
@@ -86,15 +97,58 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
 
     }, [refreshPage]);
 
+    React.useEffect(() => {
+        var discountUrl = "http://localhost:8080/pointsWallet/getPointsDiscount?learnerId=" + user.userId + "&courseId=" + courseId;
+        fetch(discountUrl)
+            .then(res => res.json())
+            .then((result) => {
+                setDiscount(result);
+            })
+            .catch((err) => {
+                setDiscount("");
+                console.log("Error happened: not found.");
+            });
+
+        var currentPointsUrl = "http://localhost:8080/pointsWallet/getPointsByLearnerAndCourse?learnerId=" + user.userId + "&courseId=" + courseId;
+
+        fetch(currentPointsUrl)
+            .then(res => res.json())
+            .then((result) => {
+                setLearnerPoints(result);
+            })
+            .catch((err) => {
+                setLearnerPoints("");
+                console.log("Error happened: not found.");
+            });
+
+        var conversionUrl = "http://localhost:8080/pointsWallet/retrieveCourseConversionRate?courseId=" + courseId;
+        fetch(conversionUrl)
+            .then(res => res.json())
+            .then((result) => {
+                setConversionRate(result);
+            })
+            .catch((err) => {
+                setConversionRate("");
+                console.log("Error happened: not found.");
+            });
+
+
+    }, [currentCourse]);
+
 
     // checkout
     const [clientSecret, setClientSecret] = useState('');
     const [amountToPay, setAmountToPay] = useState('');
     const checkout = (num_to_pay) => {
         console.log('num to pay is ' + num_to_pay);
-        if (num_to_pay!= 0) {
-            setAmountToPay(num_to_pay);
-            var url = "http://localhost:8080/payment/checkout?amount=" + num_to_pay;
+        if (num_to_pay != 0) {
+            if (discount) {
+                setAmountToPay(num_to_pay - discount);
+            } else {
+                setAmountToPay(num_to_pay);
+            }
+
+            var url = "http://localhost:8080/payment/checkout?amount=" + (num_to_pay - discount);
             console.log('url is ' + url);
             fetch(url).
                 then(res => res.json()).then((result) => {
@@ -108,6 +162,17 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
             alert("An error has occured! Please try again!");
         }
 
+    };
+
+    // open discount dialog box
+    const [openDiscount, setOpenDiscount] = React.useState(false);
+
+    const handleClickOpenDiscount = () => {
+        setOpenDiscount(true);
+    };
+
+    const handleCloseDiscount = () => {
+        setOpenDiscount(false);
     };
 
 
@@ -125,8 +190,8 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
 
     // sending over record payment
     const requestFullCourseFeeTransactionRecord = () => {
-        // send request to create payment record
-        const courseFeeRecord = { "classRunId": classRunRegistered.classRunId, "learnerId": user.userId, "amount": amountToPay};
+
+        const courseFeeRecord = { "classRunId": classRunRegistered.classRunId, "learnerId": user.userId, "amount": amountToPay };
         var url = "http://localhost:8080/payment/trackRemainingCourseFee";
         fetch(url, {
             method: "POST",
@@ -141,7 +206,7 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
         <>
             <Grid container spacing={0}>
                 <Grid item xs={2}>
-                    <LearnerCoursesDrawer courseId={courseId} learnerStatus = {false}></LearnerCoursesDrawer>
+                    <LearnerCoursesDrawer courseId={courseId} learnerStatus={false}></LearnerCoursesDrawer>
                 </Grid>
                 <Grid item xs={8}>
                     <Typography variant="h4">Course Fee Payment</Typography>
@@ -348,15 +413,29 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
                                     <TableBody>
                                         <TableRow>
                                             <TableCell component="th" scope="row">
+                                                Deposit Paid Before
+                                            </TableCell>
+                                            <TableCell align="right">SGD {currentCourse.courseFee * 0.10}</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell component="th" scope="row">
                                                 Remaining Course Fee
                                             </TableCell>
                                             <TableCell align="right">SGD {currentCourse.courseFee * 0.90}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell component="th" scope="row">
-                                                Deposit Paid Before
+                                                Discount
+
                                             </TableCell>
-                                            <TableCell align="right">SGD {currentCourse.courseFee * 0.10}</TableCell>
+                                            <TableCell align="right">SGD {discount}</TableCell>
+                                        </TableRow>
+
+                                        <TableRow>
+                                            <TableCell component="th" scope="row">
+                                                Payable
+                                            </TableCell>
+                                            <TableCell align="right">SGD {currentCourse.courseFee * 0.90 - discount}</TableCell>
                                         </TableRow>
                                     </TableBody>
                                 </Table>
@@ -373,6 +452,7 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
                                 <Button onClick={() => checkout(currentCourse.courseFee * 0.90)} variant="contained" startIcon={<ShoppingCartIcon />}>
                                     Checkout
                                 </Button>
+                                <Button onClick={handleClickOpenDiscount} variant="contained" startIcon={<InfoIcon />}>Discount</Button>
 
 
 
@@ -403,6 +483,27 @@ export default function CourseFeePayment({ courseId, classRunRegistered }) {
                         <CheckoutForm clientSecret={clientSecret} closePaymentDialogBox={closePaymentDialogBox} handleNext={handleNext} requestTransactionRecord={requestFullCourseFeeTransactionRecord} />
                     </Elements>
                 </DialogContent>
+            </Dialog>
+
+            <Dialog
+                open={openDiscount}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleCloseDiscount}
+                aria-describedby="alert-dialog-slide-description"
+            >
+                <DialogTitle>{"Your Discount Points Information"}</DialogTitle>
+                <Divider></Divider>
+                <br />
+                <DialogContent>
+                    <Typography>You have {learnerPoints} 🌟!</Typography>
+                    <br />
+                    <Typography>The course organiser has set the discount coversion rates as {conversionRate.points} 🌟 to SGD{conversionRate.currency} </Typography>
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDiscount}>Close</Button>
+                </DialogActions>
             </Dialog>
         </>
 

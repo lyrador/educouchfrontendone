@@ -72,6 +72,8 @@ import LearnerHome from "./pages/LearnerHome";
 import TeachingFileSubMarkerPage from "./pages/TeachingFileSubMarkerPage";
 import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
 import WebPet from "web-pet";
+import RewardShoppingPage from "./pages/RewardShoppingPage";
+import RewardsArrangementPage from "./pages/RewardsArrangementPage";
 import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
 
@@ -120,7 +122,7 @@ function App() {
               }
             />
 
-            
+
             <Route
               path="/account"
               element={
@@ -409,7 +411,7 @@ function App() {
                 </RequireAuth>
               }
             />
-             <Route
+            <Route
               path="/myTeachingCourse/:courseId/gradebook/:assessmentId/:learnerId/fileSubmission"
               element={
                 <RequireAuth>
@@ -691,6 +693,26 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <ViewGradedQuizAttempt />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/rewardShoppingPage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <RewardShoppingPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/rewardArrangementPage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <RewardsArrangementPage />
                 </RequireAuth>
               }
             />
