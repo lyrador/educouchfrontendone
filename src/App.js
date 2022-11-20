@@ -76,11 +76,15 @@ import RewardShoppingPage from "./pages/RewardShoppingPage";
 import RewardsArrangementPage from "./pages/RewardsArrangementPage";
 import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
+import InstructorReelsPage from "./pages/InstructorReelsPage";
+import LearnerReelsPage from "./pages/LearnerReelsPage";
+import CreateReelPage from "./pages/CreateReelPage";
+import InstructorViewReel from "./components/ReelComponents/InstructorViewReel";
 
 function App() {
   return (
     <div className="App">
-      <AuthProvider> 
+      <AuthProvider>
         <Router>
           <Routes>
             {/* <Route path = "/" element={<Home />} /> */}
@@ -94,7 +98,7 @@ function App() {
                 </RequireAuth>
               }
             />
-              <Route
+            <Route
               path="/dashboardAnnouncements"
               element={
                 <RequireAuth>
@@ -103,7 +107,7 @@ function App() {
                 </RequireAuth>
               }
             />
-              <Route
+            <Route
               path="/myPoints"
               element={
                 <RequireAuth>
@@ -121,8 +125,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
-
             <Route
               path="/account"
               element={
@@ -713,6 +715,41 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <RewardsArrangementPage />
+                </RequireAuth>
+              }/>
+            <Route
+              path="/instructorReels"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InstructorReelsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerReels"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerReelsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/createReel"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateReelPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/instructorViewReel"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InstructorViewReel />
                 </RequireAuth>
               }
             />
