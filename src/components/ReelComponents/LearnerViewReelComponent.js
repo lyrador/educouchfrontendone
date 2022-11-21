@@ -14,6 +14,7 @@ export default function LearnerViewReelComponent(props) {
   const user = auth.user;
   const learnerId = user.userId;
   const location = useLocation();
+  const navigate = useNavigate();
   const [currentReel, setCurrentReel] = useState();
   const [liked, setLiked] = useState(false);
   const renderVideoImageHolder = () => {
@@ -60,6 +61,11 @@ export default function LearnerViewReelComponent(props) {
       </>
     );
   };
+
+  function handleViewCourse() {
+    console.log("navigating to courseId: " + currentReel.courseId);
+    navigate(`/learnerCourseDetails/` + currentReel.courseId);
+  }
 
   useEffect(() => {
     fetch("http://localhost:8080/reel/getReel/" + props.reelId)
@@ -178,12 +184,15 @@ export default function LearnerViewReelComponent(props) {
 
                   <Divider style={{ marginTop: "20px" }}></Divider>
                   <Grid style={{ padding: "20px" }}>
-                    <p>
-                      <b style={{ color: "#296d98" }}>
-                        {currentReel.creatorName}{" "}
-                      </b>
-                      <u>{currentReel.reelTitle}</u>
-                    </p>
+                    <Button onClick={handleViewCourse}>
+                      <p>
+                        <b style={{ color: "#296d98" }}>
+                          {currentReel.creatorName}
+                        </b>
+                      </p>
+                    </Button>
+                    &nbsp;<u>{currentReel.reelTitle}</u>
+
                     <br></br>
                     <p>{currentReel.reelCaption}</p>
                   </Grid>
