@@ -29,13 +29,23 @@ export default function TriviaHosting(props) {
     const [room, setRoom] = useState("T12345");
 
     const [currentMessage, setCurrentMessage] = useState("")
-    const players = [];
+    var players = [];
     const [playersArray, setPlayersArray] = useState([])
-    const playersQuestionScores = [];
-    const [playersQuestionScoresArray, setPlayersQuestionScoresArray] = useState([])
+    var playersQuestionScores = [];
+    var playersTimeSentAndOptionNum = [];
+    const [playersTimeSentAndOptionNumArray, setPlayersTimeSentAndOptionNumArray] = useState([])
+    const [scoreboardArray, setScoreboardArray] = useState([])
+
+    let totalScoresHashmap = new Map();
+    var totalScoresArray = [];
+    var correctOptionNumber = 0
 
     const joinRoom = () => {
         socket.emit("join_room_admin", room)
+    }
+
+    const sendScore = (questionScoreData) => {
+        socket.emit("send_answer_and_score", questionScoreData)
     }
 
     React.useEffect(() => {
@@ -44,27 +54,85 @@ export default function TriviaHosting(props) {
 
     React.useEffect(() => {
         socket.on("new_player_joined", (data) => {
+            console.log("NEW PLAYER JOINED")
             console.log(data)
             players.push(data)
             setPlayersArray(JSON.parse(JSON.stringify(players)))
         })
         socket.on("receive_response", (data) => {
+            console.log("RECEIVE RESPONSE")
             console.log(data)
-            if (yellowCorrectAnswer && data.optionNumber == 1) {
-                //calc score
-            }
-            const questionScoreData = {
-                author: username,
-                score: data,
+            console.log("TIME OF RESPONSE: " + data.time)
+
+            const playersTimeSentAndOptionNumData = {
+                author: data.username,
+                time: data.time,
                 optionNumber: data.optionNumber
             }
-            playersQuestionScores.push(data)
-            setPlayersQuestionScoresArray(JSON.parse(JSON.stringify(playersQuestionScores)))
+            playersTimeSentAndOptionNum.push(playersTimeSentAndOptionNumData)
+            console.log("playersTimeSentAndOptionNum")
+            console.log(playersTimeSentAndOptionNum)
+            setPlayersTimeSentAndOptionNumArray(JSON.parse(JSON.stringify(playersTimeSentAndOptionNum)))
         })
     }, [socket])
 
     const handleScoreSorting = () => {
+        console.log("SCORE SORTING")
+        console.log("playersQuestionScores")
+        console.log(playersQuestionScores)
+        //firstly add to total score
+        playersQuestionScores.forEach(function (item, index) {
+            if (totalScoresHashmap.has(item.author)) {
+                totalScoresHashmap.set(item.author, totalScoresHashmap.get(item.author) + item.score);
+            } else {
+                totalScoresHashmap.set(item.author, item.score);
+            }
+        });
+        console.log("totalScoresHashmap")
+        console.log(totalScoresHashmap)
+        //secondly do sorting
+        var array = [];
 
+        totalScoresHashmap.forEach(function (value, key) {
+            console.log("inner hashmap iterate")
+            array.push({
+                author: key,
+                score: value
+            });
+        })
+
+        // console.log("ARRAY")
+        // console.log(array)
+
+        var sorted = array.sort(function (a, b) {
+            return (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0)
+        });
+
+        totalScoresArray = JSON.parse(JSON.stringify(sorted));
+
+        console.log("SCORE SORTED")
+        console.log(totalScoresArray)
+        setScoreboardArray(totalScoresArray)
+
+        //reset question score
+        while (playersQuestionScores.length) {
+            console.log("player question score pop")
+            playersQuestionScores.pop();
+        }
+        console.log(playersQuestionScores)
+
+        while (playersTimeSentAndOptionNum.length) {
+            console.log("playersTimeSentAndOptionNum pop")
+            playersTimeSentAndOptionNum.pop();
+        }
+        console.log(playersTimeSentAndOptionNum)
+        setPlayersTimeSentAndOptionNumArray(playersTimeSentAndOptionNum)
+
+        while (array.length) {
+            console.log("array pop")
+            array.pop();
+        }
+        // console.log(array)
     };
 
     const sendMessage = async () => {
@@ -77,11 +145,12 @@ export default function TriviaHosting(props) {
         }
     }
 
-
     const sendStartGame = () => {
+        console.log("SEND START GAME")
         const data = {
             room: room,
-            numOfQuestions: questions.length
+            numOfQuestions: questions.length,
+            questionTime: currentQuestionTimeLimit
         }
         socket.emit("start_game", data)
     };
@@ -135,6 +204,36 @@ export default function TriviaHosting(props) {
         }
     }, [timer])
 
+    const calcScore = () => {
+        var timeInMs = +new Date()
+        for (var i = 0; i < playersTimeSentAndOptionNumArray.length; i++) {
+            console.log("CALC SCORE i = " + i)
+            var differenceInTime = timeInMs - playersTimeSentAndOptionNumArray[i].time
+            var score = 0
+            if (yellowCorrectAnswer && playersTimeSentAndOptionNumArray[i].optionNumber == 1) {
+                score = differenceInTime
+            }
+            if (greenCorrectAnswer && playersTimeSentAndOptionNumArray[i].optionNumber == 2) {
+                score = differenceInTime
+            }
+            if (redCorrectAnswer && playersTimeSentAndOptionNumArray[i].optionNumber == 3) {
+                score = differenceInTime
+            }
+            if (blueCorrectAnswer && playersTimeSentAndOptionNumArray[i].optionNumber == 4) {
+                score = differenceInTime
+            }
+            const questionScoreData = {
+                room: room,
+                author: playersTimeSentAndOptionNumArray[i].author,
+                score: score,
+                optionNumber: playersTimeSentAndOptionNumArray[i].optionNumber
+            }
+            sendScore(questionScoreData)
+            console.log(questionScoreData)
+            playersQuestionScores.push(questionScoreData)
+        }
+    };
+
     const handleGoBackToLobby = () => {
         console.log("LOBBY")
         setShowWaitingRoomCountdown(false)
@@ -145,9 +244,23 @@ export default function TriviaHosting(props) {
         setQuestionIndex(0)
         clear()
         setTimer(3)
+        setPlayersArray([])
+        setPlayersTimeSentAndOptionNumArray([])
+        while (players.length) {
+            players.pop();
+        }
+        while (playersQuestionScores.length) {
+            playersQuestionScores.pop();
+        }
+        while (playersTimeSentAndOptionNum.length) {
+            playersTimeSentAndOptionNum.pop();
+        }
     };
 
     const handleShowWaitingRoomCountdown = () => {
+
+        //send start_game to players here???
+
         console.log("WAITING ROOM COUNTDOWN")
         setShowScoreboard(false)
         setShowWaitingRoomCountdown(true)
@@ -160,12 +273,24 @@ export default function TriviaHosting(props) {
         setShowWaitingRoomCountdown(false)
         setStartGame(true)
         sendStartGame()
+        if (yellowCorrectAnswer) {
+            correctOptionNumber = 1
+        } else if (greenCorrectAnswer) {
+            correctOptionNumber = 2
+        } else if (redCorrectAnswer) {
+            correctOptionNumber = 3
+        } else if (blueCorrectAnswer) {
+            correctOptionNumber = 4
+        }
+        // console.log("CORRECT OPTION")
+        // console.log(correctOptionNumber)
     };
 
     const handleShowCorrectAnswer = () => {
         setTimer(0)
         console.log("SHOW CORRECT ANSWER")
         setShowCorrectAnswer(true)
+        calcScore()
         handleScoreSorting()
     };
 
@@ -494,7 +619,7 @@ export default function TriviaHosting(props) {
                             </div>
                             <div className="responsesNumberRightContainer">
                                 <Typography variant="h4">Responses: </Typography>
-                                <Typography variant="h2">{numOfResponses}</Typography>
+                                <Typography variant="h2">{playersTimeSentAndOptionNumArray.length}</Typography>
                             </div>
                         </div>
                     </div >
@@ -528,7 +653,9 @@ export default function TriviaHosting(props) {
                 </div>
                 <div style={{ backgroundColor: "dodgerblue", height: "80%", width: "100%", padding: "2%" }}>
                     <div style={{ alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", paddingBottom: "3%" }}>
-                        <Typography variant="h3">Waryl</Typography>
+                        {scoreboardArray.map((player, index) => (
+                            <Typography variant="h3">{index + 1}. {player.author} - {player.score}</Typography>
+                        ))}
                     </div>
                 </div>
             </div >
