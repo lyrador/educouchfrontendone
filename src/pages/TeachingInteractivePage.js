@@ -1,6 +1,4 @@
 import * as React from "react";
-import grapesjs from "grapesjs";
-import "grapesjs/dist/css/grapes.min.css";
 
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
