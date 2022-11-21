@@ -26,7 +26,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 
-function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate, changeFolderIdWrapper, isLearner }) {
+function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate, isLearner }) {
 
     // opening mini menu
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -114,10 +114,10 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
     const navigateChildFolder = () => {
         if (!isLearner) {
             navigate(`/myTeachingCourse/${courseId}/files/${folder.folderId}`);
-            changeFolderIdWrapper(folder.folderId);
+            // changeFolderIdWrapper(folder.folderId);
         } else {
             navigate(`/learnerCourseDetails/${courseId}/files/${folder.folderId}`);
-            changeFolderIdWrapper(folder.folderId);
+            // changeFolderIdWrapper(folder.folderId);
         }
 
         console.log("Running " + folder.folderId);

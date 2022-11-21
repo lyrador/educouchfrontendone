@@ -75,21 +75,21 @@ function ShoppingToolbox({ imaginaryItem, handleMove }) {
             const isJson = response.headers.get('content-type')?.includes('application/json');
             const data = isJson ? await response.json() : null;
 
-            setPurchaseLoading(true);
-            navigate('/learnerHome');
-            setPurchaseLoading(false);
+
 
             if (!response.ok) {
                 const error = (data && data.message) || response.status;
-                console.log('Error is '+ error);
+                console.log('Error is ' + error);
                 return Promise.reject(error);
+            } else {
+                setPurchaseLoading(true);
+                navigate('/learnerHome');
+                setPurchaseLoading(false);
             }
 
         }).catch((error) => {
-            // console.log(error);
-            // toast.error(error.message);
-            alert("Unable to purchase item: location occupied or not enough balance!");
-            
+            toast.error(error);
+
             closeItemDialogBox();
 
 
