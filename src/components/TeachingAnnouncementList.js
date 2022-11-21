@@ -249,7 +249,12 @@ function TeachingAnnouncementList(props) {
     if (editAnnouncementTitle && editAnnouncementBody) {
       var announcementTitle = editAnnouncementTitle;
       var announcementBody = editAnnouncementBody;
-      const newEditedAnnouncement = { announcementTitle, announcementBody };
+      var isRead = "UNREAD";
+      const newEditedAnnouncement = {
+        announcementTitle,
+        announcementBody,
+        isRead,
+      };
       fetch(
         "http://localhost:8080/announcement/updateAnnouncementById/" +
           announcementIdToEdit,

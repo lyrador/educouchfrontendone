@@ -8,8 +8,10 @@ import MuiAppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -25,12 +27,12 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 
 // icon
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import BookIcon from '@mui/icons-material/Book';
-import SearchIcon from '@mui/icons-material/Search';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import Face3Icon from '@mui/icons-material/Face3';
-import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import BookIcon from "@mui/icons-material/Book";
+import SearchIcon from "@mui/icons-material/Search";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import Face3Icon from "@mui/icons-material/Face3";
+import ContactEmergencyIcon from "@mui/icons-material/ContactEmergency";
 
 import { useAuth } from "../context/AuthProvider";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -79,7 +81,6 @@ export default function Appbar() {
   const [click, setClick] = useState(false);
   const [button, setButton] = useState(true);
 
-
   const showButton = () => {
     if (window.innerWidth <= 960) {
       setButton(false);
@@ -104,31 +105,41 @@ export default function Appbar() {
   if (user.userEnum === "KID") {
     return (
       <>
-        <Box sx={{ display: "flex"}} style = {{backgroundColor: "black"}}>
+        <Box sx={{ display: "flex" }} style={{ backgroundColor: "black" }}>
           <CssBaseline />
-          <AppBar position="fixed" open={open} style = {{backgroundImage: "url('https://img.freepik.com/free-vector/alien-planet-landscape-night-martian-surface_107791-14299.jpg?w=1380&t=st=1667753063~exp=1667753663~hmac=86005d23f15db216e624c171f51090a025cd8e001567db95f2799ff0bb671858')"}}
+          <AppBar
+            position="fixed"
+            open={open}
+            style={{
+              backgroundImage:
+                "url('https://img.freepik.com/free-vector/alien-planet-landscape-night-martian-surface_107791-14299.jpg?w=1380&t=st=1667753063~exp=1667753663~hmac=86005d23f15db216e624c171f51090a025cd8e001567db95f2799ff0bb671858')",
+            }}
           >
             <Toolbar>
               <Typography
                 variant="h4"
                 noWrap
                 component="div"
-                style={{ marginLeft: "40px", fontWeight: "1000px"}}
+                style={{ marginLeft: "40px", fontWeight: "1000px" }}
               >
                 EduCouch Kids
               </Typography>
               <div style={{ marginLeft: "auto" }}>
                 <Box sx={{ flexGrow: 0 }}>
-                  <div style={{ float: 'left', paddingRight: 10 }}>
+                  <div style={{ float: "left", paddingRight: 10 }}>
                     <Typography variant="body2">Name: {user.name}</Typography>
                     {user.userType === "INSTRUCTOR" && (
-                      <Typography variant="body2">Role: {user.userEnum}</Typography>
+                      <Typography variant="body2">
+                        Role: {user.userEnum}
+                      </Typography>
                     )}
                     {user.userType !== "INSTRUCTOR" && (
-                      <Typography variant="body2">Role: {user.userType}</Typography>
+                      <Typography variant="body2">
+                        Role: {user.userType}
+                      </Typography>
                     )}
                   </div>
-                  <div style={{ float: 'right' }}>
+                  <div style={{ float: "right" }}>
                     <Tooltip title="Open settings">
                       <IconButton
                         onClick={handleOpenUserMenu}
@@ -159,14 +170,27 @@ export default function Appbar() {
                         style={{ textDecoration: "none", color: "black" }}
                         onClick={handleCloseUserMenu}
                       >
-                        <MenuItem style={{ justifyContent: "center" }}>
+                        <MenuItem style={{ justifyContent: "left" }}>
                           <AccountCircleIcon color="disabled" />
                           &nbsp;
                           <Typography>Profile</Typography>
                         </MenuItem>
                       </Link>
+                      {user.userEnum === "KID" && (
+                        <Link
+                          to="/myPoints"
+                          style={{ textDecoration: "none", color: "black" }}
+                          onClick={handleCloseUserMenu}
+                        >
+                          <MenuItem style={{ justifyContent: "left" }}>
+                            <AccountBalanceWalletIcon color="disabled" />
+                            &nbsp;
+                            <Typography>My Wallet</Typography>
+                          </MenuItem>
+                        </Link>
+                      )}
                       <MenuItem
-                        style={{ justifyContent: "center" }}
+                        style={{ justifyContent: "left" }}
                         onClick={handleLogout}
                       >
                         <LogoutIcon color="disabled" />
@@ -182,43 +206,40 @@ export default function Appbar() {
               <div className="navbar-container">
                 <ul className={"nav-menu"}>
                   <li className="nav-item">
-                    <Link to="/home" className="nav-links">
-                    📰 Dashboard
-
+                    <Link to="/learnerHome" className="nav-links">
+                      📰 Dashboard
                     </Link>
                   </li>
-                  {user.userType == "LEARNER" &&
+                  {user.userType == "LEARNER" && (
                     <li className="nav-item">
                       <Link to="/myLearnerCoursesList" className="nav-links">
-                      📖 My Courses
+                        📖 My Courses
                       </Link>
                     </li>
-
-                  }
-                  {user.userType != "LEARNER" &&
+                  )}
+                  {user.userType != "LEARNER" && (
                     <li className="nav-item">
                       <Link to="/myTeachingCoursesList" className="nav-links">
                         My Teaching Courses
                       </Link>
                     </li>
+                  )}
 
-                  }
-
-                  {user.userType === "LEARNER" &&
+                  {user.userType === "LEARNER" && (
                     <li className="nav-item">
                       <Link to="/courseExplorer" className="nav-links">
-                      🔍 Course Explorer
+                        🔍 Course Explorer
                       </Link>
                     </li>
-                  }
+                  )}
 
-                  {user.userType === "LEARNER" &&
+                  {user.userType === "LEARNER" && (
                     <li className="nav-item">
                       <Link to="/learnerCalendar" className="nav-links">
-                      📅 My Calendar
+                        📅 My Calendar
                       </Link>
                     </li>
-                  }
+                  )}
 
                   {user.userType === "ORG_ADMIN" && (
                     <li className="nav-item">
@@ -229,7 +250,7 @@ export default function Appbar() {
                   )}
                   <li className="nav-item">
                     <Link to="/home" className="nav-links">
-                    📸 Social Media
+                      📸 Social Media
                     </Link>
                   </li>
                   {user.userType === "ORG_ADMIN" && (
@@ -241,7 +262,7 @@ export default function Appbar() {
                   )}
                   <li className="nav-item">
                     <Link to="/whiteboardHomepage" className="nav-links">
-                    💻 Whiteboard
+                      💻 Whiteboard
                     </Link>
                   </li>
                 </ul>
@@ -257,7 +278,12 @@ export default function Appbar() {
       <>
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
-          <AppBar position="fixed" open={open} style = {{backgroundImage: "linear-gradient(to right, #413C58, #A3C4BC)"}}
+          <AppBar
+            position="fixed"
+            open={open}
+            style={{
+              backgroundImage: "linear-gradient(to right, #413C58, #A3C4BC)",
+            }}
           >
             <Toolbar>
               <Typography
@@ -286,16 +312,20 @@ export default function Appbar() {
               </div> */}
               <div style={{ marginLeft: "auto" }}>
                 <Box sx={{ flexGrow: 0 }}>
-                  <div style={{ float: 'left', paddingRight: 10 }}>
+                  <div style={{ float: "left", paddingRight: 10 }}>
                     <Typography variant="body2">Name: {user.name}</Typography>
                     {user.userType === "INSTRUCTOR" && (
-                      <Typography variant="body2">Role: {user.userEnum}</Typography>
+                      <Typography variant="body2">
+                        Role: {user.userEnum}
+                      </Typography>
                     )}
                     {user.userType !== "INSTRUCTOR" && (
-                      <Typography variant="body2">Role: {user.userType}</Typography>
+                      <Typography variant="body2">
+                        Role: {user.userType}
+                      </Typography>
                     )}
                   </div>
-                  <div style={{ float: 'right' }}>
+                  <div style={{ float: "right" }}>
                     <Tooltip title="Open settings">
                       <IconButton
                         onClick={handleOpenUserMenu}
@@ -326,14 +356,38 @@ export default function Appbar() {
                         style={{ textDecoration: "none", color: "black" }}
                         onClick={handleCloseUserMenu}
                       >
-                        <MenuItem style={{ justifyContent: "center" }}>
+                        <MenuItem style={{ justifyContent: "left" }}>
                           <AccountCircleIcon color="disabled" />
                           &nbsp;
                           <Typography>Profile</Typography>
                         </MenuItem>
                       </Link>
+                      <Link
+                        to="/technicalSupport"
+                        style={{ textDecoration: "none", color: "black" }}
+                        onClick={handleCloseUserMenu}
+                      >
+                        <MenuItem style={{ justifyContent: "center" }}>
+                          <ReportProblemIcon color="disabled" />
+                          &nbsp;
+                          <Typography>Report</Typography>
+                        </MenuItem>
+                      </Link>
+                      {user.userEnum === "KID" && (
+                        <Link
+                          to="/myPoints"
+                          style={{ textDecoration: "none", color: "black" }}
+                          onClick={handleCloseUserMenu}
+                        >
+                          <MenuItem style={{ justifyContent: "left" }}>
+                            <AccountBalanceWalletIcon color="disabled" />
+                            &nbsp;
+                            <Typography>My Wallet</Typography>
+                          </MenuItem>
+                        </Link>
+                      )}
                       <MenuItem
-                        style={{ justifyContent: "center" }}
+                        style={{ justifyContent: "left" }}
                         onClick={handleLogout}
                       >
                         <LogoutIcon color="disabled" />
@@ -349,42 +403,40 @@ export default function Appbar() {
               <div className="navbar-container">
                 <ul className={"nav-menu"}>
                   <li className="nav-item">
-                    <Link to="/home" className="nav-links">
+                    <Link to="/learnerHome" className="nav-links">
                       Dashboard
                     </Link>
                   </li>
-                  {user.userType == "LEARNER" &&
+                  {user.userType == "LEARNER" && (
                     <li className="nav-item">
                       <Link to="/myLearnerCoursesList" className="nav-links">
                         My Courses
                       </Link>
                     </li>
-
-                  }
-                  {user.userType != "LEARNER" &&
+                  )}
+                  {user.userType != "LEARNER" && (
                     <li className="nav-item">
                       <Link to="/myTeachingCoursesList" className="nav-links">
                         My Teaching Courses
                       </Link>
                     </li>
+                  )}
 
-                  }
-
-                  {user.userType === "LEARNER" &&
+                  {user.userType === "LEARNER" && (
                     <li className="nav-item">
                       <Link to="/courseExplorer" className="nav-links">
                         Course Explorer
                       </Link>
                     </li>
-                  }
+                  )}
 
-                  {user.userType === "LEARNER" &&
+                  {user.userType === "LEARNER" && (
                     <li className="nav-item">
                       <Link to="/learnerCalendar" className="nav-links">
                         My Calendar
                       </Link>
                     </li>
-                  }
+                  )}
 
                   {user.userType === "ORG_ADMIN" && (
                     <li className="nav-item">
@@ -393,11 +445,23 @@ export default function Appbar() {
                       </Link>
                     </li>
                   )}
-                  <li className="nav-item">
-                    <Link to="/home" className="nav-links">
-                      Social Media
-                    </Link>
-                  </li>
+
+                  {user.userType === "INSTRUCTOR" && (
+                    <li className="nav-item">
+                      <Link to="/instructorReels" className="nav-links">
+                        Social Media
+                      </Link>
+                    </li>
+                  )}
+
+                  {user.userType === "LEARNER" && (
+                    <li className="nav-item">
+                      <Link to="/learnerReels" className="nav-links">
+                        Social Media
+                      </Link>
+                    </li>
+                  )}
+
                   {user.userType === "ORG_ADMIN" && (
                     <li className="nav-item">
                       <Link to="/adminDrawer" className="nav-links">
@@ -419,6 +483,4 @@ export default function Appbar() {
       </>
     );
   }
-
-
 }
