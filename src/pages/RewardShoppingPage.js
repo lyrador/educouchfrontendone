@@ -20,6 +20,7 @@ export default function RewardShoppingPage() {
         imaginary_i.item = selectedItem;
         imaginary_i.positionX = potentialX;
         imaginary_i.positionY = potentialY;
+        imaginary_i.imageUrl = selectedItem.imageUrl;
         setImaginaryItem(imaginary_i);
     }
 
