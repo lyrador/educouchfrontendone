@@ -68,7 +68,7 @@ export default function LearnerViewReelComponent(props) {
         setCurrentReel(result);
         console.log("learnerViewReelComponent fetched: ", result);
       });
-  }, [liked]);
+  }, [liked, props.newReelsFetched]);
 
   function handleLike() {
     fetch(
