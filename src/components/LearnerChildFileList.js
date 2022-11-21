@@ -43,19 +43,19 @@ function LearnerChildFileList() {
   const [folderList, setFolderList] = useState([]);
   const [attachmentList, setAttachmentList] = useState([]);
 
-  function changeFolderIdWrapper(num) {
-    console.log("Reach " + num);
-    fetch("http://localhost:8080/folder/getFolderByFolderId/" + num)
-      .then((res) => res.json())
-      .then((result) => {
-        var fol = result;
-        setFolderList(fol.childFolders);
-        setAttachmentList(fol.attachments);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }
+  // function changeFolderIdWrapper(num) {
+  //   console.log("Reach " + num);
+  //   fetch("http://localhost:8080/folder/getFolderByFolderId/" + num)
+  //     .then((res) => res.json())
+  //     .then((result) => {
+  //       var fol = result;
+  //       setFolderList(fol.childFolders);
+  //       setAttachmentList(fol.attachments);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err.message);
+  //     });
+  // }
 
   React.useEffect(() => {
     fetch("http://localhost:8080/folder/getFolderByFolderId/" + folderId)
@@ -68,7 +68,7 @@ function LearnerChildFileList() {
       .catch((err) => {
         console.log(err.message);
       });
-  }, []);
+  }, [folderId]);
 
   const refresh = () => {
     fetch("http://localhost:8080/folder/getFolderByFolderId/" + folderId)
@@ -104,7 +104,7 @@ function LearnerChildFileList() {
                 <TeachingFileComponent
                   folder={folder}
                   courseId={courseId}
-                  changeFolderIdWrapper={changeFolderIdWrapper}
+                  // changeFolderIdWrapper={changeFolderIdWrapper}
                   isLearner= {true}
                 ></TeachingFileComponent>
               ))}
