@@ -12,7 +12,6 @@ export default function LearnerReelsPage(props) {
   var reelIndex = 0;
   const [reels, setReels] = React.useState([]);
   const [currentReel, setCurrentReel] = React.useState();
-
   React.useEffect(() => {
     fetch("http://localhost:8080/reel/findReelsForLearner/" + learnerId)
       .then((res) => res.json())
@@ -22,11 +21,29 @@ export default function LearnerReelsPage(props) {
       });
   }, []);
 
+  function likeReel() {}
+
+  function unlikeReel() {}
+
+  function nextReel() {
+    //if current reel
+  }
+
+  function fetchMoreReels() {
+    fetch("http://localhost:8080/reel/findReelsForLearner/" + learnerId)
+      .then((res) => res.json())
+      .then((result) => {
+        setReels(result);
+        console.log("MORE REELS fetched: ", result);
+      });
+  }
+
+  function viewCourse() {}
 
   return (
     <>
       <h1> learner reels</h1>
-      <Carousel reelsProp={reels}/>
+      <Carousel reelsProp={reels} fetchMoreReels={ fetchMoreReels} />
     </>
   );
 }

@@ -27,8 +27,11 @@ const Carousel = (props) => {
       setCurrentIndex((prevState) => prevState + 1);
       console.log("viewed ", children[currentIndex].reelId);
       fetch(
-        "http://localhost:8080/reel/viewReel/" + children[currentIndex].reelId
-        + "/" + learnerId, {
+        "http://localhost:8080/reel/viewReel/" +
+          children[currentIndex].reelId +
+          "/" +
+          learnerId,
+        {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
         }
@@ -38,7 +41,29 @@ const Carousel = (props) => {
           console.log("successfully viewed reel: ", result);
         });
     }
+
+    if (currentIndex == length - 1) {
+      console.log("viewed ", children[currentIndex].reelId);
+      fetch(
+        "http://localhost:8080/reel/viewReel/" +
+          children[currentIndex].reelId +
+          "/" +
+          learnerId,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+        .then((res) => res.json())
+        .then((result) => {
+          console.log("successfully viewed reel: ", result);
+          setCurrentIndex(0);
+          props.fetchMoreReels();
+        })
+        .then(setRefresh(!refresh));
+    }
   };
+
   const prev = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prevState) => prevState - 1);
@@ -74,14 +99,14 @@ const Carousel = (props) => {
                 reelNumViews={reel.numViews}
                 video={reel.video}
                 reelCreator={reel.reelCreator.name}
-                refreshCallback={ refreshCallback}
+                refreshCallback={refreshCallback}
               />
             ))}
           </div>
         </div>
 
         {/* You can alwas change the content of the button to other things */}
-        {currentIndex < length - 1 && (
+        {currentIndex < length && (
           <button onClick={next} className="right-arrow">
             &gt;
           </button>
