@@ -43,6 +43,8 @@ export default function CreateReelPage(props) {
   const REELTITLE_LIMIT = 30;
   const REELCAPTION_LIMIT = 400;
 
+  const [courses, setCourses] = React.useState([]);
+  const [courseSelected, setCourseSelected] = React.useState("");
   const [reels, setReels] = React.useState([]);
   const [value, setValue] = React.useState(0);
   const [refresh, setRefresh] = React.useState(false);
@@ -91,7 +93,18 @@ export default function CreateReelPage(props) {
         setCurrentPage(result);
         console.log("setcurrentPage as: ", result);
         //console.log(JSON.stringify(result.pageQuiz))
-      });
+      })
+      .then(
+        fetch(
+          "http://localhost:8080/reel/getCoursesUnderInstructor/" + instructorId
+        )
+          .then((res) => res.json())
+          .then((result) => {
+            setCourses(result);
+            console.log("setCourses as: ", result);
+            //console.log(JSON.stringify(result.pageQuiz))
+          })
+      );
   }, [refresh]);
 
   const handleClickErrorSnackbar = () => {
@@ -142,10 +155,15 @@ export default function CreateReelPage(props) {
     setOpenUploadDialog(false);
   };
 
+  const handleSelectCourse = (e) => {
+    setCourseSelected(e.target.value);
+    console.log("selecting: ", e.target.value);
+  };
+
   const renderVideoImageHolder = () => {
     if (currentPage && currentPage.video) {
       return (
-        <div style={{ height: "200px" }}>
+        <div style={{ height: "500px" }}>
           <ReactPlayer
             className="video"
             width="100%"
@@ -243,23 +261,25 @@ export default function CreateReelPage(props) {
   };
 
   function handleSaveReel() {
-      const incompleteDTO = {
-        reelTitle: reelTitle.name,
-        reelCaption: reelCaption.name,
-        courseId: "",
-        instructorId: "",
-      };
-      console.log("body: ", incompleteDTO);
-      fetch("http://localhost:8080/reel/updateReel/" + reelId, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(incompleteDTO),
-      }).then(() => navigate(`/instructorReels`));
-      //       .then((response) => response.json())
-      //       .then((res) => {
-      //         console.log("called uploadVideoToReel: ", res);
-      //       });
-   
+    const incompleteDTO = {
+      reelTitle: reelTitle.name,
+      reelCaption: reelCaption.name,
+      courseId: courseSelected,
+      instructorId: "",
+    };
+    console.log("body: ", incompleteDTO + " , reelId: " + reelId);
+    fetch("http://localhost:8080/reel/updateReel/" + reelId, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(incompleteDTO),
+    })
+      .then((res) => res.json())
+      .then((response) => console.log("saved: ", response))
+      .then(() => navigate(`/instructorReels`));
+    //       .then((response) => response.json())
+    //       .then((res) => {
+    //         console.log("called uploadVideoToReel: ", res);
+    //       });
   }
 
   function handleSubmitReel() {
@@ -269,13 +289,25 @@ export default function CreateReelPage(props) {
       reelTitle.name &&
       reelCaption.name
     ) {
+      const incompleteDTO = {
+        reelTitle: reelTitle.name,
+        reelCaption: reelCaption.name,
+        courseId: courseSelected,
+        instructorId: "",
+      };
+      console.log("body: ", incompleteDTO);
       //do submit stuff
       fetch("http://localhost:8080/reel/submitReel/" + reelId, {
-      }).then((res) => res.json())
-      .then((result) => {
-        console.log("successfully saved reel: ", result);
-        //console.log(JSON.stringify(result.pageQuiz))
-      }).then(() => navigate(`/instructorReels`));
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(incompleteDTO),
+      })
+        .then((res) => res.json())
+        .then((result) => {
+          console.log("successfully saved reel: ", result);
+          //console.log(JSON.stringify(result.pageQuiz))
+        })
+        .then(() => navigate(`/instructorReels`));
     } else {
       console.log("handleSaveReel validation failed");
       if (!currentPage.video) {
@@ -376,6 +408,26 @@ export default function CreateReelPage(props) {
                   flex: 1,
                 }}
               >
+                <p styl={{ color: "grey" }}>Select Course Tag</p>
+                <FormControl style={{ width: "70%" }}>
+                  <Select
+                    style={{
+                      width: "100%",
+                      fontSize: 16,
+                      marginBottom: "20px",
+                      backgroundColor: "ButtonFace",
+                    }}
+                    onChange={handleSelectCourse}
+                    value={courseSelected}
+                  >
+                    {courses.map((item) => (
+                      <MenuItem key={item.courseCode} value={item.courseId}>
+                        {item.courseCode}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <br></br>
                 <TextField
                   multiline
                   inputProps={{
@@ -415,7 +467,7 @@ export default function CreateReelPage(props) {
                 >
                   Upload Video
                 </Button>
-                <Paper elevation={3} style={{ width: "70%", height: "100%" }}>
+                <Paper elevation={3} style={{ width: "70%", height: "60%" }}>
                   <div style={{ width: "100%", height: "100%" }}>
                     {renderVideoImageHolder()}
                   </div>
