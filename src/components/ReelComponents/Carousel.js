@@ -7,6 +7,9 @@ import { useAuth } from "../../context/AuthProvider";
 
 const Carousel = (props) => {
   const auth = useAuth();
+  const user = auth.user;
+  const learnerId = user.userId;
+  const [children, setChildren] = React.useState([]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [length, setLength] = useState(0);
