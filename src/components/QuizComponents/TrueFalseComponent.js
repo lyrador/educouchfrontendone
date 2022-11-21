@@ -38,22 +38,6 @@ export default function TrueFalseComponent(props) {
   return (
     <Grid>
       <div>
-        <b>Learner Input</b>
-      </div>
-      <Grid container direction={"row"} alignItems={"center"}>
-        <p>False</p>
-        <Switch
-          checked={trueFalseValue}
-          onChange={handleChange}
-          inputProps={{ "aria-label": "controlled" }}
-        />
-        <p>True</p>
-
-        <div></div>
-      </Grid>
-      <br></br>
-      <br></br>
-      <div>
         <b>Select Correct Option</b>
       </div>
       <Grid container direction={"row"} alignItems={"center"} marginBottom={"35px"}>

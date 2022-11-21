@@ -208,30 +208,32 @@ export default function InClassGamesList(props) {
           console.log(err);
           handleClickErrorSnackbar();
         }
+      } else {
+        try {
+          var pollTitle = newGameTitle; 
+          var pollDescription = newGameDescription; 
+          var newPoll = { pollTitle, pollDescription};  
+          const response = await fetch(
+            "http://localhost:8080/poll/classRun/" + selectedClassRun.id + "/poll/",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(newPoll),
+            }
+          );
+          console.log(response);
+          if (response.ok == false) {
+            console.log("Error");
+            handleClickErrorSnackbar();
+          } else {
+            console.log("New Poll created Successfully!");
+            handleClickSnackbar();
+          }
+        } catch (err) {
+          console.log(err);
+          handleClickErrorSnackbar();
+        }
       }
-      // else {
-      //   try {
-      //     const response = await fetch(
-      //       "http://localhost:8080/poll/classRun/" + selectedClassRun.classRunId + "/poll/",
-      //       {
-      //         method: "POST",
-      //         headers: { "Content-Type": "application/json" },
-      //         body: JSON.stringify(newGame),
-      //       }
-      //     );
-      //     console.log(response);
-      //     if (response.ok == false) {
-      //       console.log("Error");
-      //       handleClickErrorSnackbar();
-      //     } else {
-      //       console.log("New Class Event created Successfully!");
-      //       handleClickSnackbar();
-      //     }
-      //   } catch (err) {
-      //     console.log(err);
-      //     handleClickErrorSnackbar();
-      //   }
-      // }
       setRefreshPage(true);
       handleCloseAddGame();
     }
@@ -370,15 +372,7 @@ export default function InClassGamesList(props) {
                 In-Class
               </LinkMaterial>
             </Link>
-            {/* <Link
-              to={`${classEventsPath}`}
-              state={{ classRunName: classRunNameDup }}
-              style={{ textDecoration: "none", color: "grey" }}
-            >
-              <LinkMaterial underline="hover" color="inherit">
-                {classRunName}
-              </LinkMaterial>
-            </Link> */}
+   
           </Breadcrumbs>
           <div style={{ justifyContent: "center" }}>
             <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>

@@ -86,6 +86,7 @@ import InstructorViewReel from "./components/ReelComponents/InstructorViewReel";
 import InClassGamesList from "./components/InClassGamesList";
 import TriviaCreation from "./components/TriviaCreation";
 import TriviaHosting from "./components/TriviaHosting";
+import PollCreation from "./components/PollCreation";
 
 function App() {
   return (
@@ -618,7 +619,7 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <InClassGamesList />
+                  <PollCreation />
                 </RequireAuth>
               }
             />

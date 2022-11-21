@@ -80,7 +80,7 @@ function LearnerInteractiveBook(props) {
     //paths
     const location = useLocation();
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
-    // console.log(booksPath)
+    console.log(booksPath)
     const courseId = location.pathname.split("/")[2];
     const bookId = location.pathname.split("/")[4];
 

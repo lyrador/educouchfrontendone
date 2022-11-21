@@ -32,6 +32,7 @@ import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsCom
 import { Construction } from "@mui/icons-material";
 import { omitTriggerPropKeys } from "rsuite/esm/Picker";
 import MuiAlert from "@mui/material/Alert";
+import InteractiveQuizQuestionComponent from "../components/QuizComponents/InteractiveQuizQuestionComponent";
 
 // Alert = React.forwardRef(function Alert(props, ref) {
 //   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -347,7 +348,7 @@ export default function CreateInteractiveQuizForm(props) {
           </Grid>
           {questionList}
           <Paper elevation={3} style={{ padding: 30, marginTop: 50 }}>
-            <QuizQuestionComponent
+            <InteractiveQuizQuestionComponent
               textFieldProp={textField}
               setTextFieldProp={setTextField}
               questionProp={question}
