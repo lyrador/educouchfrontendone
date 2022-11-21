@@ -138,18 +138,20 @@ export default function InteractiveQuizAttemptDisplay(props) {
     // var timeLimitRemaining = stopTimer();
     // quizAttempt.timeLimitRemaining = timeLimitRemaining;
     //call submitQuizAttempt api (api calls update quizAttempt, then update state to submitted)
-    fetch(
-      "http://localhost:8080/quizAttempt/submitQuizAttempt/" +
-        quizAttempt.quizAttemptId,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(quizAttempt),
-      }
-    )
-      .then((res) => res.json())
-      .then(console.log("submitted: ", quizAttempt))
-      .then(handleExit());
+    // fetch(
+    //   "http://localhost:8080/quizAttempt/submitQuizAttempt/" +
+    //     quizAttempt.quizAttemptId,
+    //   {
+    //     method: "PUT",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(quizAttempt),
+    //   }
+    // )
+    //   .then((res) => res.json())
+    //   .then(console.log("submitted: ", quizAttempt))
+    //   .then(handleExit());
+
+    
   }
 
   function handleSaveQuizAttempt() {
