@@ -30,6 +30,7 @@ import { useState } from "react";
 import ReactPlayer from "react-player";
 import UploadService from "../services/UploadFilesService";
 import { ConstructionOutlined } from "@mui/icons-material";
+import { FormControl, MenuItem, Select } from "@material-ui/core";
 
 export default function CreateReelPage(props) {
   const auth = useAuth();
