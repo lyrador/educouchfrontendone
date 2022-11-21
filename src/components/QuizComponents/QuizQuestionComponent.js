@@ -91,6 +91,14 @@ export default function QuizQuestionComponent(props) {
             editQuestionMaxPointsProp={props.editQuestionMaxPointsProp}
           />
         </Grid>
+
+        <Button
+          variant="contained"
+          color="inherit"
+          onClick={() => props.removeQuestionProp(props.questionProp.localid)}
+        >
+          Remove Question
+        </Button>
       </Grid>
     </Grid>
   );
