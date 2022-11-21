@@ -63,7 +63,6 @@ export default function InstructorReelsPage(props) {
     };
   }
 
-  //not tested
   function handleCreateReel() {
     fetch("http://localhost:8080/reel/createReel", {
       method: "POST",
@@ -93,7 +92,6 @@ export default function InstructorReelsPage(props) {
   }
 
   React.useEffect(() => {
-    console.log(user);
     fetch(
       "http://localhost:8080/reel/getAllReelsByInstructorId/" + instructorId
     )
