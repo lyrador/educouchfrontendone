@@ -40,6 +40,7 @@ export default function TriviaHosting(props) {
 
     const [totalScoresHashmap, setTotalScoresHashmap] = useState(new Map());
     var totalScoresArray = [];
+    var correctOptionNumber = 0
     const [questionCounter, setQuestionCounter] = useState(1);
 
     const joinRoom = () => {
@@ -172,23 +173,14 @@ export default function TriviaHosting(props) {
         });
     }
 
-    const sendMessage = async () => {
-        if (currentMessage != "") {
-            const messageData = {
-                room: room,
-                author: username,
-                message: currentMessage,
-            }
-        }
-    }
-
     const sendStartGame = () => {
         console.log("SEND START GAME")
         const data = {
             room: room,
             numOfQuestions: questions.length,
             questionTime: currentQuestionTimeLimit,
-            questionNumber: questionCounter
+            questionNumber: questionCounter,
+            questionType: currentQuestionType
         }
         socket.emit("start_game", data)
         setQuestionCounter(questionCounter + 1)
@@ -721,7 +713,7 @@ export default function TriviaHosting(props) {
             }
             {showScoreboard == true && <div style={{ backgroundColor: "dodgerblue", height: "100vh", width: "100%", alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", flexDirection: "column" }}>
                 <div style={{ backgroundColor: "#2266e3", height: "20%", width: "100%", padding: "1% 0" }}>
-                    <Typography variant="h4">Scoreboard</Typography>
+                    <Typography variant="h1" style={{ marginTop: "2%" }}>Scoreboard</Typography>
                     <Button className="btn-upload" color="secondary" variant="contained" component="span"
                         style={{ float: "right", marginLeft: "auto", right: "3%", marginTop: "0.5%", position: "absolute" }}
                         onClick={handleShowWaitingRoomCountdown}
@@ -743,7 +735,7 @@ export default function TriviaHosting(props) {
             }
             {showLeaderboard == true && <div style={{ backgroundColor: "dodgerblue", height: "100vh", width: "100%", alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", flexDirection: "column" }}>
                 <div style={{ backgroundColor: "#2266e3", height: "20%", width: "100%", padding: "1% 0" }}>
-                    <Typography variant="h2">Leaderboard</Typography>
+                    <Typography variant="h1" style={{ marginTop: "2%" }}>Leaderboard</Typography>
                     <div style={{ float: "right", marginLeft: "auto", right: "3%", position: "absolute" }}>
                         <Button className="btn-upload" color="primary" variant="contained" component="span"
                             onClick={handleGoBackToLobby}
