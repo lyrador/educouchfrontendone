@@ -5,22 +5,24 @@ import ReelCardItem from "./ReelCardItem";
 import ViewReelComponent from "./ViewReelComponent";
 
 const Carousel = (props) => {
-  const children = props.reels;
+  const [children,setChildren] = React.useState([])
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [length, setLength] = useState(children.length);
+  const [length, setLength] = useState(0);
 
   // Set the length to match current children from props
   useEffect(() => {
-    console.log("here's the children ", children);
-    setLength(children.length);
-  }, [children]);
+    console.log("Carousel received props: ", props.reelsProp);
+    setLength(props.reelsProp.length);
+    setChildren(props.reelsProp)
+}, [props.reelsProp]);
 
   const next = () => {
     if (currentIndex < length - 1) {
       setCurrentIndex((prevState) => prevState + 1);
     }
   };
+
 
   const prev = () => {
     if (currentIndex > 0) {

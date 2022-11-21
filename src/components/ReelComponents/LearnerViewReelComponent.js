@@ -1,5 +1,5 @@
 import { Button, Divider, Paper, TextField } from "@material-ui/core";
-import { Breadcrumbs, Grid, Link } from "@mui/material";
+import { Breadcrumbs, Grid, IconButton, Link } from "@mui/material";
 import { useEffect } from "react";
 import ReactPlayer from "react-player";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -40,6 +40,11 @@ export default function LearnerViewReelComponent(props) {
       props.reelNumViews
     );
   }, []);
+
+  function handleView() {}
+
+  function handleLike() {}
+
   return (
     <Grid
       container
@@ -101,8 +106,13 @@ export default function LearnerViewReelComponent(props) {
                   }}
                   className="cards-item-text"
                 >
-                  <FavoriteIcon style={{ color: "red" }} /> {props.reelNumLikes}{" "}
-                  likes
+                  <IconButton
+                    aria-label="settings"
+                    onClick={() => handleLike()}
+                  >
+                    <FavoriteIcon style={{ color: "red" }} />
+                    &nbsp;{props.reelNumLikes} likes
+                  </IconButton>
                 </p>
                 <p
                   style={{
@@ -114,7 +124,13 @@ export default function LearnerViewReelComponent(props) {
                   }}
                   className="cards-item-text"
                 >
-                  <VisibilityIcon /> {props.reelNumViews} views
+                  <IconButton
+                    aria-label="settings"
+                    onClick={() => handleView()}
+                  >
+                    <VisibilityIcon></VisibilityIcon>&nbsp;{props.reelNumViews}{" "}
+                    views
+                  </IconButton>
                 </p>
               </div>
 

@@ -12,14 +12,12 @@ export default function LearnerReelsPage(props) {
   var reelIndex = 0;
   const [reels, setReels] = React.useState([]);
   const [currentReel, setCurrentReel] = React.useState();
-  const array = React.useEffect(() => {
+
+  React.useEffect(() => {
     fetch("http://localhost:8080/reel/findReelsForLearner/" + learnerId)
       .then((res) => res.json())
       .then((result) => {
-        for (var i = 0; i < result.length; i++) {
-          reels.push(result[i]);
-        }
-        setReels(reels);
+        setReels(result);
         console.log("reels fetched: ", result);
       });
   }, []);
@@ -41,8 +39,7 @@ export default function LearnerReelsPage(props) {
   return (
     <>
       <h1> learner reels</h1>
-      <Carousel reels={reels}>
-      </Carousel>
+      <Carousel reelsProp={reels}/>
     </>
   );
 }
