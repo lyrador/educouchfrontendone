@@ -5,11 +5,39 @@ import { Typography } from "@material-ui/core";
 import { useState } from "react";
 
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Grid, TextField } from "@mui/material";
+import {
+  Button,
+  Grid,
+  TextField,
+  LinearProgress,
+  Box,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material";
 
 import { useAuth } from "../context/AuthProvider";
 import TechnicalSupportRequestDrawer from "./TechnicalSupportRequestDrawer";
+import UploadFilesService from "../services/UploadFilesService";
 
+const theme = createTheme({
+  components: {
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: {
+          height: 15,
+          borderRadius: 5,
+        },
+        colorPrimary: {
+          backgroundColor: "#EEEEEE",
+        },
+        bar: {
+          borderRadius: 5,
+          backgroundColor: "#1a90ff",
+        },
+      },
+    },
+  },
+});
 export default function CreateTechnicalSupportRequest(props) {
   React.useEffect(() => {}, []);
 
@@ -66,6 +94,7 @@ export default function CreateTechnicalSupportRequest(props) {
       const newRequest = {
         requestTitle: requestTitle,
         requestDescription: requestDescription,
+        imageUrl: imageUrl,
         requestStatus: "PENDING",
         createdByUserId,
         createdByUserName,
@@ -89,6 +118,40 @@ export default function CreateTechnicalSupportRequest(props) {
       navigate(`${location}/myRequests`);
     }
   }
+
+  // image upload
+  const [imageUrl, setImageUrl] = useState("");
+  const [previewImage, setPreviewImage] = useState(
+    "https://www.darren-young.com/wp-content/uploads/2015/04/default-placeholder.png"
+  );
+  const [currentFile, setCurrentFile] = useState(undefined);
+  const [progress, setProgress] = useState(0);
+
+  // selecting file
+  const selectFile = (event) => {
+    setCurrentFile(event.target.files[0]);
+    setPreviewImage(URL.createObjectURL(event.target.files[0]));
+    setProgress(0);
+  };
+
+  const uploadImage = () => {
+    setProgress(0);
+    UploadFilesService.upload(currentFile, (event) => {
+      setProgress(Math.round((100 * event.loaded) / event.total));
+    })
+      .then((response) => {
+        setImageUrl(response.data.fileURL);
+      })
+      .catch((err) => {
+        setProgress(0);
+        setCurrentFile(undefined);
+      });
+  };
+
+  const openInNewTab = (url) => {
+    const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+    if (newWindow) newWindow.opener = null;
+  };
 
   return (
     <div>
@@ -143,6 +206,66 @@ export default function CreateTechnicalSupportRequest(props) {
                   value={requestDescription}
                   onChange={(e) => setRequestDescription(e.target.value)}
                 />
+                {previewImage && (
+                  <div>
+                    <center>
+                      <img
+                        className="preview my20"
+                        src={previewImage}
+                        alt=""
+                        style={{ height: "200px", width: "200px" }}
+                        onClick={() => {
+                          openInNewTab(previewImage);
+                        }}
+                      />
+                    </center>
+                  </div>
+                )}
+                {currentFile && (
+                  <Box className="my20" display="flex" alignItems="center">
+                    <Box width="100%" mr={1}>
+                      <ThemeProvider theme={theme}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={progress}
+                        />
+                      </ThemeProvider>
+                    </Box>
+                    <Box minWidth={35}>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                      >{`${progress}%`}</Typography>
+                    </Box>
+                  </Box>
+                )}
+                <label htmlFor="btn-upload">
+                  <input
+                    id="btn-upload"
+                    name="btn-upload"
+                    style={{ display: "none" }}
+                    type="file"
+                    accept="image/*"
+                    onChange={selectFile}
+                  />
+                  <Button
+                    className="btn-choose"
+                    variant="outlined"
+                    component="span"
+                  >
+                    Choose Screenshot
+                  </Button>
+                </label>
+                <Button
+                  className="btn-upload"
+                  color="primary"
+                  variant="contained"
+                  component="span"
+                  disabled={!currentFile}
+                  onClick={uploadImage}
+                >
+                  Upload
+                </Button>
               </Paper>
 
               <Grid

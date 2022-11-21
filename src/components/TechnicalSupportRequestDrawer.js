@@ -25,6 +25,16 @@ function TechnicalSupportRequestDrawer() {
       <div className="drawerContainer">
         <Link
           to={{
+            pathname: `${location}`,
+          }}
+          style={{ textDecoration: "none", color: "black" }}
+        >
+          <ListItemButton>
+            <ListItemText primary="Home" />
+          </ListItemButton>
+        </Link>
+        <Link
+          to={{
             pathname: `${location}/myRequests`,
           }}
           style={{ textDecoration: "none", color: "black" }}
