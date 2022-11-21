@@ -35,7 +35,7 @@ const Carousel = (props) => {
       )
         .then((res) => res.json())
         .then((result) => {
-          console.log("successfully liked reel: ", result);
+          console.log("successfully viewed reel: ", result);
         });
     }
   };
@@ -45,6 +45,10 @@ const Carousel = (props) => {
       setRefresh(!refresh);
     }
   };
+
+  function refreshCallback() {
+    setRefresh(!refresh);
+  }
 
   return (
     <div className="carousel-container">
@@ -70,6 +74,7 @@ const Carousel = (props) => {
                 reelNumViews={reel.numViews}
                 video={reel.video}
                 reelCreator={reel.reelCreator.name}
+                refreshCallback={ refreshCallback}
               />
             ))}
           </div>

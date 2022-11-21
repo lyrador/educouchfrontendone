@@ -22,19 +22,6 @@ export default function LearnerReelsPage(props) {
       });
   }, []);
 
-  function likeReel() {}
-
-  function unlikeReel() {}
-
-  function nextReel() {
-    //if current reel
-  }
-
-  function fetchMoreReels() {
-    //append fetched reels into current reel array
-  }
-
-  function viewCourse() {}
 
   return (
     <>
