@@ -19,7 +19,72 @@ import correct from "../assets/correct.png";
 import wrong from "../assets/wrong.png";
 import sofarope from "../assets/sofaropefinal.gif";
 
+import io from "socket.io-client";
+
+const socket = io.connect("http://localhost:3001")
+
 export default function TriviaHosting(props) {
+
+    const [username, setUsername] = useState("hoster")
+    const [room, setRoom] = useState("T12345");
+
+    const [currentMessage, setCurrentMessage] = useState("")
+    const players = [];
+    const [playersArray, setPlayersArray] = useState([])
+    const playersQuestionScores = [];
+    const [playersQuestionScoresArray, setPlayersQuestionScoresArray] = useState([])
+
+    const joinRoom = () => {
+        socket.emit("join_room_admin", room)
+    }
+
+    React.useEffect(() => {
+        joinRoom()
+    }, [])
+
+    React.useEffect(() => {
+        socket.on("new_player_joined", (data) => {
+            console.log(data)
+            players.push(data)
+            setPlayersArray(JSON.parse(JSON.stringify(players)))
+        })
+        socket.on("receive_response", (data) => {
+            console.log(data)
+            if (yellowCorrectAnswer && data.optionNumber == 1) {
+                //calc score
+            }
+            const questionScoreData = {
+                author: username,
+                score: data,
+                optionNumber: data.optionNumber
+            }
+            playersQuestionScores.push(data)
+            setPlayersQuestionScoresArray(JSON.parse(JSON.stringify(playersQuestionScores)))
+        })
+    }, [socket])
+
+    const handleScoreSorting = () => {
+
+    };
+
+    const sendMessage = async () => {
+        if (currentMessage != "") {
+            const messageData = {
+                room: room,
+                author: username,
+                message: currentMessage,
+            }
+        }
+    }
+
+
+    const sendStartGame = () => {
+        const data = {
+            room: room,
+            numOfQuestions: questions.length
+        }
+        socket.emit("start_game", data)
+    };
 
     //colors
     const yellowColor = "#e4990c"
@@ -94,12 +159,14 @@ export default function TriviaHosting(props) {
         console.log("SHOW QUESTION")
         setShowWaitingRoomCountdown(false)
         setStartGame(true)
+        sendStartGame()
     };
 
     const handleShowCorrectAnswer = () => {
         setTimer(0)
         console.log("SHOW CORRECT ANSWER")
         setShowCorrectAnswer(true)
+        handleScoreSorting()
     };
 
     const handleShowScoreboard = () => {
@@ -260,9 +327,17 @@ export default function TriviaHosting(props) {
                         >
                             Start
                         </Button>
+                        <Button className="btn-upload" color="secondary" variant="contained" component="span"
+                            style={{ float: "right", marginLeft: "auto", right: "15%", marginTop: "0.5%", position: "absolute" }}
+                            onClick={sendStartGame}
+                        >
+                            Test Send Start Game
+                        </Button>
                     </div>
                     <div>
-                        <Typography variant="h3">Waryl</Typography>
+                        {playersArray.map((player) => (
+                            <Typography variant="h3">{player.author}</Typography>
+                        ))}
                     </div>
                 </div>
             </div >
@@ -471,7 +546,9 @@ export default function TriviaHosting(props) {
                 </div>
                 <div style={{ backgroundColor: "dodgerblue", height: "80%", width: "100%", padding: "2%" }}>
                     <div style={{ alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", paddingBottom: "3%" }}>
-                        <Typography variant="h3">Waryl</Typography>
+                        {players.map((player) => (
+                            <Typography variant="h3">{player.author}</Typography>
+                        ))}
                     </div>
                 </div>
             </div >
