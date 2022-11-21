@@ -3,30 +3,43 @@ import "./carousel.css";
 import LearnerViewReelComponent from "./LearnerViewReelComponent";
 import ReelCardItem from "./ReelCardItem";
 import ViewReelComponent from "./ViewReelComponent";
+import { useAuth } from "../../context/AuthProvider";
 
 const Carousel = (props) => {
-  const [children,setChildren] = React.useState([])
+  const auth = useAuth();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [length, setLength] = useState(0);
+  const [refresh, setRefresh] = useState(false);
 
   // Set the length to match current children from props
   useEffect(() => {
     console.log("Carousel received props: ", props.reelsProp);
     setLength(props.reelsProp.length);
-    setChildren(props.reelsProp)
-}, [props.reelsProp]);
+    setChildren(props.reelsProp);
+  }, [props.reelsProp, refresh]);
 
   const next = () => {
     if (currentIndex < length - 1) {
       setCurrentIndex((prevState) => prevState + 1);
+      console.log("viewed ", children[currentIndex].reelId);
+      fetch(
+        "http://localhost:8080/reel/viewReel/" + children[currentIndex].reelId
+        + "/" + learnerId, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+        .then((res) => res.json())
+        .then((result) => {
+          console.log("successfully liked reel: ", result);
+        });
     }
   };
-
-
   const prev = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prevState) => prevState - 1);
+      setRefresh(!refresh);
     }
   };
 

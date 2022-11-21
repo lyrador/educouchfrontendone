@@ -37,10 +37,10 @@ export default function InstructorViewReel(props) {
   const [courseSelected, setCourseSelected] = React.useState("");
   const [reelId, setReelId] = useState(location.state.reelId);
   const [reelTitle, setReelTitle] = useState({
-    name: "",
+    name: " ",
   });
   const [reelCaption, setReelCaption] = useState({
-    name: "",
+    name: " ",
   });
   const [reelNumLikes, setReelNumLikes] = useState(location.state.reelNumLikes);
   const [reelNumViews, setReelNumViews] = useState(location.state.reelNumViews);

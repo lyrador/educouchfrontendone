@@ -1,6 +1,6 @@
 import { Button, Divider, Paper, TextField } from "@material-ui/core";
 import { Breadcrumbs, Grid, IconButton, Link } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 import { useLocation, useNavigate } from "react-router-dom";
 import LinkMaterial from "@mui/material/Link";
@@ -10,6 +10,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export default function LearnerViewReelComponent(props) {
   const location = useLocation();
+  const [currentReel, setCurrentReel] = useState();
 
   const renderVideoImageHolder = () => {
     return (
@@ -34,14 +35,13 @@ export default function LearnerViewReelComponent(props) {
   };
 
   useEffect(() => {
-    console.log(
-      "numLikes: ",
-      props.reelNumLikes + " numViews: ",
-      props.reelNumViews
-    );
+    fetch("http://localhost:8080/reel/getReel/" + props.reelId)
+      .then((res) => res.json())
+      .then((result) => {
+        setCurrentReel(result);
+        console.log("learnerViewReelComponent fetched: ", result);
+      });
   }, []);
-
-  function handleView() {}
 
   function handleLike() {}
 
@@ -68,7 +68,6 @@ export default function LearnerViewReelComponent(props) {
       >
         Reels
       </h1>
-
       <Box sx={{ width: "100%" }}>
         <div style={{ paddingLeft: "3%" }}>
           <Grid
@@ -124,10 +123,7 @@ export default function LearnerViewReelComponent(props) {
                   }}
                   className="cards-item-text"
                 >
-                  <IconButton
-                    aria-label="settings"
-                    onClick={() => handleView()}
-                  >
+                  <IconButton aria-label="settings">
                     <VisibilityIcon></VisibilityIcon>&nbsp;{props.reelNumViews}{" "}
                     views
                   </IconButton>
