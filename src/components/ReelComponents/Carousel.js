@@ -33,16 +33,11 @@ const Carousel = (props) => {
     fetch("http://localhost:8080/reel/findReelsForLearner/" + learnerId)
       .then((res) => res.json())
       .then((result) => {
-        // const tempArray = [...children];
-        // for (var i = 0; i < result.length; i++) {
-        //   tempArray.push(result[i]);
-        // }
-        // console.log("merged array: ", tempArray);
-        // setChildren(tempArray);
         setLength(result.length);
         setChildren(result);
         console.log("MORE REELS fetched: ", result);
       })
+      .then(setChildren({ ...children }))
       // .then(setCurrentIndex((prevState) => prevState + 1));
       .then(setNewReelsFetched(!newReelsFetched))
       .then(setCurrentIndex(0));
@@ -114,20 +109,37 @@ const Carousel = (props) => {
             className="carousel-content"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
-            {children.map((reel) => (
-              <LearnerViewReelComponent
-                reelId={reel.reelId}
-                reelTitle={reel.reelTitle}
-                reelCaption={reel.reelCaption}
-                reelStatusEnum={reel.reelApprovalStatusEnum}
-                reelNumLikes={reel.numLikes}
-                reelNumViews={reel.numViews}
-                video={reel.video}
-                reelCreator={reel.reelCreator.name}
-                refreshCallback={refreshCallback}
-                newReelsFetched={newReelsFetched}
-              />
-            ))}
+            {children.length > 0 ? (
+              children.map((reel) => (
+                <LearnerViewReelComponent
+                  reelId={reel.reelId}
+                  reelTitle={reel.reelTitle}
+                  reelCaption={reel.reelCaption}
+                  reelStatusEnum={reel.reelApprovalStatusEnum}
+                  reelNumLikes={reel.numLikes}
+                  reelNumViews={reel.numViews}
+                  video={reel.video}
+                  reelCreator={reel.reelCreator.name}
+                  refreshCallback={refreshCallback}
+                  newReelsFetched={newReelsFetched}
+                />
+              ))
+            ) : (
+              <h1
+                style={{
+                  backgroundImage:
+                    "linear-gradient(to right, #FF8300, #A3C4BC)",
+                  color: "white",
+                  padding: "5px",
+                  width: "60%",
+                  borderRadius: "10px",
+                  marginBottom: "10px",
+                  marginTop: "300px",
+                }}
+              >
+                Sorry we ran out of reels!
+              </h1>
+            )}
           </div>
         </div>
 
