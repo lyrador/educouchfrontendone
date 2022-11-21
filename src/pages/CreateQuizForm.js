@@ -29,7 +29,7 @@ import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComp
 import SettingsIcon from "@mui/icons-material/Settings";
 import AddIcon from "@mui/icons-material/Add";
 import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsComponent";
-import { Construction } from "@mui/icons-material";
+import QuestionBankSidebar from "../components/QuestionBankSidebar";
 
 export default function CreateQuizForm(props) {
   const location = useLocation();
@@ -301,6 +301,39 @@ export default function CreateQuizForm(props) {
     navigate(`${assessmentsPath}`);
   };
 
+  const handleAddToQuiz=(parsedQuestion) =>{
+    var newQuestion = {...parsedQuestion}
+    if(newQuestion.questionType ==="MCQ") {
+      newQuestion.questionType = "mcq"
+    }
+    else if(newQuestion.questionType ==="OPEN_ENDED") {
+      newQuestion.questionType = "shortAnswer"
+    }
+    else {
+      newQuestion.questionType= "trueFalse"
+    }
+    console.log("here is the question", newQuestion)
+
+    const options = []
+    for(var i=0; i<newQuestion.options.length; i++) {
+      options.push(newQuestion.options[i].optionContent)
+    }
+    newQuestion.options = options;
+    setQuestionCounter(questionCounter + 1);
+    currentQuiz.questionCounter = questionCounter;
+    const question = {
+      localid: "question" + questionCounter,
+      questionTitle: "Untitled Question",
+      questionType: newQuestion.questionType,
+      questionContent: newQuestion.questionContent,
+      questionHint: newQuestion.questionHint,
+      questionMaxPoints: 0.0,
+      options: newQuestion.options,
+      correctOption: newQuestion.correctOption.optionContent,
+    };
+    console.log(question)
+    setFormQuestions([...formQuestions, question]);
+  }
   return (
     <Grid container spacing={0}>
       <Snackbar
@@ -320,7 +353,7 @@ export default function CreateQuizForm(props) {
       <Grid item xs={2}>
         <TeachingCoursesDrawer></TeachingCoursesDrawer>
       </Grid>
-      <Grid item xs={10}>
+      <Grid item xs={8}>
         <Breadcrumbs aria-label="breadcrumb">
           <Link
             to={`${assessmentsPath}`}
@@ -359,7 +392,7 @@ export default function CreateQuizForm(props) {
           </Link>
         </Breadcrumbs>
 
-        <Grid item width={"80%"}>
+        <Grid item width={"95%"}>
           <Grid
             container
             direction={"row"}
@@ -457,6 +490,13 @@ export default function CreateQuizForm(props) {
           </Grid>
         </Grid>
       </Grid>
+
+      <Grid item xs={2} backgroundColor="red" style={{ padding: "10px" }}>
+        <QuestionBankSidebar
+        handleAddToQuiz={handleAddToQuiz}
+        courseId={courseId}
+        ></QuestionBankSidebar>
+        </Grid>
     </Grid>
   );
 }
