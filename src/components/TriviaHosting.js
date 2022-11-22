@@ -19,7 +19,175 @@ import correct from "../assets/correct.png";
 import wrong from "../assets/wrong.png";
 import sofarope from "../assets/sofaropefinal.gif";
 
+import io from "socket.io-client";
+
+const socket = io.connect("http://localhost:3001")
+
 export default function TriviaHosting(props) {
+
+    let lobbyMusic = new Audio("/Bakery.mp3")
+
+    const location = useLocation();
+    const inClassPath = location.pathname.split("/").slice(0, 4).join("/");
+
+    const [username, setUsername] = useState("hoster")
+    const [room, setRoom] = useState("T" + (Math.floor(Math.random() * (99999 - 10000) + 10000)));
+
+    const [currentMessage, setCurrentMessage] = useState("")
+    var players = [];
+    const [playersArray, setPlayersArray] = useState([])
+    var playersQuestionScores = [];
+    const [playersTimeSentAndOptionNumArray, setPlayersTimeSentAndOptionNumArray] = useState([])
+    const [scoreboardArray, setScoreboardArray] = useState([])
+
+    const [totalScoresHashmap, setTotalScoresHashmap] = useState(new Map());
+    var totalScoresArray = [];
+    var correctOptionNumber = 0
+    const [questionCounter, setQuestionCounter] = useState(1);
+
+    const joinRoom = () => {
+        lobbyMusic.play()
+        socket.emit("join_room_admin", room)
+    }
+
+    const sendScore = (questionScoreData) => {
+        socket.emit("send_answer_and_score", questionScoreData)
+    }
+
+    React.useEffect(() => {
+        joinRoom()
+    }, [])
+
+    React.useEffect(() => {
+        socket.on("new_player_joined", (data) => {
+            console.log("NEW PLAYER JOINED")
+            console.log(data)
+            players.push(data)
+            setPlayersArray(JSON.parse(JSON.stringify(players)))
+        })
+        socket.on("receive_response", (data) => {
+            console.log("RECEIVE RESPONSE")
+            console.log(data)
+            console.log("TIME OF RESPONSE: " + data.time)
+
+            const playersTimeSentAndOptionNumData = {
+                author: data.username,
+                time: data.time,
+                optionNumber: data.optionNumber
+            }
+            console.log("playersTimeSentAndOptionNumArray")
+            console.log(playersTimeSentAndOptionNumArray)
+            setPlayersTimeSentAndOptionNumArray(playersTimeSentAndOptionNumArray => [...playersTimeSentAndOptionNumArray, playersTimeSentAndOptionNumData])
+        })
+    }, [socket])
+
+    const handleScoreSorting = () => {
+        console.log("SCORE SORTING")
+        console.log("playersQuestionScores")
+        console.log(playersQuestionScores)
+        //firstly add to total score
+        playersQuestionScores.forEach(function (item, index) {
+            if (totalScoresHashmap.has(item.author)) {
+                console.log("HAS PREVIOUS KEY")
+                setTotalScoresHashmap((prev) => new Map(prev).set(item.author, prev.get(item.author) + item.score));
+            } else {
+                console.log("NO PREVIOUS KEY")
+                setTotalScoresHashmap(prev => new Map([...prev, [item.author, item.score]]));
+            }
+        });
+        console.log("totalScoresHashmap")
+        console.log(totalScoresHashmap)
+    };
+
+    const handleScoreSortingMethodTwo = () => {
+        //secondly do sorting
+        var array = [];
+
+        totalScoresHashmap.forEach(function (value, key) {
+            console.log("inner hashmap iterate")
+            array.push({
+                author: key,
+                score: value
+            });
+        })
+
+        console.log("ARRAY")
+        array = JSON.parse(JSON.stringify(array));
+        console.log(array)
+
+        var sorted = array.sort(function (a, b) {
+            return (a.score < b.score) ? 1 : ((b.score < a.score) ? -1 : 0)
+        });
+
+        totalScoresArray = JSON.parse(JSON.stringify(sorted));
+
+        console.log("SCORE SORTED")
+        console.log(totalScoresArray)
+        setScoreboardArray(totalScoresArray)
+
+        //reset question score
+        while (playersQuestionScores.length) {
+            console.log("player question score pop")
+            playersQuestionScores.pop();
+        }
+        console.log(playersQuestionScores)
+
+        setPlayersTimeSentAndOptionNumArray([])
+
+        while (array.length) {
+            // console.log("array pop")
+            array.pop();
+        }
+        // console.log(array)
+    };
+
+    const handleSendLeaderboard = () => {
+        var firstScorerName = ""
+        var firstScorerScore = ""
+        var secondScorerName = ""
+        var secondScorerScore = ""
+        var thirdScorerName = ""
+        var thirdScorerScore = ""
+        if (scoreboardArray.length > 0) {
+            firstScorerName = scoreboardArray[0].author
+            firstScorerScore = scoreboardArray[0].score
+        }
+        if (scoreboardArray.length > 1) {
+            secondScorerName = scoreboardArray[1].author
+            secondScorerScore = scoreboardArray[1].score
+        }
+        if (scoreboardArray.length > 2) {
+            thirdScorerName = scoreboardArray[2].author
+            thirdScorerScore = scoreboardArray[2].score
+        }
+        scoreboardArray.forEach(function (item, index) {
+            const data = {
+                room: room,
+                author: item.author,
+                position: index + 1,
+                firstScorerName: firstScorerName,
+                firstScorerScore: firstScorerScore,
+                secondScorerName: secondScorerName,
+                secondScorerScore: secondScorerScore,
+                thirdScorerName: thirdScorerName,
+                thirdScorerScore: thirdScorerScore
+            }
+            socket.emit("send_leaderboard", data)
+        });
+    }
+
+    const sendStartGame = () => {
+        console.log("SEND START GAME")
+        const data = {
+            room: room,
+            numOfQuestions: questions.length,
+            questionTime: currentQuestionTimeLimit,
+            questionNumber: questionCounter,
+            questionType: currentQuestionType
+        }
+        socket.emit("start_game", data)
+        setQuestionCounter(questionCounter + 1)
+    };
 
     //colors
     const yellowColor = "#e4990c"
@@ -28,7 +196,6 @@ export default function TriviaHosting(props) {
     const blueColor = "#0b95e8"
 
     //paths
-    const location = useLocation();
     const triviaId = location.pathname.split("/")[5];
 
     const [questionIndex, setQuestionIndex] = useState(0);
@@ -70,6 +237,75 @@ export default function TriviaHosting(props) {
         }
     }, [timer])
 
+    const calcScore = () => {
+        var timeInMs = +new Date()
+        var playersHaveNotSubmittedArray = JSON.parse(JSON.stringify(playersArray))
+
+        // console.log("playersArray")
+        // console.log(playersArray)
+
+        // console.log("PLAYERSWHOHAVENOTSUBMITTEDARRAYBEFORE")
+        // console.log(playersHaveNotSubmittedArray)
+
+        for (var j = 0; j < playersTimeSentAndOptionNumArray.length; j++) {
+            for (var i = 0; i < playersHaveNotSubmittedArray.length; i++) {
+                if (playersTimeSentAndOptionNumArray[j].author == playersHaveNotSubmittedArray[i].author) {
+                    playersHaveNotSubmittedArray.splice(i, 1)
+                }
+            }
+        }
+
+        console.log("PLAYERSWHOHAVENOTSUBMITTEDARRAY")
+        console.log(playersHaveNotSubmittedArray)
+
+        //send to people who did not submit
+        for (var i = 0; i < playersHaveNotSubmittedArray.length; i++) {
+            const questionScoreData = {
+                room: room,
+                author: playersHaveNotSubmittedArray[i].author,
+                score: 0,
+                optionNumber: 0,
+                submitted: false
+            }
+            sendScore(questionScoreData)
+            console.log(questionScoreData)
+            playersQuestionScores.push(questionScoreData)
+        }
+
+        while (playersHaveNotSubmittedArray.length) {
+            playersHaveNotSubmittedArray.pop();
+        }
+
+        //send to people who submitted
+        for (var i = 0; i < playersTimeSentAndOptionNumArray.length; i++) {
+            console.log("CALC SCORE i = " + i)
+            var differenceInTime = timeInMs - playersTimeSentAndOptionNumArray[i].time
+            var score = 0
+            if (yellowCorrectAnswer && playersTimeSentAndOptionNumArray[i].optionNumber == 1) {
+                score = differenceInTime
+            }
+            if (greenCorrectAnswer && playersTimeSentAndOptionNumArray[i].optionNumber == 2) {
+                score = differenceInTime
+            }
+            if (redCorrectAnswer && playersTimeSentAndOptionNumArray[i].optionNumber == 3) {
+                score = differenceInTime
+            }
+            if (blueCorrectAnswer && playersTimeSentAndOptionNumArray[i].optionNumber == 4) {
+                score = differenceInTime
+            }
+            const questionScoreData = {
+                room: room,
+                author: playersTimeSentAndOptionNumArray[i].author,
+                score: score,
+                optionNumber: playersTimeSentAndOptionNumArray[i].optionNumber,
+                submitted: true
+            }
+            sendScore(questionScoreData)
+            console.log(questionScoreData)
+            playersQuestionScores.push(questionScoreData)
+        }
+    };
+
     const handleGoBackToLobby = () => {
         console.log("LOBBY")
         setShowWaitingRoomCountdown(false)
@@ -80,6 +316,14 @@ export default function TriviaHosting(props) {
         setQuestionIndex(0)
         clear()
         setTimer(3)
+        setPlayersArray([])
+        setPlayersTimeSentAndOptionNumArray([])
+        while (players.length) {
+            players.pop();
+        }
+        while (playersQuestionScores.length) {
+            playersQuestionScores.pop();
+        }
     };
 
     const handleShowWaitingRoomCountdown = () => {
@@ -94,15 +338,31 @@ export default function TriviaHosting(props) {
         console.log("SHOW QUESTION")
         setShowWaitingRoomCountdown(false)
         setStartGame(true)
+        sendStartGame()
+        if (yellowCorrectAnswer) {
+            correctOptionNumber = 1
+        } else if (greenCorrectAnswer) {
+            correctOptionNumber = 2
+        } else if (redCorrectAnswer) {
+            correctOptionNumber = 3
+        } else if (blueCorrectAnswer) {
+            correctOptionNumber = 4
+        }
+        // console.log("CORRECT OPTION")
+        // console.log(correctOptionNumber)
     };
 
     const handleShowCorrectAnswer = () => {
         setTimer(0)
+        // sendTimeout()
         console.log("SHOW CORRECT ANSWER")
         setShowCorrectAnswer(true)
+        calcScore()
+        handleScoreSorting()
     };
 
     const handleShowScoreboard = () => {
+        handleScoreSortingMethodTwo()
         console.log("QUESTION INDEX: " + questionIndex)
         if (questionIndex != questions.length - 1) {
             console.log("SHOW SCOREBOARD")
@@ -114,6 +374,7 @@ export default function TriviaHosting(props) {
             console.log("SHOW LEADERBOARD")
             setStartGame(false)
             setShowCorrectAnswer(false)
+            handleSendLeaderboard()
             setShowLeaderboard(true)
         }
     };
@@ -246,7 +507,7 @@ export default function TriviaHosting(props) {
             {startGame == false && showWaitingRoomCountdown == false && showScoreboard == false && showLeaderboard == false && <div style={{ backgroundColor: "dodgerblue", height: "100vh", width: "100%", alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", flexDirection: "column" }}>
                 <div style={{ backgroundColor: "#2266e3", height: "20%", width: "100%", padding: "1% 0" }}>
                     <Typography variant="h4">Game Pin</Typography>
-                    <Typography variant="h1" style={{ fontWeight: "bold" }}>T12345</Typography>
+                    <Typography variant="h1" style={{ fontWeight: "bold" }}>{room}</Typography>
                 </div>
                 <div style={{ backgroundColor: "dodgerblue", height: "80%", width: "100%", padding: "2%" }}>
                     <div style={{ alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", paddingBottom: "3%" }}>
@@ -260,9 +521,21 @@ export default function TriviaHosting(props) {
                         >
                             Start
                         </Button>
+                        <Link
+                            to={`${inClassPath}`}
+                            style={{ textDecoration: "none" }}
+                        >
+                            <Button className="btn-upload" color="secondary" variant="contained" component="span"
+                                style={{ float: "left", left: "3%", marginTop: "0.5%", position: "absolute" }}
+                            >
+                                Back
+                            </Button>
+                        </Link>
                     </div>
                     <div>
-                        <Typography variant="h3">Waryl</Typography>
+                        {playersArray.map((player) => (
+                            <Typography variant="h3">{player.author}</Typography>
+                        ))}
                     </div>
                 </div>
             </div >
@@ -419,7 +692,7 @@ export default function TriviaHosting(props) {
                             </div>
                             <div className="responsesNumberRightContainer">
                                 <Typography variant="h4">Responses: </Typography>
-                                <Typography variant="h2">{numOfResponses}</Typography>
+                                <Typography variant="h2">{playersTimeSentAndOptionNumArray.length}</Typography>
                             </div>
                         </div>
                     </div >
@@ -443,7 +716,7 @@ export default function TriviaHosting(props) {
             }
             {showScoreboard == true && <div style={{ backgroundColor: "dodgerblue", height: "100vh", width: "100%", alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", flexDirection: "column" }}>
                 <div style={{ backgroundColor: "#2266e3", height: "20%", width: "100%", padding: "1% 0" }}>
-                    <Typography variant="h4">Scoreboard</Typography>
+                    <Typography variant="h1" >Scoreboard</Typography>
                     <Button className="btn-upload" color="secondary" variant="contained" component="span"
                         style={{ float: "right", marginLeft: "auto", right: "3%", marginTop: "0.5%", position: "absolute" }}
                         onClick={handleShowWaitingRoomCountdown}
@@ -452,15 +725,20 @@ export default function TriviaHosting(props) {
                     </Button>
                 </div>
                 <div style={{ backgroundColor: "dodgerblue", height: "80%", width: "100%", padding: "2%" }}>
-                    <div style={{ alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", paddingBottom: "3%" }}>
-                        <Typography variant="h3">Waryl</Typography>
+                    <div style={{ alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", paddingBottom: "3%", flexDirection: "column" }}>
+                        {scoreboardArray.map((player, index) => (
+                            <div>
+                                <Typography variant="h3">{index + 1}. {player.author} - {player.score}</Typography>
+                                <br />
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div >
             }
             {showLeaderboard == true && <div style={{ backgroundColor: "dodgerblue", height: "100vh", width: "100%", alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", flexDirection: "column" }}>
                 <div style={{ backgroundColor: "#2266e3", height: "20%", width: "100%", padding: "1% 0" }}>
-                    <Typography variant="h2">Leaderboard</Typography>
+                    <Typography variant="h1" style={{ marginTop: "2%" }}>Leaderboard</Typography>
                     <div style={{ float: "right", marginLeft: "auto", right: "3%", position: "absolute" }}>
                         <Button className="btn-upload" color="primary" variant="contained" component="span"
                             onClick={handleGoBackToLobby}
@@ -470,8 +748,13 @@ export default function TriviaHosting(props) {
                     </div>
                 </div>
                 <div style={{ backgroundColor: "dodgerblue", height: "80%", width: "100%", padding: "2%" }}>
-                    <div style={{ alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", paddingBottom: "3%" }}>
-                        <Typography variant="h3">Waryl</Typography>
+                    <div style={{ alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", paddingBottom: "3%", flexDirection: "column" }}>
+                        {scoreboardArray.map((player, index) => (
+                            <Typography variant="h3">
+                                {index + 1}. {player.author} - {player.score}
+                                <br />
+                            </Typography>
+                        ))}
                     </div>
                 </div>
             </div >

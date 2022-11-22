@@ -29,7 +29,7 @@ import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComp
 import SettingsIcon from "@mui/icons-material/Settings";
 import AddIcon from "@mui/icons-material/Add";
 import QuizSettingsComponents from "../components/QuizComponents/QuizSettingsComponent";
-import { Construction } from "@mui/icons-material";
+import QuestionBankSidebar from "../components/QuestionBankSidebar";
 
 export default function CreateQuizForm(props) {
   const location = useLocation();
@@ -39,8 +39,9 @@ export default function CreateQuizForm(props) {
   const createAssessmentPath = location.state.createAssessmentPathProp;
   const createQuizFormPath = location.pathname;
   const currentQuiz = location.state.newQuizProp;
-  console.log("Current quiz", currentQuiz)
-  const maxAssessmentDiscountPoints = location.state.maxAssessmentDiscountPointsProp;
+  console.log("Current quiz", currentQuiz);
+  const maxAssessmentDiscountPoints =
+    location.state.maxAssessmentDiscountPointsProp;
   const [formQuestions, setFormQuestions] = useState([]);
   const [textField, setTextField] = useState("");
   const [questionCounter, setQuestionCounter] = useState(0);
@@ -48,6 +49,8 @@ export default function CreateQuizForm(props) {
     React.useState(false);
   const [openMaxPointsErrorSnackbar, setopenMaxPointsErrorSnackbar] =
     React.useState(false);
+  const [currChosenBankId, setCurrChosenBankId] = useState();
+  const [questionBankQuestions, setQuestionBankQuestions] = useState([]);
 
   const [maxPointsError, setMaxPointsError] = useState({
     value: false,
@@ -282,7 +285,7 @@ export default function CreateQuizForm(props) {
     e.preventDefault();
     calculateMaxQuizScore();
     if (validateQuiz()) {
-      console.log(currentQuiz)
+      console.log(currentQuiz);
       const updatedQuiz = handleQuizDateConversions(currentQuiz);
       linkQuizQuestions();
       console.log("quiz going to save: ", updatedQuiz);
@@ -292,7 +295,9 @@ export default function CreateQuizForm(props) {
         headers: { "Content-Type": "application/json" },
 
         body: JSON.stringify(updatedQuiz),
-      }).then((res) => res.json()).then(() => handleCancel() );
+      })
+        .then((res) => res.json())
+        .then(() => handleCancel());
       console.log("created Quiz: ", updatedQuiz);
     }
   };
@@ -301,6 +306,54 @@ export default function CreateQuizForm(props) {
     navigate(`${assessmentsPath}`);
   };
 
+  const handleAddToQuiz = (parsedQuestion) => {
+    var newQuestion = { ...parsedQuestion };
+    if (newQuestion.questionType === "MCQ") {
+      newQuestion.questionType = "mcq";
+    } else if (newQuestion.questionType === "OPEN_ENDED") {
+      newQuestion.questionType = "shortAnswer";
+    } else {
+      newQuestion.questionType = "trueFalse";
+    }
+    console.log("here is the question", newQuestion);
+
+    const options = [];
+    for (var i = 0; i < newQuestion.options.length; i++) {
+      options.push(newQuestion.options[i].optionContent);
+    }
+    newQuestion.options = options;
+    setQuestionCounter(questionCounter + 1);
+    currentQuiz.questionCounter = questionCounter;
+    const question = {
+      localid: "question" + questionCounter,
+      questionTitle: "Untitled Question",
+      questionType: newQuestion.questionType,
+      questionContent: newQuestion.questionContent,
+      questionHint: newQuestion.questionHint,
+      questionMaxPoints: 0.0,
+      options: newQuestion.options,
+      correctOption: newQuestion.correctOption.optionContent,
+    };
+    console.log(question);
+    setFormQuestions([...formQuestions, question]);
+  };
+
+  function handleAddToBank(parsedQuestion) {
+    console.log(parsedQuestion);
+    fetch(
+      "http://localhost:8080/questionBank/addQuestionToQuestionBank/" +
+        currChosenBankId,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsedQuestion),
+      }
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        setQuestionBankQuestions(result.questions);
+      });
+  }
   return (
     <Grid container spacing={0}>
       <Snackbar
@@ -320,7 +373,7 @@ export default function CreateQuizForm(props) {
       <Grid item xs={2}>
         <TeachingCoursesDrawer></TeachingCoursesDrawer>
       </Grid>
-      <Grid item xs={10}>
+      <Grid item xs={8}>
         <Breadcrumbs aria-label="breadcrumb">
           <Link
             to={`${assessmentsPath}`}
@@ -359,7 +412,7 @@ export default function CreateQuizForm(props) {
           </Link>
         </Breadcrumbs>
 
-        <Grid item width={"80%"}>
+        <Grid item width={"95%"}>
           <Grid
             container
             direction={"row"}
@@ -421,6 +474,10 @@ export default function CreateQuizForm(props) {
                   editQuestionHintProp={editQuestionHint}
                   removeQuestionProp={removeQuestion}
                   editQuestionMaxPointsProp={editQuestionMaxPoints}
+                  handleAddToBank={handleAddToBank}
+                  currChosenBankId={currChosenBankId}
+                  validateQuiz={validateQuiz}
+
                 />
               </Paper>
             );
@@ -456,6 +513,16 @@ export default function CreateQuizForm(props) {
             </Button>
           </Grid>
         </Grid>
+      </Grid>
+
+      <Grid item xs={2} backgroundColor="#1975D2" style={{ padding: "10px" }}>
+        <QuestionBankSidebar
+          handleAddToQuiz={handleAddToQuiz}
+          courseId={courseId}
+          setCurrChosenBankId={setCurrChosenBankId}
+          questionBankQuestions={questionBankQuestions}
+          setQuestionBankQuestions={setQuestionBankQuestions}
+        ></QuestionBankSidebar>
       </Grid>
     </Grid>
   );

@@ -63,7 +63,6 @@ export default function InstructorReelsPage(props) {
     };
   }
 
-  //not tested
   function handleCreateReel() {
     fetch("http://localhost:8080/reel/createReel", {
       method: "POST",
@@ -93,7 +92,6 @@ export default function InstructorReelsPage(props) {
   }
 
   React.useEffect(() => {
-    console.log(user);
     fetch(
       "http://localhost:8080/reel/getAllReelsByInstructorId/" + instructorId
     )
@@ -195,6 +193,7 @@ export default function InstructorReelsPage(props) {
                         reelNumLikes={reel.numLikes}
                         reelNumViews={reel.numViews}
                         video={reel.video}
+                        thumbnail={reel.thumbnail}
                         reelCreator={reel.reelCreator.name}
                         rejectionReason={reel.rejectionReason}
                       />
