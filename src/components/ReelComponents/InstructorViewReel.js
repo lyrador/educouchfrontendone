@@ -131,7 +131,14 @@ export default function InstructorViewReel(props) {
   const handleCloseUploadDialog = () => {
     setOpenUploadDialog(false);
   };
-
+  const [openUploadThumbnailDialog, setOpenUploadThumbnailDialog] =
+    React.useState(false);
+  const handleOpenUploadThumbnailDialog = () => {
+    setOpenUploadThumbnailDialog(true);
+  };
+  const handleCloseUploadThumbnailDialog = () => {
+    setOpenUploadThumbnailDialog(false);
+  };
   const [missingVideoError, setMissingVideoError] = useState(false);
   const handleMissingVideoSnackbar = () => {
     setMissingVideoError(true);
@@ -163,6 +170,17 @@ export default function InstructorViewReel(props) {
       return;
     }
     setMissingCaptionError(false);
+  };
+
+  const [missingCourseError, setMissingCourseError] = useState(false);
+  const handleMissingCourseSnackbar = () => {
+    setMissingCourseError(true);
+  };
+  const handleCloseMissingCourse = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setMissingCourseError(false);
   };
 
   const theme = createTheme({
@@ -231,7 +249,8 @@ export default function InstructorViewReel(props) {
   const renderVideoImageHolder = () => {
     if (video) {
       return (
-        <div style={{ height: "500px" }}>
+        <div style={{ height: "500px", flex: "6" }}>
+          {" "}
           <ReactPlayer
             className="video"
             width="100%"
@@ -243,8 +262,30 @@ export default function InstructorViewReel(props) {
       );
     } else {
       return (
-        <div style={{ textAlign: "center" }}>
-          <div>There is no current file!</div>
+        <div style={{ textAlign: "center", padding: "30px" }}>
+          <div>There is no current Video!</div>
+        </div>
+      );
+    }
+  };
+
+  const renderThumbnailHolder = () => {
+    if (currentPage && currentPage.thumbnail) {
+      return (
+        <div style={{ height: "500px", flex: "5" }}>
+          <img
+            src={currentPage.thumbnail.fileURL}
+            alt="Interactive Page Image"
+            width="100%"
+            height="100%"
+            objectFit="contain"
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div style={{ textAlign: "center", padding: "30px" }}>
+          <div>There is no current Thumbnail!</div>
         </div>
       );
     }
@@ -278,7 +319,6 @@ export default function InstructorViewReel(props) {
       });
   };
 
-  //need to change out API
   const createNewFileItem = async (e) => {
     e.preventDefault();
     var attachmentId = uploadedAttachmentId;
@@ -318,6 +358,47 @@ export default function InstructorViewReel(props) {
     setRefresh(!refresh);
     // props.setRefreshInteractivePage(true);
     handleCloseUploadDialog();
+  };
+
+  const createNewThumbnailItem = async (e) => {
+    e.preventDefault();
+    var attachmentId = uploadedAttachmentId;
+    console.log("attachmentId: ", attachmentId + " reelId: ", reelId);
+    try {
+      const response = await fetch(
+        "http://localhost:8080/reel/uploadThumbnailToReel/" +
+          reelId +
+          "/" +
+          attachmentId,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      console.log("called uploadThumbnailToReel: ", response);
+      if (response.ok == false) {
+        console.log("Error");
+        handleClickErrorSnackbar();
+      } else {
+        console.log("New Thumbnail Item Created Successfully!");
+        handleClickSnackbar();
+        setCurrentFile(undefined);
+        setPreviewImage(
+          "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg"
+        );
+        setProgress(0);
+        setMessage("");
+        setIsError(false);
+        setIsUploaded(false);
+        setUploadedAttachmentId("");
+      }
+    } catch (err) {
+      console.log(err);
+      handleClickErrorSnackbar();
+    }
+    setRefresh(!refresh);
+    // props.setRefreshInteractivePage(true);
+    handleCloseUploadThumbnailDialog();
   };
 
   const handleChange = (name) => (event) => {
@@ -393,9 +474,10 @@ export default function InstructorViewReel(props) {
           severity="success"
           sx={{ width: "100%" }}
         >
-          Assessment Deleted Succesfully!
+          Reel Deleted Succesfully!
         </Alert>
       </Snackbar>
+
       <div style={{ display: "flex", justifyContent: "space-around" }}>
         <Button
           color="primary"
@@ -468,6 +550,19 @@ export default function InstructorViewReel(props) {
                 Please write a caption!
               </Alert>
             </Snackbar>
+            <Snackbar
+              open={missingCourseError}
+              autoHideDuration={3000}
+              onClose={handleCloseMissingCourse}
+            >
+              <Alert
+                onClose={handleCloseMissingCourse}
+                severity="error"
+                sx={{ width: "100%" }}
+              >
+                Please select a Course Tag!
+              </Alert>
+            </Snackbar>
             <Box
               sx={{ borderBottom: 1, borderColor: "divider", marginBottom: 5 }}
             >
@@ -486,7 +581,7 @@ export default function InstructorViewReel(props) {
                 }}
               >
                 <p styl={{ color: "grey" }}>Select Course Tag</p>
-                <FormControl style={{ width: "70%" }}>
+                <FormControl style={{ width: "80%" }}>
                   <Select
                     style={{
                       width: "100%",
@@ -529,24 +624,59 @@ export default function InstructorViewReel(props) {
                   onChange={handleCaptionChange("name")}
                   style={{ width: "80%", fontSize: 20 }}
                 />
-                <Button
-                  className="btn-upload"
-                  color="primary"
-                  component="span"
-                  variant="contained"
-                  onClick={handleOpenUploadDialog}
+
+                <div
                   style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
                     width: "80%",
-                    marginTop: "10px",
-                    marginBottom: "20px",
                   }}
-                  startIcon={<InsertPhotoIcon />}
                 >
-                  Upload Video
-                </Button>
+                  <Button
+                    className="btn-upload"
+                    color="primary"
+                    component="span"
+                    variant="contained"
+                    onClick={handleOpenUploadDialog}
+                    style={{
+                      width: "20%",
+                      marginTop: "10px",
+                      marginBottom: "20px",
+                    }}
+                    startIcon={<InsertPhotoIcon />}
+                  >
+                    Upload Reel Video
+                  </Button>
+                  <Button
+                    className="btn-upload"
+                    color="primary"
+                    component="span"
+                    variant="contained"
+                    onClick={handleOpenUploadThumbnailDialog}
+                    style={{
+                      width: "20%",
+                      marginTop: "10px",
+                      marginBottom: "20px",
+                    }}
+                    startIcon={<InsertPhotoIcon />}
+                  >
+                    Upload Reel Thumbnail
+                  </Button>
+                </div>
                 <Paper elevation={3} style={{ width: "80%", height: "60%" }}>
-                  <div style={{ width: "100%", height: "100%" }}>
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
                     {renderVideoImageHolder()}
+                    <div style={{ width: "20px" }}></div>
+                    {renderThumbnailHolder()}
                   </div>
                 </Paper>
 
@@ -679,6 +809,109 @@ export default function InstructorViewReel(props) {
                   <DialogActions>
                     <Button onClick={handleCloseUploadDialog}>Cancel</Button>
                     <Button onClick={createNewFileItem}>Update</Button>
+                  </DialogActions>
+                </Dialog>
+                <Dialog
+                  open={openUploadThumbnailDialog}
+                  onClose={handleCloseUploadThumbnailDialog}
+                >
+                  <DialogTitle>Upload Thumbnail</DialogTitle>
+                  <DialogContent>
+                    <h3 style={{ fontWeight: "normal" }}>Current File</h3>
+                    {renderThumbnailHolder()}
+                    <br></br>
+                    <h3 style={{ fontWeight: "normal" }}>New File</h3>
+                    <div>
+                      {previewImage && (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <img
+                            className="preview my20"
+                            src={previewImage}
+                            alt=""
+                            style={{
+                              height: "40%",
+                              width: "40%",
+                              justifySelf: "center",
+                            }}
+                          />
+                        </div>
+                      )}
+                      {currentFile && (
+                        <Box
+                          className="my20"
+                          display="flex"
+                          alignItems="center"
+                        >
+                          <Box width="100%" mr={1}>
+                            <ThemeProvider theme={theme}>
+                              <LinearProgress
+                                variant="determinate"
+                                value={progress}
+                              />
+                            </ThemeProvider>
+                          </Box>
+                          <Box minWidth={35}>
+                            <Typography
+                              variant="body2"
+                              color="textSecondary"
+                            >{`${progress}%`}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                      {message && (
+                        <Typography
+                          variant="subtitle2"
+                          className={`upload-message ${isError ? "error" : ""}`}
+                        >
+                          {message}
+                        </Typography>
+                      )}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <label htmlFor="btn-upload">
+                          <input
+                            id="btn-upload"
+                            name="btn-upload"
+                            style={{ display: "none" }}
+                            type="file"
+                            accept="/*"
+                            onChange={selectFile}
+                          />
+                          <Button
+                            className="btn-choose"
+                            variant="outlined"
+                            component="span"
+                          >
+                            Choose File
+                          </Button>
+                        </label>
+                        <Button
+                          className="btn-upload"
+                          color="primary"
+                          variant="contained"
+                          component="span"
+                          disabled={!currentFile}
+                          onClick={uploadFile}
+                        >
+                          Upload
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleCloseUploadDialog}>Cancel</Button>
+                    <Button onClick={createNewThumbnailItem}>Update</Button>
                   </DialogActions>
                 </Dialog>
               </Grid>

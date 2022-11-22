@@ -125,7 +125,6 @@ export default function CreateReelPage(props) {
     }
     setMissingVideoError(false);
   };
-
   const [missingTitleError, setMissingTitleError] = useState(false);
   const handleMissingTitleSnackbar = () => {
     setMissingTitleError(true);
@@ -136,7 +135,6 @@ export default function CreateReelPage(props) {
     }
     setMissingTitleError(false);
   };
-
   const [missingCaptionError, setMissingCaptionError] = useState(false);
   const handleMissingCaptionSnackbar = () => {
     setMissingCaptionError(true);
@@ -147,13 +145,29 @@ export default function CreateReelPage(props) {
     }
     setMissingCaptionError(false);
   };
-
+  const [missingCourseError, setMissingCourseError] = useState(false);
+  const handleMissingCourseSnackbar = () => {
+    setMissingCourseError(true);
+  };
+  const handleCloseMissingCourse = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setMissingCourseError(false);
+  };
   const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
   const handleOpenUploadDialog = () => {
     setOpenUploadDialog(true);
   };
   const handleCloseUploadDialog = () => {
     setOpenUploadDialog(false);
+  };
+  const [openUploadThumbnailDialog, setOpenUploadThumbnailDialog] = React.useState(false);
+  const handleOpenUploadThumbnailDialog = () => {
+    setOpenUploadThumbnailDialog(true);
+  };
+  const handleCloseUploadThumbnailDialog = () => {
+    setOpenUploadThumbnailDialog(false);
   };
 
   const handleSelectCourse = (e) => {
@@ -164,7 +178,7 @@ export default function CreateReelPage(props) {
   const renderVideoImageHolder = () => {
     if (currentPage && currentPage.video) {
       return (
-        <div style={{ height: "500px" }}>
+        <div style={{ height: "500px", flex:"6" }}>
           <ReactPlayer
             className="video"
             width="100%"
@@ -176,8 +190,30 @@ export default function CreateReelPage(props) {
       );
     } else {
       return (
-        <div style={{ textAlign: "center" }}>
-          <div>There is no current file!</div>
+        <div style={{ textAlign: "center", padding: "30px" }}>
+          <div>There is no current Video!</div>
+        </div>
+      );
+    }
+  };
+
+  const renderThumbnailHolder = () => {
+    if (currentPage && currentPage.thumbnail) {
+      return (
+        <div style={{ height: "500px" , flex:"5"}}>
+          <img
+            src={currentPage.thumbnail.fileURL}
+            alt="Interactive Page Image"
+            width="100%"
+            height="100%"
+            objectFit="contain"
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div style={{ textAlign: "center", padding: "30px" }}>
+          <div>There is no current Thumbnail!</div>
         </div>
       );
     }
@@ -252,6 +288,47 @@ export default function CreateReelPage(props) {
     // props.setRefreshInteractivePage(true);
     handleCloseUploadDialog();
   };
+  
+  const createNewThumbnailItem = async (e) => {
+    e.preventDefault();
+    var attachmentId = uploadedAttachmentId;
+    console.log("attachmentId: ", attachmentId + " reelId: ", reelId);
+    try {
+      const response = await fetch(
+        "http://localhost:8080/reel/uploadThumbnailToReel/" +
+          reelId +
+          "/" +
+          attachmentId,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      console.log("called uploadThumbnailToReel: ", response);
+      if (response.ok == false) {
+        console.log("Error");
+        handleClickErrorSnackbar();
+      } else {
+        console.log("New Thumbnail Item Created Successfully!");
+        handleClickSnackbar();
+        setCurrentFile(undefined);
+        setPreviewImage(
+          "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg"
+        );
+        setProgress(0);
+        setMessage("");
+        setIsError(false);
+        setIsUploaded(false);
+        setUploadedAttachmentId("");
+      }
+    } catch (err) {
+      console.log(err);
+      handleClickErrorSnackbar();
+    }
+    setRefresh(!refresh);
+    // props.setRefreshInteractivePage(true);
+    handleCloseUploadThumbnailDialog();
+  };
 
   const handleChange = (name) => (event) => {
     setReelTitle({ ...reelTitle, [name]: event.target.value });
@@ -262,25 +339,25 @@ export default function CreateReelPage(props) {
   };
 
   function handleSaveReel() {
-    const incompleteDTO = {
-      reelTitle: reelTitle.name,
-      reelCaption: reelCaption.name,
-      courseId: courseSelected,
-      instructorId: "",
-    };
-    console.log("body: ", incompleteDTO + " , reelId: " + reelId);
-    fetch("http://localhost:8080/reel/updateReel/" + reelId, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(incompleteDTO),
-    })
-      .then((res) => res.json())
-      .then((response) => console.log("saved: ", response))
-      .then(() => navigate(`/instructorReels`));
-    //       .then((response) => response.json())
-    //       .then((res) => {
-    //         console.log("called uploadVideoToReel: ", res);
-    //       });
+    if (!courseSelected) {
+      setMissingCourseError(true);
+    } else {
+      const incompleteDTO = {
+        reelTitle: reelTitle.name,
+        reelCaption: reelCaption.name,
+        courseId: courseSelected,
+        instructorId: "",
+      };
+      console.log("body: ", incompleteDTO);
+      fetch("http://localhost:8080/reel/updateReel/" + reelId, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(incompleteDTO),
+      })
+        .then((res) => res.json())
+        .then((response) => console.log("saved: ", response))
+        .then(() => navigate(`/instructorReels`));
+    }
   }
 
   function handleSubmitReel() {
@@ -288,7 +365,8 @@ export default function CreateReelPage(props) {
       currentPage &&
       currentPage.video &&
       reelTitle.name &&
-      reelCaption.name
+      reelCaption.name &&
+      courseSelected
     ) {
       const incompleteDTO = {
         reelTitle: reelTitle.name,
@@ -320,12 +398,14 @@ export default function CreateReelPage(props) {
       if (!reelCaption.name) {
         setMissingCaptionError(true);
       }
+      if (!courseSelected) {
+      }
     }
   }
 
   return (
     <>
-      <h1>Create Reel</h1>
+      <h1 style={{ width: "72%" }}>Create Reel</h1>
       <div className="cards">
         <Box sx={{ width: "100%" }}>
           <div style={{ paddingLeft: "3%" }}>
@@ -366,6 +446,19 @@ export default function CreateReelPage(props) {
                 sx={{ width: "100%" }}
               >
                 Please write a caption!
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={missingCourseError}
+              autoHideDuration={3000}
+              onClose={handleCloseMissingCourse}
+            >
+              <Alert
+                onClose={handleCloseMissingCourse}
+                severity="error"
+                sx={{ width: "100%" }}
+              >
+                Please select a Course Tag!
               </Alert>
             </Snackbar>
             <Breadcrumbs aria-label="breadcrumb">
@@ -453,24 +546,59 @@ export default function CreateReelPage(props) {
                   onChange={handleCaptionChange("name")}
                   style={{ width: "70%", fontSize: 20 }}
                 />
-                <Button
-                  className="btn-upload"
-                  color="primary"
-                  component="span"
-                  variant="contained"
-                  onClick={handleOpenUploadDialog}
+
+                <div
                   style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
                     width: "70%",
-                    marginTop: "10px",
-                    marginBottom: "20px",
                   }}
-                  startIcon={<InsertPhotoIcon />}
                 >
-                  Upload Video
-                </Button>
+                  <Button
+                    className="btn-upload"
+                    color="primary"
+                    component="span"
+                    variant="contained"
+                    onClick={handleOpenUploadDialog}
+                    style={{
+                      width: "20%",
+                      marginTop: "10px",
+                      marginBottom: "20px",
+                    }}
+                    startIcon={<InsertPhotoIcon />}
+                  >
+                    Upload Reel Video
+                  </Button>
+                  <Button
+                    className="btn-upload"
+                    color="primary"
+                    component="span"
+                    variant="contained"
+                    onClick={handleOpenUploadThumbnailDialog}
+                    style={{
+                      width: "20%",
+                      marginTop: "10px",
+                      marginBottom: "20px",
+                    }}
+                    startIcon={<InsertPhotoIcon />}
+                  >
+                    Upload Reel Thumbnail
+                  </Button>
+                </div>
                 <Paper elevation={3} style={{ width: "70%", height: "60%" }}>
-                  <div style={{ width: "100%", height: "100%" }}>
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
                     {renderVideoImageHolder()}
+                    <div style={{width:"20px"}}></div>
+                    {renderThumbnailHolder()}
                   </div>
                 </Paper>
 
@@ -603,6 +731,109 @@ export default function CreateReelPage(props) {
                   <DialogActions>
                     <Button onClick={handleCloseUploadDialog}>Cancel</Button>
                     <Button onClick={createNewFileItem}>Update</Button>
+                  </DialogActions>
+                </Dialog>
+                <Dialog
+                  open={openUploadThumbnailDialog}
+                  onClose={handleCloseUploadThumbnailDialog}
+                >
+                  <DialogTitle>Upload Thumbnail</DialogTitle>
+                  <DialogContent>
+                    <h3 style={{ fontWeight: "normal" }}>Current File</h3>
+                    {renderThumbnailHolder()}
+                    <br></br>
+                    <h3 style={{ fontWeight: "normal" }}>New File</h3>
+                    <div>
+                      {previewImage && (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <img
+                            className="preview my20"
+                            src={previewImage}
+                            alt=""
+                            style={{
+                              height: "40%",
+                              width: "40%",
+                              justifySelf: "center",
+                            }}
+                          />
+                        </div>
+                      )}
+                      {currentFile && (
+                        <Box
+                          className="my20"
+                          display="flex"
+                          alignItems="center"
+                        >
+                          <Box width="100%" mr={1}>
+                            <ThemeProvider theme={theme}>
+                              <LinearProgress
+                                variant="determinate"
+                                value={progress}
+                              />
+                            </ThemeProvider>
+                          </Box>
+                          <Box minWidth={35}>
+                            <Typography
+                              variant="body2"
+                              color="textSecondary"
+                            >{`${progress}%`}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                      {message && (
+                        <Typography
+                          variant="subtitle2"
+                          className={`upload-message ${isError ? "error" : ""}`}
+                        >
+                          {message}
+                        </Typography>
+                      )}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <label htmlFor="btn-upload">
+                          <input
+                            id="btn-upload"
+                            name="btn-upload"
+                            style={{ display: "none" }}
+                            type="file"
+                            accept="/*"
+                            onChange={selectFile}
+                          />
+                          <Button
+                            className="btn-choose"
+                            variant="outlined"
+                            component="span"
+                          >
+                            Choose File
+                          </Button>
+                        </label>
+                        <Button
+                          className="btn-upload"
+                          color="primary"
+                          variant="contained"
+                          component="span"
+                          disabled={!currentFile}
+                          onClick={uploadFile}
+                        >
+                          Upload
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleCloseUploadDialog}>Cancel</Button>
+                    <Button onClick={createNewThumbnailItem}>Update</Button>
                   </DialogActions>
                 </Dialog>
               </Grid>
