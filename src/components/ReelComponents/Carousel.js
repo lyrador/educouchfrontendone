@@ -23,7 +23,7 @@ const Carousel = (props) => {
     fetch("http://localhost:8080/reel/findReelsForLearner/" + learnerId)
       .then((res) => res.json())
       .then((result) => {
-        console.log("Carousel fetched: ", result);
+        // console.log("Carousel fetched: ", result);
         setLength(result.length);
         setChildren(result);
       });
@@ -113,14 +113,15 @@ const Carousel = (props) => {
               children.map((reel) => (
                 <LearnerViewReelComponent
                   reelId={reel.reelId}
-                  reelTitle={reel.reelTitle}
-                  reelCaption={reel.reelCaption}
-                  reelStatusEnum={reel.reelApprovalStatusEnum}
-                  reelNumLikes={reel.numLikes}
-                  reelNumViews={reel.numViews}
+                  // reelTitle={reel.reelTitle}
+                  // reelCaption={reel.reelCaption}
+                  // reelStatusEnum={reel.reelApprovalStatusEnum}
+                  // reelNumLikes={reel.numLikes}
+                  // reelNumViews={reel.numViews}
                   video={reel.video}
-                  reelCreator={reel.reelCreator.name}
-                  refreshCallback={refreshCallback}
+                  // reelCreator={reel.reelCreator.name}
+                  // reelCreator={"temporaryName"}
+                  // refreshCallback={refreshCallback}
                   newReelsFetched={newReelsFetched}
                 />
               ))
@@ -137,7 +138,7 @@ const Carousel = (props) => {
                   marginTop: "300px",
                 }}
               >
-                Sorry we ran out of reels!
+                Sorry we ran out of reels! Come back again next time
               </h1>
             )}
           </div>
