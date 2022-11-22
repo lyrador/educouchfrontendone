@@ -77,8 +77,8 @@ import CreateTechnicalSupportRequest from "./components/CreateTechnicalSupportRe
 import WebPet from "web-pet";
 import RewardShoppingPage from "./pages/RewardShoppingPage";
 import RewardsArrangementPage from "./pages/RewardsArrangementPage";
-import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
+import MyAnnouncements from "./pages/MyAnnouncements";
 import RewardsEnhancementPage from "./pages/RewardsEnhancementPage";
 import InstructorReelsPage from "./pages/InstructorReelsPage";
 import LearnerReelsPage from "./pages/LearnerReelsPage";
@@ -107,11 +107,11 @@ function App() {
               }
             />
             <Route
-              path="/dashboardAnnouncements"
+              path="/myAnnouncements"
               element={
                 <RequireAuth>
                   <Appbar />
-                  <DashboardAnnouncements />
+                  <MyAnnouncements />
                 </RequireAuth>
               }
             />
@@ -611,9 +611,7 @@ function App() {
             />
             <Route
               path="/myTeachingCourse/:courseId/inClass/trivia/:triviaId/triviaHosting"
-              element={
-                <TriviaHosting />
-              }
+              element={<TriviaHosting />}
             />
             <Route
               path="/myTeachingCourse/:courseId/inClass/poll/:pollId"
@@ -789,8 +787,8 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <RewardsEnhancementPage/>
-                  </RequireAuth>
+                  <RewardsEnhancementPage />
+                </RequireAuth>
               }
             />
             <Route
