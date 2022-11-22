@@ -13,6 +13,7 @@ export default function InteractiveQuizAttemptDisplay(props) {
   const [quizStatusEnum, setQuizStatusEnum] = useState();
   const [answerTrigger, setAnswerTrigger] = useState(false);
   const [wrongAnswerTrigger, setWrongAnswerTrigger] = useState(false);
+  const [assessmentAttemptStatusEnum, setAssessmentAttemptStatusEnum] = useState(''); 
   var isPreview = props.isPreviewProp;
   var assessmentsPath = props.assessmentsPathProp;
   var quizAttemptLoaded = true;
@@ -26,106 +27,21 @@ export default function InteractiveQuizAttemptDisplay(props) {
   var courseId = props.courseIdProp;
   var bookId = props.bookIdProp;
   var pageId = props.pageIdProp;
-  var assessmentAttemptStatusEnum = props.assessmentAttemptStatusEnumProp
+  
   //   var learnerStatus = location.state.learnerStatusProp;
 
   React.useEffect(() => {
     console.log("quizAttemptDisplay useEffect called");
     // clearTimer(getDeadTime());
     setCurrentQuiz(props.currentQuizProp);
+    setAssessmentAttemptStatusEnum(props.assessmentAttemptStatusEnumProp);
     setQuizAttempt(props.currentQuizAttemptProp);
     setQuizQuestions(props.questionsProp);
     setQuizStatusEnum(props.assessmentStatusEnum);
     setQuestionAttempts(props.questionAttemptsProp);
   }, [pageId]);
 
-  //   const getTimeRemaining = (e) => {
-  //     const total = Date.parse(e) - Date.parse(new Date());
-  //     const seconds = Math.floor((total / 1000) % 60);
-  //     const minutes = Math.floor((total / 1000 / 60) % 60);
-  //     const hours = Math.floor((total / 1000 / 60 / 60) % 24);
-  //     return {
-  //       total,
-  //       hours,
-  //       minutes,
-  //       seconds,
-  //     };
-  //   };
 
-
-  //   const startTimer = (e) => {
-  //     let { total, hours, minutes, seconds } = getTimeRemaining(e);
-  //     if (total >= 0) {
-  //       // update the timer
-  //       // check if less than 10 then we need to
-  //       // add '0' at the beginning of the variable
-  //       setTimer(
-  //         (hours > 9 ? hours : "0" + hours) +
-  //           ":" +
-  //           (minutes > 9 ? minutes : "0" + minutes) +
-  //           ":" +
-  //           (seconds > 9 ? seconds : "0" + seconds)
-  //       );
-  //       if (
-  //         (hours > 9 ? hours : "0" + hours) +
-  //           ":" +
-  //           (minutes > 9 ? minutes : "0" + minutes) +
-  //           ":" +
-  //           (seconds > 9 ? seconds : "0" + seconds) ===
-  //         "00:00:10"
-  //       ) {
-  //         setPanic(true);
-  //       }
-  //       if (
-  //         (hours > 9 ? hours : "0" + hours) +
-  //           ":" +
-  //           (minutes > 9 ? minutes : "0" + minutes) +
-  //           ":" +
-  //           (seconds > 9 ? seconds : "0" + seconds) ===
-  //         "00:00:00"
-  //       ) {
-  //         handleSubmitQuizAttempt();
-  //       }
-  //     }
-  //   };
-
-  //   const clearTimer = (e) => {
-  //     // If you adjust it you should also need to
-  //     // adjust the Endtime formula we are about
-  //     // to code next
-  //     setTimer("00:00:00");
-
-  //     // If you try to remove this line the
-  //     // updating of timer Variable will be
-  //     // after 1000ms or 1sec
-  //     if (Ref.current) clearInterval(Ref.current);
-  //     const id = setInterval(() => {
-  //       startTimer(e);
-  //     }, 1000);
-  //     Ref.current = id;
-  //   };
-
-  //   function stopTimer() {
-  //     var hours = timer.slice(0, 2);
-  //     var minutes = timer.slice(3, 5);
-  //     var timeLimitRemaining = parseFloat(hours * 60) + parseFloat(minutes);
-  //     console.log("timeLimit Remaining: ", timeLimitRemaining);
-  //     clearTimer();
-  //     return timeLimitRemaining;
-  //   }
-
-  //   const getDeadTime = () => {
-  //     let deadline = new Date();
-  //     // This is where you need to adjust if
-  //     // you entend to add more time
-  //     if (props.timeLimitProp != quizAttempt.timeLimitRemaining) {
-  //       var timeLimit = quizAttempt.timeLimitRemaining * 60;
-  //     } else {
-  //       var timeLimit = props.timeLimitProp * 60;
-  //     }
-  //     deadline.setSeconds(deadline.getSeconds() + timeLimit);
-  //     return deadline;
-  //   };
 
   function handleExit() {
     navigate(`/learnerCourseDetails/` + bookId + `/learnerInteractiveBook`, {
@@ -148,6 +64,7 @@ export default function InteractiveQuizAttemptDisplay(props) {
         console.log("Congrats! you've submitted the right answer!");
         setAnswerTrigger(true);
         setWrongAnswerTrigger(false);
+        setAssessmentAttemptStatusEnum("SUBMITTED"); 
         fetch(
           "http://localhost:8080/quizAttempt/submitQuizAttempt/" +
           quizAttempt.quizAttemptId,
@@ -156,7 +73,9 @@ export default function InteractiveQuizAttemptDisplay(props) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(quizAttempt),
           }
-        )
+        ).then(handleExit());
+        
+        
       } else {
         console.log("You've submitted the wrong answer, please try again");
         setAnswerTrigger(false);

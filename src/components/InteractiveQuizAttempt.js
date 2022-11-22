@@ -38,6 +38,8 @@ export default function InteractiveQuizAttempt(props) {
   const [hasPreviousAttempt, setHasPreviousAttempt] = useState(false);
   const [quizExpired, setQuizExpired] = useState("false");
   const [buttonRendered, setButtonRendered] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
   React.useEffect(() => {
     fetch("http://localhost:8080/quiz/getQuizById/" + quizId)
       .then((res) => res.json())
@@ -78,6 +80,10 @@ export default function InteractiveQuizAttempt(props) {
           })
       );
   }, [quizId]);
+
+  const didSubmit = (data) => {
+    setIsSubmitted(data);
+}
 
   console.log(quizAttempt.assessmentAttemptStatusEnum)
   props.submittedProp(quizAttempt.assessmentAttemptStatusEnum)
@@ -140,7 +146,7 @@ export default function InteractiveQuizAttempt(props) {
 
   return (
     <Grid container direction={"column"}>
-      <h1>Page {pageId} Quiz</h1>
+      {/* <h1>Page {pageId} Quiz</h1> */}
       {startQuiz == "false" ? (
         <Grid
           container
@@ -162,7 +168,7 @@ export default function InteractiveQuizAttempt(props) {
             <>
               {quizAttempt.assessmentAttemptStatusEnum === "INCOMPLETE" ? (
                 <Button variant="contained" onClick={handleResumeQuiz}>
-                  Do Quiz
+                  Resume Quiz
                 </Button>
               ) : (
                 <Grid
@@ -202,6 +208,7 @@ export default function InteractiveQuizAttempt(props) {
             quizStatusEnumProp={quizStatusEnum}
             assessmentAttemptStatusEnumProp={quizAttempt.assessmentAttemptStatusEnum}
             questionAttemptsProp={questionAttempts}
+            submittedProp={didSubmit}
           />
         </Grid>
       )}

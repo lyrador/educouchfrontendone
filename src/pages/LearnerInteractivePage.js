@@ -49,6 +49,8 @@ import AddIcon from '@mui/icons-material/Add';
 import QuizAttemptDisplay from "../components/QuizAttemptComponents/QuizAttemptDisplay";
 import QuizAttempt from "../components/QuizAttemptComponents/QuizAttempt";
 import InteractiveQuizAttempt from "../components/InteractiveQuizAttempt";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import { ClassicEditor } from "@ckeditor/ckeditor5-build-classic";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -77,7 +79,7 @@ function LearnerInteractivePage(props) {
     const handleClickPageNavErrorSnackbar = () => { setOpenPageNavErrorSnackbar(true) };
     const handleClosePageNavErrorSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenPageNavErrorSnackbar(false) };
 
-    const [isSubmitted, setIsSubmitted] = useState(false); 
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
 
     //auth
@@ -88,7 +90,7 @@ function LearnerInteractivePage(props) {
     const location = useLocation();
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
     const courseId = location.pathname.split("/")[2];
-    
+
     const bookId = location.pathname.split("/")[4];
 
     //refresh view
@@ -111,21 +113,27 @@ function LearnerInteractivePage(props) {
 
     //retrieve current page and page navigation
     const [currentPage, setCurrentPage] = useState([]);
+    const [anotherPage, setAnotherPage] = useState([]);
     const [pageNumberPointer, setPageNumberPointer] = useState(1);
     const handlePageChange = (event, value) => {
         if (currentPage.pageQuiz && value > currentPage.pageNumber) {
+            // for (var i = 1;  i < value; i++) {
+            //     getAnotherPage(i);
+            //     if (anotherPage.pageQuiz && 
+            // }
+
             if (isSubmitted == "SUBMITTED") {
-            setPageNumberPointer(value);
-            setRefreshInteractivePage(true); 
-            console.log("can go to next page"); 
+                setPageNumberPointer(value);
+                setRefreshInteractivePage(true);
+                console.log("can go to next page");
             } else if (isSubmitted == "INCOMPLETE") {
-                console.log("cannot go to next page"); 
-                handleClickPageNavErrorSnackbar(); 
+                console.log("cannot go to next page");
+                handleClickPageNavErrorSnackbar();
             }
         } else if (!currentPage.pageQuiz || currentPage.pageNumber > value) {
             setPageNumberPointer(value);
-            setRefreshInteractivePage(true); 
-            console.log("can go to next page okay"); 
+            setRefreshInteractivePage(true);
+            console.log("can go to next page okay");
         }
     };
 
@@ -141,6 +149,7 @@ function LearnerInteractivePage(props) {
                 });
         };
     }, [refreshInteractivePage || props.chapterId]);
+
 
     //console.log(currentPage.interactivePageId); 
     //edit
@@ -191,6 +200,8 @@ function LearnerInteractivePage(props) {
         var height = "100%"
         if (currentPage.pageDescription || currentPage.pageTitle) {
             height = "50%"
+        } if (currentPage.pageQuiz) {
+            height = "40%"
         }
         if (currentPage.attachment) {
             if (currentPage.attachment.fileType.includes("image")) {
@@ -221,22 +232,27 @@ function LearnerInteractivePage(props) {
         }
     };
 
+    const [newTextItemWords, setNewTextItemWords] = useState('');
+
     const renderText = () => {
         var height = "100%"
-        if (currentPage.attachment && !currentPage.question) {
+        if (currentPage.attachment && !currentPage.pageQuiz) {
             height = "50%"
         }
+        if (!currentPage.attachment && currentPage.pageQuiz) {
+            height = "30%"
+        } 
         if (currentPage.pageDescription || currentPage.pageTitle) {
-            console.log(currentPage)
+
             return (
-                <div style={{ height: height, backgroundImage: "url('https://educouchbucket.s3.ap-southeast-1.amazonaws.com/img-noise-700x400+(1).png')" }}>
+                <div style={{ height: `${currentPage.textBoxHeight}px`, width: `${currentPage.textBoxWidth}px !important`, backgroundImage: "url('https://educouchbucket.s3.ap-southeast-1.amazonaws.com/img-noise-700x400+(1).png')" }}>
                     <div style={{ padding: "2%" }}>
                         <Typography gutterBottom variant="h5" component="div">
                             {currentPage.pageTitle}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <div>
                             {currentPage.pageDescription}
-                        </Typography>
+                        </div>
                     </div>
                 </div>
             );
@@ -245,14 +261,14 @@ function LearnerInteractivePage(props) {
     }
 
     const didSubmit = (data) => {
-        setIsSubmitted(data); 
+        setIsSubmitted(data);
     }
 
-    console.log(isSubmitted); 
+    console.log(isSubmitted);
 
     const renderQuiz = () => {
         if (currentPage.pageQuiz) {
-        console.log(currentPage.pageQuiz.assessmentId);
+            console.log(currentPage.pageQuiz.assessmentId);
         }
 
         var height = "100%"
@@ -334,7 +350,7 @@ function LearnerInteractivePage(props) {
                         {pages.length > 0 && <div style={{ width: "100%", height: "100%" }}>
                             {renderVideoImageHolder()}
                             {renderText()}
-                            {renderQuiz()} 
+                            {renderQuiz()}
                         </div>
                         }
                     </Paper>
@@ -359,7 +375,7 @@ function LearnerInteractivePage(props) {
                         <DialogContentText id="alert-dialog-description">
                             Enter the new interactive book details
                         </DialogContentText>
-                        
+
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleInfoDialogClose}>Cancel</Button>
