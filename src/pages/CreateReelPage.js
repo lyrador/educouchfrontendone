@@ -18,6 +18,7 @@ import {
   Paper,
   Snackbar,
   Alert,
+  DialogContentText,
 } from "@mui/material";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 
@@ -87,6 +88,8 @@ export default function CreateReelPage(props) {
   const [uploadedAttachmentId, setUploadedAttachmentId] = useState("");
   const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
 
+  const [openTermsDialog, setOpenTermsDialog] = useState(false);
+
   React.useEffect(() => {
     fetch("http://localhost:8080/reel/getReel/" + reelId)
       .then((res) => res.json())
@@ -107,6 +110,14 @@ export default function CreateReelPage(props) {
           })
       );
   }, [refresh]);
+
+  const handleOpenTermsDialog = () => {
+    setOpenTermsDialog(true)
+  }
+
+  const handleCloseTermsDialog = () => {
+    setOpenTermsDialog(false)
+  }
 
   const handleClickErrorSnackbar = () => {
     setOpenErrorSnackbar(true);
@@ -604,6 +615,21 @@ export default function CreateReelPage(props) {
                     color="primary"
                     component="span"
                     variant="contained"
+                    onClick={handleOpenTermsDialog}
+                    style={{
+                      width: "20%",
+                      marginTop: "10px",
+                      marginBottom: "20px",
+                    }}
+                    startIcon={<InsertPhotoIcon />}
+                  >
+                    Community Guidelines
+                  </Button>
+                  <Button
+                    className="btn-upload"
+                    color="primary"
+                    component="span"
+                    variant="contained"
                     onClick={handleOpenUploadThumbnailDialog}
                     style={{
                       width: "20%",
@@ -870,6 +896,24 @@ export default function CreateReelPage(props) {
           </div>
         </Box>
       </div>
+      <Dialog
+        open={openTermsDialog}
+        onClose={handleCloseTermsDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Educouch Reels Community Guidelines"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Please do not post reels containing sexual, religious or illegal undertones. Users found guilty will have their accounts permanently banned.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseTermsDialog}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
