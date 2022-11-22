@@ -79,6 +79,7 @@ import RewardShoppingPage from "./pages/RewardShoppingPage";
 import RewardsArrangementPage from "./pages/RewardsArrangementPage";
 import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
+import MyAnnouncements from "./pages/MyAnnouncements";
 import InstructorReelsPage from "./pages/InstructorReelsPage";
 import LearnerReelsPage from "./pages/LearnerReelsPage";
 import CreateReelPage from "./pages/CreateReelPage";
@@ -110,6 +111,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <DashboardAnnouncements />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myAnnouncements"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <MyAnnouncements />
                 </RequireAuth>
               }
             />
@@ -609,9 +619,7 @@ function App() {
             />
             <Route
               path="/myTeachingCourse/:courseId/inClass/trivia/:triviaId/triviaHosting"
-              element={
-                <TriviaHosting />
-              }
+              element={<TriviaHosting />}
             />
             <Route
               path="/myTeachingCourse/:courseId/inClass/poll/:pollId"

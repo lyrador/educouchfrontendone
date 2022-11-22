@@ -20,14 +20,21 @@ function DashboardDrawer(props) {
     <div>
       <div className="drawerContainer">
         <List>
-          {["My Announcements"].map((text, index) => (
+          {["Home"].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton component={Link} to="/home">
                 <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>
           ))}
-            {["My Points"].map((text, index) => (
+          {["My Announcements"].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton component={Link} to="/myAnnouncements">
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+          {["My Points"].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton component={Link} to="/myPoints">
                 <ListItemText primary={text} />
