@@ -80,6 +80,7 @@ export default function InteractiveQuizAttempt(props) {
   }, [quizId]);
 
   console.log(quizAttempt.assessmentAttemptStatusEnum)
+  props.submittedProp(quizAttempt.assessmentAttemptStatusEnum)
 
   // function handleViewQuiz() {
 
@@ -161,7 +162,7 @@ export default function InteractiveQuizAttempt(props) {
             <>
               {quizAttempt.assessmentAttemptStatusEnum === "INCOMPLETE" ? (
                 <Button variant="contained" onClick={handleResumeQuiz}>
-                  Resume Quiz
+                  Do Quiz
                 </Button>
               ) : (
                 <Grid
@@ -191,7 +192,6 @@ export default function InteractiveQuizAttempt(props) {
             assessmentsPathProp=""
             courseIdProp={courseId}
             pageIdProp={pageId}
-            // learnerStatusProp={learnerStatus}
             bookIdProp={bookId}
             currentQuizProp={currentQuiz}
             currentQuizAttemptProp={quizAttempt}

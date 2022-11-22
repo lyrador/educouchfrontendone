@@ -57,21 +57,28 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 function LearnerInteractivePage(props) {
 
     //snackbar
-    const [openSnackbar, setOpenSnackbar] = React.useState(false);
-    const handleClickSnackbar = () => { setOpenSnackbar(true) };
-    const handleCloseSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenSnackbar(false) };
+    // const [openSnackbar, setOpenSnackbar] = React.useState(false);
+    // const handleClickSnackbar = () => { setOpenSnackbar(true) };
+    // const handleCloseSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenSnackbar(false) };
 
-    const [openDeleteSnackbar, setOpenDeleteSnackbar] = React.useState(false);
-    const handleClickDeleteSnackbar = () => { setOpenDeleteSnackbar(true) };
-    const handleCloseDeleteSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenDeleteSnackbar(false) };
+    // const [openDeleteSnackbar, setOpenDeleteSnackbar] = React.useState(false);
+    // const handleClickDeleteSnackbar = () => { setOpenDeleteSnackbar(true) };
+    // const handleCloseDeleteSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenDeleteSnackbar(false) };
 
-    const [openEditSnackbar, setOpenEditSnackbar] = React.useState(false);
-    const handleClickEditSnackbar = () => { setOpenEditSnackbar(true) };
-    const handleCloseEditSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenEditSnackbar(false) };
+    // const [openEditSnackbar, setOpenEditSnackbar] = React.useState(false);
+    // const handleClickEditSnackbar = () => { setOpenEditSnackbar(true) };
+    // const handleCloseEditSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenEditSnackbar(false) };
 
-    const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
-    const handleClickErrorSnackbar = () => { setOpenErrorSnackbar(true) };
-    const handleCloseErrorSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenErrorSnackbar(false) };
+    // const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
+    // const handleClickErrorSnackbar = () => { setOpenErrorSnackbar(true) };
+    // const handleCloseErrorSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenErrorSnackbar(false) };
+
+    const [openPageNavErrorSnackbar, setOpenPageNavErrorSnackbar] = React.useState(false);
+    const handleClickPageNavErrorSnackbar = () => { setOpenPageNavErrorSnackbar(true) };
+    const handleClosePageNavErrorSnackbar = (event, reason) => { if (reason === "clickaway") { return } setOpenPageNavErrorSnackbar(false) };
+
+    const [isSubmitted, setIsSubmitted] = useState(false); 
+
 
     //auth
     const auth = useAuth();
@@ -106,8 +113,20 @@ function LearnerInteractivePage(props) {
     const [currentPage, setCurrentPage] = useState([]);
     const [pageNumberPointer, setPageNumberPointer] = useState(1);
     const handlePageChange = (event, value) => {
-        setPageNumberPointer(value);
-        setRefreshInteractivePage(true)
+        if (currentPage.pageQuiz && value > currentPage.pageNumber) {
+            if (isSubmitted == "SUBMITTED") {
+            setPageNumberPointer(value);
+            setRefreshInteractivePage(true); 
+            console.log("can go to next page"); 
+            } else if (isSubmitted == "INCOMPLETE") {
+                console.log("cannot go to next page"); 
+                handleClickPageNavErrorSnackbar(); 
+            }
+        } else if (!currentPage.pageQuiz || currentPage.pageNumber > value) {
+            setPageNumberPointer(value);
+            setRefreshInteractivePage(true); 
+            console.log("can go to next page okay"); 
+        }
     };
 
     React.useEffect(() => {
@@ -225,7 +244,11 @@ function LearnerInteractivePage(props) {
 
     }
 
-     
+    const didSubmit = (data) => {
+        setIsSubmitted(data); 
+    }
+
+    console.log(isSubmitted); 
 
     const renderQuiz = () => {
         if (currentPage.pageQuiz) {
@@ -246,7 +269,7 @@ function LearnerInteractivePage(props) {
                         pageIdProp={currentPage.interactivePageId}
                         bookIdProp={bookId}
                         courseIdProp={courseId}
-                        // learnerStatusProp=''
+                        submittedProp={didSubmit}
                         quizIdProp={currentPage.pageQuiz.assessmentId}
                         refreshInteractivePage={refreshInteractivePage}
                         setRefreshInteractivePage={setRefreshInteractivePage}
@@ -257,9 +280,11 @@ function LearnerInteractivePage(props) {
         }
     }
 
+
+
     return (
         <div style={{ backgroundColor: "#F8F9FA", width: "100%", height: "75vh", paddding: 0 }}>
-            <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
+            {/* <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
                     Interactive Page Created Succesfully!
                 </Alert>
@@ -277,6 +302,11 @@ function LearnerInteractivePage(props) {
             <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={handleCloseErrorSnackbar} >
                 <Alert onClose={handleCloseErrorSnackbar} severity="error" sx={{ width: "100%" }} >
                     Error!
+                </Alert>
+            </Snackbar> */}
+            <Snackbar open={openPageNavErrorSnackbar} autoHideDuration={5000} onClose={handleClosePageNavErrorSnackbar} >
+                <Alert onClose={handleClosePageNavErrorSnackbar} severity="error" sx={{ width: "100%" }} >
+                    Complete the question to go to the next page!
                 </Alert>
             </Snackbar>
             <div>
