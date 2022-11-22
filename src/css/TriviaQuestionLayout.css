@@ -256,3 +256,68 @@
   background-color: #a7a7a7;
   align-items: center;
 }
+
+.mediaContainerPoll {
+  /* border-style: solid;
+  border-color: black;
+  border-width: 2px; */
+  height: 250px;
+  width: 50%;
+  margin: auto;
+  justify-content: center;
+  align-content: center;
+  display: flex;
+  background-color: lightgray;
+}
+
+.mediaContainerPollLayout {
+  height: 35%;
+  width: 50%;
+  margin: auto;
+  justify-content: center;
+  align-content: center;
+  display: flex;
+  background-color: lightgray;
+  margin-bottom: 1%;
+}
+
+.pollOptionsContainer {
+  height: 49%;
+  width: 100%;
+  display: flex;
+  padding: 1%;
+  flex-wrap: wrap;
+  flex-direction: row;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.questionTitleContainerPoll {
+  justify-content: center;
+  align-content: center;
+  display: flex;
+  padding-top: 1%;
+  height: 15%;
+}
+
+.triviaLayoutContainerPoll {
+  width: 90%;
+  height: 100%;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+}
+
+.pollBubble {
+  background-color: lightblue;
+  padding: 15px;
+  margin: 5px;
+  border-radius: 10px;
+  height: fit-content;
+}
+
+.pollCorner {
+  float: right;
+  margin-bottom: -4px;
+  margin-right: -5px;
+}
