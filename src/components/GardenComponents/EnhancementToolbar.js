@@ -67,7 +67,7 @@ function EnhancementToolbar({ selectedItem, selectedEnhancement, sendSelectedIte
                     return Promise.reject(error);
                 } else {
                     
-                    sendSelectedItem(selectedItem);
+                    sendSelectedItem(data);
                     closeEnhanceDialogBox();
                     toast.success("Successful enhancement!");
                 }

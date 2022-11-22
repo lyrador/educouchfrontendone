@@ -13,6 +13,7 @@ import FlipToBackIcon from '@mui/icons-material/FlipToBack';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import TreePoint from './TreePoint';
 import CallIcon from '@mui/icons-material/Call';
+import YardIcon from '@mui/icons-material/Yard';
 
 function GardenToolbox() {
     const auth = useAuth();
@@ -47,7 +48,7 @@ function GardenToolbox() {
                         <Button variant="contained" startIcon={<ShoppingCartIcon />} onClick={navigateToShoppingPage}>Shop</Button>
                         <Button variant="contained" startIcon={<FlipToBackIcon />} onClick={navigateToArrangementPage}>Rearrange</Button>
                         <Button variant="contained" startIcon={<AutoFixHighIcon />} onClick={navigateToEnhancementPage}>Enhance</Button>
-                        <Button variant="contained" startIcon={<CallIcon />} onClick={navigateToGardenParty}>Host</Button>
+                        <Button variant="contained" startIcon={<YardIcon />} onClick={navigateToGardenParty}>Study Session</Button>
                     </Stack>
                 </Grid>
                 <Grid item xs={4} style={{ textAlign: "right" }}>
