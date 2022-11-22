@@ -25,11 +25,22 @@ const socket = io.connect("http://localhost:3001")
 
 export default function TriviaHosting(props) {
 
-    let lobbyMusic = new Audio("/Bakery.mp3")
-
     const location = useLocation();
     const inClassPath = location.pathname.split("/").slice(0, 4).join("/");
 
+    //music
+    const [lobbyMusic] = useState(new Audio("/Bakery.mp3"));
+    const [countdownMusic] = useState(new Audio("/countdown.mp3"));
+    const [battleMusic] = useState(new Audio("/battleMusic.mp3"));
+    const [revealAnswerMusic] = useState(new Audio("/revealAnswerMusic.mp3"));
+    const [leaderboardMusic] = useState(new Audio("/leaderboardMusic.mp3"));
+    // const lobbyMusic = new Audio("/Bakery.mp3")
+    // const countdownMusic = new Audio("/countdown.mp3")
+    // const battleMusic = new Audio("/battleMusic.mp3")
+    // const revealAnswerMusic = new Audio("/revealAnswerMusic.mp3")
+    // const leaderboardMusic = new Audio("/leaderboardMusic.mp3")
+
+    //socket stuff
     const [username, setUsername] = useState("hoster")
     const [room, setRoom] = useState("T" + (Math.floor(Math.random() * (99999 - 10000) + 10000)));
 
@@ -44,6 +55,7 @@ export default function TriviaHosting(props) {
     var totalScoresArray = [];
     var correctOptionNumber = 0
     const [questionCounter, setQuestionCounter] = useState(1);
+    const [skipValue, setSkipValue] = useState(0);
 
     const joinRoom = () => {
         lobbyMusic.play()
@@ -223,6 +235,9 @@ export default function TriviaHosting(props) {
     React.useEffect(() => {
         if (timer === 0 && showWaitingRoomCountdown == true) {
             console.log("TIMER 1")
+            countdownMusic.pause()
+            countdownMusic.currentTime = 0
+            battleMusic.play()
             clear()
             setTimer(currentQuestion.questionTimeLimit)
             handleShowQuestion()
@@ -232,13 +247,17 @@ export default function TriviaHosting(props) {
             clear()
         } else if (timer === 0 && showWaitingRoomCountdown == false && startGame == true) {
             console.log("TIMER 3")
+            battleMusic.pause()
+            battleMusic.currentTime = 0
+            revealAnswerMusic.play()
             handleShowCorrectAnswer()
             clear()
         }
     }, [timer])
 
     const calcScore = () => {
-        var timeInMs = +new Date()
+        //adjust for skipped time also
+        var timeInMs = +new Date() + skipValue
         var playersHaveNotSubmittedArray = JSON.parse(JSON.stringify(playersArray))
 
         // console.log("playersArray")
@@ -304,9 +323,21 @@ export default function TriviaHosting(props) {
             console.log(questionScoreData)
             playersQuestionScores.push(questionScoreData)
         }
+        setSkipValue(0)
     };
 
+    const stopAllMusic = () => {
+        battleMusic.pause()
+        battleMusic.currentTime = 0;
+        countdownMusic.pause()
+        countdownMusic.currentTime = 0
+        leaderboardMusic.pause()
+        leaderboardMusic.currentTime = 0
+    }
+
     const handleGoBackToLobby = () => {
+        window.location.reload()
+        stopAllMusic()
         console.log("LOBBY")
         setShowWaitingRoomCountdown(false)
         setStartGame(false)
@@ -328,6 +359,9 @@ export default function TriviaHosting(props) {
 
     const handleShowWaitingRoomCountdown = () => {
         console.log("WAITING ROOM COUNTDOWN")
+        lobbyMusic.pause();
+        lobbyMusic.currentTime = 0;
+        countdownMusic.play();
         setShowScoreboard(false)
         setShowWaitingRoomCountdown(true)
         setTimer(3)
@@ -352,8 +386,12 @@ export default function TriviaHosting(props) {
         // console.log(correctOptionNumber)
     };
 
-    const handleShowCorrectAnswer = () => {
+    const handleSkip = () => {
+        setSkipValue(timer * 1000)
         setTimer(0)
+    }
+
+    const handleShowCorrectAnswer = () => {
         // sendTimeout()
         console.log("SHOW CORRECT ANSWER")
         setShowCorrectAnswer(true)
@@ -372,6 +410,7 @@ export default function TriviaHosting(props) {
             setQuestionIndex(questionIndex + 1)
         } else {
             console.log("SHOW LEADERBOARD")
+            leaderboardMusic.play()
             setStartGame(false)
             setShowCorrectAnswer(false)
             handleSendLeaderboard()
@@ -458,18 +497,6 @@ export default function TriviaHosting(props) {
         }
     };
 
-    // React.useEffect(() => {
-    //     clearPreviousFields()
-    //     console.log(questions)
-    //     setCurrentQuestion(questions[questionCounter]);
-    //     setCurrentQuestionTitle(questions[questionCounter].questionTitle)
-    //     setCurrentQuestionHasTimeLimit(questions[questionCounter].hasTimeLimit)
-    //     setCurrentQuestionTimeLimit(questions[questionCounter].questionTimeLimit)
-    //     setCurrentQuestionType(questions[questionCounter].triviaQuestionType)
-    //     setTriviaOptions(questions[questionCounter].triviaOptions)
-    //     setIndividualTriviaOption(questions[questionCounter].triviaOptions)
-    // }, [currentQuestion]);
-
     const goToNextQuestion = (e) => {
         clearPreviousFields()
         console.log(questions)
@@ -481,7 +508,6 @@ export default function TriviaHosting(props) {
         setTriviaOptions(questions[questionIndex].triviaOptions)
         setIndividualTriviaOption(questions[questionIndex].triviaOptions)
     }
-
 
     const clearPreviousFields = (e) => {
         setYellowTriviaOptionId("");
@@ -527,6 +553,7 @@ export default function TriviaHosting(props) {
                         >
                             <Button className="btn-upload" color="secondary" variant="contained" component="span"
                                 style={{ float: "left", left: "3%", marginTop: "0.5%", position: "absolute" }}
+                                onClick={stopAllMusic}
                             >
                                 Back
                             </Button>
@@ -563,7 +590,7 @@ export default function TriviaHosting(props) {
                                 color="primary"
                                 variant="contained"
                                 component="span"
-                                onClick={showCorrectAnswer ? handleShowScoreboard : handleShowCorrectAnswer}
+                                onClick={showCorrectAnswer ? handleShowScoreboard : handleSkip}
                             >
                                 {showCorrectAnswer ? "Continue" : "Skip"}
                             </Button>

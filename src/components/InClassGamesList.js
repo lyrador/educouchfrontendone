@@ -117,15 +117,19 @@ export default function InClassGamesList(props) {
       });
   }, [refreshPage]);
 
-  const handleChangeClassRunSelect = (event) => {
-    setSelectedClassRun(event.target.value);
-    console.log(event.target.value)
-    fetch("http://localhost:8080/triviaQuiz/getAllPollsAndTriviaFromClassRun/" + event.target.value.id)
+  const fetchGamesFromClassRun = (classRun) => {
+    fetch("http://localhost:8080/triviaQuiz/getAllPollsAndTriviaFromClassRun/" + classRun.id)
       .then((res) => res.json())
       .then((result) => {
         console.log(result);
         setGames(result);
       });
+  }
+
+  const handleChangeClassRunSelect = (event) => {
+    setSelectedClassRun(event.target.value);
+    console.log(event.target.value)
+    fetchGamesFromClassRun(event.target.value)
   };
 
   //create states
@@ -160,7 +164,8 @@ export default function InClassGamesList(props) {
 
   //delete states
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [classEventIdToDelete, setClassEventIdToDelete] = useState("");
+  const [gameIdToDelete, setGameIdToDelete] = useState("");
+  const [gameTypeToDelete, setGameTypeToDelete] = useState("");
 
   //enums
   const gameTypeEnum = [{ value: "TRIVIA" }, { value: "QUIZ" }];
@@ -203,6 +208,7 @@ export default function InClassGamesList(props) {
           } else {
             console.log("New Trivia created Successfully!");
             handleClickSnackbar();
+            fetchGamesFromClassRun(selectedClassRun)
           }
         } catch (err) {
           console.log(err);
@@ -210,9 +216,9 @@ export default function InClassGamesList(props) {
         }
       } else {
         try {
-          var pollTitle = newGameTitle; 
-          var pollDescription = newGameDescription; 
-          var newPoll = { pollTitle, pollDescription};  
+          var pollTitle = newGameTitle;
+          var pollDescription = newGameDescription;
+          var newPoll = { pollTitle, pollDescription };
           const response = await fetch(
             "http://localhost:8080/poll/classRun/" + selectedClassRun.id + "/poll/",
             {
@@ -228,6 +234,7 @@ export default function InClassGamesList(props) {
           } else {
             console.log("New Poll created Successfully!");
             handleClickSnackbar();
+            fetchGamesFromClassRun(selectedClassRun)
           }
         } catch (err) {
           console.log(err);
@@ -240,21 +247,22 @@ export default function InClassGamesList(props) {
   };
 
   //edit methods
-  const handleClickEditDialogOpen = (event, classEventId, classEventTitle, classEventNotes, classEventStartDateTime, classEventEndDateTime) => {
-    setEditClassEventId(classEventId);
-    setEditClassEventTitle(classEventTitle);
-    setEditClassEventDescription(classEventNotes);
-    setEditClassEventStartDateTime(dayjs(classEventStartDateTime).local().format());
-    setEditClassEventEndDateTime(dayjs(classEventEndDateTime).local().format());
-    setEditDialogOpen(true);
+  const handleClickEditDialogOpen = (event, gameType, gameId, gameTitle, gameDescription) => {
+    // setEditClassEventId(classEventId);
+    // setEditClassEventTitle(classEventTitle);
+    // setEditClassEventDescription(classEventNotes);
+    // setEditClassEventStartDateTime(dayjs(classEventStartDateTime).local().format());
+    // setEditClassEventEndDateTime(dayjs(classEventEndDateTime).local().format());
+    // setEditDialogOpen(true);
   };
 
   const handleEditDialogClose = () => {
     setEditDialogOpen(false);
   };
 
-  const handleClickDeleteDialogOpen = (event, classEventId) => {
-    setClassEventIdToDelete(classEventId);
+  const handleClickDeleteDialogOpen = (event, gameType, gameId) => {
+    setGameIdToDelete(gameId);
+    setGameTypeToDelete(gameType)
     setDeleteDialogOpen(true);
   };
 
@@ -263,64 +271,77 @@ export default function InClassGamesList(props) {
   };
 
   const editClassEvent = async (e) => {
-    setEditClassEventTitleError({ value: false, errorMessage: "" });
-    setEditClassEventDescriptionError({ value: false, errorMessage: "" });
-    setEditClassEventStartDateTimeError({ value: false, errorMessage: "" });
-    setEditClassEventEndDateTimeError({ value: false, errorMessage: "" });
-    if (editClassEventTitle == "") { setEditClassEventTitleError({ value: true, errorMessage: "Event title cannot be empty!" }) }
-    if (editClassEventDescription == "") { setEditClassEventDescriptionError({ value: true, errorMessage: "Event Description cannot be empty!" }) }
-    if (editClassEventStartDateTime == "") { setEditClassEventStartDateTimeError({ value: true, errorMessage: "Event Start DateTime cannot be empty!" }) }
-    if (editClassEventEndDateTime == "") { setEditClassEventEndDateTimeError({ value: true, errorMessage: "Event End DateTime cannot be empty!" }) }
-    if (dayjs(editClassEventStartDateTime).isValid() === false) { setEditClassEventStartDateTimeError({ value: true, errorMessage: "Invalid Start DateTime!" }) }
-    if (dayjs(editClassEventEndDateTime).isValid() === false) { setEditClassEventEndDateTimeError({ value: true, errorMessage: "Invalid End DateTime!" }) }
-    if (dayjs(editClassEventStartDateTime).isAfter(dayjs(editClassEventEndDateTime))) {
-      setEditClassEventStartDateTimeError({ value: true, errorMessage: "End DateTime cannot be earlier than Start DateTime!" })
-      setEditClassEventEndDateTimeError({ value: true, errorMessage: "End DateTime cannot be earlier than Start DateTime!" })
-    } else if (editClassEventTitle && editClassEventDescription && dayjs(editClassEventStartDateTime).isValid() && dayjs(editClassEventEndDateTime).isValid()) {
-      var title = editClassEventTitle;
-      var notes = editClassEventDescription;
-      var startDate = editClassEventStartDateTime;
-      var endDate = editClassEventEndDateTime;
-      var allDay = false;
-      var editClassEvent = { title, notes, startDate, endDate, allDay };
-      e.preventDefault();
-      try {
-        const response = await fetch(
-          "http://localhost:8080/event/events/" + editClassEventId,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(editClassEvent),
-          }
-        );
-        console.log(response);
-        if (response.ok == false) {
-          console.log("Error");
-          handleClickErrorSnackbar();
-        } else {
-          console.log("Class Event edited Successfully!");
-          handleClickEditSnackbar();
-        }
-      } catch (err) {
-        console.log(err);
-        handleClickErrorSnackbar();
-      }
-      setRefreshPage(true);
-      handleEditDialogClose();
-    }
+    // setEditClassEventTitleError({ value: false, errorMessage: "" });
+    // setEditClassEventDescriptionError({ value: false, errorMessage: "" });
+    // setEditClassEventStartDateTimeError({ value: false, errorMessage: "" });
+    // setEditClassEventEndDateTimeError({ value: false, errorMessage: "" });
+    // if (editClassEventTitle == "") { setEditClassEventTitleError({ value: true, errorMessage: "Event title cannot be empty!" }) }
+    // if (editClassEventDescription == "") { setEditClassEventDescriptionError({ value: true, errorMessage: "Event Description cannot be empty!" }) }
+    // if (editClassEventStartDateTime == "") { setEditClassEventStartDateTimeError({ value: true, errorMessage: "Event Start DateTime cannot be empty!" }) }
+    // if (editClassEventEndDateTime == "") { setEditClassEventEndDateTimeError({ value: true, errorMessage: "Event End DateTime cannot be empty!" }) }
+    // if (dayjs(editClassEventStartDateTime).isValid() === false) { setEditClassEventStartDateTimeError({ value: true, errorMessage: "Invalid Start DateTime!" }) }
+    // if (dayjs(editClassEventEndDateTime).isValid() === false) { setEditClassEventEndDateTimeError({ value: true, errorMessage: "Invalid End DateTime!" }) }
+    // if (dayjs(editClassEventStartDateTime).isAfter(dayjs(editClassEventEndDateTime))) {
+    //   setEditClassEventStartDateTimeError({ value: true, errorMessage: "End DateTime cannot be earlier than Start DateTime!" })
+    //   setEditClassEventEndDateTimeError({ value: true, errorMessage: "End DateTime cannot be earlier than Start DateTime!" })
+    // } else if (editClassEventTitle && editClassEventDescription && dayjs(editClassEventStartDateTime).isValid() && dayjs(editClassEventEndDateTime).isValid()) {
+    //   var title = editClassEventTitle;
+    //   var notes = editClassEventDescription;
+    //   var startDate = editClassEventStartDateTime;
+    //   var endDate = editClassEventEndDateTime;
+    //   var allDay = false;
+    //   var editClassEvent = { title, notes, startDate, endDate, allDay };
+    //   e.preventDefault();
+    //   try {
+    //     const response = await fetch(
+    //       "http://localhost:8080/event/events/" + editClassEventId,
+    //       {
+    //         method: "PUT",
+    //         headers: { "Content-Type": "application/json" },
+    //         body: JSON.stringify(editClassEvent),
+    //       }
+    //     );
+    //     console.log(response);
+    //     if (response.ok == false) {
+    //       console.log("Error");
+    //       handleClickErrorSnackbar();
+    //     } else {
+    //       console.log("Class Event edited Successfully!");
+    //       handleClickEditSnackbar();
+    //     }
+    //   } catch (err) {
+    //     console.log(err);
+    //     handleClickErrorSnackbar();
+    //   }
+    //   setRefreshPage(true);
+    //   handleEditDialogClose();
+    // }
   };
 
   //delete methods
-  const deleteClassEvent = (e) => {
+  const deleteGame = (e) => {
     e.preventDefault();
-    fetch("http://localhost:8080/event/events/" + classEventIdToDelete, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    }).then(() => {
-      console.log("Class Event Deleted Successfully!");
-      setRefreshPage(true);
-      handleDeleteDialogClose();
-    });
+    if (gameTypeToDelete == "TRIVIA") {
+      fetch("http://localhost:8080/triviaQuiz/triviaQuizzes/" + gameIdToDelete, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      }).then(() => {
+        console.log("Trivia Deleted Successfully!");
+        setRefreshPage(true);
+        handleDeleteDialogClose();
+        fetchGamesFromClassRun(selectedClassRun)
+      });
+    } else {
+      fetch("http://localhost:8080/poll/polls/" + gameIdToDelete, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      }).then(() => {
+        console.log("Poll Deleted Successfully!");
+        setRefreshPage(true);
+        handleDeleteDialogClose();
+        fetchGamesFromClassRun(selectedClassRun)
+      });
+    }
   };
 
   //conditional rendering
@@ -372,7 +393,7 @@ export default function InClassGamesList(props) {
                 In-Class
               </LinkMaterial>
             </Link>
-   
+
           </Breadcrumbs>
           <div style={{ justifyContent: "center" }}>
             <h1 style={{ justifySelf: "center", marginLeft: "auto" }}>
@@ -418,7 +439,7 @@ export default function InClassGamesList(props) {
                 <TableBody>
                   {renderEmptyRowMessage()}
                   {games.map((row) => (
-                    <TableRow key={row.classRunId} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                    <TableRow key={row.gameId} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                       <TableCell component="th" scope="row" align="right">
                         <Link
                           to={`${inClassPath}/${row.gameType.toLowerCase()}/${row.gameId}`}
@@ -436,7 +457,7 @@ export default function InClassGamesList(props) {
                           <IconButton
                             aria-label="settings"
                             onClick={(event) =>
-                              handleClickDeleteDialogOpen(event, row.id)
+                              handleClickDeleteDialogOpen(event, row.gameType, row.gameId)
                             }
                           >
                             <DeleteIcon />
@@ -444,12 +465,12 @@ export default function InClassGamesList(props) {
                           <IconButton
                             aria-label="settings"
                             onClick={(event) =>
-                              handleClickEditDialogOpen(event, row.id, row.title, row.notes, row.startDate, row.endDate)
+                              handleClickEditDialogOpen(event, row.gameId, row.gameType, row.gameTitle, row.gameDescription)
                             }
                           >
                             <EditIcon />
                           </IconButton>
-                          <Link
+                          {row.gameType == "TRIVIA" && <Link
                             to={`${inClassPath}/${row.gameType.toLowerCase()}/${row.gameId}/triviaHosting`}
                             style={{ textDecoration: "none" }}
                           >
@@ -459,6 +480,7 @@ export default function InClassGamesList(props) {
                               <PlayCircleFilledWhiteIcon />
                             </IconButton>
                           </Link>
+                          }
                         </div>
                       </TableCell>
                     </TableRow>
@@ -528,7 +550,7 @@ export default function InClassGamesList(props) {
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {"Delete this class event?"}
+            {"Delete this game?"}
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
@@ -538,7 +560,7 @@ export default function InClassGamesList(props) {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleDeleteDialogClose}>Cancel</Button>
-            <Button onClick={deleteClassEvent} autoFocus>
+            <Button onClick={deleteGame} autoFocus>
               Delete
             </Button>
           </DialogActions>

@@ -46,9 +46,10 @@ export default function PollCreation(props) {
     const loadUpStartingQuestionIdIfHave = (questions) => {
         if (questionIdToBrowse == "" && questionNumberToBrowse == "") {
             console.log("LOAD UP STARTING QN")
+            console.log(questions)
             for (const retrievedQuestion of questions) {
-                if (retrievedQuestion.questionNumber == 1) {
-                    setQuestionIdToBrowse(retrievedQuestion.triviaQuestionId)
+                if (retrievedQuestion.pollQuestionNumber == 1) {
+                    setQuestionIdToBrowse(retrievedQuestion.pollQuestionId)
                     setQuestionNumberToBrowse(1)
                 }
             }

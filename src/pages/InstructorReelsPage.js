@@ -2,9 +2,11 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import { useAuth } from "../context/AuthProvider";
 import {
+  Alert,
   Breadcrumbs,
   Button,
   Grid,
+  Snackbar,
   Tabs,
   TextField,
   Typography,
@@ -25,6 +27,36 @@ export default function InstructorReelsPage(props) {
   const [value, setValue] = React.useState(0);
   const [courseId, setCourseId] = React.useState(1);
   const [refresh, setRefresh] = React.useState(false);
+
+  const [openDeleteSnackbar, setOpenDeleteSnackbar] = React.useState(false);
+  const handleOpenDeleteSnackbar = () => {
+    setOpenDeleteSnackbar(true);
+  };
+  const handleCloseDeleteSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenDeleteSnackbar(false);
+  };
+
+  const [saveReelSuccess, setSaveReelSuccess] = React.useState(false);
+  const handleSaveReelSucess = () => {
+    console.log("save reel suces");
+    setSaveReelSuccess(true);
+  };
+  const handleCloseSaveReelSucess = () => {
+    setSaveReelSuccess(false);
+  };
+
+  const [submitReelSuccess, setSubmitReelSucess] = React.useState(false);
+  const handleSubmitSuccess = () => {
+    setSubmitReelSucess(true);
+  };
+  const handleCloseSubmitSucess = () => {
+    setSubmitReelSucess(false);
+  };
+
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -63,7 +95,6 @@ export default function InstructorReelsPage(props) {
     };
   }
 
-  //not tested
   function handleCreateReel() {
     fetch("http://localhost:8080/reel/createReel", {
       method: "POST",
@@ -93,7 +124,6 @@ export default function InstructorReelsPage(props) {
   }
 
   React.useEffect(() => {
-    console.log(user);
     fetch(
       "http://localhost:8080/reel/getAllReelsByInstructorId/" + instructorId
     )
@@ -107,7 +137,45 @@ export default function InstructorReelsPage(props) {
   return (
     <>
       <h1>Instructor Reels</h1>
-
+      <Snackbar
+        open={openDeleteSnackbar}
+        autoHideDuration={5000}
+        onClose={handleCloseDeleteSnackbar}
+      >
+        <Alert
+          onClose={handleCloseDeleteSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Reel Deleted Succesfully!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={saveReelSuccess}
+        autoHideDuration={3000}
+        onClose={handleCloseSaveReelSucess}
+      >
+        <Alert
+          onClose={handleCloseSaveReelSucess}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Successfully Saved Reel!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={submitReelSuccess}
+        autoHideDuration={3000}
+        onClose={handleCloseSubmitSucess}
+      >
+        <Alert
+          onClose={handleCloseSubmitSucess}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          Successfully Submitted Reel!
+        </Alert>
+      </Snackbar>
       <div className="cards">
         <Box sx={{ width: "100%" }}>
           <div style={{ paddingLeft: "3%" }}>
@@ -195,6 +263,7 @@ export default function InstructorReelsPage(props) {
                         reelNumLikes={reel.numLikes}
                         reelNumViews={reel.numViews}
                         video={reel.video}
+                        thumbnail={reel.thumbnail}
                         reelCreator={reel.reelCreator.name}
                         rejectionReason={reel.rejectionReason}
                       />

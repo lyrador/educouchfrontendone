@@ -66,30 +66,85 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 export default function PollQuestionLayout(props) {
 
-    const [pollResponses, setPollResponses] = useState([])
-    const [username, setUsername] = useState("hoster2")
-    const [room, setRoom] = useState("P12345");
-
-    const joinRoom = () => {
-        socket.emit("join_room_admin_poll", room)
+    function delay(time) {
+        return new Promise(resolve => setTimeout(resolve, time));
     }
 
-    const sendPollQuestion = () => {
+    const [activatedBoolean, setActivatedBoolean] = useState(false)
+    const [pollResponses, setPollResponses] = useState([])
+    const [username, setUsername] = useState("hoster2")
+    const [room, setRoom] = useState("");
+
+    function generateRandomRoomNumber() {
+        let x = "P" + (Math.floor(Math.random() * (99999 - 10000) + 10000))
+        return x
+    }
+
+    const joinRoom = (roomNumber) => {
+        socket.emit("join_room_admin_poll", roomNumber)
+    }
+
+    const leaveRoom = () => {
+        socket.emit("leave_room_admin_poll", room)
+    }
+
+    const deactivateQuestion = () => {
+        setRoom("")
+        leaveRoom()
+        setActivatedBoolean(false)
+    }
+
+    const activateQuestion = () => {
+        var temp = generateRandomRoomNumber()
+        console.log(temp)
+        setRoom(temp)
+        joinRoom(temp)
+        setActivatedBoolean(true)
+        sendPollQuestionFromEffect(currentQuestion.pollQuestionTitle)
+    }
+
+    const sendPollQuestionFromEffect = (questionTitle) => {
         const pollQuestion = {
             author: username,
             room: room,
-            question: currentQuestion.pollQuestionTitle
+            question: questionTitle
         }
         console.log("SEND POLL QUESTION")
         console.log(pollQuestion)
         socket.emit("send_poll_question", pollQuestion)
     }
 
+    // const sendPollQuestion = () => {
+    //     const pollQuestion = {
+    //         author: username,
+    //         room: room,
+    //         question: currentQuestion.pollQuestionTitle
+    //     }
+    //     console.log("SEND POLL QUESTION")
+    //     console.log(pollQuestion)
+    //     socket.emit("send_poll_question", pollQuestion)
+    // }
+
     React.useEffect(() => {
         joinRoom()
     }, [])
 
     React.useEffect(() => {
+        socket.on("receive_request_poll_question", (data) => {
+            console.log("receive request poll question")
+            console.log(currentQuestion)
+            if (currentQuestion.pollQuestionTitle) {
+                delay(200).then(() => sendPollQuestionFromEffect(currentQuestion.pollQuestionTitle));
+            } else {
+                fetch("http://localhost:8080/pollQuestion/" + props.pollQuestionId + "/pollQuestions")
+                    .then((res) => res.json())
+                    .then((result) => {
+                        console.log("WAY 2")
+                        console.log(result)
+                        delay(200).then(() => sendPollQuestionFromEffect(result.pollQuestionTitle));
+                    });
+            }
+        })
         socket.on("receive_poll_response", (data) => {
             console.log("receive poll response")
             const pollerResponse = {
@@ -207,6 +262,9 @@ export default function PollQuestionLayout(props) {
                 setEditedCurrentPollQuestionTitle(result.pollQuestionTitle)
                 setEditedCurrentQuestionHasTimeLimit(result.hasTimeLimit)
                 setEditedCurrentQuestionTimeLimit(result.questionTimeLimit)
+                if (room != "") {
+                    sendPollQuestionFromEffect(result.pollQuestionTitle)
+                }
             });
     }, [props.pollQuestionId]);
 
@@ -404,6 +462,12 @@ export default function PollQuestionLayout(props) {
             <div className="secondaryLayoutContainer">
                 <div className="slideLayoutContainer">
                     <Paper elevation={3} className="triviaLayoutContainerPoll">
+
+                        <div className="roomContainerPoll" style={{ textAlign: "center", alignItems: 'center' }}>
+                            <Typography variant="h5" style={{ fontStyle: "italic" }}>Room Pin:&nbsp;</Typography>
+                            <Typography variant="h5" style={{ fontWeight: "bold" }}>{room ? room : "Not in Progress"}</Typography>
+                        </div>
+
                         <div className="questionTitleContainerPoll" style={{ textAlign: "center", alignItems: 'center' }}>
                             <Typography variant="h3" style={{ fontWeight: "bold", margin: "1%" }}>{currentQuestion.pollQuestionTitle}</Typography>
                         </div>
@@ -432,6 +496,33 @@ export default function PollQuestionLayout(props) {
                     <div id="sidenavbar2" className="sidebarPage">
                         <div style={{ width: "100%", display: "flex" }}>
                             <div style={{ width: "85%" }}>
+                                <h2>Session Settings</h2>
+                                <Divider />
+                            </div>
+                        </div>
+                        <div style={{ width: "100%", justifyContent: 'center', textAlign: 'center' }}>
+                            {!activatedBoolean && props.pollQuestionId &&
+                                <Button className="btn-upload" color="secondary" component="span" variant="outlined"
+                                    onClick={activateQuestion}
+                                    style={{ width: "80%", marginTop: "10px" }}
+                                    startIcon={<AirplayIcon />}
+                                >
+                                    Activate
+                                </Button>
+                            }
+                            {activatedBoolean && props.pollQuestionId &&
+                                <Button className="btn-upload" color="secondary" component="span" variant="contained"
+                                    onClick={deactivateQuestion}
+                                    style={{ width: "80%", marginTop: "10px" }}
+                                    startIcon={<AirplayIcon />}
+                                >
+                                    Deactivate
+                                </Button>
+                            }
+                        </div>
+                        <br></br>
+                        <div style={{ width: "100%", display: "flex" }}>
+                            <div style={{ width: "85%" }}>
                                 <h2>Question Settings</h2>
                                 <Divider />
                             </div>
@@ -457,17 +548,6 @@ export default function PollQuestionLayout(props) {
                                 </Button>
                             }
                         </div> */}
-                        <div style={{ width: "100%", justifyContent: 'center', textAlign: 'center' }}>
-                            {props.pollQuestionId &&
-                                <Button className="btn-upload" color="secondary" component="span" variant="contained"
-                                    onClick={sendPollQuestion}
-                                    style={{ width: "80%", marginTop: "10px" }}
-                                    startIcon={<AirplayIcon />}
-                                >
-                                    Activate
-                                </Button>
-                            }
-                        </div>
                         <div style={{ width: "100%", justifyContent: 'center', textAlign: 'center' }}>
                             {props.pollQuestionId &&
                                 <Button className="btn-upload" color="primary" component="span" variant="contained"

@@ -80,7 +80,7 @@ function TechnicalSupport(props) {
                   src="https://cdn.pixabay.com/photo/2018/04/09/08/01/problem-3303396_960_720.png"
                   alt="Issue"
                   width="700"
-                  height="600"
+                  height="500"
                 ></img>
               </center>
             </Typography>

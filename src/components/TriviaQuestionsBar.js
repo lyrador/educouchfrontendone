@@ -261,12 +261,15 @@ export default function TriviaQuestionBar(props) {
         if (newQuestionTitle == "") {
             setQuestionTitleError({ value: true, errorMessage: "Question title cannot be empty!" });
         }
-        if (newQuestionHasTimeLimit == true && newQuestionTimeLimit == "") {
+        // if (newQuestionHasTimeLimit == true && newQuestionTimeLimit == "") {
+        //     setQuestionTimeLimitError({ value: true, errorMessage: "Question time limit cannot be empty!" });
+        // }
+        if (newQuestionTimeLimit == "") {
             setQuestionTimeLimitError({ value: true, errorMessage: "Question time limit cannot be empty!" });
         }
         if (newQuestionTitle && newQuestionTimeLimit) {
             var questionTitle = newQuestionTitle
-            var hasTimeLimit = newQuestionHasTimeLimit
+            var hasTimeLimit = false
             var questionTimeLimit = newQuestionTimeLimit
             var triviaQuestionType = newQuestionType
             const newQuestion = { questionTitle, hasTimeLimit, questionTimeLimit, triviaQuestionType }
@@ -642,7 +645,7 @@ export default function TriviaQuestionBar(props) {
                                 </MenuItem>
                             ))}
                         </TextField>
-                        <FormControl>
+                        {/* <FormControl>
                             <FormLabel id="controlled-radio-buttons-group">Has Time Limit</FormLabel>
                             <RadioGroup
                                 aria-labelledby="controlled-radio-buttons-group"
@@ -653,7 +656,7 @@ export default function TriviaQuestionBar(props) {
                                 <FormControlLabel value={true} control={<Radio />} label="Yes" />
                                 <FormControlLabel value={false} control={<Radio />} label="No" />
                             </RadioGroup>
-                        </FormControl>
+                        </FormControl> */}
                         <TextField
                             id="outlined-basic"
                             label="Trivia Question Time Limit (Seconds)"

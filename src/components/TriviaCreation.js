@@ -103,7 +103,7 @@ export default function TriviaCreation(props) {
                     <TriviaQuestionLayout
                         questionId={questionIdToBrowse}
                         questionNumber={questionNumberToBrowse}
-                        book={questions}
+                        questions={questions}
                         checkForChanges={checkForChanges}
                         setCheckForChanges={setCheckForChanges}
                         refreshPageChild={refreshPageChild}
