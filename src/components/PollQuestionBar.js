@@ -264,10 +264,10 @@ export default function PollQuestionBar(props) {
         if (newQuestionHasTimeLimit == true && newQuestionTimeLimit == "") {
             setQuestionTimeLimitError({ value: true, errorMessage: "Question time limit cannot be empty!" });
         }
-        if (newPollQuestionTitle && newQuestionTimeLimit) {
+        if (newPollQuestionTitle) {
             var pollQuestionTitle = newPollQuestionTitle
-            var hasTimeLimit = newQuestionHasTimeLimit
-            var questionTimeLimit = newQuestionTimeLimit
+            var hasTimeLimit = false
+            var questionTimeLimit = 60
             const newQuestion = { pollQuestionTitle, hasTimeLimit, questionTimeLimit }
             console.log(newQuestion);
             try {
@@ -504,7 +504,7 @@ export default function PollQuestionBar(props) {
                                 <Button onClick={(event) => handleQuestionChange(event, question.pollQuestionId, question.pollQuestionNumber)} fullWidth
                                     style={{ justifyContent: "flex-start", textTransform: 'none', backgroundColor: props.questionIdToBrowse == question.pollQuestionId ? "#e5e5e5" : "" }}>
                                     <div className="chapterLine" style={{ width: "90%", textAlign: "left" }}>Q{question.pollQuestionNumber} - {question.pollQuestionTitle}</div>
-                                    {question.questionIsValid &&
+                                    {/* {question.questionIsValid &&
                                         <div style={{ float: "right", textAlign: "right" }}>
                                             <img src={tick} style={{ height: "20px", width: "20px", objectFit: "contain", marginTop: "6px" }} />
                                         </div>
@@ -513,7 +513,7 @@ export default function PollQuestionBar(props) {
                                         <div style={{ float: "right", textAlign: "right" }}>
                                             <img src={warning} style={{ height: "20px", width: "20px", objectFit: "contain", marginTop: "6px" }} />
                                         </div>
-                                    }
+                                    } */}
                                 </Button>
                                 <Divider />
                             </div>
@@ -614,7 +614,7 @@ export default function PollQuestionBar(props) {
                 </Alert>
             </Snackbar>
             <div>
-                <Dialog open={open} onClose={handleClose}>
+                <Dialog open={open} onClose={handleClose} maxWidth={'sm'} fullWidth={true}>
                     <DialogTitle>Create New Poll Question</DialogTitle>
                     <DialogContent>
                         <TextField
@@ -641,7 +641,7 @@ export default function PollQuestionBar(props) {
                                 </MenuItem>
                             ))}
                         </TextField> */}
-                        <FormControl>
+                        {/* <FormControl>
                             <FormLabel id="controlled-radio-buttons-group">Has Time Limit</FormLabel>
                             <RadioGroup
                                 aria-labelledby="controlled-radio-buttons-group"
@@ -652,8 +652,8 @@ export default function PollQuestionBar(props) {
                                 <FormControlLabel value={true} control={<Radio />} label="Yes" />
                                 <FormControlLabel value={false} control={<Radio />} label="No" />
                             </RadioGroup>
-                        </FormControl>
-                        <TextField
+                        </FormControl> */}
+                        {/* <TextField
                             id="outlined-basic"
                             label="Poll Question Time Limit (Seconds)"
                             variant="outlined"
@@ -664,7 +664,7 @@ export default function PollQuestionBar(props) {
                             onChange={(e) => setNewQuestionTimeLimit(e.target.value)}
                             error={questionTimeLimitError.value}
                             helperText={questionTimeLimitError.errorMessage}
-                        />
+                        /> */}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
@@ -806,9 +806,7 @@ export default function PollQuestionBar(props) {
                 </Dialog>
             </div>
             <div>
-                <Dialog
-                    open={reorderDialogOpen} onClose={handleReorderDialogClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth={'sm'} fullWidth={true}
-                >
+                <Dialog open={reorderDialogOpen} onClose={handleReorderDialogClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth={'sm'} fullWidth={true}>
                     <DialogTitle id="alert-dialog-title">
                         {"Chapter Re-Ordering"}
                     </DialogTitle>
