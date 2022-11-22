@@ -16,6 +16,9 @@ import Moment from "moment";
 import SettingsIcon from "@mui/icons-material/Settings";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import UploadService from "../../services/UploadFilesService";
 import AttachmentFileSubmissionComponent from "../AttachmentFileSubmissionComponent";
 import {
@@ -70,7 +73,7 @@ export default function FileSubmissionAttempt(props) {
     console.log("useEffect called");
     fetch(
       "http://localhost:8080/assessment/getFileSubmissionById/" +
-        fileSubmissionId
+      fileSubmissionId
     )
       .then((res) => res.json())
       .then((result) => {
@@ -95,9 +98,9 @@ export default function FileSubmissionAttempt(props) {
       .then(
         fetch(
           "http://localhost:8080/fileSubmissionAttempt/getFileSubmissionAttemptByAssessmentId/" +
-            fileSubmissionId +
-            "/" +
-            learnerId
+          fileSubmissionId +
+          "/" +
+          learnerId
         )
           .then((res) => res.json())
           .then((result) => {
@@ -140,7 +143,7 @@ export default function FileSubmissionAttempt(props) {
     console.log("refresh page called");
     fetch(
       "http://localhost:8080/assessment/getFileSubmissionById/" +
-        fileSubmissionId
+      fileSubmissionId
     )
       .then((res) => res.json())
       .then((result) => {
@@ -151,9 +154,9 @@ export default function FileSubmissionAttempt(props) {
       .then(
         fetch(
           "http://localhost:8080/fileSubmissionAttempt/getFileSubmissionAttemptByAssessmentId/" +
-            fileSubmissionId +
-            "/" +
-            learnerId
+          fileSubmissionId +
+          "/" +
+          learnerId
         )
           .then((res) => res.json())
           .then((result) => {
@@ -236,9 +239,9 @@ export default function FileSubmissionAttempt(props) {
       console.log("proceed file sub, no previous attempt found");
       fetch(
         "http://localhost:8080/fileSubmissionAttempt/createFileSubmissionAttempt/" +
-          fileSubmissionId +
-          "/" +
-          learnerId,
+        fileSubmissionId +
+        "/" +
+        learnerId,
         {
           method: "POST",
         }
@@ -248,7 +251,18 @@ export default function FileSubmissionAttempt(props) {
           console.log("instantiated new file sub attempt: ", result);
           setFileSubmissionAttempt(result);
         })
-        .then(setViewSubmission(true));
+        .then(() => {
+          setViewSubmission(true);
+          var incrementUrl = "http://localhost:8080/treePoints/incrementTreePoints?learnerId=" + user.userId + "&increment=1";
+          fetch(incrementUrl)
+            .then(() => {
+              console.log("Successful in adding one tree poitns!");
+            })
+            .catch((err)=> {
+              console.log(err);
+            })
+        })
+
     } else {
       //already has file submission attempt set
       setViewSubmission(true);
@@ -258,6 +272,7 @@ export default function FileSubmissionAttempt(props) {
   return (
     <div>
       <Grid container direction={"column"}>
+        <ToastContainer/>
         <h1>{title}</h1>
         <Grid item xs={2}>
           <LearnerCoursesDrawer
@@ -382,7 +397,7 @@ export default function FileSubmissionAttempt(props) {
 
                 <Grid container justifyContent={"center"} marginTop="50px">
                   {!fileSubmissionAttempt.assessmentAttemptStatusEnum ==
-                  "GRADED" ? (
+                    "GRADED" ? (
                     <Button
                       color="primary"
                       variant="contained"
@@ -398,7 +413,7 @@ export default function FileSubmissionAttempt(props) {
                       style={{
                         paddingTop: 10,
                         paddingBottom: 30,
-                            paddingLeft: 10,
+                        paddingLeft: 10,
                         paddingRight: 10,
                         marginTop: 10,
                         backgroundColor: "#CCCCFF",

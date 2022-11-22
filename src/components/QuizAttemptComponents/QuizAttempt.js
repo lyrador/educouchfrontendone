@@ -98,15 +98,6 @@ export default function QuizAttempt(props) {
         // console.log("questionAttempts fetched: ", result.questionAttempts);
       });
 
-    
-      var treePointUrl = "http://localhost:8080/treePoints/incrementTreePoints?learnerId=" + user.userId + "&increment=" + 1;
-      fetch(treePointUrl)
-      .then((result) => {
-        console.log("Succesfully adding the tree points.");
-      })
-      .catch((err) => {
-        console.log("An error has occured in adding the tree points");
-      });
   }
 
   function handleViewGradedQuizAttempt() {

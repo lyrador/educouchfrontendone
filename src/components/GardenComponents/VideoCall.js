@@ -144,7 +144,8 @@ export default function VideoCall({ user, sendOtherUser }) {
         <img src={groupStudy} style={{ width: '50%' }} />
         <div>
           <Typography variant="h6">Study with Strangers</Typography>
-          <Typography>Connect with other kids within our community through productive studying session in each other's garden. To visit another user's garden, simply click the button below. Once they received you invitation, they are also allowing you to study in their garden.</Typography>
+          <br/>
+          <Typography style = {{textAlign: "justify", width: "60%"}}>Connect with the other kids within our community through productive studying session. To visit another user's garden, simply click the button below. Once they accept your invitation, they are also allowing you to study in their garden.</Typography>
         </div>
         <br />
         {connectionStatus === null && <Button variant="contained" onClick={() => sendOrAcceptInvitation(true)}>Find a stranger to study with!</Button>}
