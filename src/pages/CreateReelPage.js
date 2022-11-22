@@ -18,6 +18,7 @@ import {
   Paper,
   Snackbar,
   Alert,
+  DialogContentText,
 } from "@mui/material";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 
@@ -50,10 +51,10 @@ export default function CreateReelPage(props) {
   const [value, setValue] = React.useState(0);
   const [refresh, setRefresh] = React.useState(false);
   const [reelTitle, setReelTitle] = React.useState({
-    name: "",
+    name: " ",
   });
   const [reelCaption, setReelCaption] = React.useState({
-    name: "",
+    name: " ",
   });
   //upload video stuff
   const theme = createTheme({
@@ -87,6 +88,8 @@ export default function CreateReelPage(props) {
   const [uploadedAttachmentId, setUploadedAttachmentId] = useState("");
   const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
 
+  const [openTermsDialog, setOpenTermsDialog] = useState(false);
+
   React.useEffect(() => {
     fetch("http://localhost:8080/reel/getReel/" + reelId)
       .then((res) => res.json())
@@ -107,6 +110,14 @@ export default function CreateReelPage(props) {
           })
       );
   }, [refresh]);
+
+  const handleOpenTermsDialog = () => {
+    setOpenTermsDialog(true)
+  }
+
+  const handleCloseTermsDialog = () => {
+    setOpenTermsDialog(false)
+  }
 
   const handleClickErrorSnackbar = () => {
     setOpenErrorSnackbar(true);
@@ -247,6 +258,24 @@ export default function CreateReelPage(props) {
       });
   };
 
+  const [saveReelSuccess, setSaveReelSuccess] = useState(false);
+  const handleSaveReelSucess = () => {
+    console.log("trigger handle save reel")
+    setSaveReelSuccess(true);
+  };
+  const handleCloseSaveReelSucess = () => {
+    setSaveReelSuccess(false);
+  };
+
+  const [submitReelSuccess, setSubmitReelSucess] = useState(false);
+  const handleSubmitSuccess = () => {
+    setSubmitReelSucess(true);
+  };
+  const handleCloseSubmitSucess= () => {
+    setSubmitReelSucess(false);
+  };
+
+
   //need to change out API
   const createNewFileItem = async (e) => {
     e.preventDefault();
@@ -356,6 +385,7 @@ export default function CreateReelPage(props) {
       })
         .then((res) => res.json())
         .then((response) => console.log("saved: ", response))
+        .then(handleSaveReelSucess)
         .then(() => navigate(`/instructorReels`));
     }
   }
@@ -364,8 +394,8 @@ export default function CreateReelPage(props) {
     if (
       currentPage &&
       currentPage.video &&
-      reelTitle.name &&
-      reelCaption.name &&
+      (reelTitle.name!=" ") &&
+      (reelCaption.name!=" ") &&
       courseSelected
     ) {
       const incompleteDTO = {
@@ -386,19 +416,29 @@ export default function CreateReelPage(props) {
           console.log("successfully saved reel: ", result);
           //console.log(JSON.stringify(result.pageQuiz))
         })
+        .then(handleSaveReelSucess)
         .then(() => navigate(`/instructorReels`));
     } else {
       console.log("handleSaveReel validation failed");
+      console.log("video: ", currentPage.video)
+      console.log("title: ", reelTitle.name)
+      console.log("caption: ", reelCaption.name)
+
       if (!currentPage.video) {
+        console.log("fail video val")
         setMissingVideoError(true);
       }
-      if (!reelTitle.name) {
+      if (reelTitle.name == " ") {
+        console.log("fail title val")
         setMissingTitleError(true);
       }
-      if (!reelCaption.name) {
+      if (reelCaption.name == " ") {
+        console.log("fail caption val")
         setMissingCaptionError(true);
       }
       if (!courseSelected) {
+        console.log("fail course selected val")
+        setMissingCourseError(true);
       }
     }
   }
@@ -569,6 +609,21 @@ export default function CreateReelPage(props) {
                     startIcon={<InsertPhotoIcon />}
                   >
                     Upload Reel Video
+                  </Button>
+                  <Button
+                    className="btn-upload"
+                    color="primary"
+                    component="span"
+                    variant="contained"
+                    onClick={handleOpenTermsDialog}
+                    style={{
+                      width: "20%",
+                      marginTop: "10px",
+                      marginBottom: "20px",
+                    }}
+                    startIcon={<InsertPhotoIcon />}
+                  >
+                    Community Guidelines
                   </Button>
                   <Button
                     className="btn-upload"
@@ -841,6 +896,24 @@ export default function CreateReelPage(props) {
           </div>
         </Box>
       </div>
+      <Dialog
+        open={openTermsDialog}
+        onClose={handleCloseTermsDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Educouch Reels Community Guidelines"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Please do not post reels containing sexual, religious or illegal undertones. Users found guilty will have their accounts permanently banned.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseTermsDialog}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

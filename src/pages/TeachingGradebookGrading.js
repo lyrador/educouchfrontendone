@@ -65,13 +65,6 @@ function TeachingGradebookGrading() {
       width: 250,
     },
     {
-      field: "graded",
-      headerName: "Graded",
-      width: 250,
-      valueGetter: getGraded,
-      type : 'boolean',
-    },
-    {
       headerName: "Action",
       width: 200,
       renderCell: (params) => {

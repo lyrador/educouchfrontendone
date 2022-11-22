@@ -55,7 +55,6 @@ export default function InstructorViewReel(props) {
   const REELTITLE_LIMIT = 30;
   const REELCAPTION_LIMIT = 400;
   const [currentPage, setCurrentPage] = useState([]);
-  const [openDeleteSnackbar, setOpenDeleteSnackbar] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   //edit reel stuff
@@ -208,18 +207,6 @@ export default function InstructorViewReel(props) {
     console.log("selecting: ", e.target.value);
   };
 
-  //delete reel stuff
-  const handleClickDeleteSnackbar = () => {
-    setOpenDeleteSnackbar(true);
-  };
-
-  const handleCloseDeleteSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenDeleteSnackbar(false);
-  };
-
   const handleClickDeleteDialogOpen = (event) => {
     setDeleteDialogOpen(true);
   };
@@ -237,7 +224,6 @@ export default function InstructorViewReel(props) {
     }).then(() => {
       console.log("Reel Deleted Successfully!");
       handleDeleteDialogClose();
-      handleClickDeleteSnackbar();
       handleBack();
     });
   };
@@ -435,8 +421,8 @@ export default function InstructorViewReel(props) {
     if (
       currentPage &&
       currentPage.video &&
-      reelTitle.name &&
-      reelCaption.name &&
+      reelTitle.name != " " &&
+      reelCaption.name != " " &&
       courseSelected
     ) {
       const incompleteDTO = {
@@ -457,39 +443,35 @@ export default function InstructorViewReel(props) {
           console.log("successfully saved reel: ", result);
           //console.log(JSON.stringify(result.pageQuiz))
         })
+
         .then(() => navigate(`/instructorReels`));
     } else {
       console.log("handleSaveReel validation failed");
+      console.log("video: ", currentPage.video);
+      console.log("title: ", reelTitle.name);
+      console.log("caption: ", reelCaption.name);
+
       if (!currentPage.video) {
+        console.log("fail video val");
         setMissingVideoError(true);
       }
-      if (!reelTitle.name) {
+      if (reelTitle.name == " ") {
+        console.log("fail title val");
         setMissingTitleError(true);
       }
-      if (!reelCaption.name) {
+      if (reelCaption.name == " ") {
+        console.log("fail caption val");
         setMissingCaptionError(true);
       }
       if (!courseSelected) {
+        console.log("fail course selected val");
+        setMissingCourseError(true);
       }
     }
   }
 
   return (
     <>
-      <Snackbar
-        open={openDeleteSnackbar}
-        autoHideDuration={5000}
-        onClose={handleCloseDeleteSnackbar}
-      >
-        <Alert
-          onClose={handleCloseDeleteSnackbar}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          Reel Deleted Succesfully!
-        </Alert>
-      </Snackbar>
-
       <div style={{ display: "flex", justifyContent: "space-around" }}>
         <Button
           color="primary"
@@ -575,6 +557,7 @@ export default function InstructorViewReel(props) {
                 Please select a Course Tag!
               </Alert>
             </Snackbar>
+
             <Box
               sx={{ borderBottom: 1, borderColor: "divider", marginBottom: 5 }}
             >

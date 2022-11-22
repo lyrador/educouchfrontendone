@@ -3,6 +3,8 @@ import React, { useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
 import QuizQuestionAttemptComponent from "./QuizQuestionAttemptComponent";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function QuizAttemptDisplay(props) {
   const [currentQuiz, setCurrentQuiz] = useState();
@@ -25,6 +27,10 @@ export default function QuizAttemptDisplay(props) {
   var location = useLocation(props);
   var courseId = location.state.courseIdProp;
   var learnerStatus = location.state.learnerStatusProp;
+
+  // user
+  const auth = useAuth();
+  const user = auth.user;
 
   React.useEffect(() => {
     console.log("quizAttemptDisplay useEffect called");
@@ -57,27 +63,27 @@ export default function QuizAttemptDisplay(props) {
       // add '0' at the beginning of the variable
       setTimer(
         (hours > 9 ? hours : "0" + hours) +
-          ":" +
-          (minutes > 9 ? minutes : "0" + minutes) +
-          ":" +
-          (seconds > 9 ? seconds : "0" + seconds)
+        ":" +
+        (minutes > 9 ? minutes : "0" + minutes) +
+        ":" +
+        (seconds > 9 ? seconds : "0" + seconds)
       );
       if (
         (hours > 9 ? hours : "0" + hours) +
-          ":" +
-          (minutes > 9 ? minutes : "0" + minutes) +
-          ":" +
-          (seconds > 9 ? seconds : "0" + seconds) ===
+        ":" +
+        (minutes > 9 ? minutes : "0" + minutes) +
+        ":" +
+        (seconds > 9 ? seconds : "0" + seconds) ===
         "00:00:10"
       ) {
         setPanic(true);
       }
       if (
         (hours > 9 ? hours : "0" + hours) +
-          ":" +
-          (minutes > 9 ? minutes : "0" + minutes) +
-          ":" +
-          (seconds > 9 ? seconds : "0" + seconds) ===
+        ":" +
+        (minutes > 9 ? minutes : "0" + minutes) +
+        ":" +
+        (seconds > 9 ? seconds : "0" + seconds) ===
         "00:00:00"
       ) {
         handleSubmitQuizAttempt();
@@ -132,7 +138,7 @@ export default function QuizAttemptDisplay(props) {
     });
   }
 
-  function handleExitPreview() {}
+  function handleExitPreview() { }
   function handleSubmitQuizAttempt() {
     console.log("clicked handleSubmitQuiz");
     var timeLimitRemaining = stopTimer();
@@ -140,7 +146,7 @@ export default function QuizAttemptDisplay(props) {
     //call submitQuizAttempt api (api calls update quizAttempt, then update state to submitted)
     fetch(
       "http://localhost:8080/quizAttempt/submitQuizAttempt/" +
-        quizAttempt.quizAttemptId,
+      quizAttempt.quizAttemptId,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -148,7 +154,14 @@ export default function QuizAttemptDisplay(props) {
       }
     )
       .then((res) => res.json())
-      .then(console.log("submitted: ", quizAttempt))
+      .then(() => {
+        console.log("submitted: ", quizAttempt);
+        var incrementUrl = "http://localhost:8080/treePoints/incrementTreePoints?learnerId=" + user.userId + "&increment=1";
+        fetch(incrementUrl)
+        .catch((err) => {
+          console.log("There is an error in incrementing the tree points!")
+        })
+      })
       .then(handleExit());
   }
 
@@ -162,7 +175,7 @@ export default function QuizAttemptDisplay(props) {
     console.log("current quiz attempt: ", quizAttempt);
     fetch(
       "http://localhost:8080/quizAttempt/updateQuizAttemptById/" +
-        quizAttempt.quizAttemptId,
+      quizAttempt.quizAttemptId,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -209,6 +222,7 @@ export default function QuizAttemptDisplay(props) {
 
   return (
     <Grid container spacing={0} direction={"column"} alignContent={"center"}>
+      <ToastContainer/>
       {props.hasTimeLimitProp == "true" && (
         <Paper
           style={{
@@ -236,10 +250,10 @@ export default function QuizAttemptDisplay(props) {
           style={{ textDecoration: "none", color: "white", backgroundColor: "#e27602" }}
         >
           <ListItemButton>
-            <ListItemText primary ="Exit Preview Quiz" />
+            <ListItemText primary="Exit Preview Quiz" />
           </ListItemButton>
         </Link>
-      )} 
+      )}
 
       <Grid container width={"60%"} flexDirection={"column"}>
         {quizQuestions.map((question, index) => {

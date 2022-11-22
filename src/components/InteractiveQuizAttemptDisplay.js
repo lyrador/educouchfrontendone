@@ -2,8 +2,14 @@ import { Alert, AlertTitle, Button, Grid, ListItemButton, ListItemText, Paper } 
 import React, { useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import QuizQuestionAttemptComponent from "./QuizAttemptComponents/QuizQuestionAttemptComponent";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from "../context/AuthProvider";
 
 export default function InteractiveQuizAttemptDisplay(props) {
+  const auth = useAuth();
+  const user = auth.user;
+
   const [currentQuiz, setCurrentQuiz] = useState();
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [questionAttempts, setQuestionAttempts] = useState(
@@ -13,7 +19,8 @@ export default function InteractiveQuizAttemptDisplay(props) {
   const [quizStatusEnum, setQuizStatusEnum] = useState();
   const [answerTrigger, setAnswerTrigger] = useState(false);
   const [wrongAnswerTrigger, setWrongAnswerTrigger] = useState(false);
-  const [assessmentAttemptStatusEnum, setAssessmentAttemptStatusEnum] = useState(''); 
+
+
   var isPreview = props.isPreviewProp;
   var assessmentsPath = props.assessmentsPathProp;
   var quizAttemptLoaded = true;
@@ -150,6 +157,7 @@ export default function InteractiveQuizAttemptDisplay(props) {
 
   return (
     <Grid container spacing={0} direction={"column"} alignContent={"center"}>
+      <ToastContainer/>
       {/* {props.hasTimeLimitProp == "true" && (
         <Paper
           style={{
