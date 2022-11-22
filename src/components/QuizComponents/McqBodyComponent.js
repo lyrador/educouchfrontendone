@@ -20,6 +20,7 @@ export default function McqBodyComponent(props) {
 
   React.useEffect(() => {
     setMcqOptions(props.mcqOptionsProp);
+    setCorrectOption(props.correctOptionProp);
     console.log(mcqOptions);
   }, []);
 

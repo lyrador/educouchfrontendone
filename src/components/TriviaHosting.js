@@ -25,6 +25,8 @@ const socket = io.connect("http://localhost:3001")
 
 export default function TriviaHosting(props) {
 
+    let lobbyMusic = new Audio("/Bakery.mp3")
+
     const location = useLocation();
     const inClassPath = location.pathname.split("/").slice(0, 4).join("/");
 
@@ -44,6 +46,7 @@ export default function TriviaHosting(props) {
     const [questionCounter, setQuestionCounter] = useState(1);
 
     const joinRoom = () => {
+        lobbyMusic.play()
         socket.emit("join_room_admin", room)
     }
 
@@ -713,7 +716,7 @@ export default function TriviaHosting(props) {
             }
             {showScoreboard == true && <div style={{ backgroundColor: "dodgerblue", height: "100vh", width: "100%", alignContent: 'center', display: 'flex', justifyContent: "center", textAlign: "center", flexDirection: "column" }}>
                 <div style={{ backgroundColor: "#2266e3", height: "20%", width: "100%", padding: "1% 0" }}>
-                    <Typography variant="h1" style={{ marginTop: "2%" }}>Scoreboard</Typography>
+                    <Typography variant="h1" >Scoreboard</Typography>
                     <Button className="btn-upload" color="secondary" variant="contained" component="span"
                         style={{ float: "right", marginLeft: "auto", right: "3%", marginTop: "0.5%", position: "absolute" }}
                         onClick={handleShowWaitingRoomCountdown}

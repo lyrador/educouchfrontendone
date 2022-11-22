@@ -21,8 +21,8 @@ import TeachingFileComponent from "./TeachingFileComponent";
 import AttachmentComponent from "./AttachmentComponent";
 import { useState } from "react";
 
-import InstantErrorMessage from "./InstantErrorMessage";
-import InstantSuccessMessage from "./InstantSuccessMessage";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
@@ -32,6 +32,7 @@ import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 import UploadService from "../services/UploadFilesService";
+import FolderBreadcrumb from "./FolderBreadcrumb";
 
 function TeachingChildFileList() {
   var courseId = useParams();
@@ -43,19 +44,19 @@ function TeachingChildFileList() {
   const [folderList, setFolderList] = useState([]);
   const [attachmentList, setAttachmentList] = useState([]);
 
-  function changeFolderIdWrapper(num) {
-    console.log("Reach " + num);
-    fetch("http://localhost:8080/folder/getFolderByFolderId/" + num)
-      .then((res) => res.json())
-      .then((result) => {
-        var fol = result;
-        setFolderList(fol.childFolders);
-        setAttachmentList(fol.attachments);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }
+  // function changeFolderIdWrapper(num) {
+  //   console.log("Reach " + num);
+  //   fetch("http://localhost:8080/folder/getFolderByFolderId/" + num)
+  //     .then((res) => res.json())
+  //     .then((result) => {
+  //       var fol = result;
+  //       setFolderList(fol.childFolders);
+  //       setAttachmentList(fol.attachments);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err.message);
+  //     });
+  // }
 
   React.useEffect(() => {
     fetch("http://localhost:8080/folder/getFolderByFolderId/" + folderId)
@@ -68,7 +69,7 @@ function TeachingChildFileList() {
       .catch((err) => {
         console.log(err.message);
       });
-  }, []);
+  }, [folderId]);
 
   const refresh = () => {
     fetch("http://localhost:8080/folder/getFolderByFolderId/" + folderId)
@@ -78,8 +79,6 @@ function TeachingChildFileList() {
         console.log(JSON.stringify(fol));
         setFolderList(fol.childFolders);
         setAttachmentList(fol.attachments);
-        console.log("Length of folder is " + folderList.length);
-        console.log("Length of attachment is " + attachmentList.length);
       })
       .catch((err) => {
         console.log(err.message);
@@ -124,16 +123,13 @@ function TeachingChildFileList() {
   // create new folder form
   const [folderName, setFolderName] = useState("");
 
-  // notification
-  const [message, setMessage] = useState("");
-  const [isError, setError] = useState(false);
-  const [isSuccess, setSuccess] = useState(false);
+
 
   const createNewFolder = (e) => {
     e.preventDefault();
 
     if (folderName.length === 0) {
-      setError(true);
+      toast.error("Length of folder name must be more than 0!");
     }
 
     const childFolder = {
@@ -148,23 +144,29 @@ function TeachingChildFileList() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(childFolder),
     })
-      .then(() => {
+      .then(async response => {
         setOpen(false);
 
-        //notification
-        setMessage("Folder is successfully created!");
-        setError(false);
-        setSuccess(true);
-        refresh();
+        const isJson = response.headers.get('content-type')?.includes('application/json');
+        const data = isJson ? await response.json() : null;
+
+        if (!response.ok) {
+          const error = (data && data.message) || response.status;
+          console.log('Error is ' + error);
+          return Promise.reject(error);
+        } else {
+          //notification
+          toast.success("Folder is successfully created!");
+          refresh();
+        }
+
+
       })
       .catch((error) => {
         setOpen(false);
 
         //notification
-        setMessage("Could not create folder.");
-        setError(true);
-        setSuccess(false);
-        console.log(error);
+        toast.error(error);
       });
   };
 
@@ -172,17 +174,13 @@ function TeachingChildFileList() {
   const handleRefreshDelete = () => {
     refresh();
     //notification
-    setMessage("Item is successfully deleted!");
-    setError(false);
-    setSuccess(true);
+    toast.success("Item is successfully deleted!");
   };
 
   const handleRefreshUpdate = () => {
     refresh();
     //notification
-    setMessage("Item is successfully updated!");
-    setError(false);
-    setSuccess(true);
+    toast.success("Item is successfully updated!");
   };
 
   // uploading function
@@ -192,7 +190,7 @@ function TeachingChildFileList() {
   const selectFile = (event) => {
     setCurrentFile(event.target.files[0]);
     setProgress(0);
-    setMessage("");
+
   };
 
   const uploadAttachment = () => {
@@ -201,15 +199,12 @@ function TeachingChildFileList() {
       setProgress(Math.round((100 * event.loaded) / event.total));
     })
       .then((response) => {
-        setMessage("Succesfully Uploaded!");
-        setError(false);
-        console.log(response);
+        toast.success("Succesfully Uploaded!");
         closeUploadDialogBox();
         refresh();
       })
-      .catch((err) => {
-        setMessage("Could not upload the image!");
-        setError(true);
+      .catch((error) => {
+        toast.error("Could not upload the file!");
         setProgress(0);
         setCurrentFile(undefined);
       });
@@ -237,138 +232,122 @@ function TeachingChildFileList() {
   });
 
   return (
+
     <div>
-      <Grid container spacing={0}>
-        <Grid item xs={2}>
-          <TeachingCoursesDrawer courseId={courseId}></TeachingCoursesDrawer>
-        </Grid>
-        <Grid item xs={10}>
-          {message && isError && (
-            <InstantErrorMessage message={message}></InstantErrorMessage>
-          )}
-          {message && isSuccess && (
-            <InstantSuccessMessage message={message}></InstantSuccessMessage>
-          )}
-          <Typography variant="h5">Content Files Uploading</Typography>
-          <divider></divider>
+      {folderList &&
+        folderList.length > 0 &&
+        folderList.map((folder) => (
+          <TeachingFileComponent
+            folder={folder}
+            courseId={courseId}
+            handleRefreshDelete={handleRefreshDelete}
+            handleRefreshUpdate={handleRefreshUpdate}
+            // changeFolderIdWrapper={changeFolderIdWrapper}
+          ></TeachingFileComponent>
+        ))}
+      {attachmentList &&
+        attachmentList.length > 0 &&
+        attachmentList.map((attachment) => (
+          <AttachmentComponent
+            attachment={attachment}
+            courseId={courseId}
+            handleRefreshDelete={handleRefreshDelete}
+            handleRefreshUpdate={handleRefreshUpdate}
+          ></AttachmentComponent>
+        ))}
+      {(!folderList || folderList.length <= 0) &&
+        (!attachmentList || attachmentList.length <= 0) && (
+          <p>This folder doesn't have any content currently.</p>
+        )}
+
+      <Dialog
+        open={open}
+        onClose={closeCreateFolderDialogBox}
+        fullWidth="lg"
+      >
+        <DialogContent>
+          <DialogContentText>Create a new folder</DialogContentText>
+
+          <TextField
+            autoFocus
+            margin="dense"
+            id="childFolderTitleField"
+            label="Folder Title"
+            type="text"
+            fullWidth
+            variant="standard"
+            onChange={(e) => setFolderName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={createNewFolder}>Create</Button>
+          <Button onClick={closeCreateFolderDialogBox}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+      <SpeedDial
+        ariaLabel="SpeedDial openIcon example"
+        sx={{ position: "absolute", bottom: 16, right: 16 }}
+        icon={<SpeedDialIcon openIcon={<EditIcon />} />}
+      >
+        {actions.map((action) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            tooltipTitle={action.name}
+            onClick={action.action}
+          />
+        ))}
+      </SpeedDial>
+      <Dialog
+        open={uploadDialogBox}
+        onClose={closeUploadDialogBox}
+        fullWidth="lg"
+      >
+        <DialogContent>
+          <DialogContentText>Upload file</DialogContentText>
+
           <br />
-          <div>
-            {folderList &&
-              folderList.length > 0 &&
-              folderList.map((folder) => (
-                <TeachingFileComponent
-                  folder={folder}
-                  courseId={courseId}
-                  handleRefreshDelete={handleRefreshDelete}
-                  handleRefreshUpdate={handleRefreshUpdate}
-                  changeFolderIdWrapper={changeFolderIdWrapper}
-                ></TeachingFileComponent>
-              ))}
-            {attachmentList &&
-              attachmentList.length > 0 &&
-              attachmentList.map((attachment) => (
-                <AttachmentComponent
-                  attachment={attachment}
-                  courseId={courseId}
-                  handleRefreshDelete={handleRefreshDelete}
-                  handleRefreshUpdate={handleRefreshUpdate}
-                ></AttachmentComponent>
-              ))}
-            {(!folderList || folderList.length <= 0) &&
-              (!attachmentList || attachmentList.length <= 0) && (
-                <p>This folder doesn't have any content currently.</p>
-              )}
-          </div>
-          <Dialog
-            open={open}
-            onClose={closeCreateFolderDialogBox}
-            fullWidth="lg"
-          >
-            <DialogContent>
-              <DialogContentText>Create a new folder</DialogContentText>
-
-              <TextField
-                autoFocus
-                margin="dense"
-                id="childFolderTitleField"
-                label="Folder Title"
-                type="text"
-                fullWidth
-                variant="standard"
-                onChange={(e) => setFolderName(e.target.value)}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={createNewFolder}>Create</Button>
-              <Button onClick={closeCreateFolderDialogBox}>Cancel</Button>
-            </DialogActions>
-          </Dialog>
-          <SpeedDial
-            ariaLabel="SpeedDial openIcon example"
-            sx={{ position: "absolute", bottom: 16, right: 16 }}
-            icon={<SpeedDialIcon openIcon={<EditIcon />} />}
-          >
-            {actions.map((action) => (
-              <SpeedDialAction
-                key={action.name}
-                icon={action.icon}
-                tooltipTitle={action.name}
-                onClick={action.action}
-              />
-            ))}
-          </SpeedDial>
-          <Dialog
-            open={uploadDialogBox}
-            onClose={closeUploadDialogBox}
-            fullWidth="lg"
-          >
-            <DialogContent>
-              <DialogContentText>Upload file</DialogContentText>
-
-              <br />
-              <label htmlFor="btn-upload">
-                <input
-                  id="btn-upload"
-                  name="btn-upload"
-                  style={{ display: "none" }}
-                  type="file"
-                  accept=".doc,.docx,.pdf, .mp4"
-                  onChange={selectFile}
-                />
-                <Button
-                  className="btn-choose"
-                  variant="outlined"
-                  component="span"
-                >
-                  Choose File
-                </Button>
-              </label>
-              <divider></divider>
-              {currentFile && (
-                <Box className="my20" display="flex" alignItems="center">
-                  <Box width="100%" mr={1}>
-                    <ThemeProvider theme={theme}>
-                      <LinearProgress variant="determinate" value={progress} />
-                    </ThemeProvider>
-                  </Box>
-                  <Box minWidth={35}>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                    >{`${progress}%`}</Typography>
-                  </Box>
-                </Box>
-              )}
-            </DialogContent>
-            <DialogActions>
-              <Button disabled={!currentFile} onClick={uploadAttachment}>
-                Upload
-              </Button>
-              <Button onClick={closeUploadDialogBox}>Cancel</Button>
-            </DialogActions>
-          </Dialog>
-        </Grid>
-      </Grid>
+          <label htmlFor="btn-upload">
+            <input
+              id="btn-upload"
+              name="btn-upload"
+              style={{ display: "none" }}
+              type="file"
+              accept=".doc,.docx,.pdf, .mp4"
+              onChange={selectFile}
+            />
+            <Button
+              className="btn-choose"
+              variant="outlined"
+              component="span"
+            >
+              Choose File
+            </Button>
+          </label>
+          <divider></divider>
+          {currentFile && (
+            <Box className="my20" display="flex" alignItems="center">
+              <Box width="100%" mr={1}>
+                <ThemeProvider theme={theme}>
+                  <LinearProgress variant="determinate" value={progress} />
+                </ThemeProvider>
+              </Box>
+              <Box minWidth={35}>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                >{`${progress}%`}</Typography>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button disabled={!currentFile} onClick={uploadAttachment}>
+            Upload
+          </Button>
+          <Button onClick={closeUploadDialogBox}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

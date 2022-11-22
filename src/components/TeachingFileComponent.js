@@ -17,6 +17,8 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import DeleteIcon from '@mui/icons-material/Delete';
 import InstantErrorMessage from './InstantErrorMessage';
 import InstantSuccessMessage from './InstantSuccessMessage';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -24,7 +26,7 @@ import InstantSuccessMessage from './InstantSuccessMessage';
 
 
 
-function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate, changeFolderIdWrapper, isLearner }) {
+function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRefreshUpdate, isLearner }) {
 
     // opening mini menu
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -85,18 +87,24 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
         var apiUrl = "http://localhost:8080/folder/renameFolderByFolderId?folderId=" + folder.folderId + "&folderName=" + currFolderName;
 
         fetch(apiUrl)
-            .then(() => {
-                setRenameDialogBox(false);
-                handleRefreshUpdate();
+            .then(async response => {
+                const isJson = response.headers.get('content-type')?.includes('application/json');
+                const data = isJson ? await response.json() : null;
+                if (!response.ok) {
+                    const error = (data && data.message) || response.status;
+                    console.log('Error is ' + error);
+                    return Promise.reject(error);
+                } else {
+                    //notification
+                    setRenameDialogBox(false);
+                    handleRefreshUpdate();
+                    toast.success("Folder is successfully renamed!");
+                }
+
+
             })
             .catch((error) => {
-                setRenameDialogBox(false);
-
-                //notification
-                setMessage("Could not rename folder.");
-                setError(true);
-                setSuccess(false);
-                console.log(error);
+                toast.error("Unable to update the folder name: " + error);
 
             })
     };
@@ -106,10 +114,10 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
     const navigateChildFolder = () => {
         if (!isLearner) {
             navigate(`/myTeachingCourse/${courseId}/files/${folder.folderId}`);
-            changeFolderIdWrapper(folder.folderId);
+            // changeFolderIdWrapper(folder.folderId);
         } else {
             navigate(`/learnerCourseDetails/${courseId}/files/${folder.folderId}`);
-            changeFolderIdWrapper(folder.folderId);
+            // changeFolderIdWrapper(folder.folderId);
         }
 
         console.log("Running " + folder.folderId);
@@ -118,24 +126,25 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
 
 
     return (
-
-        <List>
-            {message && isError && (
-                <InstantErrorMessage message={message}></InstantErrorMessage>
-            )}
-            <ListItem>
-                {/* <ListItemButton href={`/myTeachingCourse/${courseId}/files/${folder.folderId}`}> */}
-                <ListItemButton aria-controls={open ? 'basic-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? 'true' : undefined}
-                    onClick={handleClick}>
-                    <ListItemIcon>
-                        <img class="folder-picture" src={folderPicture} />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={folder.folderName}
-                    />
-                    {/* <Link to={`/myTeachingCourse/${moduleCode}/files/${folder.folderId}`}>
+        <div>
+            {/* <ToastContainer position = "bottom-left"></ToastContainer> */}
+            <List>
+                {message && isError && (
+                    <InstantErrorMessage message={message}></InstantErrorMessage>
+                )}
+                <ListItem>
+                    {/* <ListItemButton href={`/myTeachingCourse/${courseId}/files/${folder.folderId}`}> */}
+                    <ListItemButton aria-controls={open ? 'basic-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? 'true' : undefined}
+                        onClick={handleClick}>
+                        <ListItemIcon>
+                            <img class="folder-picture" src={folderPicture} />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={folder.folderName}
+                        />
+                        {/* <Link to={`/myTeachingCourse/${moduleCode}/files/${folder.folderId}`}>
                         <ListItemIcon>
                             <img class="folder-picture" src={folderPicture} />
                         </ListItemIcon>
@@ -145,69 +154,71 @@ function TeachingFileComponent({ folder, courseId, handleRefreshDelete, handleRe
                     </Link> */}
 
 
-                </ListItemButton>
-                <Menu
-                    id="basic-menu"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    MenuListProps={{
-                        'aria-labelledby': 'basic-button',
-                    }}
-                >
+                    </ListItemButton>
+                    <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                        }}
+                    >
 
 
-                    <MenuItem onClick={navigateChildFolder}>
-                        <ListItemIcon>
-                            <FolderOpenIcon fontSize="small" />
-                        </ListItemIcon>
-                        Open
-                    </MenuItem>
-                    {!isLearner &&
-                        <div>
-                            <MenuItem onClick={processDeletion}>
-                                <ListItemIcon>
-                                    <DeleteIcon fontSize="small" />
-                                </ListItemIcon>
-                                Delete
-                            </MenuItem>
-                            <MenuItem onClick={openRenameDialogBox}>
-                                <ListItemIcon>
-                                    <DriveFileRenameOutlineIcon fontSize="small" />
-                                </ListItemIcon>
-                                Rename
-                            </MenuItem>
-                        </div>
+                        <MenuItem onClick={navigateChildFolder}>
+                            <ListItemIcon>
+                                <FolderOpenIcon fontSize="small" />
+                            </ListItemIcon>
+                            Open
+                        </MenuItem>
+                        {!isLearner &&
+                            <div>
+                                <MenuItem onClick={processDeletion}>
+                                    <ListItemIcon>
+                                        <DeleteIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    Delete
+                                </MenuItem>
+                                <MenuItem onClick={openRenameDialogBox}>
+                                    <ListItemIcon>
+                                        <DriveFileRenameOutlineIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    Rename
+                                </MenuItem>
+                            </div>
 
-                    }
-                </Menu>
-                <Dialog open={renameDialogBox} onClose={closeRenameDialogBox} fullWidth="lg">
-                    <DialogContent>
-                        <DialogContentText>
-                            Rename folder
-                        </DialogContentText>
+                        }
+                    </Menu>
+                    <Dialog open={renameDialogBox} onClose={closeRenameDialogBox} fullWidth="lg">
+                        <DialogContent>
+                            <DialogContentText>
+                                Rename folder
+                            </DialogContentText>
 
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="parentFolderTitleField"
-                            label="Folder Title"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                            defaultValue={folder.folderName}
-                            onChange={(e) => setCurrFolderName(e.target.value)} />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={clickRenameButton}>Rename</Button>
-                        <Button onClick={closeRenameDialogBox}>Cancel</Button>
-                    </DialogActions>
-                </Dialog>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="parentFolderTitleField"
+                                label="Folder Title"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                                defaultValue={folder.folderName}
+                                onChange={(e) => setCurrFolderName(e.target.value)} />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={clickRenameButton}>Rename</Button>
+                            <Button onClick={closeRenameDialogBox}>Cancel</Button>
+                        </DialogActions>
+                    </Dialog>
 
 
 
-            </ListItem>
-        </List>
+                </ListItem>
+            </List>
+        </div>
+
 
     )
 }

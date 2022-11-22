@@ -77,6 +77,7 @@ export default function QuizQuestionAttemptComponent(props) {
             <div>
               <QuizAttemptMCQComponent
                 mcqOptionsProp={question.options}
+                correctOptionProp={question.correctOption}
                 questionIdProp={question.questionId}
                 selectOptionProp={props.selectOptionProp}
                 optionSelectedProp={optionSelected}

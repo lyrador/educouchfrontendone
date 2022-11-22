@@ -16,6 +16,17 @@ export default function QuizQuestionComponent(props) {
   const [index, setIndex] = useState(props.indexProp);
   const [onEdit, setOnEdit] = useState(false);
 
+  function validateQuestion() {
+    if(question.questionType === "shortAnswer") {
+      return question.questionContent
+    }
+    else if(question.questionType === "mcq") {
+      return question.questionContent && question.questionHint && question.options && question.correctOption
+    }
+    else {
+      return question.questionContent && question.questionHint && question.correctOption
+    }
+  }
   return (
     <Grid
       container
@@ -90,7 +101,17 @@ export default function QuizQuestionComponent(props) {
             questionMaxPointsProp={props.questionProp.questionMaxPoints}
             editQuestionMaxPointsProp={props.editQuestionMaxPointsProp}
           />
+
+          <Button disabled={!props.currChosenBankId || !validateQuestion()} onClick={() => props.handleAddToBank(props.questionProp)} variant="contained">Add To Bank</Button>
         </Grid>
+        <br></br>
+        <Button
+          variant="contained"
+          color="inherit"
+          onClick={() => props.removeQuestionProp(props.questionProp.localid)}
+        >
+          Remove Question
+        </Button>
       </Grid>
     </Grid>
   );
