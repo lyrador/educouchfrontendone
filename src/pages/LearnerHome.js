@@ -7,6 +7,7 @@ import HomepageGarden from "../components/GardenComponents/HomepageGarden";
 import GardenToolbox from "../components/GardenComponents/GardenToolbox";
 import TreePoint from "../components/GardenComponents/TreePoint";
 import DashboardDrawer from "../components/DashboardDrawer";
+import YoungLearnerDashboardAnnouncements from "../components/YoungLearnerDashboardAnnouncements";
 
 export default function LearnerHome() {
   const auth = useAuth();
@@ -15,7 +16,7 @@ export default function LearnerHome() {
   return (
     <>
       {user.userEnum === "KID" && (
-        <Grid container spacing={0}>
+        <Grid container spacing={2}>
           <Grid item xs={6}>
             <div>
               <GardenToolbox />
@@ -23,7 +24,11 @@ export default function LearnerHome() {
               <HomepageGarden />
             </div>
           </Grid>
-          <Grid item xs={4}></Grid>
+          <Grid item xs={6}>
+            <div>
+              <YoungLearnerDashboardAnnouncements />
+            </div>
+          </Grid>
         </Grid>
       )}
       {user.userEnum === "ADULT" && (

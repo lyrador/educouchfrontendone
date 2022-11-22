@@ -1,7 +1,4 @@
 import * as React from "react";
-import "../App.css";
-import "../css/TeachingFileList.css";
-
 import {
   Grid,
   Typography,

@@ -77,7 +77,6 @@ import CreateTechnicalSupportRequest from "./components/CreateTechnicalSupportRe
 import WebPet from "web-pet";
 import RewardShoppingPage from "./pages/RewardShoppingPage";
 import RewardsArrangementPage from "./pages/RewardsArrangementPage";
-import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
 import MyAnnouncements from "./pages/MyAnnouncements";
 import RewardsEnhancementPage from "./pages/RewardsEnhancementPage";
@@ -104,15 +103,6 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <Home />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/dashboardAnnouncements"
-              element={
-                <RequireAuth>
-                  <Appbar />
-                  <DashboardAnnouncements />
                 </RequireAuth>
               }
             />

@@ -22,7 +22,7 @@ function DashboardDrawer(props) {
         <List>
           {["Home"].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton component={Link} to="/home">
+              <ListItemButton component={Link} to="/learnerhome">
                 <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>
