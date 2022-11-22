@@ -98,15 +98,21 @@ function ArrangeToolbox({ selectedItem, handleMove, destinationGrid }) {
         var requestUrl = "http://localhost:8080/treePoints/hideItems?learnerId=" + user.userId + "&itemOwnedId=" + selectedItem.itemOwnedId;
         fetch(requestUrl)
             .then(async response => {
+                const isJson = response.headers.get('content-type')?.includes('application/json');
+                const data = isJson ? await response.json() : null;
+
                 if (!response.ok) {
-                    const error = response.status;
+                    const error = (data && data.message) || response.status;
+                    console.log('Error is ' + error);
                     return Promise.reject(error);
+                } else {
+                    navigate('/learnerHome');
                 }
-                navigate('/learnerHome');
+
             }).catch((error) => {
                 // console.log(error);
                 // toast.error(error.message);
-                alert("Unable to hide item: location occupied or learner not found!");
+                toast.error(error);
 
                 closeHideDialogBox();
 
@@ -130,15 +136,20 @@ function ArrangeToolbox({ selectedItem, handleMove, destinationGrid }) {
         var requestUrl = "http://localhost:8080/treePoints/unhideItems?learnerId=" + user.userId + "&itemOwnedId=" + selectedItem.itemOwnedId;
         fetch(requestUrl)
             .then(async response => {
+                const isJson = response.headers.get('content-type')?.includes('application/json');
+                const data = isJson ? await response.json() : null;
+
                 if (!response.ok) {
                     const error = response.status;
                     return Promise.reject(error);
+                } else {
+                    navigate('/learnerHome');
                 }
-                navigate('/learnerHome');
+
             }).catch((error) => {
                 // console.log(error);
                 // toast.error(error.message);
-                alert("Unable to show item: location occupied or learner not found!");
+                toast.error(error);
 
                 closeUnhideDialogBox();
 
@@ -164,20 +175,22 @@ function ArrangeToolbox({ selectedItem, handleMove, destinationGrid }) {
             const isJson = response.headers.get('content-type')?.includes('application/json');
             const data = isJson ? await response.json() : null;
 
-            setPurchaseLoading(true);
-            navigate('/learnerHome');
-            setPurchaseLoading(false);
+
 
             if (!response.ok) {
                 const error = (data && data.message) || response.status;
                 console.log('Error is ' + error);
                 return Promise.reject(error);
+            } else {
+                setPurchaseLoading(true);
+                navigate('/learnerHome');
+                setPurchaseLoading(false);
             }
 
         }).catch((error) => {
             // console.log(error);
             // toast.error(error.message);
-            alert("Unable to relocate item!");
+            toast.error(error);
             closeRelocateDialogBox();
 
 
@@ -209,7 +222,7 @@ function ArrangeToolbox({ selectedItem, handleMove, destinationGrid }) {
                             </ButtonGroup>
                         }
 
-                        {selectedItem !== ""  && <Button variant="contained" onClick={openRelocateDialogBox} startIcon={<ChangeCircleIcon />}>Relocate</Button>}
+                        {selectedItem !== "" && <Button variant="contained" onClick={openRelocateDialogBox} startIcon={<ChangeCircleIcon />}>Relocate</Button>}
                     </Stack>
                 </Grid>
             </Grid>

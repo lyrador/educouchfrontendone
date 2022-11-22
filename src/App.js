@@ -83,6 +83,9 @@ import InstructorReelsPage from "./pages/InstructorReelsPage";
 import LearnerReelsPage from "./pages/LearnerReelsPage";
 import CreateReelPage from "./pages/CreateReelPage";
 import InstructorViewReel from "./components/ReelComponents/InstructorViewReel";
+import InClassGamesList from "./components/InClassGamesList";
+import TriviaCreation from "./components/TriviaCreation";
+import TriviaHosting from "./components/TriviaHosting";
 
 function App() {
   return (
@@ -583,6 +586,39 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <TeachingInteractiveBook />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/inClass"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InClassGamesList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/inClass/trivia/:triviaId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TriviaCreation />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/inClass/trivia/:triviaId/triviaHosting"
+              element={
+                <TriviaHosting />
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/inClass/poll/:pollId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InClassGamesList />
                 </RequireAuth>
               }
             />
