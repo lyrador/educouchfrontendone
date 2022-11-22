@@ -34,6 +34,7 @@ import {
   Snackbar,
   Alert,
   Divider,
+  TextField,
 } from "@mui/material";
 
 export default function FileSubmissionAttempt(props) {
@@ -283,111 +284,139 @@ export default function FileSubmissionAttempt(props) {
             <Grid item>File Submission Max Score: {maxScore}</Grid>
             <Grid item>File Submission Start Date: {startDate}</Grid>
             <Grid item>File Submission Deadline: {endDate}</Grid>
-            {!fileSubmissionExpired && (
-              <Button onClick={proceedFileSubmission} variant="contained">
-                Proceed to File Submission
+
+            {fileSubmissionAttempt.assessmentAttemptStatusEnum == "GRADED" ? (
+              <Button variant="contained" onClick={proceedFileSubmission}>
+                View Graded File Submission Attempt
               </Button>
+            ) : (
+              <>
+                {!fileSubmissionExpired ? (
+                  <Button onClick={proceedFileSubmission} variant="contained">
+                    Proceed to File Submission
+                  </Button>
+                ) : (
+                  <p style={{ marginTop: "20px" }}>File Submission Expired</p>
+                )}
+              </>
             )}
           </Grid>
         ) : (
-          <Grid style={{ marginLeft: "300px" }}>
-            <div style={{ padding: "2%" }}>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow style={{ backgroundColor: "#B0C4DE" }}>
-                      <TableCell>
-                        <b>Deadline: </b>
-                        {Moment(endDate).format("YYYY-MM-DD")}
-                      </TableCell>
-                      <TableCell>
-                        <b>File Submission Max Score: </b>
-                        {maxScore}
+          <Grid item xs={2}>
+            <Grid style={{ marginLeft: "400px" }}>
+              <div style={{ padding: "2%" }}>
+                <TableContainer component={Paper}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow style={{ backgroundColor: "#B0C4DE" }}>
+                        <TableCell>
+                          <b>Deadline: </b>
+                          {Moment(endDate).format("YYYY-MM-DD")}
+                        </TableCell>
+                        <TableCell>
+                          <b>File Submission Max Score: </b>
+                          {maxScore}
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+
+                    <TableRow>
+                      <TableCell colSpan={2} style={{ textAlign: "justify" }}>
+                        <b>Assessment Description: </b> <br /> <br />
+                        {description}
                       </TableCell>
                     </TableRow>
-                  </TableHead>
 
-                  <TableRow>
-                    <TableCell colSpan={2} style={{ textAlign: "justify" }}>
-                      <b>Assessment Description: </b> <br /> <br />
-                      {description}
-                    </TableCell>
-                  </TableRow>
-
-                  <TableRow>
-                    <TableCell colSpan={2}>
-                      {attachmentList &&
-                        attachmentList.length > 0 &&
-                        attachmentList.map((attachment) => (
-                          <div>
-                            <p>Attachments available for Download:</p>
-                            <AttachmentFileSubmissionComponent
-                              attachment={attachment}
-                              courseId={fileSubmissionId}
-                              handleRefreshDeleteFileSubmission={
-                                handleRefreshDelete
-                              }
-                              handleRefreshUpdateFileSubmission={
-                                handleRefreshUpdate
-                              }
-                            />
-                          </div>
-                        ))}
-                      {(!attachmentList || attachmentList.length <= 0) && (
-                        <p>
-                          This Assessment does not have attachments available
-                          for download
-                        </p>
-                      )}
-                    </TableCell>
-                  </TableRow>
-
-                  <TableRow>
-                    <TableCell colSpan={2}>
-                      {!hasPreviousAttempt ? (
-                        <div>
-                          <p>You do not have any File Uploads</p>
-                        </div>
-                      ) : (
-                        <>
-                          {!(fileSubmissionAttempt.attachment == null) &&
+                    <TableRow>
+                      <TableCell colSpan={2}>
+                        {attachmentList &&
+                          attachmentList.length > 0 &&
+                          attachmentList.map((attachment) => (
                             <div>
-                              <p>You have uploaded:</p>
-                              <br />
-                              {
-                                fileSubmissionAttempt.attachment
-                                  .fileOriginalName
-                              }
+                              <p>Attachments available for Download:</p>
+                              <AttachmentFileSubmissionComponent
+                                attachment={attachment}
+                                courseId={fileSubmissionId}
+                                handleRefreshDeleteFileSubmission={
+                                  handleRefreshDelete
+                                }
+                                handleRefreshUpdateFileSubmission={
+                                  handleRefreshUpdate
+                                }
+                              />
                             </div>
-                          }
-                        </>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                </Table>
-              </TableContainer>
+                          ))}
+                        {(!attachmentList || attachmentList.length <= 0) && (
+                          <p>
+                            This Assessment does not have attachments available
+                            for download
+                          </p>
+                        )}
+                      </TableCell>
+                    </TableRow>
 
-              <Grid container justifyContent={"center"} marginTop="50px">
-                {/* <Button
-                  color="primary"
-                  variant="contained"
-                  component="span"
-                  onClick={handleSubmit}
-                >
-                  Submit File Submission
-                </Button> */}
-                <Button
-                  color="primary"
-                  variant="contained"
-                  component="span"
-                  onClick={openUploadDialogBox}
-                  style={{ float: "right" }}
-                >
-                  <FileUploadIcon style={{ marginRight: 10 }} />
-                  Upload File
-                </Button>
-              </Grid>
-            </div>
+                    <TableRow>
+                      <TableCell colSpan={2}>
+                        {!hasPreviousAttempt ? (
+                          <div>
+                            <p>You do not have any File Uploads</p>
+                          </div>
+                        ) : (
+                          <>
+                            {!(fileSubmissionAttempt.attachment == null) && (
+                              <div>
+                                <p>You have uploaded:</p>
+                                <br />
+                                {
+                                  fileSubmissionAttempt.attachment
+                                    .fileOriginalName
+                                }
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  </Table>
+                </TableContainer>
+
+                <Grid container justifyContent={"center"} marginTop="50px">
+                  {!fileSubmissionAttempt.assessmentAttemptStatusEnum ==
+                  "GRADED" ? (
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      component="span"
+                      onClick={openUploadDialogBox}
+                      style={{ float: "right" }}
+                    >
+                      <FileUploadIcon style={{ marginRight: 10 }} />
+                      Upload File
+                    </Button>
+                  ) : (
+                    <Paper
+                      style={{
+                        paddingTop: 10,
+                        paddingBottom: 30,
+                            paddingLeft: 10,
+                        paddingRight: 10,
+                        marginTop: 10,
+                        backgroundColor: "#CCCCFF",
+                      }}
+                    >
+                      <p>
+                        <b>Instructor Feedback:</b>
+                      </p>
+                      <br />
+                      <TextField
+                        multiline
+                        value={fileSubmissionAttempt.feedback}
+                      ></TextField>
+                    </Paper>
+                  )}
+                </Grid>
+              </div>
+            </Grid>
           </Grid>
         )}
       </Grid>

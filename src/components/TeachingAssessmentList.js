@@ -133,9 +133,9 @@ function TeachingAssessmentList(props) {
   const courseId = location.pathname.split("/")[2];
 
   const [assessments, setAssessments] = useState([]);
-  const [maxAssessmentDiscountPoints, setMaxAssessmentDiscountPoints] = useState();
+  const [maxAssessmentDiscountPoints, setMaxAssessmentDiscountPoints] =
+    useState();
   const [assessmentIdToDelete, setAssessmentIdToDelete] = useState("");
-
 
   const [refreshPage, setRefreshPage] = useState(false);
   const refreshFunction = () => {
@@ -144,19 +144,6 @@ function TeachingAssessmentList(props) {
   };
 
   const enumGroup = [{ value: "INDIVIDUAL" }, { value: "GROUP" }];
-
-  // get all assessments here
-  React.useEffect(() => {
-    fetch(
-      "http://localhost:8080/assessment/getAllAssessmentsByCourseIdWithDiscountPoint?courseId=" +
-        courseId
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        setAssessments(result.listOfAssessments);
-        setMaxAssessmentDiscountPoints(result.maxAssignmentPoints)
-      });
-  }, [courseId, refreshPage]);
 
   const [open, setOpen] = React.useState(false);
 
@@ -223,36 +210,18 @@ function TeachingAssessmentList(props) {
     navigate(`${assessmentsPath}/editQuiz/${assessmentId}`, {
       state: {
         assessmentPathProp: assessmentsPath,
-        maxAssessmentDiscountPointsProp : maxAssessmentDiscountPoints,
+        maxAssessmentDiscountPointsProp: maxAssessmentDiscountPoints,
         assessmentIdProp: assessmentId,
       },
     });
   }
 
   function handlePreviewQuiz(event, quizId) {
-    //   const [quizAttempt, setQuizAttempt] = useState({})
-    //   const [questionAttempts, setQuestionAttempts] = useState([])
-    //   const [currentQuiz, setCurrentQuiz] = useState();
-
-    // courseIdProp={courseId}
-    // learnerStatusProp={learnerStatus}
-    // currentQuizProp={currentQuiz}
-    // currentQuizAttemptProp={quizAttempt}
-    // quizIdProp={quizId}
-    // questionsProp={quizQuestions}
-    // hasTimeLimitProp={hasTimeLimit}
-    // timeLimitProp={timeLimit}
-    // quizStatusEnumProp={quizStatusEnum}
-    // questionAttemptsProp={questionAttempts}
     navigate(`/previewQuiz`, {
       state: {
         courseIdProp: courseId,
         quizIdProp: quizId,
         assessmentsPathProp: assessmentsPath,
-        // quizProp: currentQuiz,
-        // learnerIdProp: learnerId,
-        // quizAttemptProp: quizAttempt,
-        // questionAttemptsProp: questionAttempts,
       },
     });
   }
@@ -270,6 +239,7 @@ function TeachingAssessmentList(props) {
     handleReleaseDialogueClose();
     // then open snackbar for successful release
     handleClickReleaseSnackbar();
+    refreshFunction();
   }
 
   function handleClickReleaseAssessment(event, assassessmentessmentId) {
@@ -294,7 +264,7 @@ function TeachingAssessmentList(props) {
       navigate(`${assessmentsPath}/${currAssessment.assessmentId}`, {
         state: {
           assessmentsPathProp: assessmentsPath,
-          maxAssessmentDiscountPointsProp : maxAssessmentDiscountPoints,
+          maxAssessmentDiscountPointsProp: maxAssessmentDiscountPoints,
           createAssessmentPathProp: createAssessmentPath,
           newFileSubProp: currAssessment,
         },
@@ -315,6 +285,20 @@ function TeachingAssessmentList(props) {
       );
     }
   };
+
+  // get all assessments here
+  React.useEffect(() => {
+    fetch(
+      "http://localhost:8080/assessment/getAllAssessmentsByCourseIdWithDiscountPoint?courseId=" +
+        courseId
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        console.log("list of assessments: ", result);
+        setAssessments(result.listOfAssessments);
+        setMaxAssessmentDiscountPoints(result.maxAssignmentPoints);
+      });
+  }, [courseId, refreshPage]);
 
   return (
     <div>
@@ -444,12 +428,19 @@ function TeachingAssessmentList(props) {
                       <TableCell>{assessment.open}</TableCell>
                       <TableCell>
                         <div>
-                          <IconButton
-                            aria-label="settings"
-                            onClick={(event) => {handlePreviewQuiz(event, assessment.assessmentId)}}
-                          >
-                            <VisibilityIcon />
-                          </IconButton>
+                          {!assessment.assessmentType == "FileSubmission" && (
+                            <IconButton
+                              aria-label="settings"
+                              onClick={(event) => {
+                                handlePreviewQuiz(
+                                  event,
+                                  assessment.assessmentId
+                                );
+                              }}
+                            >
+                              <VisibilityIcon />
+                            </IconButton>
+                          )}
                           {assessment.open !== "true" && (
                             <IconButton
                               aria-label="settings"
@@ -554,9 +545,7 @@ function TeachingAssessmentList(props) {
           </DialogActions>
         </Dialog>
       </div>
-      <div>
-
-      </div>
+      <div></div>
     </div>
   );
 }
