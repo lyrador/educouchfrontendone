@@ -158,8 +158,8 @@ export default function QuizAttemptDisplay(props) {
         console.log("submitted: ", quizAttempt);
         var incrementUrl = "http://localhost:8080/treePoints/incrementTreePoints?learnerId=" + user.userId + "&increment=1";
         fetch(incrementUrl)
-        .then(() => {
-          toast.success("Congratulations! You have been awarded 1🌲 for your answering the quiz correctly!");
+        .catch((err) => {
+          console.log("There is an error in incrementing the tree points!")
         })
       })
       .then(handleExit());

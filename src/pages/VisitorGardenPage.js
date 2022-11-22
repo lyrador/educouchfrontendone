@@ -77,7 +77,7 @@ export default function VisitorGardenPage() {
                                 <Avatar alt={user.username} src= {user.profilePictureURL}/>
                             </StyledBadge>
 
-                            <Typography variant="h5" style = {{ paddingTop: "1px"}}>{"You are currently in " + currUser.username + "'s Garden"}</Typography>
+                            <Typography variant="h5" style = {{ paddingTop: "1px"}}>{"You are currently in " + currUser.username + "'s garden"}</Typography>
                         </Stack>
                     </div>
 

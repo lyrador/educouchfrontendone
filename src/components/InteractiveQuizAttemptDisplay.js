@@ -2,8 +2,14 @@ import { Alert, AlertTitle, Button, Grid, ListItemButton, ListItemText, Paper } 
 import React, { useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import QuizQuestionAttemptComponent from "./QuizAttemptComponents/QuizQuestionAttemptComponent";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from "../context/AuthProvider";
 
 export default function InteractiveQuizAttemptDisplay(props) {
+  const auth = useAuth();
+  const user = auth.user;
+
   const [currentQuiz, setCurrentQuiz] = useState();
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [questionAttempts, setQuestionAttempts] = useState(
@@ -13,6 +19,8 @@ export default function InteractiveQuizAttemptDisplay(props) {
   const [quizStatusEnum, setQuizStatusEnum] = useState();
   const [answerTrigger, setAnswerTrigger] = useState(false);
   const [wrongAnswerTrigger, setWrongAnswerTrigger] = useState(false);
+
+
   var isPreview = props.isPreviewProp;
   var assessmentsPath = props.assessmentsPathProp;
   var quizAttemptLoaded = true;
@@ -156,7 +164,13 @@ export default function InteractiveQuizAttemptDisplay(props) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(quizAttempt),
           }
-        )
+        ).then(() => {
+          var incrementUrl = "http://localhost:8080/treePoints/incrementTreePoints?learnerId=" + user.userId + "&increment=1";
+          fetch(incrementUrl)
+            .then(() => {
+              toast.success("Congratulations! You have been awarded 1🌲 for your answering the quiz correctly!");
+            })
+        })
       } else {
         console.log("You've submitted the wrong answer, please try again");
         setAnswerTrigger(false);
@@ -231,6 +245,7 @@ export default function InteractiveQuizAttemptDisplay(props) {
 
   return (
     <Grid container spacing={0} direction={"column"} alignContent={"center"}>
+      <ToastContainer/>
       {/* {props.hasTimeLimitProp == "true" && (
         <Paper
           style={{
