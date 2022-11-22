@@ -88,6 +88,8 @@ import InClassGamesList from "./components/InClassGamesList";
 import TriviaCreation from "./components/TriviaCreation";
 import TriviaHosting from "./components/TriviaHosting";
 import PollCreation from "./components/PollCreation";
+import VisitorGardenPage from "./pages/VisitorGardenPage";
+import VideoCall from "./components/GardenComponents/VideoCall";
 
 function App() {
   return (
@@ -827,7 +829,26 @@ function App() {
                 </RequireAuth>
               }
             />
+            <Route
+              path="/visitorPage/:userId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <VisitorGardenPage/>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/videoCall"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <VideoCall/>
+                </RequireAuth>
+              }
+            />
           </Routes>
+
         </Router>
       </AuthProvider>
     </div>

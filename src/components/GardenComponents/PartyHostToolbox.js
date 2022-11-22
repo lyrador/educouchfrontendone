@@ -13,29 +13,29 @@ import FlipToBackIcon from '@mui/icons-material/FlipToBack';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import TreePoint from './TreePoint';
 import CallIcon from '@mui/icons-material/Call';
+import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
 
-function GardenToolbox() {
+function PartyHostToolbox() {
     const auth = useAuth();
     const user = auth.user;
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
-    const navigateToShoppingPage = () => {
-        navigate('/rewardShoppingPage');
-    }
+    // const navigateToShoppingPage = () => {
+    //     navigate('/rewardShoppingPage');
+    // }
 
-    const navigateToArrangementPage = () => {
-        navigate('/rewardArrangementPage');
-    }
+    // const navigateToArrangementPage = () => {
+    //     navigate('/rewardArrangementPage');
+    // }
 
-    const navigateToEnhancementPage = () => {
-        navigate('/rewardEnhancementPage');
-    }
+    // const navigateToEnhancementPage = () => {
+    //     navigate('/rewardEnhancementPage');
+    // }
 
-    const navigateToGardenParty = () => {
-        navigate('/visitorPage/' + user.userId);
-        // navigate('/videoCall');
-    }
+    // const navigateToGardenParty = () => {
+    //     navigate('/visitorPage/' + user.userId);
+    // }
 
 
 
@@ -44,14 +44,10 @@ function GardenToolbox() {
             <Grid container spacing={2}>
                 <Grid item xs={8}>
                     <Stack direction="row" spacing={2}>
-                        <Button variant="contained" startIcon={<ShoppingCartIcon />} onClick={navigateToShoppingPage}>Shop</Button>
-                        <Button variant="contained" startIcon={<FlipToBackIcon />} onClick={navigateToArrangementPage}>Rearrange</Button>
-                        <Button variant="contained" startIcon={<AutoFixHighIcon />} onClick={navigateToEnhancementPage}>Enhance</Button>
-                        <Button variant="contained" startIcon={<CallIcon />} onClick={navigateToGardenParty}>Host</Button>
+                        <Button variant="contained" startIcon={<ContactEmergencyIcon />}>Invite</Button>
                     </Stack>
                 </Grid>
                 <Grid item xs={4} style={{ textAlign: "right" }}>
-                    <TreePoint />
                 </Grid>
             </Grid>
 
@@ -59,4 +55,4 @@ function GardenToolbox() {
     )
 }
 
-export default GardenToolbox;
+export default PartyHostToolbox;

@@ -56,9 +56,9 @@ import "../css/TriviaQuestionLayout.css";
 import { LinearProgress, ThemeProvider, createTheme } from "@mui/material";
 import UploadService from "../services/UploadFilesService";
 
-import io from "socket.io-client";
+// import io from "socket.io-client";
 
-const socket = io.connect("http://localhost:3001")
+// const socket = io.connect("http://localhost:3001")
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;

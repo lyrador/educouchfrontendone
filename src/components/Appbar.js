@@ -265,6 +265,11 @@ export default function Appbar() {
                       💻 Whiteboard
                     </Link>
                   </li>
+                  <li className="nav-item">
+                    <Link to="/videoCall" className="nav-links">
+                      Demo Voice Call
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </nav>
