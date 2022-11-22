@@ -90,11 +90,11 @@ function QuestionBankSidebar(props) {
   }
 
   const handleDeleteQuestionBank = () => {
-    const oldBankName = [...bankName]
-    const result = oldBankName.filter((o)=> {
-      return o !== bankToDelete
-    })
-    setBankName(result)
+    // const oldBankName = [...bankName]
+    // const result = oldBankName.filter((o)=> {
+    //   return o !== bankToDelete
+    // })
+    // setBankName(result)
     fetch(
       "http://localhost:8080/questionBank/deleteQuestionBank/" +
         bankToDelete.questionBankId,
@@ -106,6 +106,11 @@ function QuestionBankSidebar(props) {
       .then((res) => res.json())
       .then((result) => {
         setOpenDeleteDialog(false)
+        const oldBankName = [...bankName]
+        const res = oldBankName.filter((o)=> {
+          return o !== bankToDelete
+        })
+        setBankName(res)
 
       });
 
@@ -148,12 +153,12 @@ function QuestionBankSidebar(props) {
           >
             {bankName.length > 0 &&
               bankName.map((x) => (
-                <>
                   <MenuItem key={x.questionBankId} value={x.questionBankId}>
+                    <>
                     {x.questionBankName}
+                    <Button onClick={()=>handleOpenDeleteDialog(x)}>Delete</Button>
+                    </>
                   </MenuItem>
-                  <Button onClick={()=>handleOpenDeleteDialog(x)}>Delete</Button>
-                  </>
               ))}
           </Select>
         </FormControl>
