@@ -58,7 +58,6 @@ function renderSquare(i, [itemX, itemY], link, isImaginary, isSelected, isHidden
 }
 
 function renderPiece(x, y, [itemX, itemY], link, isImaginary, isHidden) {
-    console.log('Link is ' + link);
     if (x === itemX && y === itemY && !isHidden) {
         if (isImaginary == true) {
             

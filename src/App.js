@@ -76,6 +76,7 @@ import RewardShoppingPage from "./pages/RewardShoppingPage";
 import RewardsArrangementPage from "./pages/RewardsArrangementPage";
 import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
+import RewardsEnhancementPage from "./pages/RewardsEnhancementPage";
 
 function App() {
   return (
@@ -713,6 +714,15 @@ function App() {
                 <RequireAuth>
                   <Appbar />
                   <RewardsArrangementPage />
+                </RequireAuth>
+              }
+            />
+             <Route
+              path="/rewardEnhancementPage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <RewardsEnhancementPage/>
                 </RequireAuth>
               }
             />
