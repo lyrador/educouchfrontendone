@@ -91,7 +91,7 @@ function VisitorGarden({ userId }) {
 
         }
         setSquares(squares_copy);
-    }, [itemList]);
+    }, [itemList, userId]);
 
     
 

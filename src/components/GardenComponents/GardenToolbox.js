@@ -33,8 +33,8 @@ function GardenToolbox() {
     }
 
     const navigateToGardenParty = () => {
-        // navigate('/visitorPage/' + user.userId);
-        navigate('/videoCall');
+        navigate('/visitorPage/' + user.userId);
+        // navigate('/videoCall');
     }
 
 
