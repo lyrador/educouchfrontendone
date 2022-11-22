@@ -410,26 +410,35 @@ export default function InstructorViewReel(props) {
   };
 
   function handleSaveReel() {
-    const incompleteDTO = {
-      reelTitle: reelTitle.name,
-      reelCaption: reelCaption.name,
-      courseId: courseSelected,
-      instructorId: "",
-    };
-    console.log("body: ", incompleteDTO);
-    fetch("http://localhost:8080/reel/updateReel/" + reelId, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(incompleteDTO),
-    }).then(() => navigate(`/instructorReels`));
-    //       .then((response) => response.json())
-    //       .then((res) => {
-    //         console.log("called uploadVideoToReel: ", res);
-    //       });
+    if (!courseSelected) {
+      setMissingCourseError(true);
+    } else {
+      const incompleteDTO = {
+        reelTitle: reelTitle.name,
+        reelCaption: reelCaption.name,
+        courseId: courseSelected,
+        instructorId: "",
+      };
+      console.log("body: ", incompleteDTO);
+      fetch("http://localhost:8080/reel/updateReel/" + reelId, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(incompleteDTO),
+      })
+        .then((res) => res.json())
+        .then((response) => console.log("saved: ", response))
+        .then(() => navigate(`/instructorReels`));
+    }
   }
 
   function handleSubmitReel() {
-    if (video && reelCaption.name && reelTitle.name) {
+    if (
+      currentPage &&
+      currentPage.video &&
+      reelTitle.name &&
+      reelCaption.name &&
+      courseSelected
+    ) {
       const incompleteDTO = {
         reelTitle: reelTitle.name,
         reelCaption: reelCaption.name,
@@ -443,14 +452,15 @@ export default function InstructorViewReel(props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(incompleteDTO),
       })
-        // .then((res) => res.json())
-        // .then((result) => {
-        //   console.log("successfully saved reel: ", result);
-        // })
+        .then((res) => res.json())
+        .then((result) => {
+          console.log("successfully saved reel: ", result);
+          //console.log(JSON.stringify(result.pageQuiz))
+        })
         .then(() => navigate(`/instructorReels`));
     } else {
       console.log("handleSaveReel validation failed");
-      if (!video) {
+      if (!currentPage.video) {
         setMissingVideoError(true);
       }
       if (!reelTitle.name) {
@@ -458,6 +468,8 @@ export default function InstructorViewReel(props) {
       }
       if (!reelCaption.name) {
         setMissingCaptionError(true);
+      }
+      if (!courseSelected) {
       }
     }
   }

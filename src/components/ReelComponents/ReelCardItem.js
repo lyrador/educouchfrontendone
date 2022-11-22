@@ -24,14 +24,18 @@ function ReelCardItem(props) {
             reelNumViews: props.reelNumViews,
             video: props.video,
             reelCreator: props.reelCreator,
-            rejectionReason: props.rejectionReason
+            rejectionReason: props.rejectionReason,
           }}
         >
           <figure
             className="cards-item-pic-wrap"
             data-category={props.reelApprovalStatusEnum}
           >
-            <img src={props.src} alt="picture" className="cards-item-img" />
+            {props.thumbnail ? (
+              <img src={props.thumbnail.fileURL} alt="picture" className="cards-item-img" />
+            ) : (
+              <img src={props.src} alt="picture" className="cards-item-img" />
+            )}
           </figure>
           <div className="cards-item-info">
             <h5 style={{ fontSize: "20px" }} className="cards-item-text">
