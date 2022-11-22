@@ -10,11 +10,14 @@ import PartyHostToolbox from '../components/GardenComponents/PartyHostToolbox';
 import LearnerList from '../components/GardenComponents/LearnerList';
 
 export default function VisitorGardenPage() {
+
+
+
     var userId = useParams();
     userId = userId.userId;
 
     const [selectedLearner, setSelectedLearner] = useState("");
-    
+
     const sendSelectedLearner = (x) => {
         setSelectedLearner(x);
     }
@@ -23,13 +26,13 @@ export default function VisitorGardenPage() {
         <>
             <Grid container spacing={2}>
                 <Grid item xs={5.8}>
-                    <ToastContainer position = "top-center"></ToastContainer>
-                    <PartyHostToolbox sendSelectedLearner = {sendSelectedLearner}/>
+                    <ToastContainer position="top-center"></ToastContainer>
+                    <PartyHostToolbox sendSelectedLearner={sendSelectedLearner} />
                     <br />
-                    <VisitorGarden userId = {userId}/>
+                    <VisitorGarden userId={userId} />
                 </Grid>
                 <Grid item xs={5.8}>
-                    <LearnerList/>
+                    <LearnerList />
                 </Grid>
             </Grid>
         </>
