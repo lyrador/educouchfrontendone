@@ -92,12 +92,12 @@ function LearnerInteractivePage(props) {
     React.useEffect(() => {
         if (props.chapterId) {
             setRefreshInteractivePage(false);
-            console.log(props.chapterId)
+            //console.log(props.chapterId)
             fetch("http://localhost:8080/interactivePage/interactiveChapter/" + props.chapterId + "/interactivePages")
                 .then((res) => res.json())
                 .then((result) => {
                     setPages(result);
-                    console.log(result);
+                    //console.log(result);
                 });
         };
     }, [refreshInteractivePage || props.chapterId]);
@@ -118,12 +118,12 @@ function LearnerInteractivePage(props) {
                 .then((res) => res.json())
                 .then((result) => {
                     setCurrentPage(result);
-                    console.log(result);
+                    //console.log(result);
                 });
         };
     }, [refreshInteractivePage || props.chapterId]);
 
-    console.log(currentPage.interactivePageId); 
+    //console.log(currentPage.interactivePageId); 
     //edit
     const [infoDialogOpen, setEditDialogOpen] = React.useState(false);
 
@@ -137,7 +137,7 @@ function LearnerInteractivePage(props) {
     };
 
     const renderEmptyRowMessage = () => {
-        console.log(props.chapterId)
+        //console.log(props.chapterId)
         if (props.book.interactiveChapters) {
             if (props.book.interactiveChapters.length == 0) {
                 return (
@@ -225,9 +225,12 @@ function LearnerInteractivePage(props) {
 
     }
 
-    console.log(currentPage.pageQuiz); 
+     
 
     const renderQuiz = () => {
+        if (currentPage.pageQuiz) {
+        console.log(currentPage.pageQuiz.assessmentId);
+        }
 
         var height = "100%"
         if (currentPage.pageDescription && !currentPage.attachment) {

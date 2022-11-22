@@ -13,8 +13,9 @@ export default function InteractiveQuizAttempt(props) {
   var courseId = props.courseIdProp;
   //var learnerStatus = location.state.learnerStatusProp;
   var quizId = props.quizIdProp;
+  console.log(quizId);
   var pageId = props.pageIdProp
-  var bookId = props.bookIdProp; 
+  var bookId = props.bookIdProp;
   var auth = useAuth();
   var user = auth.user;
   var learnerId = user.userId;
@@ -60,9 +61,9 @@ export default function InteractiveQuizAttempt(props) {
       .then(
         fetch(
           "http://localhost:8080/quizAttempt/getMostRecentQuizAttemptByLearnerId/" +
-            quizId +
-            "/" +
-            learnerId
+          quizId +
+          "/" +
+          learnerId
         )
           .then((res) => res.json())
           .then((result) => {
@@ -76,7 +77,29 @@ export default function InteractiveQuizAttempt(props) {
             }
           })
       );
-  }, []);
+  }, [quizId]);
+
+  console.log(quizAttempt.assessmentAttemptStatusEnum)
+
+  // function handleViewQuiz() {
+
+  //   <InteractiveQuizAttemptDisplay
+  //     isPreviewProp={false}
+  //     assessmentsPathProp=""
+  //     courseIdProp={courseId}
+  //     // learnerStatusProp={learnerStatus}
+  //     bookIdProp={bookId}
+  //     currentQuizProp={currentQuiz}
+  //     currentQuizAttemptProp={quizAttempt}
+  //     quizIdProp={quizId}
+  //     questionsProp={quizQuestions}
+  //     hasTimeLimitProp={hasTimeLimit}
+  //     timeLimitProp={timeLimit}
+  //     quizStatusEnumProp={quizStatusEnum}
+  //     questionAttemptsProp={questionAttempts}
+  //   />
+
+  // }
 
   function handleResumeQuiz() {
     setStartQuiz("true");
@@ -87,9 +110,9 @@ export default function InteractiveQuizAttempt(props) {
     console.log("clicked handleStartQuiz");
     fetch(
       "http://localhost:8080/quizAttempt/createQuizAttempt/" +
-        quizId +
-        "/" +
-        learnerId,
+      quizId +
+      "/" +
+      learnerId,
       { method: "POST" }
     )
       .then((res) => res.json())
@@ -141,30 +164,18 @@ export default function InteractiveQuizAttempt(props) {
                   Resume Quiz
                 </Button>
               ) : (
-                <>
-                  {" "}
-                  {quizAttempt.assessmentAttemptStatusEnum === "GRADED" ? (
-                    <Button
-                      onClick={handleViewGradedQuizAttempt}
-                      variant="contained"
-                    >
-                      View Graded Attempt
-                    </Button>
-                  ) : (
-                    <Grid
-                      marginTop={"20px"}
-                      style={{
-                        backgroundColor: "#1975D2",
-                        padding: "7px",
-                        borderRadius: "6px",
-                      }}
-                    >
-                      <p style={{ color: "white" }}>
-                        Your attempt has been submitted!
-                      </p>
-                    </Grid>
-                  )}
-                </>
+                <Grid
+                  marginTop={"20px"}
+                  style={{
+                    backgroundColor: "#1975D2",
+                    padding: "7px",
+                    borderRadius: "6px",
+                  }}
+                >
+                  <Button variant="contained" onClick={handleResumeQuiz}>
+                    View Quiz Attempt
+                  </Button>
+                </Grid>
               )}
             </>
           ) : (
@@ -179,6 +190,7 @@ export default function InteractiveQuizAttempt(props) {
             isPreviewProp={false}
             assessmentsPathProp=""
             courseIdProp={courseId}
+            pageIdProp={pageId}
             // learnerStatusProp={learnerStatus}
             bookIdProp={bookId}
             currentQuizProp={currentQuiz}
@@ -188,6 +200,7 @@ export default function InteractiveQuizAttempt(props) {
             hasTimeLimitProp={hasTimeLimit}
             timeLimitProp={timeLimit}
             quizStatusEnumProp={quizStatusEnum}
+            assessmentAttemptStatusEnumProp={quizAttempt.assessmentAttemptStatusEnum}
             questionAttemptsProp={questionAttempts}
           />
         </Grid>
