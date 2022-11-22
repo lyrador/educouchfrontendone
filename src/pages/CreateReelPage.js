@@ -50,10 +50,10 @@ export default function CreateReelPage(props) {
   const [value, setValue] = React.useState(0);
   const [refresh, setRefresh] = React.useState(false);
   const [reelTitle, setReelTitle] = React.useState({
-    name: "",
+    name: " ",
   });
   const [reelCaption, setReelCaption] = React.useState({
-    name: "",
+    name: " ",
   });
   //upload video stuff
   const theme = createTheme({
@@ -247,6 +247,24 @@ export default function CreateReelPage(props) {
       });
   };
 
+  const [saveReelSuccess, setSaveReelSuccess] = useState(false);
+  const handleSaveReelSucess = () => {
+    console.log("trigger handle save reel")
+    setSaveReelSuccess(true);
+  };
+  const handleCloseSaveReelSucess = () => {
+    setSaveReelSuccess(false);
+  };
+
+  const [submitReelSuccess, setSubmitReelSucess] = useState(false);
+  const handleSubmitSuccess = () => {
+    setSubmitReelSucess(true);
+  };
+  const handleCloseSubmitSucess= () => {
+    setSubmitReelSucess(false);
+  };
+
+
   //need to change out API
   const createNewFileItem = async (e) => {
     e.preventDefault();
@@ -356,6 +374,7 @@ export default function CreateReelPage(props) {
       })
         .then((res) => res.json())
         .then((response) => console.log("saved: ", response))
+        .then(handleSaveReelSucess)
         .then(() => navigate(`/instructorReels`));
     }
   }
@@ -364,8 +383,8 @@ export default function CreateReelPage(props) {
     if (
       currentPage &&
       currentPage.video &&
-      reelTitle.name &&
-      reelCaption.name &&
+      (reelTitle.name!=" ") &&
+      (reelCaption.name!=" ") &&
       courseSelected
     ) {
       const incompleteDTO = {
@@ -386,19 +405,29 @@ export default function CreateReelPage(props) {
           console.log("successfully saved reel: ", result);
           //console.log(JSON.stringify(result.pageQuiz))
         })
+        .then(handleSaveReelSucess)
         .then(() => navigate(`/instructorReels`));
     } else {
       console.log("handleSaveReel validation failed");
+      console.log("video: ", currentPage.video)
+      console.log("title: ", reelTitle.name)
+      console.log("caption: ", reelCaption.name)
+
       if (!currentPage.video) {
+        console.log("fail video val")
         setMissingVideoError(true);
       }
-      if (!reelTitle.name) {
+      if (reelTitle.name == " ") {
+        console.log("fail title val")
         setMissingTitleError(true);
       }
-      if (!reelCaption.name) {
+      if (reelCaption.name == " ") {
+        console.log("fail caption val")
         setMissingCaptionError(true);
       }
       if (!courseSelected) {
+        console.log("fail course selected val")
+        setMissingCourseError(true);
       }
     }
   }
