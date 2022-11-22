@@ -19,6 +19,7 @@ export default function InteractiveQuizAttemptDisplay(props) {
   const [quizStatusEnum, setQuizStatusEnum] = useState();
   const [answerTrigger, setAnswerTrigger] = useState(false);
   const [wrongAnswerTrigger, setWrongAnswerTrigger] = useState(false);
+  const [assessmentAttemptStatusEnum, setAssessmentAttemptStatusEnum] = useState(false); 
 
 
   var isPreview = props.isPreviewProp;
