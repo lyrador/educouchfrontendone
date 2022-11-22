@@ -70,7 +70,6 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 export default function TriviaQuestionLayout(props) {
 
-
     const questionTypeEnums = [{ value: "Four Options" }, { value: "True or False" }];
 
     //upload
@@ -279,7 +278,7 @@ export default function TriviaQuestionLayout(props) {
     const [refreshQuestion, setRefreshQuestion] = useState("");
 
     //get
-    const [currentQuestion, setCurrentQuestion] = useState("");
+    const [currentQuestion, setCurrentQuestion] = useState([]);
     const [editedCurrentQuestionTitle, setEditedCurrentQuestionTitle] = useState("");
     const [editedCurrentQuestionHasTimeLimit, setEditedCurrentQuestionHasTimeLimit] = useState(false);
     const [editedCurrentQuestionTimeLimit, setEditedCurrentQuestionTimeLimit] = useState("");
@@ -777,207 +776,214 @@ export default function TriviaQuestionLayout(props) {
                             Page {pageNumberPointer}
                         </h1>
                     </div> */}
-                    <Paper elevation={3} className="triviaLayoutContainer">
-                        <div className="questionTitleContainer">
-                            <TextField
-                                id="outlined-basic"
-                                label="Question Title"
-                                variant="outlined"
-                                fullWidth
-                                style={{ margin: "6px 0", marginTop: "20px", backgroundColor: "white" }}
-                                sx={{ width: "95%" }}
-                                InputProps={{ sx: { height: 80, fontSize: "20px" } }}
-                                InputLabelProps={{ sx: { fontSize: "22px", paddingTop: "5px" } }}
-                                value={editedCurrentQuestionTitle}
-                                required
-                                onChange={(e) => setEditedCurrentQuestionTitle(e.target.value)}
-                                error={questionTitleError.value}
-                                helperText={questionTitleError.errorMessage}
-                            />
-                        </div>
+                    {props.questions && props.questions.length > 0 &&
+                        <Paper elevation={3} className="triviaLayoutContainer">
+                            <div className="questionTitleContainer">
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Question Title"
+                                    variant="outlined"
+                                    fullWidth
+                                    style={{ margin: "6px 0", marginTop: "20px", backgroundColor: "white" }}
+                                    sx={{ width: "95%" }}
+                                    InputProps={{ sx: { height: 80, fontSize: "20px" } }}
+                                    InputLabelProps={{ sx: { fontSize: "22px", paddingTop: "5px" } }}
+                                    value={editedCurrentQuestionTitle}
+                                    required
+                                    onChange={(e) => setEditedCurrentQuestionTitle(e.target.value)}
+                                    error={questionTitleError.value}
+                                    helperText={questionTitleError.errorMessage}
+                                />
+                            </div>
 
-                        <div className="mediaContainer">
-                            {!currentQuestion.attachment &&
-                                <IconButton color="primary" aria-label="upload picture" component="label" style={{ height: "25%", top: "37%" }} onClick={handleOpenUploadDialog}>
-                                    <AddPhotoAlternateIcon style={{ fontSize: "60px" }} />
-                                </IconButton>
-                            }
-                            {currentQuestion.attachment &&
-                                <div style={{ height: "100%", width: "100%", alignContent: "center", justifyContent: "center", display: "flex" }}>
-                                    <div style={{ width: "7%" }}></div>
-                                    <img src={currentQuestion.attachment.fileURL} style={{ padding: "5% 0", height: "100%", width: "84%", objectFit: "contain" }} />
-                                    <div style={{ width: "7%", height: "100%" }}>
-                                        <IconButton color="primary" aria-label="delete" style={{ top: "85%", right: "2%", objectFit: "contain" }} onClick={handleOpenUploadDialog}>
-                                            <DeleteIcon style={{ fontSize: "30px" }} />
-                                        </IconButton>
+                            <div className="mediaContainer">
+                                {!currentQuestion.attachment &&
+                                    <IconButton color="primary" aria-label="upload picture" component="label" style={{ height: "25%", top: "37%" }} onClick={handleOpenUploadDialog}>
+                                        <AddPhotoAlternateIcon style={{ fontSize: "60px" }} />
+                                    </IconButton>
+                                }
+                                {currentQuestion.attachment &&
+                                    <div style={{ height: "100%", width: "100%", alignContent: "center", justifyContent: "center", display: "flex" }}>
+                                        <div style={{ width: "7%" }}></div>
+                                        <img src={currentQuestion.attachment.fileURL} style={{ padding: "5% 0", height: "100%", width: "84%", objectFit: "contain" }} />
+                                        <div style={{ width: "7%", height: "100%" }}>
+                                            <IconButton color="primary" aria-label="delete" style={{ top: "85%", right: "2%", objectFit: "contain" }} onClick={handleOpenUploadDialog}>
+                                                <DeleteIcon style={{ fontSize: "30px" }} />
+                                            </IconButton>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            {editedCurrentQuestionType == "Four Options" && <div className="triviaOptionsRowContainer">
+                                {/* yellow star */}
+                                <div className="triviaOptionContainer" style={{ backgroundColor: yellowOptionContent == "" ? "white" : yellowColor }}>
+                                    <div style={{ width: "10%", margin: "2%", backgroundColor: yellowColor }}>
+                                        <img src={starwhite} className="triviaOptionImageStyle" />
+                                    </div>
+                                    <TextField id="outlined-basic" variant="standard" fullWidth required
+                                        sx={{ input: { color: 'white' } }}
+                                        label={yellowOptionContent == "" ? "Add answer 1" : null}
+                                        style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
+                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
+                                        InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
+                                        value={yellowOptionContent}
+                                        onChange={(e) => setYellowOptionContent(e.target.value)}
+                                    />
+                                    <div className="triviaOptionRightSideCompartment">
+                                        {yellowOptionContent != "" &&
+                                            <div>
+                                                <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
+                                                    checked={yellowCorrectAnswer}
+                                                    onChange={handleYellowCheckbox}
+                                                    style={{ height: "80%", paddingTop: "45%" }}
+                                                />
+                                                <div style={{ textAlign: "right" }}>
+                                                    {100 - yellowOptionContent.length}
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
+                                <div className="triviaOptionColumnGap" />
+                                {/* green moon */}
+                                <div className="triviaOptionContainer" style={{ backgroundColor: greenOptionContent == "" ? "white" : greenColor }}>
+                                    <div style={{ width: "10%", margin: "2%", backgroundColor: greenColor }}>
+                                        <img src={moonwhite} className="triviaOptionImageStyle" />
+                                    </div>
+                                    <TextField id="outlined-basic" variant="standard" fullWidth required
+                                        sx={{ input: { color: 'white' } }}
+                                        style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
+                                        label={greenOptionContent == "" ? "Add answer 2" : null}
+                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
+                                        InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
+                                        value={greenOptionContent}
+                                        onChange={(e) => setGreenOptionContent(e.target.value)}
+                                    />
+                                    <div className="triviaOptionRightSideCompartment">
+                                        {greenOptionContent != "" &&
+                                            <div>
+                                                <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
+                                                    checked={greenCorrectAnswer}
+                                                    onChange={handleGreenCheckbox}
+                                                    style={{ height: "80%", paddingTop: "45%" }}
+                                                />
+                                                <div style={{ textAlign: "right" }}>
+                                                    {100 - greenOptionContent.length}
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                             }
-                        </div>
 
-                        {editedCurrentQuestionType == "Four Options" && <div className="triviaOptionsRowContainer">
-                            {/* yellow star */}
-                            <div className="triviaOptionContainer" style={{ backgroundColor: yellowOptionContent == "" ? "white" : yellowColor }}>
-                                <div style={{ width: "10%", margin: "2%", backgroundColor: yellowColor }}>
-                                    <img src={starwhite} className="triviaOptionImageStyle" />
-                                </div>
-                                <TextField id="outlined-basic" variant="standard" fullWidth required
-                                    sx={{ input: { color: 'white' } }}
-                                    label={yellowOptionContent == "" ? "Add answer 1" : null}
-                                    style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
-                                    InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
-                                    InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
-                                    value={yellowOptionContent}
-                                    onChange={(e) => setYellowOptionContent(e.target.value)}
-                                />
-                                <div className="triviaOptionRightSideCompartment">
-                                    {yellowOptionContent != "" &&
-                                        <div>
-                                            <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
-                                                checked={yellowCorrectAnswer}
-                                                onChange={handleYellowCheckbox}
-                                                style={{ height: "80%", paddingTop: "45%" }}
-                                            />
-                                            <div style={{ textAlign: "right" }}>
-                                                {100 - yellowOptionContent.length}
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                            <div className="triviaOptionColumnGap" />
-                            {/* green moon */}
-                            <div className="triviaOptionContainer" style={{ backgroundColor: greenOptionContent == "" ? "white" : greenColor }}>
-                                <div style={{ width: "10%", margin: "2%", backgroundColor: greenColor }}>
-                                    <img src={moonwhite} className="triviaOptionImageStyle" />
-                                </div>
-                                <TextField id="outlined-basic" variant="standard" fullWidth required
-                                    sx={{ input: { color: 'white' } }}
-                                    style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
-                                    label={greenOptionContent == "" ? "Add answer 2" : null}
-                                    InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
-                                    InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
-                                    value={greenOptionContent}
-                                    onChange={(e) => setGreenOptionContent(e.target.value)}
-                                />
-                                <div className="triviaOptionRightSideCompartment">
-                                    {greenOptionContent != "" &&
-                                        <div>
-                                            <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
-                                                checked={greenCorrectAnswer}
-                                                onChange={handleGreenCheckbox}
-                                                style={{ height: "80%", paddingTop: "45%" }}
-                                            />
-                                            <div style={{ textAlign: "right" }}>
-                                                {100 - greenOptionContent.length}
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        }
-
-                        {editedCurrentQuestionType == "Four Options" && <div className="triviaOptionsRowContainer">
-                            {/* red apple */}
-                            <div className="triviaOptionContainer" style={{ backgroundColor: redOptionContent == "" ? "white" : redColor }}>
-                                <div style={{ width: "10%", margin: "2%", backgroundColor: redColor }}>
-                                    <img src={applewhite} className="triviaOptionImageStyle" />
-                                </div>
-                                <TextField id="outlined-basic" variant="standard" fullWidth required
-                                    sx={{ input: { color: 'white' } }}
-                                    label={redOptionContent == "" ? "Add answer 3 (optional)" : null}
-                                    style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
-                                    InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
-                                    InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
-                                    value={redOptionContent}
-                                    onChange={(e) => setRedOptionContent(e.target.value)}
-                                />
-                                <div className="triviaOptionRightSideCompartment">
-                                    {redOptionContent != "" &&
-                                        <div>
-                                            <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
-                                                checked={redCorrectAnswer}
-                                                onChange={handleRedCheckbox}
-                                                style={{ height: "80%", paddingTop: "45%" }}
-                                            />
-                                            <div style={{ textAlign: "right" }}>
-                                                {100 - redOptionContent.length}
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                            <div className="triviaOptionColumnGap" />
-                            {/* blue cloud */}
-                            <div className="triviaOptionContainer" style={{ backgroundColor: blueOptionContent == "" ? "white" : blueColor }}>
-                                <div style={{ width: "10%", margin: "2%", backgroundColor: blueColor }}>
-                                    <img src={cloudwhite} className="triviaOptionImageStyle" />
-                                </div>
-                                <TextField id="outlined-basic" variant="standard" fullWidth required
-                                    sx={{ input: { color: 'white' } }}
-                                    style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
-                                    label={blueOptionContent == "" ? "Add answer 4 (optional)" : null}
-                                    InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
-                                    InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
-                                    value={blueOptionContent}
-                                    onChange={(e) => setBlueOptionContent(e.target.value)}
-                                />
-                                <div className="triviaOptionRightSideCompartment">
-                                    {blueOptionContent != "" &&
-                                        <div>
-                                            <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
-                                                checked={blueCorrectAnswer}
-                                                onChange={handleBlueCheckbox}
-                                                style={{ height: "80%", paddingTop: "45%" }}
-                                            />
-                                            <div style={{ textAlign: "right" }}>
-                                                {100 - blueOptionContent.length}
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        }
-
-                        {/* gets abit confusing here but basically translate yellow option to correct and set the color to green, and green option to wrong and set the color to red */}
-                        {editedCurrentQuestionType == "True or False" && <div className="triviaOptionsRowContainerTrueFalse">
-                            {/* red apple */}
-                            <div className="triviaOptionContainer" style={{ backgroundColor: greenColor }}>
-                                <div style={{ width: "10%", margin: "2%", backgroundColor: greenColor }}>
-                                    <img src={correct} className="triviaOptionImageStyleTrueFalse" />
-                                </div>
-                                <div className="triviaOptionTextStyleTrueFalse">True</div>
-                                <div className="triviaOptionRightSideCompartment">
-                                    <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
-                                        checked={yellowCorrectAnswer}
-                                        onChange={handleYellowCheckbox}
-                                        style={{ height: "100%", paddingTop: "20%" }}
+                            {editedCurrentQuestionType == "Four Options" && <div className="triviaOptionsRowContainer">
+                                {/* red apple */}
+                                <div className="triviaOptionContainer" style={{ backgroundColor: redOptionContent == "" ? "white" : redColor }}>
+                                    <div style={{ width: "10%", margin: "2%", backgroundColor: redColor }}>
+                                        <img src={applewhite} className="triviaOptionImageStyle" />
+                                    </div>
+                                    <TextField id="outlined-basic" variant="standard" fullWidth required
+                                        sx={{ input: { color: 'white' } }}
+                                        label={redOptionContent == "" ? "Add answer 3 (optional)" : null}
+                                        style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
+                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
+                                        InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
+                                        value={redOptionContent}
+                                        onChange={(e) => setRedOptionContent(e.target.value)}
                                     />
+                                    <div className="triviaOptionRightSideCompartment">
+                                        {redOptionContent != "" &&
+                                            <div>
+                                                <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
+                                                    checked={redCorrectAnswer}
+                                                    onChange={handleRedCheckbox}
+                                                    style={{ height: "80%", paddingTop: "45%" }}
+                                                />
+                                                <div style={{ textAlign: "right" }}>
+                                                    {100 - redOptionContent.length}
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="triviaOptionColumnGap" />
-                            {/* blue cloud */}
-                            <div className="triviaOptionContainer" style={{ backgroundColor: redColor }}>
-                                <div style={{ width: "10%", margin: "2%", backgroundColor: redColor }}>
-                                    <img src={wrong} className="triviaOptionImageStyleTrueFalse" />
-                                </div>
-                                <div className="triviaOptionTextStyleTrueFalse">False</div>
-                                <div className="triviaOptionRightSideCompartment">
-                                    <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
-                                        checked={greenCorrectAnswer}
-                                        onChange={handleGreenCheckbox}
-                                        style={{ height: "100%", paddingTop: "20%" }}
+                                <div className="triviaOptionColumnGap" />
+                                {/* blue cloud */}
+                                <div className="triviaOptionContainer" style={{ backgroundColor: blueOptionContent == "" ? "white" : blueColor }}>
+                                    <div style={{ width: "10%", margin: "2%", backgroundColor: blueColor }}>
+                                        <img src={cloudwhite} className="triviaOptionImageStyle" />
+                                    </div>
+                                    <TextField id="outlined-basic" variant="standard" fullWidth required
+                                        sx={{ input: { color: 'white' } }}
+                                        style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
+                                        label={blueOptionContent == "" ? "Add answer 4 (optional)" : null}
+                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
+                                        InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
+                                        value={blueOptionContent}
+                                        onChange={(e) => setBlueOptionContent(e.target.value)}
                                     />
+                                    <div className="triviaOptionRightSideCompartment">
+                                        {blueOptionContent != "" &&
+                                            <div>
+                                                <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
+                                                    checked={blueCorrectAnswer}
+                                                    onChange={handleBlueCheckbox}
+                                                    style={{ height: "80%", paddingTop: "45%" }}
+                                                />
+                                                <div style={{ textAlign: "right" }}>
+                                                    {100 - blueOptionContent.length}
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        }
-                    </Paper>
+                            }
+
+                            {/* gets abit confusing here but basically translate yellow option to correct and set the color to green, and green option to wrong and set the color to red */}
+                            {editedCurrentQuestionType == "True or False" && <div className="triviaOptionsRowContainerTrueFalse">
+                                {/* red apple */}
+                                <div className="triviaOptionContainer" style={{ backgroundColor: greenColor }}>
+                                    <div style={{ width: "10%", margin: "2%", backgroundColor: greenColor }}>
+                                        <img src={correct} className="triviaOptionImageStyleTrueFalse" />
+                                    </div>
+                                    <div className="triviaOptionTextStyleTrueFalse">True</div>
+                                    <div className="triviaOptionRightSideCompartment">
+                                        <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
+                                            checked={yellowCorrectAnswer}
+                                            onChange={handleYellowCheckbox}
+                                            style={{ height: "100%", paddingTop: "20%" }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="triviaOptionColumnGap" />
+                                {/* blue cloud */}
+                                <div className="triviaOptionContainer" style={{ backgroundColor: redColor }}>
+                                    <div style={{ width: "10%", margin: "2%", backgroundColor: redColor }}>
+                                        <img src={wrong} className="triviaOptionImageStyleTrueFalse" />
+                                    </div>
+                                    <div className="triviaOptionTextStyleTrueFalse">False</div>
+                                    <div className="triviaOptionRightSideCompartment">
+                                        <Checkbox color="default" inputProps={{ 'aria-label': 'controlled' }} sx={{ '& .MuiSvgIcon-root': { fontSize: 40 } }}
+                                            checked={greenCorrectAnswer}
+                                            onChange={handleGreenCheckbox}
+                                            style={{ height: "100%", paddingTop: "20%" }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                        </Paper>
+                    }
+                    {!(props.questions && props.questions.length > 0) &&
+                        <Paper elevation={3} className="triviaLayoutContainer" style={{ alignItems: "center", justifyContent: "center", display: "flex" }}>
+                            <h2>There are no questions! Please create one.</h2>
+                        </Paper>
+                    }
                 </div>
                 <div style={{ width: "20%", height: "100%" }}>
-                    <div id="sidenavbar2" className="sidebarPage">
+                    {props.questions && props.questions.length > 0 && <div id="sidenavbar2" className="sidebarPage">
                         <div style={{ width: "100%", display: "flex" }}>
                             <div style={{ width: "85%" }}>
                                 <h2>Question Settings</h2>
@@ -1067,6 +1073,7 @@ export default function TriviaQuestionLayout(props) {
                             }
                         </div>
                     </div>
+                    }
                 </div>
             </div>
 

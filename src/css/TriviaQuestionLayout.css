@@ -321,3 +321,12 @@
   margin-bottom: -4px;
   margin-right: -5px;
 }
+
+.roomContainerPoll {
+  justify-content: center;
+  align-content: center;
+  display: flex;
+  padding: 3% 0;
+  height: 5%;
+  background-color: #fed9af;
+}
