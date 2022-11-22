@@ -10,7 +10,7 @@ export default function QuestionMaxPoints(props) {
       key={props.questionIdProp}
       style={{ marginBottom: 30, width: "Auto" }}
     >
-      <div>Question Max Points</div>
+      <div><b>Question Max Points</b></div>
       <TextField
         type="text"
         placeholder={props.questionMaxPointsProp}

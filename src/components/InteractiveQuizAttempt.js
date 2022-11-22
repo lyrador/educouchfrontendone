@@ -1,18 +1,20 @@
 import { Button, Grid } from "@mui/material";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import LearnerCoursesDrawer from "../LearnerCourseDrawer";
-import QuizAttemptDisplay from "./QuizAttemptDisplay";
-import QuizInformation from "./QuizInformation";
-import { useAuth } from "../../context/AuthProvider";
-import QuestionAttemptTrueFalseComponent from "./QuestionAttemptTrueFalseComponent";
+// import LearnerCoursesDrawer from "../LearnerCourseDrawer";
+// import QuizAttemptDisplay from "../QuizAttemptDisplay";
+import QuizAttemptDisplay from "./QuizAttemptComponents/QuizAttemptDisplay";
+import { useAuth } from "../context/AuthProvider";
+import InteractiveQuizAttemptDisplay from "./InteractiveQuizAttemptDisplay";
 
-export default function QuizAttempt(props) {
+export default function InteractiveQuizAttempt(props) {
   const navigate = useNavigate();
   var location = useLocation(props);
-  var courseId = location.state.courseIdProp;
+  var courseId = props.courseIdProp;
   //var learnerStatus = location.state.learnerStatusProp;
-  var quizId = location.state.quizIdProp;
+  var quizId = props.quizIdProp;
+  var pageId = props.pageIdProp
+  var bookId = props.bookIdProp; 
   var auth = useAuth();
   var user = auth.user;
   var learnerId = user.userId;
@@ -97,16 +99,6 @@ export default function QuizAttempt(props) {
         setStartQuiz("true");
         // console.log("questionAttempts fetched: ", result.questionAttempts);
       });
-
-    
-      var treePointUrl = "http://localhost:8080/treePoints/incrementTreePoints?learnerId=" + user.userId + "&increment=" + 1;
-      fetch(treePointUrl)
-      .then((result) => {
-        console.log("Succesfully adding the tree points.");
-      })
-      .catch((err) => {
-        console.log("An error has occured in adding the tree points");
-      });
   }
 
   function handleViewGradedQuizAttempt() {
@@ -124,7 +116,7 @@ export default function QuizAttempt(props) {
 
   return (
     <Grid container direction={"column"}>
-      <h1>{title}</h1>
+      <h1>Page {pageId} Quiz</h1>
       {startQuiz == "false" ? (
         <Grid
           container
@@ -132,13 +124,7 @@ export default function QuizAttempt(props) {
           alignContent={"center"}
           marginTop={"20px"}
         >
-          <Grid item xs={2}>
-            <LearnerCoursesDrawer
-              courseId={courseId}
-              // learnerStatus={learnerStatus}
-            />
-          </Grid>
-          <Grid item>Quiz Description: {description}</Grid>
+          {/* <Grid item>Quiz Description: {description}</Grid>
           <Grid item>Quiz Max Score: {maxScore}</Grid>
           <Grid item>Quiz Start Date: {startDate}</Grid>
           <Grid item>Quiz Deadline: {endDate}</Grid>
@@ -146,7 +132,7 @@ export default function QuizAttempt(props) {
             <Grid item>Time Limit: {timeLimit}</Grid>
           ) : (
             <Grid item>No Time Limit</Grid>
-          )}
+          )} */}
 
           {hasPreviousAttempt ? (
             <>
@@ -189,11 +175,12 @@ export default function QuizAttempt(props) {
         </Grid>
       ) : (
         <Grid>
-          <QuizAttemptDisplay
+          <InteractiveQuizAttemptDisplay
             isPreviewProp={false}
             assessmentsPathProp=""
             courseIdProp={courseId}
             // learnerStatusProp={learnerStatus}
+            bookIdProp={bookId}
             currentQuizProp={currentQuiz}
             currentQuizAttemptProp={quizAttempt}
             quizIdProp={quizId}

@@ -10,7 +10,7 @@ export default function QuizContentComponent(props) {
       key={props.questionIdProp}
       style={{ marginBottom: 30, width: "Auto" }}
     >
-      <div>Question Content</div>
+      <div><b>Question Content</b></div>
       <TextField
         multiline
         type="text"

@@ -46,6 +46,9 @@ import Pagination from '@mui/material/Pagination';
 
 import QuizQuestionComponent from "../components/QuizComponents/QuizQuestionComponent";
 import AddIcon from '@mui/icons-material/Add';
+import QuizAttemptDisplay from "../components/QuizAttemptComponents/QuizAttemptDisplay";
+import QuizAttempt from "../components/QuizAttemptComponents/QuizAttempt";
+import InteractiveQuizAttempt from "../components/InteractiveQuizAttempt";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -78,6 +81,7 @@ function LearnerInteractivePage(props) {
     const location = useLocation();
     const booksPath = location.pathname.split("/").slice(0, 4).join("/");
     const courseId = location.pathname.split("/")[2];
+    
     const bookId = location.pathname.split("/")[4];
 
     //refresh view
@@ -119,8 +123,7 @@ function LearnerInteractivePage(props) {
         };
     }, [refreshInteractivePage || props.chapterId]);
 
-    console.log(currentPage.pageNumber)
-
+    console.log(currentPage.interactivePageId); 
     //edit
     const [infoDialogOpen, setEditDialogOpen] = React.useState(false);
 
@@ -222,6 +225,35 @@ function LearnerInteractivePage(props) {
 
     }
 
+    console.log(currentPage.pageQuiz); 
+
+    const renderQuiz = () => {
+
+        var height = "100%"
+        if (currentPage.pageDescription && !currentPage.attachment) {
+            height = '50%'
+        }
+        if (currentPage.pageDescription && currentPage.attachment) {
+            height = '33%'
+        }
+        if (currentPage.pageQuiz) {
+            return (
+                <div style={{ height: height, width: '100%' }}>
+                    <InteractiveQuizAttempt
+                        pageIdProp={currentPage.interactivePageId}
+                        bookIdProp={bookId}
+                        courseIdProp={courseId}
+                        // learnerStatusProp=''
+                        quizIdProp={currentPage.pageQuiz.assessmentId}
+                        refreshInteractivePage={refreshInteractivePage}
+                        setRefreshInteractivePage={setRefreshInteractivePage}
+                    >
+                    </InteractiveQuizAttempt>
+                </div>
+            );
+        }
+    }
+
     return (
         <div style={{ backgroundColor: "#F8F9FA", width: "100%", height: "75vh", paddding: 0 }}>
             <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
@@ -269,6 +301,7 @@ function LearnerInteractivePage(props) {
                         {pages.length > 0 && <div style={{ width: "100%", height: "100%" }}>
                             {renderVideoImageHolder()}
                             {renderText()}
+                            {renderQuiz()} 
                         </div>
                         }
                     </Paper>

@@ -11,22 +11,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import QuestionMaxPoints from "./QuestionMaxPoints";
 import QuestionHintComponent from "./QuestionGuideComponent";
 import QuestionGuideComponent from "./QuestionGuideComponent";
-export default function QuizQuestionComponent(props) {
+import InteractiveQuizTypeDropdownComponent from "./InteractiveQuizTypeDropdownComponent";
+export default function InteractiveQuizQuestionComponent(props) {
   const [question, setQuestion] = useState(props.questionProp);
   const [index, setIndex] = useState(props.indexProp);
   const [onEdit, setOnEdit] = useState(false);
 
-  function validateQuestion() {
-    if(question.questionType === "shortAnswer") {
-      return question.questionContent
-    }
-    else if(question.questionType === "mcq") {
-      return question.questionContent && question.questionHint && question.options && question.correctOption
-    }
-    else {
-      return question.questionContent && question.questionHint && question.correctOption
-    }
-  }
   return (
     <Grid
       container
@@ -40,7 +30,7 @@ export default function QuizQuestionComponent(props) {
         editQuestionTitleProp={props.editQuestionTitleProp}
       />
 
-      <QuizTypeDropdownComponent
+      <InteractiveQuizTypeDropdownComponent
         questionTypeProp={props.questionProp.questionType}
         editQuestionTypeProp={props.editQuestionTypeProp}
         questionIdProp={props.questionProp.localid}
@@ -56,9 +46,9 @@ export default function QuizQuestionComponent(props) {
         </Grid>
 
         <Grid item>
-          {props.questionProp.questionType == "shortAnswer" && (
+          {/* {props.questionProp.questionType == "shortAnswer" && (
             <ShortAnswerComponent />
-          )}
+          )} */}
           {props.questionProp.questionType == "mcq" && (
             <div>
               <McqBodyComponent
@@ -71,11 +61,11 @@ export default function QuizQuestionComponent(props) {
                 correctOptionProp={question.correctOption}
                 selectCorrectOptionProp={props.selectCorrectOptionProp}
               />
-              <QuestionGuideComponent
+              {/* <QuestionGuideComponent
                 questionIdProp={props.questionProp.localid}
                 questionHintProp={props.questionProp.questionHint}
                 editQuestionHintProp={props.editQuestionHintProp}
-              />
+              /> */}
             </div>
           )}
           {props.questionProp.questionType == "trueFalse" && (
@@ -87,31 +77,21 @@ export default function QuizQuestionComponent(props) {
                 correctOptionProp={question.correctOption}
                 selectCorrectOptionProp={props.selectCorrectOptionProp}
               />
-              <QuestionGuideComponent
+              {/* <QuestionGuideComponent
                 questionIdProp={props.questionProp.localid}
                 questionHintProp={props.questionProp.questionHint}
                 editQuestionHintProp={props.editQuestionHintProp}
-              />
+              /> */}
             </div>
           )}
         </Grid>
-        <Grid item style={{ marginTop: 50 }}>
+        <Grid item style={{ marginTop: 20 }}>
           <QuestionMaxPoints
             questionIdProp={props.questionProp.localid}
             questionMaxPointsProp={props.questionProp.questionMaxPoints}
             editQuestionMaxPointsProp={props.editQuestionMaxPointsProp}
           />
-
-          <Button disabled={!props.currChosenBankId || !validateQuestion()} onClick={() => props.handleAddToBank(props.questionProp)} variant="contained">Add To Bank</Button>
         </Grid>
-        <br></br>
-        <Button
-          variant="contained"
-          color="inherit"
-          onClick={() => props.removeQuestionProp(props.questionProp.localid)}
-        >
-          Remove Question
-        </Button>
       </Grid>
     </Grid>
   );

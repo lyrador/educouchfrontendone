@@ -71,17 +71,28 @@ import ViewGradedQuizAttempt from "./pages/ViewGradedQuizAttempt";
 import LearnerHome from "./pages/LearnerHome";
 import TeachingFileSubMarkerPage from "./pages/TeachingFileSubMarkerPage";
 import PreviewQuiz from "./components/QuizComponents/PreviewQuiz";
+import TechnicalSupport from "./components/TechnicalSupport";
+import TechnicalSupportList from "./components/TechnicalSupportList";
+import CreateTechnicalSupportRequest from "./components/CreateTechnicalSupportRequest";
 import WebPet from "web-pet";
 import RewardShoppingPage from "./pages/RewardShoppingPage";
 import RewardsArrangementPage from "./pages/RewardsArrangementPage";
 import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
 import RewardsEnhancementPage from "./pages/RewardsEnhancementPage";
+import InstructorReelsPage from "./pages/InstructorReelsPage";
+import LearnerReelsPage from "./pages/LearnerReelsPage";
+import CreateReelPage from "./pages/CreateReelPage";
+import InstructorViewReel from "./components/ReelComponents/InstructorViewReel";
+import InClassGamesList from "./components/InClassGamesList";
+import TriviaCreation from "./components/TriviaCreation";
+import TriviaHosting from "./components/TriviaHosting";
+import PollCreation from "./components/PollCreation";
 
 function App() {
   return (
     <div className="App">
-      <AuthProvider> 
+      <AuthProvider>
         <Router>
           <Routes>
             {/* <Route path = "/" element={<Home />} /> */}
@@ -95,7 +106,7 @@ function App() {
                 </RequireAuth>
               }
             />
-              <Route
+            <Route
               path="/dashboardAnnouncements"
               element={
                 <RequireAuth>
@@ -104,7 +115,7 @@ function App() {
                 </RequireAuth>
               }
             />
-              <Route
+            <Route
               path="/myPoints"
               element={
                 <RequireAuth>
@@ -122,8 +133,33 @@ function App() {
                 </RequireAuth>
               }
             />
-
-
+            <Route
+              path="/technicalSupport"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TechnicalSupport />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/technicalSupport/myRequests"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TechnicalSupportList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/technicalSupport/createRequest"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateTechnicalSupportRequest />
+                </RequireAuth>
+              }
+            />
             <Route
               path="/account"
               element={
@@ -556,6 +592,39 @@ function App() {
               }
             />
             <Route
+              path="/myTeachingCourse/:courseId/inClass"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InClassGamesList />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/inClass/trivia/:triviaId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <TriviaCreation />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/inClass/trivia/:triviaId/triviaHosting"
+              element={
+                <TriviaHosting />
+              }
+            />
+            <Route
+              path="/myTeachingCourse/:courseId/inClass/poll/:pollId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <PollCreation />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/learnerCourseDetails/:courseId/learnerInteractiveBook"
               element={
                 <RequireAuth>
@@ -697,7 +766,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/rewardShoppingPage"
               element={
@@ -707,7 +775,6 @@ function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/rewardArrangementPage"
               element={
@@ -717,12 +784,48 @@ function App() {
                 </RequireAuth>
               }
             />
-             <Route
+            <Route
               path="/rewardEnhancementPage"
               element={
                 <RequireAuth>
                   <Appbar />
                   <RewardsEnhancementPage/>
+                  </RequireAuth>
+              }
+            />
+            <Route
+              path="/instructorReels"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InstructorReelsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/learnerReels"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <LearnerReelsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/createReel"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <CreateReelPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/instructorViewReel"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <InstructorViewReel />
                 </RequireAuth>
               }
             />
