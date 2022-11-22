@@ -88,6 +88,7 @@ import InClassGamesList from "./components/InClassGamesList";
 import TriviaCreation from "./components/TriviaCreation";
 import TriviaHosting from "./components/TriviaHosting";
 import PollCreation from "./components/PollCreation";
+import VisitorGardenPage from "./pages/VisitorGardenPage";
 
 function App() {
   return (
@@ -789,8 +790,8 @@ function App() {
               element={
                 <RequireAuth>
                   <Appbar />
-                  <RewardsEnhancementPage/>
-                  </RequireAuth>
+                  <RewardsEnhancementPage />
+                </RequireAuth>
               }
             />
             <Route
@@ -829,7 +830,17 @@ function App() {
                 </RequireAuth>
               }
             />
+            <Route
+              path="/visitorPage/:userId"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <VisitorGardenPage/>
+                </RequireAuth>
+              }
+            />
           </Routes>
+
         </Router>
       </AuthProvider>
     </div>
