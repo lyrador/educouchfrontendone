@@ -271,7 +271,7 @@
 }
 
 .mediaContainerPollLayout {
-  height: 35%;
+  height: 30%;
   width: 50%;
   margin: auto;
   justify-content: center;
@@ -282,7 +282,7 @@
 }
 
 .pollOptionsContainer {
-  height: 49%;
+  height: 46%;
   width: 100%;
   display: flex;
   padding: 1%;

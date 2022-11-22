@@ -126,7 +126,7 @@ export default function PollQuestionLayout(props) {
     // }
 
     React.useEffect(() => {
-        joinRoom()
+        // joinRoom()
     }, [])
 
     React.useEffect(() => {
@@ -265,6 +265,7 @@ export default function PollQuestionLayout(props) {
                 if (room != "") {
                     sendPollQuestionFromEffect(result.pollQuestionTitle)
                 }
+                setPollResponses([])
             });
     }, [props.pollQuestionId]);
 
@@ -446,13 +447,13 @@ export default function PollQuestionLayout(props) {
 
         <div className="mainLayoutContainer">
             <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
-                <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >Interactive Page Created Succesfully!</Alert>
+                <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >Poll Updated Succesfully!</Alert>
             </Snackbar>
             <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar} >
-                <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: "100%" }} >Interactive Page Deleted Succesfully!</Alert>
+                <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: "100%" }} >Poll Updated Succesfully!</Alert>
             </Snackbar>
             <Snackbar open={openEditSnackbar} autoHideDuration={5000} onClose={handleCloseEditSnackbar} >
-                <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: "100%" }} >Interactive Page Updated Succesfully!</Alert>
+                <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: "100%" }} >Poll Updated Succesfully!</Alert>
             </Snackbar>
             <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={handleCloseErrorSnackbar} >
                 <Alert onClose={handleCloseErrorSnackbar} severity="error" sx={{ width: "100%" }} >Error!</Alert>
@@ -561,7 +562,7 @@ export default function PollQuestionLayout(props) {
                         </div>
                         <br />
 
-                        <div style={{ width: "100%", display: "flex" }}>
+                        {/* <div style={{ width: "100%", display: "flex" }}>
                             <div style={{ width: "85%" }}>
                                 <h2>Validity</h2>
                                 <Divider />
@@ -569,7 +570,7 @@ export default function PollQuestionLayout(props) {
                         </div>
                         <div style={{ width: "100%", justifyContent: 'center', textAlign: 'center' }}>
 
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
