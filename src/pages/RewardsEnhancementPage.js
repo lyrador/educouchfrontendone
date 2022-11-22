@@ -37,7 +37,7 @@ export default function RewardsEnhancementPage() {
             <Grid container spacing={2}>
                 <Grid item xs={5.8}>
                     <ToastContainer position = "top-center"></ToastContainer>
-                    <EnhancementToolbar selectedItem = {selectedItem} selectedEnhancement = {selectedEnhancement}/>
+                    <EnhancementToolbar selectedItem = {selectedItem} selectedEnhancement = {selectedEnhancement} sendSelectedItem = {sendSelectedItem}/>
                     <br />
                     <HomepageGarden selectedItem = {selectedItem}/>
                 </Grid>

@@ -25,7 +25,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
-function EnhancementToolbar({ selectedItem, selectedEnhancement }) {
+function EnhancementToolbar({ selectedItem, selectedEnhancement, sendSelectedItem }) {
 
     const navigate = useNavigate();
     const auth = useAuth();
@@ -66,8 +66,10 @@ function EnhancementToolbar({ selectedItem, selectedEnhancement }) {
                     console.log('Error is ' + error);
                     return Promise.reject(error);
                 } else {
-                    toast.success("Successful enhancement!")
-                    navigate('/learnerHome');
+                    
+                    sendSelectedItem(selectedItem);
+                    closeEnhanceDialogBox();
+                    toast.success("Successful enhancement!");
                 }
 
             }).catch((error) => {
