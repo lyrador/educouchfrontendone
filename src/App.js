@@ -79,6 +79,7 @@ import RewardShoppingPage from "./pages/RewardShoppingPage";
 import RewardsArrangementPage from "./pages/RewardsArrangementPage";
 import DashboardAnnouncements from "./pages/DashboardAnnouncements";
 import MyPoints from "./pages/MyPoints";
+import RewardsEnhancementPage from "./pages/RewardsEnhancementPage";
 import InstructorReelsPage from "./pages/InstructorReelsPage";
 import LearnerReelsPage from "./pages/LearnerReelsPage";
 import CreateReelPage from "./pages/CreateReelPage";
@@ -781,6 +782,15 @@ function App() {
                   <Appbar />
                   <RewardsArrangementPage />
                 </RequireAuth>
+              }
+            />
+            <Route
+              path="/rewardEnhancementPage"
+              element={
+                <RequireAuth>
+                  <Appbar />
+                  <RewardsEnhancementPage/>
+                  </RequireAuth>
               }
             />
             <Route

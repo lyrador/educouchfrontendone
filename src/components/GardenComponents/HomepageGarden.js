@@ -138,7 +138,7 @@ function HomepageGarden({ imaginaryItem, selectedItem, destinationGrid }) {
             for (let j = 0; j < item_list_copy.length; j++) {
                 var xCoor = item_list_copy[j].positionX;
                 var yCoor = item_list_copy[j].positionY;
-                var itemLink = item_list_copy[j].item.imageUrl;
+                var itemLink = item_list_copy[j].imageUrl;
                 var itemOwnedId = item_list_copy[j].itemOwnedId;
                 var isHidden = item_list_copy[j].hidden;
 
