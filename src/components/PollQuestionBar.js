@@ -595,17 +595,17 @@ export default function PollQuestionBar(props) {
             </div>
             <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar} >
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }} >
-                    Interactive Chapter Created Succesfully!
+                    Poll Updated Succesfully!
                 </Alert>
             </Snackbar>
             <Snackbar open={openDeleteSnackbar} autoHideDuration={5000} onClose={handleCloseDeleteSnackbar} >
                 <Alert onClose={handleCloseDeleteSnackbar} severity="success" sx={{ width: "100%" }} >
-                    Interactive Chapter Deleted Succesfully!
+                    Poll Updated Succesfully!
                 </Alert>
             </Snackbar>
             <Snackbar open={openEditSnackbar} autoHideDuration={5000} onClose={handleCloseEditSnackbar} >
                 <Alert onClose={handleCloseEditSnackbar} severity="success" sx={{ width: "100%" }} >
-                    Interactive Chapter Updated Succesfully!
+                    Poll Updated Succesfully!
                 </Alert>
             </Snackbar>
             <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={handleCloseErrorSnackbar} >

@@ -140,27 +140,20 @@ export default function InClassGamesList(props) {
 
   const [newGameTitleError, setNewGameTitleError] = useState({ value: false, errorMessage: "" });
   const [newGameDescriptionError, setNewGameDescriptionError] = useState({ value: false, errorMessage: "" });
-  const [newGameTypeError, setNewGameTypeError] = useState({ value: false, errorMessage: "" });
 
   const handleSelectGameType = (event) => {
     setNewGameType(event.target.value);
   };
 
-  //const [newGameCreatedDateTime, setNewGameCreatedDateTime] = React.useState(dayjs(currentDate.toISOString().split("T")[0]));
-  // const [newGameCreatedDateTimeError, setNewGameCreatedDateTimeError] = useState({ value: false, errorMessage: "" });
-
   //edit states
   const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-  const [editClassEventId, setEditClassEventId] = useState("");
-  const [editClassEventTitle, setEditClassEventTitle] = useState("");
-  const [editClassEventDescription, setEditClassEventDescription] = useState("");
-  const [editClassEventStartDateTime, setEditClassEventStartDateTime] = React.useState(dayjs(currentDate.toISOString().split("T")[0]));
-  const [editClassEventEndDateTime, setEditClassEventEndDateTime] = React.useState(dayjs(currentDate.toISOString().split("T")[0]));
+  const [editGameId, setEditGameId] = useState("");
+  const [editGameTitle, setEditGameTitle] = useState("");
+  const [editGameDescription, setEditGameDescription] = useState("");
+  const [editGameType, setEditGameType] = useState("");
 
-  const [editClassEventTitleError, setEditClassEventTitleError] = useState({ value: false, errorMessage: "", });
-  const [editClassEventDescriptionError, setEditClassEventDescriptionError] = useState({ value: false, errorMessage: "" });
-  const [editClassEventStartDateTimeError, setEditClassEventStartDateTimeError] = useState({ value: false, errorMessage: "" });
-  const [editClassEventEndDateTimeError, setEditClassEventEndDateTimeError] = useState({ value: false, errorMessage: "" });
+  const [editGameTitleError, setEditGameTitleError] = useState({ value: false, errorMessage: "", });
+  const [editGameDescriptionError, setEditGameDescriptionError] = useState({ value: false, errorMessage: "" });
 
   //delete states
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -182,10 +175,8 @@ export default function InClassGamesList(props) {
   const createNewGame = async (e) => {
     setNewGameTitleError({ value: false, errorMessage: "" });
     setNewGameDescriptionError({ value: false, errorMessage: "" });
-    setNewGameTypeError({ value: false, errorMessage: "" });
     if (newGameTitle == "") { setNewGameTitleError({ value: true, errorMessage: "Game title cannot be empty!" }) }
     if (newGameDescription == "") { setNewGameDescriptionError({ value: true, errorMessage: "Game Description cannot be empty!" }) }
-    if (newGameType == "") { setNewGameTypeError({ value: true, errorMessage: "Game Type cannot be empty!" }) }
     else if (newGameTitle && newGameDescription && newGameType) {
       e.preventDefault();
       if (newGameType == "TRIVIA") {
@@ -209,6 +200,8 @@ export default function InClassGamesList(props) {
             console.log("New Trivia created Successfully!");
             handleClickSnackbar();
             fetchGamesFromClassRun(selectedClassRun)
+            setNewGameTitle("")
+            setNewGameDescription("")
           }
         } catch (err) {
           console.log(err);
@@ -235,6 +228,8 @@ export default function InClassGamesList(props) {
             console.log("New Poll created Successfully!");
             handleClickSnackbar();
             fetchGamesFromClassRun(selectedClassRun)
+            setNewGameTitle("")
+            setNewGameDescription("")
           }
         } catch (err) {
           console.log(err);
@@ -248,12 +243,11 @@ export default function InClassGamesList(props) {
 
   //edit methods
   const handleClickEditDialogOpen = (event, gameType, gameId, gameTitle, gameDescription) => {
-    // setEditClassEventId(classEventId);
-    // setEditClassEventTitle(classEventTitle);
-    // setEditClassEventDescription(classEventNotes);
-    // setEditClassEventStartDateTime(dayjs(classEventStartDateTime).local().format());
-    // setEditClassEventEndDateTime(dayjs(classEventEndDateTime).local().format());
-    // setEditDialogOpen(true);
+    setEditGameType(gameType)
+    setEditGameId(gameId);
+    setEditGameTitle(gameTitle);
+    setEditGameDescription(gameDescription);
+    setEditDialogOpen(true);
   };
 
   const handleEditDialogClose = () => {
@@ -270,52 +264,76 @@ export default function InClassGamesList(props) {
     setDeleteDialogOpen(false);
   };
 
-  const editClassEvent = async (e) => {
-    // setEditClassEventTitleError({ value: false, errorMessage: "" });
-    // setEditClassEventDescriptionError({ value: false, errorMessage: "" });
-    // setEditClassEventStartDateTimeError({ value: false, errorMessage: "" });
-    // setEditClassEventEndDateTimeError({ value: false, errorMessage: "" });
-    // if (editClassEventTitle == "") { setEditClassEventTitleError({ value: true, errorMessage: "Event title cannot be empty!" }) }
-    // if (editClassEventDescription == "") { setEditClassEventDescriptionError({ value: true, errorMessage: "Event Description cannot be empty!" }) }
-    // if (editClassEventStartDateTime == "") { setEditClassEventStartDateTimeError({ value: true, errorMessage: "Event Start DateTime cannot be empty!" }) }
-    // if (editClassEventEndDateTime == "") { setEditClassEventEndDateTimeError({ value: true, errorMessage: "Event End DateTime cannot be empty!" }) }
-    // if (dayjs(editClassEventStartDateTime).isValid() === false) { setEditClassEventStartDateTimeError({ value: true, errorMessage: "Invalid Start DateTime!" }) }
-    // if (dayjs(editClassEventEndDateTime).isValid() === false) { setEditClassEventEndDateTimeError({ value: true, errorMessage: "Invalid End DateTime!" }) }
-    // if (dayjs(editClassEventStartDateTime).isAfter(dayjs(editClassEventEndDateTime))) {
-    //   setEditClassEventStartDateTimeError({ value: true, errorMessage: "End DateTime cannot be earlier than Start DateTime!" })
-    //   setEditClassEventEndDateTimeError({ value: true, errorMessage: "End DateTime cannot be earlier than Start DateTime!" })
-    // } else if (editClassEventTitle && editClassEventDescription && dayjs(editClassEventStartDateTime).isValid() && dayjs(editClassEventEndDateTime).isValid()) {
-    //   var title = editClassEventTitle;
-    //   var notes = editClassEventDescription;
-    //   var startDate = editClassEventStartDateTime;
-    //   var endDate = editClassEventEndDateTime;
-    //   var allDay = false;
-    //   var editClassEvent = { title, notes, startDate, endDate, allDay };
-    //   e.preventDefault();
-    //   try {
-    //     const response = await fetch(
-    //       "http://localhost:8080/event/events/" + editClassEventId,
-    //       {
-    //         method: "PUT",
-    //         headers: { "Content-Type": "application/json" },
-    //         body: JSON.stringify(editClassEvent),
-    //       }
-    //     );
-    //     console.log(response);
-    //     if (response.ok == false) {
-    //       console.log("Error");
-    //       handleClickErrorSnackbar();
-    //     } else {
-    //       console.log("Class Event edited Successfully!");
-    //       handleClickEditSnackbar();
-    //     }
-    //   } catch (err) {
-    //     console.log(err);
-    //     handleClickErrorSnackbar();
-    //   }
-    //   setRefreshPage(true);
-    //   handleEditDialogClose();
-    // }
+  const editGame = async (e) => {
+    setEditGameTitleError({ value: false, errorMessage: "" });
+    setEditGameDescriptionError({ value: false, errorMessage: "" });
+    if (editGameTitle == "") { setEditGameTitleError({ value: true, errorMessage: "Game title cannot be empty!" }) }
+    if (editGameDescription == "") { setEditGameDescriptionError({ value: true, errorMessage: "Game Description cannot be empty!" }) }
+    if (editGameTitle && editGameDescription) {
+      if (editGameType == "TRIVIA") {
+        var triviaQuizTitle = editGameTitle;
+        var triviaQuizDescription = editGameDescription;
+        var editedTriviaQuiz = { triviaQuizTitle, triviaQuizDescription };
+        e.preventDefault();
+        try {
+          const response = await fetch(
+            "http://localhost:8080/triviaQuiz/triviaQuizzes/" + editGameId,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(editedTriviaQuiz),
+            }
+          );
+          console.log(response);
+          if (response.ok == false) {
+            console.log("Error");
+            handleClickErrorSnackbar();
+          } else {
+            console.log("Trivia Quiz edited Successfully!");
+            handleClickEditSnackbar();
+            fetchGamesFromClassRun(selectedClassRun)
+            setEditGameTitle("")
+            setEditGameDescription("")
+          }
+        } catch (err) {
+          console.log(err);
+          handleClickErrorSnackbar();
+        }
+        setRefreshPage(true);
+        handleEditDialogClose();
+      } else {
+        var pollTitle = editGameTitle;
+        var pollDescription = editGameDescription;
+        var editedPoll = { pollTitle, pollDescription };
+        e.preventDefault();
+        try {
+          const response = await fetch(
+            "http://localhost:8080/poll/polls/" + editGameId,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(editedPoll),
+            }
+          );
+          console.log(response);
+          if (response.ok == false) {
+            console.log("Error");
+            handleClickErrorSnackbar();
+          } else {
+            console.log("Poll edited Successfully!");
+            handleClickEditSnackbar();
+            fetchGamesFromClassRun(selectedClassRun)
+            setEditGameTitle("")
+            setEditGameDescription("")
+          }
+        } catch (err) {
+          console.log(err);
+          handleClickErrorSnackbar();
+        }
+        setRefreshPage(true);
+        handleEditDialogClose();
+      }
+    }
   };
 
   //delete methods
@@ -385,10 +403,7 @@ export default function InClassGamesList(props) {
             <Alert onClose={handleCloseErrorSnackbar} severity="error" sx={{ width: "100%" }}>Error!</Alert>
           </Snackbar>
           <Breadcrumbs aria-label="breadcrumb">
-            <Link
-              to={`${inClassPath}`}
-              style={{ textDecoration: "none", color: "grey" }}
-            >
+            <Link to={`${inClassPath}`} style={{ textDecoration: "none", color: "grey" }}>
               <LinkMaterial underline="hover" color="inherit">
                 In-Class
               </LinkMaterial>
@@ -465,7 +480,7 @@ export default function InClassGamesList(props) {
                           <IconButton
                             aria-label="settings"
                             onClick={(event) =>
-                              handleClickEditDialogOpen(event, row.gameId, row.gameType, row.gameTitle, row.gameDescription)
+                              handleClickEditDialogOpen(event, row.gameType, row.gameId, row.gameTitle, row.gameDescription)
                             }
                           >
                             <EditIcon />
@@ -554,8 +569,7 @@ export default function InClassGamesList(props) {
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              You will not be able to undo this action. Are you sure you want to
-              delete?
+              You will not be able to undo this action. Are you sure you want to delete?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -568,81 +582,39 @@ export default function InClassGamesList(props) {
       </div>
       <div>
         <Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
-          <DialogTitle>Edit Class Event</DialogTitle>
+          <DialogTitle>Edit Game</DialogTitle>
           <DialogContent>
             <TextField
               id="outlined-basic"
-              label="Class Event Name"
+              label="Game Title"
               fullWidth
               defaultValue=""
               style={{ margin: "6px 0" }}
-              value={editClassEventTitle}
-              onChange={(e) => setEditClassEventTitle(e.target.value)}
-              error={editClassEventTitleError.value}
-              helperText={editClassEventTitleError.errorMessage}
+              value={editGameTitle}
+              onChange={(e) => setEditGameTitle(e.target.value)}
+              error={editGameTitleError.value}
+              helperText={editGameTitleError.errorMessage}
               required
             />
 
             <TextField
               id="outlined-multiline-static"
-              label="Class Event Description"
+              label="Game Description"
               multiline
               rows={6}
               fullWidth
               defaultValue=""
               style={{ margin: "6px 0" }}
-              value={editClassEventDescription}
-              onChange={(e) => setEditClassEventDescription(e.target.value)}
-              error={editClassEventDescriptionError.value}
-              helperText={editClassEventDescriptionError.errorMessage}
+              value={editGameDescription}
+              onChange={(e) => setEditGameDescription(e.target.value)}
+              error={editGameDescriptionError.value}
+              helperText={editGameDescriptionError.errorMessage}
               required
             />
-
-            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
-              <Stack spacing={1} style={{ margin: "8px 0" }}>
-                <DateTimePicker
-                  value={editClassEventStartDateTime}
-                  onChange={(newValue) =>
-                    setEditClassEventStartDateTime(newValue)
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      error={editClassEventStartDateTimeError.value}
-                      helperText={editClassEventStartDateTimeError.errorMessage}
-                      required
-                    />
-                  )}
-                  ampm={false}
-                  label="Event Start Date Time"
-                />
-              </Stack>
-            </LocalizationProvider>
-
-            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
-              <Stack spacing={1} style={{ margin: "12px 0" }}>
-                <DateTimePicker
-                  value={editClassEventEndDateTime}
-                  onChange={(newValue) =>
-                    setEditClassEventEndDateTime(newValue)
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      error={editClassEventEndDateTimeError.value}
-                      helperText={editClassEventEndDateTimeError.errorMessage}
-                      required
-                    />
-                  )}
-                  ampm={false}
-                  label="Event End Date Time"
-                />
-              </Stack>
-            </LocalizationProvider>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleEditDialogClose}>Cancel</Button>
-            <Button onClick={editClassEvent}>Edit</Button>
+            <Button onClick={editGame}>Edit</Button>
           </DialogActions>
         </Dialog>
       </div>
