@@ -92,7 +92,7 @@ function HomepageGarden({ imaginaryItem, selectedItem, destinationGrid }) {
             }
             );
         setLoadingGarden(false);
-    }, []);
+    }, [selectedItem]);
 
     // useEffect(() => {
     //     var squares_copy = []
