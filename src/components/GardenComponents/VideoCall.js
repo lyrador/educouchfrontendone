@@ -92,6 +92,9 @@ export default function VideoCall({ user, sendOtherUser }) {
         stream: mediaStream,
       });
 
+      localStream = mediaStream;
+
+
       if (isInitiator) setConnectionStatus("OFFERING");
       else offer && sp.signal(offer);
 
@@ -128,11 +131,18 @@ export default function VideoCall({ user, sendOtherUser }) {
     video = videoSelf.current;
     video.srcObject = undefined;
     video.pause();
-    localStream.getTracks().forEach(function (track) {
-      if (track.readyState == 'live') {
-        track.stop();
-      }
-    });
+    if(localStream) {
+      console.log('Local stream is not undefined.');
+      localStream.getTracks().forEach(function (track) {
+        if (track.readyState == 'live') {
+          track.stop();
+        }
+      });
+
+    } else {
+      console.log('Local stream is undefined.');
+    }
+    
 
     setConnectionStatus(null);
   }
