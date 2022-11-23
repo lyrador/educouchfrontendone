@@ -181,9 +181,9 @@ function TeachingAssessmentList(props) {
     e.preventDefault();
     fetch(
       "http://localhost:8080/assessment/deleteAssessmentByIdFromCourseId/" +
-        assessmentIdToDelete +
-        "/" +
-        courseId,
+      assessmentIdToDelete +
+      "/" +
+      courseId,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -290,7 +290,7 @@ function TeachingAssessmentList(props) {
   React.useEffect(() => {
     fetch(
       "http://localhost:8080/assessment/getAllAssessmentsByCourseIdWithDiscountPoint?courseId=" +
-        courseId
+      courseId
     )
       .then((res) => res.json())
       .then((result) => {
@@ -428,7 +428,7 @@ function TeachingAssessmentList(props) {
                       <TableCell>{assessment.open}</TableCell>
                       <TableCell>
                         <div>
-                          {!assessment.assessmentType == "FileSubmission" && (
+                          {!(assessment.assessmentType == "FileSubmission") && (
                             <IconButton
                               aria-label="settings"
                               onClick={(event) => {
