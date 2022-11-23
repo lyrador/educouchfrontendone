@@ -825,7 +825,7 @@ export default function TriviaQuestionLayout(props) {
                                         sx={{ input: { color: 'white' } }}
                                         label={yellowOptionContent == "" ? "Add answer 1" : null}
                                         style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
-                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
+                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true, maxLength: 30 }}
                                         InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
                                         value={yellowOptionContent}
                                         onChange={(e) => setYellowOptionContent(e.target.value)}
@@ -839,7 +839,7 @@ export default function TriviaQuestionLayout(props) {
                                                     style={{ height: "80%", paddingTop: "45%" }}
                                                 />
                                                 <div style={{ textAlign: "right" }}>
-                                                    {100 - yellowOptionContent.length}
+                                                    {30 - yellowOptionContent.length}
                                                 </div>
                                             </div>
                                         }
@@ -855,7 +855,7 @@ export default function TriviaQuestionLayout(props) {
                                         sx={{ input: { color: 'white' } }}
                                         style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
                                         label={greenOptionContent == "" ? "Add answer 2" : null}
-                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
+                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true, maxLength: 30 }}
                                         InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
                                         value={greenOptionContent}
                                         onChange={(e) => setGreenOptionContent(e.target.value)}
@@ -869,7 +869,7 @@ export default function TriviaQuestionLayout(props) {
                                                     style={{ height: "80%", paddingTop: "45%" }}
                                                 />
                                                 <div style={{ textAlign: "right" }}>
-                                                    {100 - greenOptionContent.length}
+                                                    {30 - greenOptionContent.length}
                                                 </div>
                                             </div>
                                         }
@@ -888,7 +888,7 @@ export default function TriviaQuestionLayout(props) {
                                         sx={{ input: { color: 'white' } }}
                                         label={redOptionContent == "" ? "Add answer 3 (optional)" : null}
                                         style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
-                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
+                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true, maxLength: 30 }}
                                         InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
                                         value={redOptionContent}
                                         onChange={(e) => setRedOptionContent(e.target.value)}
@@ -902,7 +902,7 @@ export default function TriviaQuestionLayout(props) {
                                                     style={{ height: "80%", paddingTop: "45%" }}
                                                 />
                                                 <div style={{ textAlign: "right" }}>
-                                                    {100 - redOptionContent.length}
+                                                    {30 - redOptionContent.length}
                                                 </div>
                                             </div>
                                         }
@@ -918,7 +918,7 @@ export default function TriviaQuestionLayout(props) {
                                         sx={{ input: { color: 'white' } }}
                                         style={{ margin: "6px 0", marginTop: "20px", width: "80%" }}
                                         label={blueOptionContent == "" ? "Add answer 4 (optional)" : null}
-                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true }}
+                                        InputProps={{ sx: { height: 80, fontSize: "18px" }, disableUnderline: true, maxLength: 30 }}
                                         InputLabelProps={{ sx: { fontSize: "20px", paddingTop: "5px" } }}
                                         value={blueOptionContent}
                                         onChange={(e) => setBlueOptionContent(e.target.value)}
@@ -932,7 +932,7 @@ export default function TriviaQuestionLayout(props) {
                                                     style={{ height: "80%", paddingTop: "45%" }}
                                                 />
                                                 <div style={{ textAlign: "right" }}>
-                                                    {100 - blueOptionContent.length}
+                                                    {30 - blueOptionContent.length}
                                                 </div>
                                             </div>
                                         }
