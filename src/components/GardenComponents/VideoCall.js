@@ -92,8 +92,6 @@ export default function VideoCall({ user, sendOtherUser }) {
         stream: mediaStream,
       });
 
-      localStream = mediaStream;
-
 
       if (isInitiator) setConnectionStatus("OFFERING");
       else offer && sp.signal(offer);

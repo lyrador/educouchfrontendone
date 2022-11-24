@@ -8,12 +8,19 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
 import ForestIcon from '@mui/icons-material/Forest';
 
-function TreePoint() {
+function TreePoint({refresh}) {
     
     const auth = useAuth();
     const user = auth.user;
 
     const [treePoint, setTreePoint] = useState("0");
+    const [refreshPoint, setRefreshPoint] = useState("");
+
+    useEffect(() => {
+        if(refresh) {
+            setRefreshPoint(refresh);
+        }
+    },[refresh]);
 
     useEffect(() => {
         var retrievalUrl = "http://localhost:8080/treePoints/retrieveTreePointByLearnerId?learnerId=" + user.userId;
@@ -23,7 +30,7 @@ function TreePoint() {
                 setTreePoint(result);
             }
             );
-    }, []);
+    }, [refreshPoint]);
 
 
     return (

@@ -31,6 +31,8 @@ function EnhancementToolbar({ selectedItem, selectedEnhancement, sendSelectedIte
     const auth = useAuth();
     const user = auth.user;
 
+    const [refresh, setRefresh] = useState("");
+
     // hide dialog box
     const [enhanceDialogBox, setEnhanceDialogBox] = useState(false);
     const openEnhanceDialogBox = () => {
@@ -70,6 +72,7 @@ function EnhancementToolbar({ selectedItem, selectedEnhancement, sendSelectedIte
                     sendSelectedItem(data);
                     closeEnhanceDialogBox();
                     toast.success("Successful enhancement!");
+                    setRefresh(data);
                 }
 
             }).catch((error) => {
@@ -95,7 +98,7 @@ function EnhancementToolbar({ selectedItem, selectedEnhancement, sendSelectedIte
                     </Stack>
                 </Grid>
                 <Grid item xs={4} style = {{textAlign: "right"}}>
-                    <TreePoint/>
+                    <TreePoint refresh = {refresh}/>
                 </Grid>
             </Grid>
 
